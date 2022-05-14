@@ -1,0 +1,87 @@
+{
+  "project_info": {
+    "project_number": "938249328963",
+    "firebase_url": "https://ipassio-41a15.firebaseio.com",
+    "project_id": "ipassio-41a15",
+    "storage_bucket": "ipassio-41a15.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:938249328963:android:5c2192447ea674b9",
+        "android_client_info": {
+          "package_name": "com.ipassio_"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "938249328963-d0jvsu7081hk26uuh38re5fuibg38t7r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ipassio_",
+            "certificate_hash": "113695a4df6aaf763d8d5d73406fe09da9e37dd9"
+          }
+        },
+        {
+          "client_id": "938249328963-5a3h65oi1cjad85s8vlvf85aoshfa8if.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ipassio_",
+            "certificate_hash": "d8026c8e90423d134c4a0abc8e9ac54eac9d2d96"
+          }
+        },
+        {
+          "client_id": "938249328963-3fuk1pdso985dt4d56mj9sj6m88udbtf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ipassio_",
+            "certificate_hash": "5b3ab8b00c4bac746d840796a67ed50b58bbf089"
+          }
+        },
+        {
+          "client_id": "938249328963-gqrbune0nb2kbg6knsqar8gkoqmshpes.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ipassio_",
+            "certificate_hash": "c147c0cc24d0aadc172f6d5c0818eed33e762264"
+          }
+        },
+        {
+          "client_id": "938249328963-s28cudclvjoi94ulaf8ijkdb3vd4bhgd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ipassio_",
+            "certificate_hash": "cd3a956e19594e2d40b25ee675bef59e017d0814"
+          }
+        },
+        {
+          "client_id": "938249328963-o6gf6eao638mh7h1kl1p4sj1qd4jfrjd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSumwFqS78kXZNE4aikLnAAyGuTDX6b7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "938249328963-8f129t3lo100o4pua9bs8j6c9v0rq14q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "938249328963-8haukfgbirtkjjcvrecljk5muh0lgeog.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ipassio_"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

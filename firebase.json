@@ -1,0 +1,7 @@
+{
+    "react-native": {
+      "messaging_ios_auto_register_for_remote_messages": false
+    }
+  }
+
+  //Not required because then we will have to handle the registration manually
