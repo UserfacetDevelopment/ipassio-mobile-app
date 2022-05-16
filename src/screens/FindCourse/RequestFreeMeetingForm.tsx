@@ -136,7 +136,9 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
     //when user is not logged in and yob should be there + user logged in and yob not required
     //  if (selectedCountry !== undefined && reason !== undefined)
     if (selectedCountry !== undefined && reason !== undefined && meetingPlatform !== undefined) {
-      dispatch(setPageLoading(true));
+      if(data[meetingPlatform.code] !==undefined){
+        if(timeSlots[0].date!=='' && timeSlots[0].start_time!=='' && timeSlots[0].end_time && timeSlots[0].timezone){
+          dispatch(setPageLoading(true));
       let learn_on = new Array();
       // if (course.taught_on) {
       //   course.taught_on.map((val: any, i: number) => {
@@ -240,6 +242,16 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
         .catch(() => {
           dispatch(setPageLoading(false));
         });
+        }
+        else{
+          Alert.alert('', 'Add atleast onr time slot');
+        }
+        
+      }
+      else{
+        Alert.alert('Fill details', 'Add your meeting platform details');
+      }
+      
     }
     // }
   };
@@ -986,6 +998,8 @@ zIndex={10000}
                         />
                       )}
                     />
+                    {/* Add error condition to this */}
+                    {/* {submitRequested ? } */}
                   </View> : null}
                   {/* {course.taught_on && course.taught_on.length > 0 ? (
                     <>

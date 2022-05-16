@@ -257,9 +257,9 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
           )}
         >
          {userData.user_type === 'T' ? <View
-              style={{ marginTop: 40 }}
+              style={{ marginTop: 43 }}
             ></View> : <View
-            style={{ marginTop: 20 }}
+            style={{ marginTop: 16 }}
           ></View> }
           {transactionsDataStatus === 'loading' ? (
             <View style={styles.transactionsWrapper}>

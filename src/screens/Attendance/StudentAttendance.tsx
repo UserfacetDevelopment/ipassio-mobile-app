@@ -658,7 +658,7 @@ onRefresh();
                   <Calender />
                 </View>
                 <DateTimePickerModal
-                  minimumDate={new Date()}
+                  maximumDate={new Date()}
                   isVisible={isDateTimePickerVisible}
                   mode="date"
                   onConfirm={selectedDate => {

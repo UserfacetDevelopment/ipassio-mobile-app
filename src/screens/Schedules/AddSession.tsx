@@ -466,10 +466,10 @@ const meetingPlatforms = [
             <KeyboardAwareScrollView
               scrollEventThrottle={16}
               keyboardShouldPersistTaps={'handled'}>
-              <View
+              {/* <View
                 style={{
                   marginBottom: 5,
-                }}></View>
+                }}></View> */}
 
               <View
               // style={styles.formWrapper}
@@ -666,7 +666,6 @@ const meetingPlatforms = [
                     </Text>
                   </TouchableOpacity>
                 </View>
-                <View style={{marginBottom:150}}></View>
               </View>
 
             </KeyboardAwareScrollView>
@@ -689,7 +688,7 @@ const styles = StyleSheet.create({
 
   scrollView: {
     flex: 1,
-    marginTop: 189,
+    //marginTop: 189,
   },
   input: {
     color: font1,

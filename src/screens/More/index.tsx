@@ -33,7 +33,7 @@ export default function More({navigation}) {
     await AsyncStorage.removeItem('USER_NOT_FIRST');
     
     dispatch(logoutUser());
-    navigation.navigate('FindCourses');
+    navigation.navigate('Browse');
   }
 
   return (

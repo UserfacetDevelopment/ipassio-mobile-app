@@ -645,7 +645,7 @@ export default function Schedules({navigation}: Props) {
         <View style={styles.modalView}>
           <View style={styles.modalLine}></View>
           <Text style={{fontWeight:'700', fontSize: 18, color: font1, marginTop:24}}>Add Session</Text>
-              {/* <AddSessionCmp setShowAddSessionModal = {setShowAddSessionModal} navigation={navigation}/> */}
+              <AddSessionCmp setShowAddSessionModal = {setShowAddSessionModal} navigation={navigation}/>
         </View>
         </View>
       </Modal>
@@ -757,7 +757,7 @@ borderRadius:12,
     width:48,
     alignItems:'flex-end'
   },
-  addSessionWrapper:{position:'absolute', bottom:20, zIndex:1000, paddingHorizontal:16, width:'100%'},
+  addSessionWrapper:{position:'absolute', bottom:80, zIndex:1000, paddingHorizontal:16, width:'100%'},
   addSessionButton:{ backgroundColor:brandColor, flexDirection:'row', justifyContent:'center', padding:11, borderRadius:8},
   addSession:{flexDirection:'row',alignItems:'center', width:'35%'},
   dropBackground:{borderRadius: 50, padding:8, backgroundColor:lineColor},
@@ -768,9 +768,11 @@ borderRadius:12,
     height: '100%',
   },
   modalView: {
+position:'absolute',
+bottom:0,
     alignSelf: 'flex-end',
     backgroundColor: '#fff',
-    marginTop:150,
+    // marginTop:150,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     padding: 16,

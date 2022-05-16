@@ -298,13 +298,13 @@ console.log(course)
         ? userLocation?.data?.country === 'IN'
           ? course.teacher.ip_country === 'India'
             ? `INR ${course.pricing[0].INR}`
-            : `US $ ${course.pricing[0].USD}`
-          : `US $ ${course.pricing[0].USD}`
+            : `US $${course.pricing[0].USD}`
+          : `US $${course.pricing[0].USD}`
         : userData?.ip_country === 'India'
         ? course.teacher.ip_country === 'India'
           ? `INR ${course.pricing[0].INR}`
-          : `US $ ${course.pricing[0].USD}`
-        : `US $ ${course.pricing[0].USD}`}
+          : `US $${course.pricing[0].USD}`
+        : `US $${course.pricing[0].USD}`}
 
       
     </Text>

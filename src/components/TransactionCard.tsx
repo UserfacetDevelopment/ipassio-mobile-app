@@ -13,8 +13,9 @@ import SheetCSS from '../styles/style';
 import Moment from 'moment';
 import Helper from '../utils/helperMethods';
 import Dropdown from '../assets/images/dropdown.svg';
-import {font1, font2, font3, lineColor} from '../styles/colors';
+import {brandColor, font1, font2, font3, lineColor} from '../styles/colors';
 import StyleCSS from '../styles/style';
+import DashedLine from 'react-native-dashed-line';
 
 export default function TransactionCard({
   data,
@@ -37,19 +38,12 @@ export default function TransactionCard({
               setSelectedTransaction(0);
             }}>
             <View style={[styles.cardHeadSection]}>
-              {userData.user_type === 'T' && (
+             <View style={{ height:56, width:56, borderWidth:1.3, borderColor:brandColor, justifyContent:'center', alignItems:'center', borderRadius: 30}}>
                 <Image
-                  source={{uri: data.student.profile_pic}}
+                  source={{uri:userData.user_type === 'T' ?  data.student.profile_pic : userData.user_type === 'S' ? data.course.course_image : null}}
                   style={[styles.profilePic]}
                 />
-              )}
-              {userData.user_type === 'S' && (
-                <Image
-                  source={{uri: data.course.course_image}}
-                  style={[styles.profilePic]}
-                />
-              )}
-
+              </View>
               <View style={[styles.cardTitleWrapper]}>
                 <Text style={styles.cardTitle}>
                   {userData.user_type === 'T' && data.student.name}
@@ -60,7 +54,7 @@ export default function TransactionCard({
                       : ' ( ' + data.class_type + ' Members)')}
                 </Text>
                 <View style={styles.itemRowItem}>
-                  <Text style={styles.contentText}>
+                  <Text style={styles.contentLabel}>
                     {Moment(data.created).format('MMM DD, yyyy')}
                   </Text>
                 </View>
@@ -80,13 +74,18 @@ export default function TransactionCard({
             </View>
           </TouchableOpacity>
 
-          <View style={SheetCSS.styles.lineStyleDashed} />
+          <DashedLine
+              dashLength={5}
+              dashThickness={1}
+              dashGap={5}
+              dashColor={lineColor}
+            />
           {userData.user_type === 'T' ? (
             <View style={styles.collapsedCard}>
               <View style={styles.itemRow}>
                 <View>
                   <Text style={styles.contentLabel}>Course</Text>
-                  <Text style={styles.contentText}>
+                  <Text style={styles.contentLabel}>
                     {data.course.title}{' '}
                     {userData.user_type === 'T' &&
                       (data.class_type === '1'
@@ -96,7 +95,12 @@ export default function TransactionCard({
                 </View>
               </View>
 
-              <View style={SheetCSS.styles.lineStyleDashed} />
+              <DashedLine
+              dashLength={5}
+              dashThickness={1}
+              dashGap={5}
+              dashColor={lineColor}
+            />
             </View>
           ) : null}
           <View style={styles.itemRow}>
@@ -113,8 +117,12 @@ export default function TransactionCard({
             </View>
           </View>
 
-          <View style={SheetCSS.styles.lineStyleDashed} />
-
+          <DashedLine
+              dashLength={5}
+              dashThickness={1}
+              dashGap={5}
+              dashColor={lineColor}
+            />
           <View style={styles.itemRow}>
           <View style={styles.itemRowItem}>
               {userData.user_type === 'T' ? <><Text style={styles.contentLabel}>Balance</Text>
@@ -127,12 +135,10 @@ export default function TransactionCard({
               <Text style={styles.contentLabel}>Amount</Text>
               <Text
                 style={[
-                  styles.contentText,
-                  styles.font3Color,
-                  styles.boldText,
+                  styles.amount,
                 ]}>
                 {data.currency_type === 'INR' ? 'Rs.' : 'US$'}
-                {data.amount}
+                {' '}{data.amount}
               </Text>
             </View>
             
@@ -148,19 +154,13 @@ export default function TransactionCard({
           }}>
           <View style={[styles.cardWrapperNS]}>
             <View style={styles.transactionItem}>
-              <View>
-                {userData.user_type === 'T' && (
+              <View >
+               
                   <Image
-                    source={{uri: data.student.profile_pic}}
+                    source={{uri: userData.user_type === 'T' ? data.student.profile_pic :  userData.user_type === 'S' ? data.course.course_image : null}}
                     style={[styles.profilePic]}
                   />
-                )}
-                {userData.user_type === 'S' && (
-                  <Image
-                    source={{uri: data.course.course_image}}
-                    style={[styles.profilePic]}
-                  />
-                )}
+               
               </View>
               <View style={styles.cardTitleWrapperNS}>
                 <View
@@ -176,19 +176,21 @@ export default function TransactionCard({
                         ? ' (1-on-1 Class)'
                         : ' ( ' + data.class_type + ' Members)')}
                   </Text>
+                  <Dropdown/>
                 </View>
                 <View style={styles.dateWrapper}>
                   <Text style={styles.date}>
                     {Moment(data.created).format('MMM DD, yyyy')}
                   </Text>
-                  <Text style={styles.amount}>
+                  <Text style={[styles.amount]}>
                     {data.currency_type === 'INR' ? 'Rs.' : 'US$'}
-                    {data.amount}
+                    {' '}{data.amount}
                   </Text>
                 </View>
               </View>
+              
             </View>
-            <Dropdown />
+            
           </View>
         </TouchableOpacity>
       )}
@@ -197,43 +199,12 @@ export default function TransactionCard({
 }
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   backgroundColor: '#ffffff',
-  // },
-  // safecontainer: {
-  //   flex: 1,
-  //   // backgroundColor: '#FEFEFE',
-  // },
-  scrollView: {
-    flex: 1,
-    marginTop: 90,
-  },
-  body: {
-    flex: 1,
-    fontSize: 15,
-    color: '#606060',
-    lineHeight: 24,
-    marginRight: 8,
-  },
 
-  walletWrapper: {
-    zIndex: 1,
-  },
-  wallet: {
-    padding: 40,
-    height: 154,
-  },
-  transactionsWrapper: {
-    flex: 1,
-    marginTop: -80,
-    paddingTop: 75,
-    zIndex: 0,
-  },
   transactionItem: {
     flexDirection: 'row',
+    width:'100%'  
   },
-  dateWrapper: {flexDirection: 'row', marginTop: 6},
+  dateWrapper: { flexDirection: 'row', alignItems:'center', marginTop: 8, justifyContent:'space-between', width:'100%', flex:1},
   lineStyle: {
     borderBottomWidth: 1,
     borderColor: '#E2E4E5',
@@ -241,17 +212,17 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   highlightedWrappper: {
-    backgroundColor: 'white',
-    padding: 16,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
     marginVertical: 4,
-  },
-  border: {
-    borderWidth: 4,
+    
   },
   cardWrapperNS: {
+    // borderWidth:1,
     marginHorizontal: 16,
     padding: 16,
     flexDirection: 'row',
+
     backgroundColor: '#fff',
     borderRadius: 8,
     marginVertical: 4,
@@ -263,16 +234,22 @@ const styles = StyleSheet.create({
   },
   itemRowItem: {
     width: '50%',
+    // borderWidth:1,
   },
   contentLabel: {
-    fontSize: 16,
+    // borderWidth:1,
+    fontSize: 14,
     color: font2,
+    lineHeight:18,
+    fontWeight:'500',
     fontFamily: Helper.switchFont('regular'),
   },
   contentText: {
-   
+    // borderWidth:1,
     color: font1,
-    fontSize: 16,
+    fontSize: 14,
+    lineHeight:18,
+    fontWeight:'500',
     fontFamily: Helper.switchFont('medium'),
     marginTop: 4,
   },
@@ -284,18 +261,21 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     width: '90%',
-    fontSize: 18,
+    fontSize: 14,
+    fontWeight:'600',
     color: font1,
     flexWrap: 'wrap',
-    fontWeight: '500',
+    textTransform:'capitalize',
+    lineHeight:20,
     fontFamily: Helper.switchFont('medium'),
   },
   cardTitleWrapper: {
-    marginLeft: 10,
-    width: '72%',
+    marginLeft: 12,
+    flex:1,
+    // width: '72%',
     justifyContent: 'center',
   },
-  cardTitleWrapperNS: {marginLeft: 10, width: '75%'},
+  cardTitleWrapperNS: {marginLeft: 12, flex:1},
 
   profilePic: {
     width: 50,
@@ -303,33 +283,24 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
   },
-  bubblesWrapper: {
-    flex: 1,
-    marginTop: -13,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 35,
-  },
-  loaderWrapper: {
-    paddingHorizontal: 32,
-  },
+
   cardHeadSection: {
     flexDirection: 'row',
     paddingVertical: 16,
     justifyContent: 'center',
   },
   amount: {
-    fontSize: 16,
-    color: font3,
-    width: '50%',
-    textAlign: 'right',
+    fontSize: 14,
+    color: font1,
+    lineHeight:18,
+    fontWeight:'500',
     fontFamily: Helper.switchFont('medium'),
   },
   date: {
-    fontSize: 16,
+    fontSize: 14,
     color: font2,
-    width: '50%',
-    fontFamily: Helper.switchFont('regular'),
+    fontWeight:'500',
+    fontFamily: Helper.switchFont('medium'),
   },
   collapsedCard: {
     backgroundColor: '#fff',

@@ -30,7 +30,7 @@ import {RootParamList} from '../../navigation/Navigators';
 import {useSelector} from 'react-redux';
 import {userState} from '../../reducers/user.slice';
 import {loaderState} from '../../reducers/loader.slice';
-import {brandColor} from '../../styles/colors';
+import {brandColor, font1, font2, lineColor, secondaryColor, secondaryColorBorder} from '../../styles/colors';
 import Helper from '../../utils/helperMethods';
 import config from '../../config/Config';
 import {
@@ -44,6 +44,8 @@ import {
 } from '../../reducers/withdrawal.slice';
 import {useAppDispatch} from '../../app/store';
 import HeaderInner from '../../components/HeaderInner'
+import BottomNavigation from '../../components/BottomNavigation';
+import DashedLine from 'react-native-dashed-line';
 
 type Props = NativeStackScreenProps<RootParamList, 'Withdraw'>;
 
@@ -317,10 +319,12 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                   setSelectedTransaction(0);
                 }}>
                 <View style={SheetCSS.styles.justifyContentCenter}>
+                  <View style={{height:56, width:56, borderRadius:30, borderWidth:1.3, borderColor:brandColor, justifyContent:'center', alignItems:'center'}}>
                   <Image
                     source={{uri: data.student.profile_pic}}
                     style={styles.profilePic}
                   />
+                  </View>
                 </View>
                 <View style={styles.cardHeadSelected}>
                   <Text style={styles.cardTitle}>
@@ -332,13 +336,14 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                         : '( ' + data.class_type + ' Members)')}
                   </Text>
                   <View style={styles.dateWrapper}>
-                    <Text style={styles.amount}>
+                    {/* <Text style={styles.amount}>
                       {data.currency_type === 'INR' ? 'Rs.' : 'US$ '}
                       {data.amount}
-                    </Text>
+                    </Text> */}
                     <Text style={styles.date}>
                       {Moment.tz(data.created, userData.timezone).format(
-                        'ddd, MMM DD, YYYY',
+                        // 'ddd, MMM DD, YYYY',
+                        'MMM DD, YYYY',
                       )}
                     </Text>
                   </View>
@@ -365,8 +370,13 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
               </View>
             </View>
 
-            <View style={styles.lineStyleFull} />
-
+            
+            <DashedLine
+              dashLength={5}
+              dashThickness={1}
+              dashGap={5}
+              dashColor={lineColor}
+            />
             {userData.user_type === 'T' ? (
               <View>
                 <View style={styles.itemRow}>
@@ -382,7 +392,12 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                   </View>
                 </View>
 
-                <View style={styles.lineStyleFull} />
+                <DashedLine
+              dashLength={5}
+              dashThickness={1}
+              dashGap={5}
+              dashColor={lineColor}
+            />
               </View>
             ) : null}
 
@@ -397,48 +412,68 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                     : '-'}
                 </Text>
               </View>
-              {data.status ? (
-                <View style={styles.itemRowItem}>
+              <View style={styles.itemRowItem}>
+                <Text style={styles.contentLabel}>Amount</Text>
+                <Text style={styles.contentText}>
+                      {data.currency_type === 'INR' ? 'Rs.' : 'US$ '}
+                      {data.amount}
+                    </Text>
+              </View>
+             
+              
+            </View>
+
+            {data.status ? (
+              <>
+               <DashedLine
+              dashLength={5}
+              dashThickness={1}
+              dashGap={5}
+              dashColor={lineColor}
+            />
+              <View style={styles.itemRow}>
+                <View style={[styles.itemRowItem, {flexDirection:'row', alignItems:'center'}]}>
                   <Text style={styles.contentLabel}>Status</Text>
                   {data.status.code === 'RW' && (
-                    <Text style={[styles.contentText, styles.status_text_rw]}>
+                    <Text style={[styles.contentStatus, styles.status_text_rw]}>
                       {data.status.name}
                     </Text>
                   )}
                   {data.status.code === 'P' && (
-                    <Text style={[styles.contentText, styles.status_text_p]}>
+                    <Text style={[styles.contentStatus, styles.status_text_p]}>
                       {data.status.name}
                     </Text>
                   )}
                   {data.status.code === 'A' && (
-                    <Text style={[styles.contentText, styles.status_text_a]}>
+                    <Text style={[styles.contentStatus, styles.status_text_a]}>
                       {data.status.name}
                     </Text>
                   )}
                   {data.status.code === 'C' && (
-                    <Text style={[styles.contentText, styles.status_text_c]}>
+                    <Text style={[styles.contentStatus, styles.status_text_c]}>
                       {data.status.name}
                     </Text>
                   )}
                   {data.status.code === 'R' && (
-                    <Text style={[styles.contentText, styles.status_text_r]}>
+                    <Text style={[styles.contentStatus, styles.status_text_r]}>
                       {data.status.name}
                     </Text>
                   )}
+                  </View>
                 </View>
+                </>
               ) : null}
-            </View>
             {selectedIds.length > 0 ||
             data.status.code === 'A' ||
             data.status.code === 'C' ||
             data.status.code === 'P' ? null : (
-              <View style={[styles.itemRow, {alignItems: 'center'}]}>
+              <View style={[styles.itemRow, {alignItems: 'center', paddingTop:8}]}>
                 <TouchableOpacity
                   style={styles.cancelButton}
                   onPress={() => {
                     cancelSelections();
                   }}>
-                  <Text style={styles.cancelText}>CLOSE</Text>
+                  <Text style={styles.cancelText}>Close</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -452,7 +487,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                       },
                     ]);
                   }}>
-                  <Text style={styles.withdrawText}>WITHDRAW</Text>
+                  <Text style={styles.withdrawText}>Withdraw</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -479,31 +514,28 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                 />
               </View>
               <View style={styles.cardHeadNSelected}>
-                <Text style={styles.cardTitle}>
-                  {userData.user_type === 'T' && data.student.name}
+                <Text style={styles.cardTitle}>{data.student.name}
+                  {/* {userData.user_type === 'T' && data.student.name}
                   {userData.user_type === 'S' && data.course.title}
                   {userData.user_type === 'S' &&
                     (data.class_type === '1'
                       ? '(1-on-1 Class)'
-                      : '( ' + data.class_type + ' Members)')}
+                      : '( ' + data.class_type + ' Members)')} */}
                 </Text>
                 <View
                   style={styles.amtDateWrapper}>
                   <Text
                     style={styles.amount}>
-                    {data.currency_type === 'INR' ? 'Rs.' : 'US$ '}
+                    {data.currency_type === 'INR' ? 'Rs. ' : 'US $'}
                     {data.amount}
                   </Text>
-                  <Text style={styles.date}>
-                    {Moment.tz(data.created, userData.timezone).format(
-                      'ddd, MMM DD, YYYY',
-                    )}
-                  </Text>
+                  
                 </View>
               </View>
             </TouchableOpacity>
 
             <View style={styles.addIdWrapper2}>
+              
               {data.status.code === 'A' ||
               data.status.code === 'C' ||
               data.status.code === 'P' ? null : (
@@ -534,6 +566,13 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
             </View>
 
             <View style={styles.status}>
+            <Text style={styles.date}>
+                    {Moment.tz(data.created, userData.timezone).format(
+                      // 'ddd, MMM DD, YYYY',
+                      'MMM DD, YYYY',
+                    )}
+                  </Text>
+            
               {data.status.code === 'A' ||
               data.status.code === 'C' ||
               data.status.code === 'P' ? (
@@ -575,7 +614,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                       },
                     ]);
                   }}>
-                  <Text style={styles.mainLink}>WITHDRAW</Text>
+                  <Text style={styles.mainLink}>Withdraw</Text>
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -631,7 +670,6 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
               </Animated.View>
                     <Animated.Text
                     style={[
-                      styles.walletTitle,
                       {
                        
                         marginTop: titleSubTop,
@@ -643,13 +681,12 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                         zIndex:4,
                         color:'#fff',
                         borderColor:'#fff',
-                      },
+                      }
                     ]}>
                     {`${walletBalance}`}
                   </Animated.Text>
                   <Animated.Text
                     style={[
-                      styles.walletSubTitle,
                       {marginTop: thirdTitleTop, position:'absolute', fontSize: balanceSize,
                       top:109, color:'#fff', opacity:0.7, fontWeight:'bold', margin: 16,
                     },
@@ -670,6 +707,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
               { useNativeDriver: false }
             )}
           >
+            <View style={{marginTop:39}}/>
             <View style={styles.loaderWrapper}>
               {withdrawalDataStatus === 'loading' ? (
                 <View style={styles.transactionsWrapper}>
@@ -730,6 +768,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
           ) : null}
         </View>
       )}
+      <BottomNavigation navigation={navigation} selected={'W'}/>
     </View>
   );
 };
@@ -747,17 +786,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop:164
   },
-  body: {
-    flex: 1,
-    fontSize: 15,
-    color: '#606060',
-    lineHeight: 24,
-    marginRight: 8,
-  },
-  // lineStyle: {
-  //   borderWidth: 1.0,
-  //   borderColor: "#E2E4E5",
-  // },
   walletWrapper: {
     zIndex: 1,
   },
@@ -767,8 +795,8 @@ const styles = StyleSheet.create({
   },
   transactionsWrapper: {
     flex: 1,
-    marginTop: -60,
-    paddingTop: 75,
+    // marginTop: -60,
+    // paddingTop: 75,
     zIndex: 0,
   },
   transactionItem: {
@@ -790,14 +818,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   highlightedWrappper: {
-    borderRadius: 10,
-    margin: 3,
     backgroundColor: 'white',
-    paddingHorizontal: 24,
-    marginHorizontal: 24,
+    paddingHorizontal: 16,
   },
   itemRow: {
-    paddingVertical: 10,
+    paddingVertical: 16,
     flexDirection: 'row',
   },
   itemRowItem: {
@@ -805,12 +830,15 @@ const styles = StyleSheet.create({
   },
   contentLabel: {
     fontSize: 14,
-    color: 'rgb(107, 114, 122)',
-    fontFamily: Helper.switchFont('regular'),
+    color: font2,
+    fontWeight:'500',
+    lineHeight:18,
+    fontFamily: Helper.switchFont('medium'),
   },
   contentText: {
-    color: 'rgb(44, 54, 65)',
+    color: font1,
     fontSize: 14,
+    fontWeight:'500',
     fontFamily: Helper.switchFont('medium'),
     marginTop: 5,
   },
@@ -824,77 +852,85 @@ const styles = StyleSheet.create({
     color: 'rgb(39, 127, 217)',
   },
   status_text_c: {
-    color: 'rgb(36, 186, 96)',
+    color: 'rgba(40, 190, 145, 1)'
   },
   status_text_r: {
-    color: 'rgb(234, 68, 53)',
+    color: brandColor
   },
 
   mainLink: {
+    fontWeight:'700',
+    // borderWidth:1,
     fontSize: 14,
     color: brandColor,
     fontFamily: Helper.switchFont('medium'),
   },
   transactionBox: {
-    borderRadius: 10,
-    marginVertical: 8,
-    marginHorizontal: 24,
+    borderRadius: 8,
+    marginVertical: 4,
+    marginHorizontal: 16,
     backgroundColor: '#fff',
-    padding: 24,
+    padding: 16,
   },
   cardTitle: {
-    fontSize: 16,
-    color: 'rgb(44, 54, 65)',
+    fontSize: 14,
+    color: font1,
+    fontWeight:'600',
     flexWrap: 'wrap',
-    fontFamily: Helper.switchFont('medium'),
+    textTransform:'capitalize',
+    fontFamily: Helper.switchFont('semibold'),
   },
   cancelText: {
-    color: 'rgb(108, 108, 108)',
-    fontSize: 12,
+    color: secondaryColor,
+    fontSize: 14,
+    fontWeight:'700',
     textAlign: 'center',
-    fontFamily: Helper.switchFont('medium'),
+    lineHeight:18,
+    fontFamily: Helper.switchFont('bold'),
   },
   cancelButton: {
-    padding: 12,
-    paddingTop: 16,
-    paddingBottom: 16,
+    paddingTop: 10,
+    paddingBottom: 12,
     backgroundColor: 'fff',
+    borderColor: secondaryColorBorder,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 3,
-    width: '30%',
+    borderRadius: 8,
+    width: '49%',
     zIndex: 1,
-    borderColor: 'rgb(224, 224, 224)',
-    borderWidth: 0.8,
+    borderWidth: 1,
     marginRight: '3%',
   },
   withdrawText: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 12,
-    fontFamily: Helper.switchFont('medium'),
+lineHeight:18,
+fontWeight:'700',
+    fontSize: 14,
+    fontFamily: Helper.switchFont('bold'),
   },
   withdrawButton: {
-    padding: 12,
-    paddingTop: 16,
-    paddingBottom: 16,
+    paddingTop: 10,
+    paddingBottom: 12,
     backgroundColor: brandColor,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 5,
-    width: '67%',
+    borderRadius: 8,
+    width: '49%',
     zIndex: 1,
   },
   amount: {
-    fontSize: 13,
-    color: 'rgb(44, 54, 65)',
+    fontSize: 14,
+    color: font1,
+    fontWeight:'500',
     fontFamily: Helper.switchFont('medium'),
   },
   date: {
-    fontSize: 13,
-    color: '#81878D',
-    fontFamily: Helper.switchFont('regular'),
-    marginLeft: 16,
+    fontSize: 14,
+    color: font2,
+    fontWeight:'500',
+    lineHeight:18,
+    fontFamily: Helper.switchFont('medium'),
   },
   profilePic: {
     width: 50,
@@ -915,7 +951,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     justifyContent: 'center',
   },
-  cardHeadNSelected:{marginLeft: 16, width: '75%'},
+  cardHeadNSelected:{marginLeft: 12, flex:1},
   radioButtonImage: {
     height: 20,
     width: 20,
@@ -926,14 +962,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#fff',
     paddingHorizontal: 16,
+    bottom:64
+    
   },
-  cardHeadSelected:{marginLeft: 10, width: '75%', marginTop: 6},
-  dateWrapper:{flexDirection: 'row', marginTop: 6},
+  cardHeadSelected:{marginLeft: 12, marginTop: 6, flex:1},
+  dateWrapper:{flexDirection: 'row', marginTop: 5},
   addIdWrapper:{position: 'absolute', right: 0, top: 39},
-  addIdWrapper2:{position: 'absolute', right: 24, top: 39},
-  status:{alignItems: 'flex-end', marginTop: 19},
-  amtDateWrapper:{flexDirection: 'row', marginTop: 6, marginLeft: 0},
-  loaderWrapper:{flex: 1, marginTop: 20, marginBottom:80},
+  addIdWrapper2:{position: 'absolute', right: 24, top: 39,},
+  status:{flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginTop: 10},
+  amtDateWrapper:{marginTop: 5},
+  loaderWrapper:{
+    flex: 1, 
+    // borderWidth:1,
+    // marginTop: 20, 
+    marginBottom:80},
+    contentStatus:{
+      fontSize:14,
+      fontWeight:'700',
+      lineHeight:18,
+      fontFamily: Helper.switchFont('bold'),
+      marginLeft:8,
+      fontStyle:'italic'
+
+    }
 });
+
 
 export default Withdrawal;

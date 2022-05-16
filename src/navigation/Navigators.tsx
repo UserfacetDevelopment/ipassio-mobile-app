@@ -823,7 +823,11 @@ const RootStackNavigator = () => {
               headerShown: false,
             }}
           />
-           
+           <Stack.Screen
+        name="Recording"
+        component={Recording}
+        options={{headerShown: false}}
+      />
           <Stack.Screen
             name="Transactions"
             component={Transaction}
@@ -850,7 +854,11 @@ const RootStackNavigator = () => {
           component={LoginFlowNavigator}
           options={{headerShown: false}}
         /> 
-        
+        <Stack.Screen
+          name="Withdraw"
+          component={Withdrawal}
+          options={{headerShown: false}}
+        /> 
         </>
       )}
     </Stack.Navigator>
