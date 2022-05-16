@@ -532,8 +532,17 @@ const meetingPlatforms = [
                 </View>
                 <View style={styles.formElement}>
                   
-                  <View>
+                  <View style={StyleCSS.styles.flexDirRow}>
                     <Text
+                    style={{ paddingTop: 15,
+                      paddingBottom:15,
+                      paddingHorizontal: 16,
+                      flexDirection: 'row',
+                      flex: 1,
+                      alignItems:'center',
+                      borderWidth: 1,
+                      borderColor: dropdownBorder,
+                      borderRadius: 8,}}
                       style={styles.input}
                       onPress={() => {
                         showDateTimePicker();
@@ -545,8 +554,9 @@ const meetingPlatforms = [
                       <Text
                         style={{
                           position: 'absolute',
-                          top: -10,
-                          left: 10,
+                          top: -8,
+                          left: 7,
+                          paddingHorizontal: 4,
                           backgroundColor: '#fff',
                           fontSize: 12,
                           color: font2,
@@ -555,8 +565,9 @@ const meetingPlatforms = [
                         
                       </Text>
                     ) : null}
-                    <View style={{position:'absolute', right:16, top:16}}><Calender/></View>
+                    <View ><Calender/></View>
                     <DateTimePickerModal
+                  
                       minimumDate={new Date()}
                       isVisible={isDateTimePickerVisible}
                       mode="date"
@@ -691,10 +702,13 @@ const styles = StyleSheet.create({
     //marginTop: 189,
   },
   input: {
+    alignItems:'center',
     color: font1,
     margin: 0,
     fontSize: 14,
-    padding: 18,
+    padding: 12,
+    height: 48,
+    paddingLeft:16,
     backgroundColor: 'transparent',
     borderRadius: 8,
     borderWidth: 1,
@@ -730,7 +744,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: font2,
     fontWeight: '500',
-    marginBottom: 8,
+    marginBottom: 12,
+    marginTop:-4,
     fontStyle: 'italic',
   },
 });

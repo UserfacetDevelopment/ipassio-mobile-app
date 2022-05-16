@@ -44,8 +44,8 @@ export default function TransactionCard({
                   style={[styles.profilePic]}
                 />
               </View>
-              <View style={[styles.cardTitleWrapper]}>
-                <Text style={styles.cardTitle}>
+              <View style={[styles.cardTitleWrapper, {paddingVertical:userData.user_type === 'S' ? 0 : 6}]}>
+                <Text style={[styles.cardTitle, {lineHeight : userData.user_type==='S' ? 20 : 18}]}>
                   {userData.user_type === 'T' && data.student.name}
                   {userData.user_type === 'S' && data.course.title}
                   {userData.user_type === 'S' &&
@@ -53,16 +53,21 @@ export default function TransactionCard({
                       ? ' (1-on-1 Class)'
                       : ' ( ' + data.class_type + ' Members)')}
                 </Text>
-                <View style={styles.itemRowItem}>
-                  <Text style={styles.contentLabel}>
+                {/* <View style={[styles.dateWrapper]}>
+                  <Text style={styles.date}>
                     {Moment(data.created).format('MMM DD, yyyy')}
                   </Text>
-                </View>
+                </View> */}
+                 <View style={[styles.dateWrapper, {marginTop: userData.user_type === 'S' ? 8 : 5}]}>
+                  <Text style={styles.date}>
+                    {Moment(data.created).format('MMM DD, yyyy')}
+                  </Text>
+                  </View>
               </View>
               <View
                 style={{
-                  width: 32,
-                  height: 32,
+                  width: 28,
+                  height: 28,
                   backgroundColor: '#E0E6ED',
                   opacity: 0.8,
                   borderRadius: 50,
@@ -85,7 +90,7 @@ export default function TransactionCard({
               <View style={styles.itemRow}>
                 <View>
                   <Text style={styles.contentLabel}>Course</Text>
-                  <Text style={styles.contentLabel}>
+                  <Text style={[styles.contentText,{fontWeight:'600',  lineHeight:20}]}>
                     {data.course.title}{' '}
                     {userData.user_type === 'T' &&
                       (data.class_type === '1'
@@ -126,16 +131,16 @@ export default function TransactionCard({
           <View style={styles.itemRow}>
           <View style={styles.itemRowItem}>
               {userData.user_type === 'T' ? <><Text style={styles.contentLabel}>Balance</Text>
-              <Text style={[styles.contentText, styles.boldText]}>
+              <Text style={[styles.contentText]}>
                 {data.currency_type === 'INR' ? 'Rs.' : 'US$'}
                 {data.balance}
               </Text></> : null }
             </View>
             <View style={styles.itemRowItem}>
-              <Text style={styles.contentLabel}>Amount</Text>
+              <Text style={[styles.contentLabel]}>Amount</Text>
               <Text
                 style={[
-                  styles.amount,
+                  styles.amount,{marginTop:5}
                 ]}>
                 {data.currency_type === 'INR' ? 'Rs.' : 'US$'}
                 {' '}{data.amount}
@@ -162,7 +167,7 @@ export default function TransactionCard({
                   />
                
               </View>
-              <View style={styles.cardTitleWrapperNS}>
+              <View style={[styles.cardTitleWrapperNS]}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -178,7 +183,7 @@ export default function TransactionCard({
                   </Text>
                   <Dropdown/>
                 </View>
-                <View style={styles.dateWrapper}>
+                <View style={[styles.dateWrapper, {marginTop: userData.user_type === 'S' ? 8 : 5}]}>
                   <Text style={styles.date}>
                     {Moment(data.created).format('MMM DD, yyyy')}
                   </Text>
@@ -204,7 +209,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width:'100%'  
   },
-  dateWrapper: { flexDirection: 'row', alignItems:'center', marginTop: 8, justifyContent:'space-between', width:'100%', flex:1},
+  dateWrapper: { flexDirection: 'row', alignItems:'center', marginTop: 5, justifyContent:'space-between', width:'100%', flex:1},
   lineStyle: {
     borderBottomWidth: 1,
     borderColor: '#E2E4E5',
@@ -240,18 +245,17 @@ const styles = StyleSheet.create({
     // borderWidth:1,
     fontSize: 14,
     color: font2,
-    lineHeight:18,
+    // lineHeight:18,
     fontWeight:'500',
-    fontFamily: Helper.switchFont('regular'),
+    fontFamily: Helper.switchFont('medium'),
   },
   contentText: {
     // borderWidth:1,
     color: font1,
     fontSize: 14,
-    lineHeight:18,
     fontWeight:'500',
     fontFamily: Helper.switchFont('medium'),
-    marginTop: 4,
+    marginTop: 5,
   },
   font3Color: {
     color: font3,
@@ -266,20 +270,23 @@ const styles = StyleSheet.create({
     color: font1,
     flexWrap: 'wrap',
     textTransform:'capitalize',
-    lineHeight:20,
+    //lineHeight:20,
     fontFamily: Helper.switchFont('medium'),
   },
   cardTitleWrapper: {
-    marginLeft: 12,
+    marginLeft: 16,
     flex:1,
+    // borderWidth:1,
+    // flexDirection:'row',
     // width: '72%',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    // alignItems:'center'
   },
-  cardTitleWrapperNS: {marginLeft: 12, flex:1},
+  cardTitleWrapperNS: {marginLeft: 16, flex:1},
 
   profilePic: {
-    width: 50,
-    height: 50,
+    width: 48,
+    height: 48,
     borderRadius: 25,
     alignItems: 'center',
   },
@@ -288,11 +295,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 16,
     justifyContent: 'center',
+    // alignItems:'center',
+    // borderWidth:1
   },
   amount: {
     fontSize: 14,
     color: font1,
-    lineHeight:18,
+    
+    // lineHeight:18,
     fontWeight:'500',
     fontFamily: Helper.switchFont('medium'),
   },

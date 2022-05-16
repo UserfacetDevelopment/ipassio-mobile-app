@@ -34,12 +34,12 @@ import {userState} from '../../reducers/user.slice';
 import SheetCSS from '../../styles/style';
 import {fetchWithdrawalDataSuccess} from '../../reducers/withdrawal.slice';
 import Helper from '../../utils/helperMethods';
-import {appBackground, brandColor, font1, font2, lineColor} from '../../styles/colors';
+import {appBackground, brandColor, font1, font2, font3, lineColor} from '../../styles/colors';
 import NoData from '../../components/NoData';
 import HeaderInner from '../../components/HeaderInner';
 import {useRoute} from '@react-navigation/native';
 import Dropdown from '../../assets/images/dropdown.svg'
-
+import config from '../../config/Config';
 const {width, height} = Dimensions.get('screen');
 
 import Copy from '../../assets/images/copy.svg'
@@ -47,6 +47,7 @@ import AddSession from '../../assets/images/addSession.svg';
 import AddSessionCmp from './AddSession';
 import Clipboard from '@react-native-clipboard/clipboard';
 import BottomNavigation from '../../components/BottomNavigation';
+import DashedLine from 'react-native-dashed-line';
 
 type Props = NativeStackScreenProps<RootParamList, 'AddSession'>;
 
@@ -128,7 +129,7 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
             ? setSelectedCard(0)
             : setSelectedCard(data.class_token);
         }}>
-          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+          <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'flex-start'}}>
             {
               daysRemaining(
                 Moment.tz(new Date(), 'Asia/Calcutta').format(
@@ -142,7 +143,7 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
               }>
               <Text
                 style={{
-                  color: 'rgba(254, 88, 88, 1)',
+                  color: '#FE5858',
                   fontSize: 14,
                   fontWeight:'500',
                   fontFamily: Helper.switchFont('medium'),
@@ -162,7 +163,7 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
             }>
             <Text
               style={{
-                color: 'rgba(40, 190, 145, 1)',
+                color: font3,
                 fontSize: 14,
                 fontWeight:'500',
                 fontFamily: Helper.switchFont('medium'),
@@ -212,13 +213,14 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
         </View>
         
         </View>
-        <View style={{paddingVertical:16}}>
+        <View style={{paddingTop:12}}>
           <Text
             style={{
               fontSize: 14,
               fontWeight:'600',
               fontFamily: Helper.switchFont('medium'),
-              color: font1,
+              color: font1
+              
             }}>
             {data.course.title}{' '}
             {/* {data.course.class_type && data.course.class_type.members === '1'
@@ -241,6 +243,7 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
                 )}{' '}
               </Text>
             </View>
+           {selectedCard == data.class_token? <View style={{marginBottom:16}}/>:null}
           </View>
         )}
         {userData.user_type === 'S' && (
@@ -262,7 +265,12 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
 
       {selectedCard == data.class_token ? (
         <View>
-          <View style={SheetCSS.styles.lineStyleDashed} />
+          <DashedLine
+              dashLength={5}
+              dashThickness={1}
+              dashGap={5}
+              dashColor={lineColor}
+            />
 
           <View style={styles.itemRow}>
             <View style={styles.itemRowItem}>
@@ -274,11 +282,12 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
                 {' - '}
                 {Moment.tz(data.end_time, userData.timezone).format('hh:mm A')}
                 
-                <Text style={[styles.contentText,{fontSize:12}]}>{userData.timezone}</Text>
+                
               </Text>
+              <Text style={[styles.contentText,{fontSize:12, marginTop:2}]}>{userData.timezone}</Text>
             </View>
             <View style={styles.itemRowItem}>
-              <Text style={styles.contentLabel}>On</Text>
+              <Text style={styles.contentLabel}>Taught On</Text>
               <View style={{flexDirection:'row', alignItems:'center'}} >
                 {data.taught_on.icon ? <Image style={{height:20, width:20, marginRight:8}} source={{uri:data.taught_on.icon}}/> : null}
               <Text style={styles.contentText}>{data.taught_on.name}</Text>
@@ -288,10 +297,15 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
           </View>
           {data.class_url!==null ? 
           <>
-          <View style={SheetCSS.styles.lineStyleDashed}/>
-          <View style={{paddingVertical:16}}>
+          <DashedLine
+              dashLength={5}
+              dashThickness={1}
+              dashGap={5}
+              dashColor={lineColor}
+            />
+          <View style={{paddingTop:16}}>
            <Text style={styles.contentLabel}>Session URL</Text>
-           <View style={styles.sessionURL}><Text selectable={true} style={[styles.contentText, {width:'80%'}]}>{data.class_url
+           <View style={styles.sessionURL}><Text selectable={true} style={[styles.contentText, {flex:1, marginTop:0}]}>{data.class_url.length > 30 ? `${data.class_url.substring(0, 30)}...` : data.class_url
           //  handleGenerateClassURL(
           //       data.class_token,
           //       upcoming.taught_on.code
@@ -344,7 +358,7 @@ export default function Schedules({navigation}: Props) {
   let scrollY = new Animated.Value(0.01);
   let changingHeight = scrollY.interpolate({
     inputRange: [0.01, 50],
-    outputRange: [170, 80],
+    outputRange: [100, 100],
     extrapolate: 'clamp',
   });
   let titleSize = scrollY.interpolate({
@@ -456,7 +470,7 @@ export default function Schedules({navigation}: Props) {
           titleSize={titleSize}
           titleTop={titleTop}
           logo={true}
-          changingHeight={109}
+          changingHeight={changingHeight}
           title={'Schedules'}
           navigation={navigation}
           type={'findCourse'}
@@ -544,6 +558,7 @@ export default function Schedules({navigation}: Props) {
           <View>
             {scheduledDataStatus === 'loading' ? (
               <View style={styles.layoutWrapper}>
+                
                 <View
                   style={[
                     styles.scheduleSingleWrapper,
@@ -610,7 +625,7 @@ export default function Schedules({navigation}: Props) {
                   scheduledData.length <= 0 ? (
                     <NoData message={'No Sessions Scheduled!'} />
                   ) : (
-                    <View style={{flex: 1, paddingBottom: 50}}>
+                    <View style={{flex: 1, paddingBottom: 120}}>
                       <FlatList
                         data={scheduledData}
                         keyExtractor={(item, index) => index.toString()}
@@ -644,7 +659,7 @@ export default function Schedules({navigation}: Props) {
         <View  style={styles.modalBackground}>
         <View style={styles.modalView}>
           <View style={styles.modalLine}></View>
-          <Text style={{fontWeight:'700', fontSize: 18, color: font1, marginTop:24}}>Add Session</Text>
+          <Text style={{fontWeight:'700', fontSize: 18, color: font1, marginVertical:16}}>Add Session</Text>
               <AddSessionCmp setShowAddSessionModal = {setShowAddSessionModal} navigation={navigation}/>
         </View>
         </View>
@@ -666,7 +681,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    marginTop: 109,
+    marginTop: config.headerHeight,
   },
   body: {
     flex: 1,
@@ -680,13 +695,13 @@ const styles = StyleSheet.create({
     borderColor: '#E2E4E5',
   },
   layoutWrapper: {
-    marginVertical: 14,
+    marginTop: 12,
   },
   scheduleSingleWrapper: {
     borderRadius: 8,
     backgroundColor: '#fff',
     padding: 16,
-    marginVertical: 8,
+    marginVertical: 4,
     marginHorizontal: 16,
   },
   highlightTimerRed: {
@@ -695,8 +710,8 @@ const styles = StyleSheet.create({
     // borderTopRightRadius: 15,
     borderRadius:6,
     backgroundColor: 'rgba(254, 88, 88, 0.1)',
-    paddingVertical: 5,
-    paddingHorizontal: 16,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
     // color:
   },
   highlightTimerGreen: {
@@ -705,8 +720,8 @@ const styles = StyleSheet.create({
     // borderTopRightRadius: 15,
     borderRadius:6,
     backgroundColor: 'rgba(40, 190, 145, 0.1)',
-    paddingVertical: 5,
-    paddingHorizontal: 16,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
   },
   itemRow: {
     paddingVertical: 16,
@@ -734,7 +749,7 @@ const styles = StyleSheet.create({
     justifyContent:"space-between",
 
     marginTop:5,
-padding:16,
+padding:15,
 backgroundColor:'#F7F9FA',
 borderRadius:12,
   },
@@ -760,7 +775,7 @@ borderRadius:12,
   addSessionWrapper:{position:'absolute', bottom:80, zIndex:1000, paddingHorizontal:16, width:'100%'},
   addSessionButton:{ backgroundColor:brandColor, flexDirection:'row', justifyContent:'center', padding:11, borderRadius:8},
   addSession:{flexDirection:'row',alignItems:'center', width:'35%'},
-  dropBackground:{borderRadius: 50, padding:8, backgroundColor:lineColor},
+  dropBackground:{borderRadius: 50, padding:6, backgroundColor:lineColor},
   modalBackground: {
     backgroundColor: 'rgba(0,0,0,0.3)',
     flexDirection: 'column',
@@ -776,6 +791,7 @@ bottom:0,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     padding: 16,
+    paddingTop:0,
     //  top:252,
     zIndex: 20,
   },

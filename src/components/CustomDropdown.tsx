@@ -118,24 +118,20 @@ export default function CustomDropdown({
     <View>
       <TouchableOpacity onPress={() => toggleModal()}>
         <View style={styles.container}>
-          <Text
+          {topLabel ?<Text
             style={[
               {
                 position: 'absolute',
-                top: -7,
+                top: -8,
                 fontSize: 12,
-                marginHorizontal: 2,
+                paddingHorizontal: 4,
                 backgroundColor: '#fff',
                 left: 7,
-                // color:
-                //   config && config.color
-                //     ? config.color
-                //     : font2,
                 color: font2,
               },
             ]}>
-            {topLabel ? topLabel : null}
-          </Text>
+            {topLabel }
+          </Text> : null}
           <Text
             style={[
               styles.label,
@@ -280,10 +276,12 @@ export default function CustomDropdown({
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 15,
+    paddingTop: 12,
+    paddingBottom:12,
     paddingHorizontal: 16,
     flexDirection: 'row',
     flex: 1,
+    alignItems:'center',
     borderWidth: 1,
     borderColor: dropdownBorder,
     borderRadius: 8,
@@ -291,7 +289,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontFamily: Helper.switchFont('regular'),
-    width: '90%',
+    flex:1,
   },
   option_item: {
     fontSize: 14,

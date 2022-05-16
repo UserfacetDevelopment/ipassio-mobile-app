@@ -100,6 +100,8 @@ export default class StyleCSS {
       marginTop: 24,
       height: 48,
       fontFamily: helper.switchFont('medium'),
+      fontSize:14,
+      color:font1
     },
     lineStyleDashed: {
       borderRadius: 0.5,

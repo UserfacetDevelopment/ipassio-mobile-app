@@ -32,10 +32,11 @@ import {
   fetchTransactionsDataSuccess,
   withdrawalState,
 } from '../../reducers/withdrawal.slice';
-import {brandColor} from '../../styles/colors';
+import {background4, brandColor} from '../../styles/colors';
 import HeaderInner from '../../components/HeaderInner'
 import TransactionCard from '../../components/TransactionCard';
 import BottomNavigation from '../../components/BottomNavigation';
+import LinearGradient from 'react-native-linear-gradient';
 
 const width= Dimensions.get('screen').width;
 type Props = NativeStackScreenProps<RootParamList, 'Transactions'>;
@@ -48,17 +49,19 @@ const Transaction: FC<Props> = ({navigation}) => {
   const [selectedTransaction, setSelectedTransaction] = useState(0);
   const [walletBalance, setWalletBalance] = useState('0.00');
   const [refreshing, setRefreshing] = useState(false);
+  const headerHeight= 100;
+
 let scrollY= new Animated.Value(0.01);
 let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleTop, thirdTitleLeft;
 
     changingHeight = scrollY.interpolate({
       inputRange: [0.01, 70],
-      outputRange: [109, 109],
+      outputRange: [100, 100],
       extrapolate: "clamp",
     });
     let changingHeight2 = scrollY.interpolate({
       inputRange: [0.01, 70],
-      outputRange: [82, 55],
+      outputRange: [82, 47],
       extrapolate: "clamp",
     });
     titleSize = scrollY.interpolate({
@@ -81,27 +84,37 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
     });
     titleSubTop = scrollY.interpolate({
       inputRange: [0.01, 50],
-      outputRange: [16, 16],
+      outputRange: [12, 12],
       extrapolate: "clamp",
     });
     thirdTitleTop = scrollY.interpolate({
       inputRange: [0.01, 50],
-      outputRange: [48, 16],
+      outputRange: [48, 14],
       extrapolate: "clamp",
     });
     let balanceSize = scrollY.interpolate({
       inputRange : [0.01, 50],
-      outputRange: [14, 18],
+      outputRange: [14, 16],
       extrapolate:"clamp"
     });
     thirdTitleLeft = scrollY.interpolate({
       inputRange: [0.01, 50],
-      outputRange: [16, 90],
+      outputRange: [16, 88],
       extrapolate: "clamp",
     });
     const height = scrollY.interpolate({
       inputRange:[0.01, 50],
       outputRange:[100, 0],
+      extrapolate:'clamp'
+    })
+    // const fontWeight =scrollY.interpolate({
+    //   inputRange:[0.01, 50],
+    //   outputRange:[bold, normal],
+    //   extrapolate:'clamp'
+    // })
+    const balOpacity =scrollY.interpolate({
+      inputRange:[0.01, 50],
+      outputRange:[0.7, 1],
       extrapolate:'clamp'
     })
 
@@ -195,14 +208,30 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
           />
            {userData.user_type === 'T' ?
                     <>
-                    <Animated.View style={{position:'absolute', top:109, height:changingHeight2}}>
+                    <Animated.View style={{position:'absolute', top:headerHeight, height:changingHeight2}}>
                     <Image
                 style={{flex: 1,
                   width: width,
                   flexDirection: 'row',
                   height:140}}
-                source={require('@images/header_bg.png')}
+                source={require('@images/transactions_bg.png')}
               />
+              {/* <View style={{flex: 1,
+                  width: width,
+                  backgroundColor:'#b1281e',
+                  flexDirection: 'row',
+                  height:140}}/> */}
+                  {/* <LinearGradient
+       start={{x: 0, y: 0}} end={{x: 1, y: 0}}
+        colors={['#E04033', '#A8190E']}
+        style={{
+          height: 140,
+          top: headerHeight,
+          // zIndex: 20,
+          position: 'absolute',
+          // opacity: 0.6,
+          width: '100%',
+        }}></LinearGradient> */}
               </Animated.View>
                      <Animated.View
               style={{backgroundColor:'#000',
@@ -210,7 +239,7 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
               zIndex:2,
               height: changingHeight2,
               position:'absolute',
-              top:109,
+              top:headerHeight,
               width:'100%'
               }}>
 
@@ -223,7 +252,7 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
                         marginTop: titleSubTop,
                         fontSize: titleSize,
                         position:'absolute',
-                        top:109,
+                        top:headerHeight,
                         fontWeight:'700',
                         marginLeft: thirdTitleLeft,
                         zIndex:4,
@@ -237,7 +266,7 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
                     style={[
                       styles.walletSubTitle,
                       {marginTop: thirdTitleTop, position:'absolute', fontSize: balanceSize,
-                      top:109, color:'#fff', opacity:0.7, fontWeight:'bold', margin: 16,
+                      top:headerHeight, color:'#fff', opacity:0.9, fontWeight:'600', marginLeft: 16, marginBottom:12,
                     },
                     ]}>
                     Balance
@@ -257,7 +286,7 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
           )}
         >
          {userData.user_type === 'T' ? <View
-              style={{ marginTop: 43 }}
+              style={{ marginTop: 51}}
             ></View> : <View
             style={{ marginTop: 16 }}
           ></View> }
@@ -299,7 +328,7 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: background4,
   },
   safecontainer: {
     flex: 1,
@@ -307,18 +336,10 @@ const styles = StyleSheet.create({
   },
   scrollViewS: {
     flex: 1,
-    marginTop:109
+    marginTop:100
   },
   scrollViewT:{
-    marginTop:164
-  },
-
-  body: {
-    flex: 1,
-    fontSize: 15,
-    color: '#606060',
-    lineHeight: 24,
-    marginRight: 8,
+    marginTop:147
   },
 
   walletWrapper: {
@@ -392,8 +413,8 @@ const styles = StyleSheet.create({
   },
   cardTitleWrapperNS:{marginLeft: 10, width: '75%'},
   profilePic: {
-    width: 50,
-    height: 50,
+    width: 48,
+    height: 48,
     borderRadius: 25,
     alignItems: 'center',
   },

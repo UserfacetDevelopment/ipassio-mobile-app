@@ -30,7 +30,7 @@ import {RootParamList} from '../../navigation/Navigators';
 import {useSelector} from 'react-redux';
 import {userState} from '../../reducers/user.slice';
 import {loaderState} from '../../reducers/loader.slice';
-import {brandColor, font1, font2, lineColor, secondaryColor, secondaryColorBorder} from '../../styles/colors';
+import {background4, brandColor, font1, font2, lineColor, secondaryColor, secondaryColorBorder} from '../../styles/colors';
 import Helper from '../../utils/helperMethods';
 import config from '../../config/Config';
 import {
@@ -42,6 +42,7 @@ import {
   fetchWithdrawalDataSuccess,
   fetchWithdrawalsDataFailure
 } from '../../reducers/withdrawal.slice';
+import {Checkbox} from 'react-native-paper';
 import {useAppDispatch} from '../../app/store';
 import HeaderInner from '../../components/HeaderInner'
 import BottomNavigation from '../../components/BottomNavigation';
@@ -81,12 +82,12 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
   let scrollY = new Animated.Value(0.01);
   let changingHeight = scrollY.interpolate({
     inputRange: [0.01, 70],
-    outputRange: [109, 109],
+    outputRange: [100, 100],
     extrapolate: "clamp",
   });
   let changingHeight2 = scrollY.interpolate({
     inputRange: [0.01, 70],
-    outputRange: [82, 55],
+    outputRange: [82, 47],
     extrapolate: "clamp",
   });
   let titleSize = scrollY.interpolate({
@@ -109,22 +110,22 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
   });
   let titleSubTop = scrollY.interpolate({
     inputRange: [0.01, 50],
-    outputRange: [16, 16],
+    outputRange: [12, 12],
     extrapolate: "clamp",
   });
   let thirdTitleTop = scrollY.interpolate({
     inputRange: [0.01, 50],
-    outputRange: [48, 16],
+    outputRange: [48, 14],
     extrapolate: "clamp",
   });
   let balanceSize = scrollY.interpolate({
     inputRange : [0.01, 50],
-    outputRange: [14, 18],
+    outputRange: [14, 16],
     extrapolate:"clamp"
   });
   let thirdTitleLeft = scrollY.interpolate({
     inputRange: [0.01, 50],
-    outputRange: [16, 90],
+    outputRange: [16, 88],
     extrapolate: "clamp",
   });
   const height = scrollY.interpolate({
@@ -312,7 +313,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
       <View>
         {selectedTransaction == data.id ? (
           <View style={[styles.highlightedWrappper, SheetCSS.styles.shadow]}>
-            <View style={styles.cardHeadSection}>
+            <View style={[styles.cardHeadSection]}>
               <TouchableOpacity
                 style={SheetCSS.styles.flexDirRow}
                 onPress={() => {
@@ -354,17 +355,25 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                 data.status.code === 'C' ||
                 data.status.code === 'P' ? null : (
                   <TouchableOpacity
+                  style={{marginTop:16}}
                     onPress={() => {
                       addId(data.id);
                     }}>
-                    <Image
+                      <Checkbox.Android
+                    status={
+                      selectedIds.indexOf(data.id) > -1
+                        ? 'checked'
+                        : 'unchecked'
+                    }
+                  />
+                    {/* <Image
                       style={styles.radioButtonImage}
                       source={
                         selectedIds.includes(data.id)
                           ? require('@images/checked.png')
                           : require('@images/unchecked.png')
                       }
-                    />
+                    /> */}
                   </TouchableOpacity>
                 )}
               </View>
@@ -382,7 +391,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                 <View style={styles.itemRow}>
                   <View>
                     <Text style={styles.contentLabel}>Course</Text>
-                    <Text style={styles.contentText}>
+                    <Text style={[styles.contentText,{fontWeight:'600', lineHeight:20}]}>
                       {data.course.title}{' '}
                       {userData.user_type === 'T' &&
                         (data.class_type === '1'
@@ -494,8 +503,9 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
           </View>
         ) : (
           <View style={[styles.transactionBox, SheetCSS.styles.shadow]}>
+            <View style={{flexDirection:'row' ,justifyContent:'space-between'}}>
             <TouchableOpacity
-              style={SheetCSS.styles.flexDirRow}
+              style={[SheetCSS.styles.flexDirRow]}
               onPress={() => {
                 setSelectedTransaction(data.id);
                 // expandTransaction(
@@ -507,7 +517,9 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                 //   )
                 // );
               }}>
-              <View style={SheetCSS.styles.justifyContentCenter}>
+              <View 
+              // style={SheetCSS.styles.justifyContentCenter}
+              >
                 <Image
                   source={{uri: data.student.profile_pic}}
                   style={styles.profilePic}
@@ -548,7 +560,16 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                     //   :
                     addId(data.id);
                   }}>
-                  <Image
+                      <Checkbox.Android
+                      style={{alignSelf:'flex-start'}}
+                      color={secondaryColor}
+                    status={
+                      selectedIds.indexOf(data.id) > -1
+                        ? 'checked'
+                        : 'unchecked'
+                    }
+                  />
+                  {/* <Image
                     style={styles.radioButtonImage}
                     source={
                       // data.status.code === 'A' ||
@@ -560,49 +581,53 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                         ? require('@images/checked.png')
                         : require('@images/unchecked.png')
                     }
-                  />
+                  /> */}
                 </TouchableOpacity>
               )}
             </View>
-
+</View>
             <View style={styles.status}>
             <Text style={styles.date}>
                     {Moment.tz(data.created, userData.timezone).format(
                       // 'ddd, MMM DD, YYYY',
                       'MMM DD, YYYY',
                     )}
-                  </Text>
+              </Text>
             
               {data.status.code === 'A' ||
               data.status.code === 'C' ||
               data.status.code === 'P' ? (
-                <>
+                <View>
                   {data.status.code === 'RW' && (
-                    <Text style={[styles.contentText, styles.status_text_rw]}>
+
+                    <Text style={[styles.mainLink, styles.status_text_rw]}>
                       {data.status.name}
                     </Text>
+
                   )}
                   {data.status.code === 'P' && (
-                    <Text style={[styles.contentText, styles.status_text_p]}>
+                    <Text style={[styles.mainLink, styles.status_text_p]}>
                       {data.status.name}
                     </Text>
                   )}
                   {data.status.code === 'A' && (
-                    <Text style={[styles.contentText, styles.status_text_a]}>
+
+                    <Text style={[styles.mainLink, styles.status_text_a]}>
                       {data.status.name}
                     </Text>
+
                   )}
                   {data.status.code === 'C' && (
-                    <Text style={[styles.contentText, styles.status_text_c]}>
+                    <Text style={[styles.mainLink, styles.status_text_c]}>
                       {data.status.name}
                     </Text>
                   )}
                   {data.status.code === 'R' && (
-                    <Text style={[styles.contentText, styles.status_text_r]}>
+                    <Text style={[styles.mainLink, styles.status_text_r]}>
                       {data.status.name}
                     </Text>
                   )}
-                </>
+                </View>
               ) : selectedIds.length <= 0 ? (
                 <TouchableOpacity
                   onPress={() => {
@@ -648,14 +673,30 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
               backroute={routes.name}
             />
             <>
-                    <Animated.View style={{position:'absolute', top:109, height:changingHeight2}}>
+            <Animated.View style={{position:'absolute', top:config.headerHeight, height:changingHeight2}}>
                     <Image
                 style={{flex: 1,
                   width: width,
                   flexDirection: 'row',
                   height:140}}
-                source={require('@images/header_bg.png')}
+                source={require('@images/transactions_bg.png')}
               />
+              {/* <View style={{flex: 1,
+                  width: width,
+                  backgroundColor:'#b1281e',
+                  flexDirection: 'row',
+                  height:140}}/> */}
+                  {/* <LinearGradient
+       start={{x: 0, y: 0}} end={{x: 1, y: 0}}
+        colors={['#E04033', '#A8190E']}
+        style={{
+          height: 140,
+          top: headerHeight,
+          // zIndex: 20,
+          position: 'absolute',
+          // opacity: 0.6,
+          width: '100%',
+        }}></LinearGradient> */}
               </Animated.View>
                      <Animated.View
               style={{backgroundColor:'#000',
@@ -663,36 +704,39 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
               zIndex:2,
               height: changingHeight2,
               position:'absolute',
-              top:109,
+              top:config.headerHeight,
               width:'100%'
               }}>
 
               </Animated.View>
                     <Animated.Text
                     style={[
+                      styles.walletTitle,
                       {
                        
                         marginTop: titleSubTop,
                         fontSize: titleSize,
                         position:'absolute',
-                        top:109,
+                        top:config.headerHeight,
                         fontWeight:'700',
                         marginLeft: thirdTitleLeft,
                         zIndex:4,
                         color:'#fff',
                         borderColor:'#fff',
-                      }
+                      },
                     ]}>
                     {`${walletBalance}`}
                   </Animated.Text>
                   <Animated.Text
                     style={[
+                      styles.walletSubTitle,
                       {marginTop: thirdTitleTop, position:'absolute', fontSize: balanceSize,
-                      top:109, color:'#fff', opacity:0.7, fontWeight:'bold', margin: 16,
+                      top:config.headerHeight, color:'#fff', opacity:0.9, fontWeight:'600', margin: 16,
                     },
                     ]}>
                     Balance
                   </Animated.Text>
+                  
                     </>
 
           <ScrollView
@@ -707,7 +751,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
               { useNativeDriver: false }
             )}
           >
-            <View style={{marginTop:39}}/>
+            <View style={{marginTop:48}}/>
             <View style={styles.loaderWrapper}>
               {withdrawalDataStatus === 'loading' ? (
                 <View style={styles.transactionsWrapper}>
@@ -776,15 +820,14 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: background4,
   },
   safecontainer: {
     flex: 1,
-    //backgroundColor: "#FEFEFE",
   },
   scrollView: {
     flex: 1,
-    marginTop:164
+    marginTop:147
   },
   walletWrapper: {
     zIndex: 1,
@@ -820,6 +863,7 @@ const styles = StyleSheet.create({
   highlightedWrappper: {
     backgroundColor: 'white',
     paddingHorizontal: 16,
+    marginVertical:4,
   },
   itemRow: {
     paddingVertical: 16,
@@ -832,7 +876,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: font2,
     fontWeight:'500',
-    lineHeight:18,
+    // lineHeight:18,
     fontFamily: Helper.switchFont('medium'),
   },
   contentText: {
@@ -843,19 +887,19 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   status_text_rw: {
-    color: 'rgb(82, 85, 91)',
+    color: '#f2972b',
   },
   status_text_p: {
-    color: 'rgb(255, 165, 0)',
+    color: '#28BE91',
   },
   status_text_a: {
-    color: 'rgb(39, 127, 217)',
+    color: secondaryColor,
   },
   status_text_c: {
     color: 'rgba(40, 190, 145, 1)'
   },
   status_text_r: {
-    color: brandColor
+    color: '#D25C54'
   },
 
   mainLink: {
@@ -889,8 +933,7 @@ const styles = StyleSheet.create({
     fontFamily: Helper.switchFont('bold'),
   },
   cancelButton: {
-    paddingTop: 10,
-    paddingBottom: 12,
+    paddingVertical: 11,
     backgroundColor: 'fff',
     borderColor: secondaryColorBorder,
     alignItems: 'center',
@@ -910,8 +953,7 @@ fontWeight:'700',
     fontFamily: Helper.switchFont('bold'),
   },
   withdrawButton: {
-    paddingTop: 10,
-    paddingBottom: 12,
+    paddingVertical: 11,
     backgroundColor: brandColor,
     alignItems: 'center',
     justifyContent: 'center',
@@ -929,12 +971,12 @@ fontWeight:'700',
     fontSize: 14,
     color: font2,
     fontWeight:'500',
-    lineHeight:18,
+    // lineHeight:18,
     fontFamily: Helper.switchFont('medium'),
   },
   profilePic: {
-    width: 50,
-    height: 50,
+    width: 48,
+    height: 48,
     borderRadius: 25,
     alignItems: 'center',
   },
@@ -967,19 +1009,25 @@ fontWeight:'700',
   },
   cardHeadSelected:{marginLeft: 12, marginTop: 6, flex:1},
   dateWrapper:{flexDirection: 'row', marginTop: 5},
-  addIdWrapper:{position: 'absolute', right: 0, top: 39},
-  addIdWrapper2:{position: 'absolute', right: 24, top: 39,},
-  status:{flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginTop: 10},
+  addIdWrapper:{position: 'absolute', right: 0, top: 0},
+  addIdWrapper2:{
+    justifyContent:'flex-start',
+    // position: 'absolute', right: 0, top: 0,
+    // borderWidth:1,
+    padding:0
+  },
+  status:{flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginTop: 12},
   amtDateWrapper:{marginTop: 5},
   loaderWrapper:{
     flex: 1, 
     // borderWidth:1,
     // marginTop: 20, 
     marginBottom:80},
+
     contentStatus:{
       fontSize:14,
       fontWeight:'700',
-      lineHeight:18,
+      // lineHeight:18,
       fontFamily: Helper.switchFont('bold'),
       marginLeft:8,
       fontStyle:'italic'

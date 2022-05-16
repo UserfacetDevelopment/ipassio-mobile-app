@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
   inputpassword: {
     color: 'rgb(44, 54, 65)',
     margin: 0,
-    fontSize: 18,
+    fontSize: 14,
     padding: 16,
     height: 55,
     backgroundColor: 'rgb(255, 255, 255)',

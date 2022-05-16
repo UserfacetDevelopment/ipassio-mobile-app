@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, Image, StyleSheet} from 'react-native';
+import {Text, View, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import {useSelector} from 'react-redux';
 // @ts-ignore
 import Background from '../../assets/images/more-bg.svg';
@@ -13,7 +13,6 @@ import Drop from '../../assets/images/Drop.svg';
 import Recordings from '../../assets/images/recordings.svg';
 // @ts-ignore
 import CreatedCourses from '../../assets/images/created-courses.svg';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 // @ts-ignore
 import Student from '../../assets/images/student.svg';
 // @ts-ignore
@@ -22,7 +21,7 @@ import { useAppDispatch } from '../../app/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigation from '../../components/BottomNavigation';
 
-export default function More({navigation}) {
+export default function More({navigation}: any) {
   const {userData, isLoggedIn} = useSelector(userState);
   console.log(userData);
   const dispatch = useAppDispatch();
@@ -85,7 +84,7 @@ export default function More({navigation}) {
       </View>
       <View
         style={{backgroundColor: '#F3F5F8', padding: 16, height: '100%'}}>
-        {isLoggedIn && userData.user_type === 'T' ? (
+        {/* {isLoggedIn && userData.user_type === 'T' ? (
           <>
             <TouchableOpacity  style={styles.listItemWrapper}>
               <View style={styles.listItem}>
@@ -119,7 +118,7 @@ export default function More({navigation}) {
               </View>
             </TouchableOpacity>
           </>
-        ) : null}
+        ) : null} */}
         {isLoggedIn ? <TouchableOpacity onPress={() => doLogout()} style={styles.listItemWrapper}>
           <View style={styles.listItem}>
             <View style={{marginRight: 16}}>
