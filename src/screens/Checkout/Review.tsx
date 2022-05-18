@@ -25,33 +25,33 @@ import {userState} from '../../reducers/user.slice';
 import helper from '../../utils/helperMethods';
 import {loaderState, setPageLoading} from '../../reducers/loader.slice';
 import Helper from '../../utils/helperMethods';
-import {brandColor} from '../../styles/colors';
+import {brandColor, font1, font2, lineColor} from '../../styles/colors';
 import StyleCSS from '../../styles/style';
-import { useAppDispatch } from '../../app/store';
+import {useAppDispatch} from '../../app/store';
 import config from '../../config/Config';
 import axios from 'axios';
 import HeaderInner from '../../components/HeaderInner';
-
+import DashedLine from 'react-native-dashed-line';
+import PurchaseDot from '../../assets/images/purchase_dot.svg';
 const height = Dimensions.get('screen').height;
 const width = Dimensions.get('screen').width;
 
 type Props = NativeStackScreenProps<RootParamList, 'Review'>;
 
-type PayType = "DISCOUNT";
-type PaymentStatus= "Pending"|"Complete"|"Cancelled";
+type PayType = 'DISCOUNT';
+type PaymentStatus = 'Pending' | 'Complete' | 'Cancelled';
 
 const Review: FC<Props> = ({navigation}) => {
-
   const currentPage = 3;
-  const dispatch= useAppDispatch();
+  const dispatch = useAppDispatch();
   const {checkoutDataDetails} = useSelector(checkoutState);
   const {userData} = useSelector(userState);
   const {pageLoading} = useSelector(loaderState);
   const [showModal, setShowModal] = useState(false);
-  const [reqData, setReqData] = useState("");
-  const [paymentURL, setPaymentURL] = useState("");
+  const [reqData, setReqData] = useState('');
+  const [paymentURL, setPaymentURL] = useState('');
   const [status, setStatus] = useState<PaymentStatus>('Pending');
-  
+
   let scrollY;
 
   useEffect(() => {}, []);
@@ -65,30 +65,30 @@ const Review: FC<Props> = ({navigation}) => {
       return (TA - CDA).toFixed(2);
     }
   };
-  
+
   const proceedGatewayPayment = () => {
     let finalData = checkoutDataDetails;
     let reqGatewayData = {};
-    let gatewayURL = "";
+    let gatewayURL = '';
 
     if (
-      checkoutDataDetails.payment_gateway === "PP" ||
-      checkoutDataDetails.payment_gateway === "PPU"
+      checkoutDataDetails.payment_gateway === 'PP' ||
+      checkoutDataDetails.payment_gateway === 'PPU'
     ) {
-      gatewayURL = "paypal_view?data=";
-    } else if (checkoutDataDetails.payment_gateway === "PU") {
-      gatewayURL = "payumoney_view?data=";
+      gatewayURL = 'paypal_view?data=';
+    } else if (checkoutDataDetails.payment_gateway === 'PU') {
+      gatewayURL = 'payumoney_view?data=';
     }
 
     if (
-      checkoutDataDetails.payment_gateway === "PU" ||
-      checkoutDataDetails.payment_gateway === "PP" ||
-      checkoutDataDetails.payment_gateway === "PPU"
+      checkoutDataDetails.payment_gateway === 'PU' ||
+      checkoutDataDetails.payment_gateway === 'PP' ||
+      checkoutDataDetails.payment_gateway === 'PPU'
     ) {
       reqGatewayData = {
-        prodInfo: finalData.course.title.replace(/[^a-zA-Z]/g, ""),
-        pay_amount: parseFloat(finalData.amount.pay_amount.replace(/,/g, "")),
-        first_name: finalData.billing_first_name.replace(/[^a-zA-Z]/g, ""),
+        prodInfo: finalData.course.title.replace(/[^a-zA-Z]/g, ''),
+        pay_amount: parseFloat(finalData.amount.pay_amount.replace(/,/g, '')),
+        first_name: finalData.billing_first_name.replace(/[^a-zA-Z]/g, ''),
         email_id: userData.email,
         mobile_no: userData.phone_number,
         paymentType: checkoutDataDetails.payment_gateway,
@@ -96,86 +96,85 @@ const Review: FC<Props> = ({navigation}) => {
 
       setShowModal(true);
       setReqData(JSON.stringify(reqGatewayData));
-      setPaymentURL(gatewayURL)
+      setPaymentURL(gatewayURL);
     }
   };
 
-
-  const proceedPayment = (payType:PayType) => {
-    dispatch(setPageLoading(true))
+  const proceedPayment = (payType: PayType) => {
+    dispatch(setPageLoading(true));
     setShowModal(true);
     let finalData = checkoutDataDetails;
     let finalPay = finalData.amount.pay_amount;
-    finalData.amount.pay_amount = finalPay.replace(/,/g, "");
-  
-    if (payType === "DISCOUNT") {
+    finalData.amount.pay_amount = finalPay.replace(/,/g, '');
+
+    if (payType === 'DISCOUNT') {
       var date = new Date();
-      var dateToNo = userData.id + date.getTime() + "I-PAY";
+      var dateToNo = userData.id + date.getTime() + 'I-PAY';
       let dataPay = {
         course: checkoutDataDetails.course.id,
         checkout_id: checkoutDataDetails.id,
         number_of_class: checkoutDataDetails.amount.number_of_class,
         paid_ammount: checkoutDataDetails.amount.pay_amount,
-        error_code: "SUCCESS",
-        error_msg: "100% discount transaction",
-        pay_status: "S",
+        error_code: 'SUCCESS',
+        error_msg: '100% discount transaction',
+        pay_status: 'S',
         payerid: userData.user_token,
         paymentid: dateToNo,
         paymenttoken: dateToNo,
-        returnurl: "",
+        returnurl: '',
         timezone: userData.timezone,
-        split_info: "",
-        merchantTransactionId: "",
-        additionalCharges: "",
-        notificationId: "",
-        productInfo: "",
-        pg_type: "",
-        payment_addedon: "",
-        bank_ref_num: "",
-        bankcode: "",
-        cardToken: "",
-        cardnum: "",
+        split_info: '',
+        merchantTransactionId: '',
+        additionalCharges: '',
+        notificationId: '',
+        productInfo: '',
+        pg_type: '',
+        payment_addedon: '',
+        bank_ref_num: '',
+        bankcode: '',
+        cardToken: '',
+        cardnum: '',
         discount: checkoutDataDetails.amount.discount_amount,
         customeremail: userData.email,
         encryptedPaymentId: dateToNo,
-        mihpayid: "",
-        paymentMode: "",
-        payuMoneyId: "",
+        mihpayid: '',
+        paymentMode: '',
+        payuMoneyId: '',
       };
-  
+
       let finalData = {
         dataPay: dataPay,
-        userToken: userData.token
-      }
+        userToken: userData.token,
+      };
       dispatch(proceedToPayment(finalData))
-      .unwrap()
-        .then((response) => {
-          dispatch(setPageLoading(false))
-          if (response.data.status === "success") {
-            navigation.navigate("ActionStatus", {
-              messageStatus: "",
-              messageTitle: "Congratulations!",
+        .unwrap()
+        .then(response => {
+          dispatch(setPageLoading(false));
+          if (response.data.status === 'success') {
+            navigation.navigate('ActionStatus', {
+              messageStatus: '',
+              messageTitle: 'Congratulations!',
               messageDesc: response.data.error_message.message,
               timeOut: 4000,
               backRoute: 'DashboardPage',
             });
-          } else if (response.data.status === "failure") {
-            Alert.alert("", response.data.error_message.message, [
-              { text: "Okay", style: "cancel" },
+          } else if (response.data.status === 'failure') {
+            Alert.alert('', response.data.error_message.message, [
+              {text: 'Okay', style: 'cancel'},
             ]);
           }
         })
-        .catch((error) => {
-          dispatch(setPageLoading(false))
-          Alert.alert("", config.messages.common_error, [
-            { text: "Okay", style: "cancel" },
+        .catch(error => {
+          dispatch(setPageLoading(false));
+          Alert.alert('', config.messages.common_error, [
+            {text: 'Okay', style: 'cancel'},
           ]);
         });
     }
   };
 
   const handleResponse = (data: any) => {
-    if (data.title === "success") {
+    if (data.title === 'success') {
       dispatch(setPageLoading(true));
       var regex = /[?&]([^=#]+)=([^&#]*)/g,
         urlParams: any = {},
@@ -188,74 +187,74 @@ const Review: FC<Props> = ({navigation}) => {
         checkout_id: checkoutDataDetails.id,
         number_of_class: checkoutDataDetails.number_of_class,
         paid_ammount: checkoutDataDetails.amount.pay_amount,
-        error_code: data.title === "success" ? "SUCCESS" : "CANCELLED",
+        error_code: data.title === 'success' ? 'SUCCESS' : 'CANCELLED',
         error_msg:
-          data.title === "success"
-            ? "Your payment was successful"
-            : "You have cancelled the payment.",
-        pay_status: "S",
-        payerid: urlParams["PayerID"],
-        paymentid: urlParams["paymentId"],
-        paymenttoken: urlParams["token"],
-        returnurl: "",
+          data.title === 'success'
+            ? 'Your payment was successful'
+            : 'You have cancelled the payment.',
+        pay_status: 'S',
+        payerid: urlParams['PayerID'],
+        paymentid: urlParams['paymentId'],
+        paymenttoken: urlParams['token'],
+        returnurl: '',
         timezone: userData.timezone,
-        split_info: "",
-        merchantTransactionId: "",
-        additionalCharges: "",
-        notificationId: "",
-        productInfo: "",
-        pg_type: "",
-        payment_addedon: "",
-        bank_ref_num: "",
-        bankcode: "",
-        cardToken: "",
-        cardnum: "",
-        discount: "",
-        customeremail: "",
-        encryptedPaymentId: "",
-        mihpayid: "",
-        paymentMode: "",
-        payuMoneyId: "",
+        split_info: '',
+        merchantTransactionId: '',
+        additionalCharges: '',
+        notificationId: '',
+        productInfo: '',
+        pg_type: '',
+        payment_addedon: '',
+        bank_ref_num: '',
+        bankcode: '',
+        cardToken: '',
+        cardnum: '',
+        discount: '',
+        customeremail: '',
+        encryptedPaymentId: '',
+        mihpayid: '',
+        paymentMode: '',
+        payuMoneyId: '',
       };
       setShowModal(false);
       setStatus('Complete');
 
       let finalData = {
         dataPay: dataPay,
-        userToken: userData.token
-      }
+        userToken: userData.token,
+      };
 
       dispatch(proceedToPayment(finalData))
-      .unwrap()
-        .then((response) => {
+        .unwrap()
+        .then(response => {
           dispatch(setPageLoading(false));
-          if (response.data.status === "success") {
-            navigation.navigate("ActionStatus", {
-              messageStatus: "success",
-              messageTitle: "Congratulations!",
+          if (response.data.status === 'success') {
+            navigation.navigate('ActionStatus', {
+              messageStatus: 'success',
+              messageTitle: 'Congratulations!',
               messageDesc: response.data.error_message.message,
               timeOut: 4000,
               backRoute: 'DashboardPage',
             });
-          } else if (response.data.status === "failure") {
-            Alert.alert("", response.data.error_message.message, [
-              { text: "Okay", style: "cancel" },
+          } else if (response.data.status === 'failure') {
+            Alert.alert('', response.data.error_message.message, [
+              {text: 'Okay', style: 'cancel'},
             ]);
           }
         })
-        .catch((error) => {
-      dispatch(setPageLoading(false));
-          navigation.navigate("ActionStatus", {
-            messageStatus: "",
-            messageTitle: "Sorry!",
+        .catch(error => {
+          dispatch(setPageLoading(false));
+          navigation.navigate('ActionStatus', {
+            messageStatus: '',
+            messageTitle: 'Sorry!',
             messageDesc: config.messages.common_error,
             timeOut: 4000,
-            backRoute: 'DashboardPage'
+            backRoute: 'DashboardPage',
           });
         });
-    } else if (data.title === "cancel") {
+    } else if (data.title === 'cancel') {
       setShowModal(false);
-      setStatus('Cancelled');    
+      setStatus('Cancelled');
     } else {
       return;
     }
@@ -264,19 +263,40 @@ const Review: FC<Props> = ({navigation}) => {
   console.log(checkoutDataDetails);
   return (
     <>
-    <HeaderInner
-      type={'findCourse'}
-      back={true}
-      navigation={navigation}
-      title={"Review "}
-      />
-   
-    <View style={styles.container}>
-      {pageLoading ? (
-        <PageLoader />
-      ) : (
-        <View>
-          {/* <HeaderInner
+      <HeaderInner
+        title={'Review Order'}
+        type={'findCourse'}
+        back={true}
+        removeRightHeader={true}
+        changingHeight={config.headerHeight}
+        navigation={navigation}
+        // backRoute={}
+      ></HeaderInner>
+      <View
+        style={{
+          position: 'absolute',
+          top: config.headerHeight,
+          zIndex: 2,
+          height: 32,
+          width: '100%',
+        }}>
+        <Image
+          style={styles.formFillTimeImage}
+          source={require('@images/transactions_bg.png')}
+        />
+        <View style={styles.formFillTimeTextWrapper}>
+          <Text style={styles.formFillTimeText}>
+            Should take less than 48 seconds
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.container}>
+        {pageLoading ? (
+          <PageLoader />
+        ) : (
+          <View>
+            {/* <HeaderInner
               iconTop={this.iconTop}
               changingHeight={this.changingHeight}
               titleSize={this.titleSize}
@@ -287,213 +307,234 @@ const Review: FC<Props> = ({navigation}) => {
               navigation={this.props.navigation}
               type={"innerpage"}
             /> */}
-          <ScrollView
-            style={{marginTop: 20}}
-            scrollEventThrottle={16}
-            // onScroll={Animated.event(
-            //   [{ nativeEvent: { contentOffset: { y: this.scrollY } } }],
-            //   { useNativeDriver: false }
-            // )}
-          >
-            <View style={[styles.stepIndicator]}>
-              <StepIndicator
-                customStyles={stepIndicatorStyles}
-                stepCount={4}
-                direction="horizontal"
-                currentPosition={currentPage}
-              />
-            </View>
-
-            <View style={styles.headingWrapper}>
-              <Text style={styles.title}>Purchase Details</Text>
-            </View>
-
-            <View style={styles.courseGenDetailsWrapper}>
-              <Text style={styles.courseName}>
-                {checkoutDataDetails.course.title}
-                {checkoutDataDetails.class_type.members === '1' ? (
-                  <Text style={styles.row_content}>(1-on-1 Class)</Text>
-                ) : (
-                  <Text style={styles.row_content}>
-                    ({checkoutDataDetails.class_type.members} Members)
-                  </Text>
-                )}
-              </Text>
-              <View style={{flexDirection: 'row'}}>
-                <View style={{width: '50%', marginTop: 12}}>
-                  <Text style={styles.grey_items}>Cost Per Class</Text>
-                  <Text style={styles.grey_items_value}>
-                    {checkoutDataDetails.amount.currency_type === 'INR'
-                      ? 'Rs.'
-                      : 'US$ '}
-                    {checkoutDataDetails.amount.price_per_class}
-                  </Text>
-                </View>
-                <View style={{width: '50%', marginTop: 12}}>
-                  <Text style={styles.grey_items}>Number of Classes</Text>
-                  <Text style={styles.grey_items_value}>
-                    {checkoutDataDetails.amount.number_of_class}
-                  </Text>
-                </View>
+            <ScrollView
+              // style={{marginTop: 16}}
+              scrollEventThrottle={16}
+              // onScroll={Animated.event(
+              //   [{ nativeEvent: { contentOffset: { y: this.scrollY } } }],
+              //   { useNativeDriver: false }
+              // )}
+            >
+              <View style={[styles.stepIndicator]}>
+                <StepIndicator
+                  customStyles={stepIndicatorStyles}
+                  stepCount={4}
+                  direction="horizontal"
+                  currentPosition={currentPage}
+                />
               </View>
 
-              <View style={styles.lineStyle} />
-
-              <View style={StyleCSS.styles.flexDirRow}>
-                <View style={{width: '50%'}}>
-                  <Text style={styles.grey_items}>Classes per week</Text>
-                  <Text style={styles.grey_items_value}>
-                    {checkoutDataDetails.amount.classes_per_week}
-                  </Text>
-                </View>
-
-                <View style={{width: '50%'}}>
-                  <Text style={styles.grey_items}>
-                    Number of Weeks (to purchase for)
-                  </Text>
-                  <Text style={styles.grey_items_value}>
-                    {checkoutDataDetails.amount.number_of_weeks}
-                  </Text>
-                </View>
+              <View style={styles.headingWrapper}>
+                <Text style={styles.title}>Purchase Details</Text>
               </View>
-            </View>
 
-            <View style={styles.priceSection}>
-              <View>
-                <Text style={styles.noteText}>
-                  Note:- This total price includes handling charges plus 18%
-                  GST, if applicable.
+              <View style={styles.courseGenDetailsWrapper}>
+                <Text style={styles.grey_items}>Course</Text>
+                <Text style={styles.courseName}>
+                  {checkoutDataDetails.course.title}
+                  {checkoutDataDetails.class_type.members === '1' ? (
+                    <Text style={styles.courseName}>(1-on-1 Class)</Text>
+                  ) : (
+                    <Text style={styles.courseName}>
+                      ({checkoutDataDetails.class_type.members} Members)
+                    </Text>
+                  )}
                 </Text>
-              </View>
-
-              <View style={styles.lineStyleDark} />
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  marginBottom: -12,
-                }}>
-                <View style={{width: '100%'}}>
-                  <View style={styles.priceDetails}>
-                    <Text style={styles.labelText}>Actual Price: </Text>
-                    <Text style={[styles.contentText, {paddingLeft: 5}]}>
+                <View style={{marginVertical: 16}}>
+                  <DashedLine
+                    dashLength={5}
+                    dashThickness={1}
+                    dashGap={5}
+                    dashColor={lineColor}
+                  />
+                </View>
+                <View style={{flexDirection: 'row'}}>
+                  <View style={{width: '50%'}}>
+                    <Text style={styles.grey_items}>Cost Per Class</Text>
+                    <Text style={styles.grey_items_value}>
                       {checkoutDataDetails.amount.currency_type === 'INR'
                         ? 'Rs.'
                         : 'US$ '}
-                      {checkoutDataDetails.amount.total_amount}
+                      {checkoutDataDetails.amount.price_per_class}
                     </Text>
                   </View>
-                  {checkoutDataDetails.amount.coupon_discount_amount !==
-                    '0.00' && (
-                    <View style={styles.discountSection}>
-                      <Text style={styles.discount}>
-                        Discount{' '}
-                        {checkoutDataDetails.amount.percentage
-                          ? checkoutDataDetails.amount.percentage + '%'
-                          : 'Amount'}
-                        :
-                      </Text>
-                      <Text style={styles.priceSectionTextGrey}>
-                        {' - '}
-                        {checkoutDataDetails.amount.currency_type === 'INR'
-                          ? 'Rs.'
-                          : 'US$ '}
-                        {checkoutDataDetails.amount.coupon_discount_amount}
-                      </Text>
-                    </View>
-                  )}
-                  {checkoutDataDetails.amount.coupon_discount_amount !==
-                    '0.00' && (
-                    <View
-                      style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        marginBottom: 12,
-                        alignSelf: 'flex-end',
-                      }}>
-                      <Text style={styles.priceSectionTextGrey}>
-                        Price After Discount:
-                      </Text>
-                      <Text style={[styles.contentText, {paddingLeft: 5}]}>
-                        {checkoutDataDetails.amount.currency_type === 'INR'
-                          ? 'Rs.'
-                          : 'US$ '}
-                        {getDiscountAmount(
-                            checkoutDataDetails.amount
-                          )}
-                      </Text>
-                    </View>
-                  )}
+                  <View style={{width: '50%'}}>
+                    <Text style={styles.grey_items}>Number of Classes</Text>
+                    <Text style={styles.grey_items_value}>
+                      {checkoutDataDetails.amount.number_of_class}
+                    </Text>
+                  </View>
+                </View>
 
-                  {checkoutDataDetails.cgst_applied && (
-                    <View
-                      style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        marginBottom: 12,
-                        alignSelf: 'flex-end',
-                      }}>
-                      <Text style={styles.priceSectionTextGrey}>
-                        CGST ({checkoutDataDetails.amount.cgst}%):
-                      </Text>
-                      <Text style={[styles.contentText, {paddingLeft: 5}]}>
-                        {checkoutDataDetails.amount.currency_type === 'INR'
-                          ? 'Rs.'
-                          : 'US$ '}
-                        {checkoutDataDetails.amount.cgst_amount}
-                      </Text>
-                    </View>
-                  )}
-                  {checkoutDataDetails.sgst_applied && (
-                    <View
-                      style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        marginBottom: 12,
-                        alignSelf: 'flex-end',
-                      }}>
-                      <Text style={styles.priceSectionTextGrey}>
-                        SGST ({checkoutDataDetails.amount.sgst}%):
-                      </Text>
-                      <Text style={[styles.contentText, {paddingLeft: 5}]}>
-                        {checkoutDataDetails.amount.currency_type === 'INR'
-                          ? 'Rs.'
-                          : 'US$ '}
-                        {checkoutDataDetails.amount.sgst_amount}
-                      </Text>
-                    </View>
-                  )}
-                  {checkoutDataDetails.igst_applied && (
-                    <View
-                      style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        marginBottom: 12,
-                        alignSelf: 'flex-end',
-                      }}>
-                      <Text style={styles.priceSectionTextGrey}>
-                        IGST ({checkoutDataDetails.amount.igst}%):
-                      </Text>
-                      <Text style={[styles.contentText, {paddingLeft: 5}]}>
-                        {checkoutDataDetails.amount.currency_type === 'INR'
-                          ? 'Rs.'
-                          : 'US$ '}
-                        {checkoutDataDetails.amount.igst_amount}
-                      </Text>
-                    </View>
-                  )}
+                <View style={{marginVertical: 16}}>
+                  <DashedLine
+                    dashLength={5}
+                    dashThickness={1}
+                    dashGap={5}
+                    dashColor={lineColor}
+                  />
+                </View>
+
+                <View style={StyleCSS.styles.flexDirRow}>
+                  <View style={{width: '50%'}}>
+                    <Text style={styles.grey_items}>Classes per week</Text>
+                    <Text style={styles.grey_items_value}>
+                      {checkoutDataDetails.amount.classes_per_week}
+                    </Text>
+                  </View>
+
+                  <View style={{width: '50%'}}>
+                    <Text style={styles.grey_items}>
+                      Number of Weeks (to purchase for)
+                    </Text>
+                    <Text style={styles.grey_items_value}>
+                      {checkoutDataDetails.amount.number_of_weeks}
+                    </Text>
+                  </View>
                 </View>
               </View>
-              <View style={styles.lineStyleDark} />
 
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'flex-end',
-                }}>
-                <View style={{paddingBottom: 8, flexDirection: 'row'}}>
-                  <Text style={styles.totalDueText}>Total Due:</Text>
-                  <Text style={[styles.totalDueText, styles.brandColorText]}>
+              <View style={styles.priceSection}>
+                <View style={{padding: 16}}>
+                <View>
+                  <Text style={styles.noteText}>
+                    <Text style={{color: font1}}> Note:</Text> This total price
+                    includes handling charges
+                  </Text>
+                  <Text style={styles.noteText}>
+                    plus 18% GST, if applicable.
+                  </Text>
+                </View>
+                <View style={{marginVertical: 16}}>
+                  <DashedLine
+                    dashLength={5}
+                    dashThickness={1}
+                    dashGap={5}
+                    dashColor={lineColor}
+                  />
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
+                  <View style={{width: '100%'}}>
+                    <View style={styles.priceDetails}>
+                      <View style={styles.priceLabelWrapper}>
+                        <Text style={styles.labelText}>Actual Price</Text>
+                        <Text style={styles.labelText}>:</Text>
+                      </View>
+                      <Text style={[styles.contentText]}>
+                        {checkoutDataDetails.amount.currency_type === 'INR'
+                          ? 'Rs.'
+                          : 'US$ '}
+                        {checkoutDataDetails.amount.total_amount}
+                      </Text>
+                    </View>
+                    {checkoutDataDetails.amount.coupon_discount_amount !==
+                      '0.00' && (
+                      <View style={styles.priceDetails}>
+                        <View style={styles.priceLabelWrapper}>
+                          <Text style={styles.labelText}>
+                            Discount{' '}
+                            {checkoutDataDetails.amount.percentage
+                              ? checkoutDataDetails.amount.percentage + '%'
+                              : 'Amount'}
+                          </Text>
+                          <Text style={styles.labelText}>:</Text>
+                        </View>
+                        <Text style={styles.priceSectionTextGrey}>
+                          {' - '}
+                          {checkoutDataDetails.amount.currency_type === 'INR'
+                            ? 'Rs.'
+                            : 'US$ '}
+                          {checkoutDataDetails.amount.coupon_discount_amount}
+                        </Text>
+                      </View>
+                    )}
+                    {checkoutDataDetails.amount.coupon_discount_amount !==
+                      '0.00' && (
+                      <View style={styles.priceDetails}>
+                        <View style={styles.priceLabelWrapper}>
+                          <Text style={styles.labelText}>
+                            Price After Discount
+                          </Text>
+                          <Text style={styles.labelText}>:</Text>
+                        </View>
+                        <Text style={[styles.contentText]}>
+                          {checkoutDataDetails.amount.currency_type === 'INR'
+                            ? 'Rs.'
+                            : 'US$ '}
+                          {getDiscountAmount(checkoutDataDetails.amount)}
+                        </Text>
+                      </View>
+                    )}
+
+                    {checkoutDataDetails.cgst_applied && (
+                      <View style={styles.priceDetails}>
+                        <View style={styles.priceLabelWrapper}>
+                          <Text style={styles.labelText}>
+                            CGST ({checkoutDataDetails.amount.cgst}%)
+                          </Text>
+                          <Text style={styles.labelText}>:</Text>
+                        </View>
+                        <Text style={[styles.contentText]}>
+                          {checkoutDataDetails.amount.currency_type === 'INR'
+                            ? 'Rs.'
+                            : 'US$ '}
+                          {checkoutDataDetails.amount.cgst_amount}
+                        </Text>
+                      </View>
+                    )}
+                    {checkoutDataDetails.sgst_applied && (
+                      <View style={styles.priceDetails}>
+                        <View style={styles.priceLabelWrapper}>
+                          <Text style={styles.labelText}>
+                            SGST ({checkoutDataDetails.amount.sgst}%)
+                          </Text>
+                          <Text style={styles.labelText}>:</Text>
+                        </View>
+                        <Text style={[styles.contentText]}>
+                          {checkoutDataDetails.amount.currency_type === 'INR'
+                            ? 'Rs.'
+                            : 'US$ '}
+                          {checkoutDataDetails.amount.sgst_amount}
+                        </Text>
+                      </View>
+                    )}
+                    {checkoutDataDetails.igst_applied && (
+                      <View style={styles.priceDetails}>
+                        <View style={styles.priceLabelWrapper}>
+                          <Text style={styles.labelText}>
+                            IGST ({checkoutDataDetails.amount.igst}%)
+                          </Text>
+                          <Text style={styles.labelText}>:</Text>
+                        </View>
+                        <Text style={[styles.contentText]}>
+                          {checkoutDataDetails.amount.currency_type === 'INR'
+                            ? 'Rs.'
+                            : 'US$ '}
+                          {checkoutDataDetails.amount.igst_amount}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
+
+                <View style={{marginBottom: 16}}>
+                  <DashedLine
+                    dashLength={5}
+                    dashThickness={1}
+                    dashGap={5}
+                    dashColor={lineColor}
+                  />
+                </View>
+                <View style={styles.priceDetails}>
+                  <View style={styles.priceLabelWrapper}>
+                    <Text style={styles.totalDueText}>Total Due</Text>
+                    <Text style={styles.totalDueText}>:</Text>
+                  </View>
+                  <Text style={[styles.totalDueInfo]}>
                     {checkoutDataDetails.amount.currency_type === 'INR'
                       ? 'Rs.'
                       : 'US$ '}
@@ -501,203 +542,202 @@ const Review: FC<Props> = ({navigation}) => {
                   </Text>
                 </View>
               </View>
-            </View>
-
-            <View>
-              <View style={[styles.titleBorder, styles.safecontainer24]}>
-                <Text style={styles.title}>Billing Address</Text>
               </View>
-              <View style={styles.safecontainer20}>
-                <Text style={styles.black_items}>
-                  {checkoutDataDetails.billing_first_name}{' '}
-                  {checkoutDataDetails.billing_last_name},
-                </Text>
-                <Text style={styles.grey_items}>
-                  {checkoutDataDetails.billing_street_address},
-                </Text>
-                <Text style={styles.grey_items}>
-                  {checkoutDataDetails.billing_city}
-                </Text>
-                <Text style={styles.grey_items}>
-                  {checkoutDataDetails.billing_state +
-                    ' ' +
-                    checkoutDataDetails.billing_pin_code}
-                </Text>
-                <Text style={styles.grey_items}>
-                  {checkoutDataDetails.billing_country}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.userEmail}>
-              <Text style={styles.black_items}>{userData.email}</Text>
-              <Text style={styles.orderInfo}>
-                (Order information will be sent to your account e-mail.)
-              </Text>
-            </View>
-
-            {checkoutDataDetails.order_comments ? (
               <View>
+                <View style={{width:'100%', marginHorizontal:16,top:-6}}>
+                  <Image
+                    source={require('@images/purchase_dot.png')}
+                    style={{width: '100%', height: 16, marginHorizontal: -16}}
+                  />
+                </View>
+              </View>
+
+              <View style={{marginTop:-8}}>
                 <View style={[styles.titleBorder, styles.safecontainer24]}>
-                  <Text style={styles.title}>Order Comment</Text>
+                  <Text style={styles.title}>Billing Address</Text>
                 </View>
                 <View style={styles.safecontainer20}>
+                  <Text style={[styles.contentText, {fontWeight:'600'}]}>
+                    {checkoutDataDetails.billing_first_name}{' '}
+                    {checkoutDataDetails.billing_last_name},
+                  </Text>
                   <Text style={styles.grey_items}>
-                    {checkoutDataDetails.order_comments}
+                    {checkoutDataDetails.billing_street_address},
+                  </Text>
+                  <Text style={styles.grey_items}>
+                    {checkoutDataDetails.billing_city}
+                  </Text>
+                  <Text style={styles.grey_items}>
+                    {checkoutDataDetails.billing_state +
+                      ' ' +
+                      checkoutDataDetails.billing_pin_code}
+                  </Text>
+                  <Text style={styles.grey_items}>
+                    {checkoutDataDetails.billing_country}
                   </Text>
                 </View>
-              </View>
-            ) : null}
-
-            <View>
-              <View style={[styles.titleBorder, styles.safecontainer24]}>
-                <Text style={styles.title}>Payment Method</Text>
-              </View>
-              <View style={styles.safecontainer20}>
-                <Text style={styles.black_item}>
-                  {checkoutDataDetails.payment_gateway === 'PU' && 'Pay U'}
-                  {checkoutDataDetails.payment_gateway === 'PP' && 'Paypal'}
-                  {checkoutDataDetails.payment_gateway === 'PPU' &&
-                    'Paypal USA'}
-                </Text>
-                <Text style={styles.grey_items_small}>
-                  {checkoutDataDetails.payment_gateway === 'PU' &&
-                    'PayU Money supports all Debit cards, Credit cards and Net Banking options. On the next page, after you click Pay Now securely button, you will be taken to PayU money website,where you will be asked to enter your Card or Net banking details.'}
-                  {(checkoutDataDetails.payment_gateway === 'PP' ||
-                    checkoutDataDetails.payment_gateway === 'PPU') &&
-                    'Pay easily , fast and secure with paypal.'}
-                </Text>
-                <Image
-                  style={{
-                    width: '70%',
-                    height: 24,
-                    marginTop: 14,
-                  }}
-                  source={require('@images/payment_gateway_cards.png')}
-                />
-              </View>
-            </View>
-
-            <View
-              style={[
-                StyleCSS.styles.flexDirRow,
-                styles.safecontainer24,
-                {marginTop: 24},
-              ]}>
-              <View style={{borderRadius: 5, width: '35%'}}>
-                <TouchableOpacity
-                  style={styles.backButton}
-                  onPress={() => navigation.navigate('BillingAddress')}>
-                  <Text style={styles.backButtonText}>BACK</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={{width: '65%', marginLeft: 10}}>
-                {checkoutDataDetails.amount.pay_amount === '0.00' && (
-                  <TouchableOpacity
-                    style={styles.completeCheckoutButton}
-                    onPress={() => proceedPayment("DISCOUNT")}
-                  >
-                    <Text style={styles.completeCheckoutButtonText}>
-                      COMPLETE CHECKOUT
+                {checkoutDataDetails.order_comments ? (
+                <View>
+                  <View style={[styles.safecontainer24,{marginBottom:4, marginTop:16}]}>
+                    <Text style={[styles.contentText,{fontWeight:'600'}]}>Order Comment</Text>
+                  </View>
+                  <View style={styles.safecontainer20}>
+                    <Text style={styles.grey_items}>
+                      {checkoutDataDetails.order_comments}
                     </Text>
-                  </TouchableOpacity>
-                )}
-                {checkoutDataDetails.amount.pay_amount != '0.00' && (
-                  <>
-                    {checkoutDataDetails.payment_gateway === 'PU' && (
-                      <TouchableOpacity
-                        style={styles.payNowButton}
-                        onPress={() => proceedGatewayPayment()}
-                      >
-                        <Text style={styles.payNowButtonText}>
-                          PAY NOW SECURELY
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                    {checkoutDataDetails.payment_gateway === 'PP' && (
-                      <TouchableOpacity
-                        style={styles.payNowButton}
-                        onPress={() => proceedGatewayPayment()}
-                      >
-                        <Text style={styles.payNowButtonText}>
-                          PAY NOW SECURELY
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                    {checkoutDataDetails.payment_gateway === 'PPU' && (
-                      <TouchableOpacity
-                        style={styles.payNowButton}
-                        onPress={() => proceedGatewayPayment()}
-                      >
-                        <Text style={styles.payNowButtonText}>
-                          PAY NOW SECURELY
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  </>
-                )}
-              </View>
-            </View>
-            <View style={{height: 50}}></View>
-            <View style={{marginTop: 0}}>
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={showModal}
-                onRequestClose={() => setShowModal(false)}
-              >
-                <View
-                  style={{
-                    backgroundColor: 'rgb(232, 67, 53)',
-                    padding: 16,
-                    flexDirection: 'row',
-                    flex: 1,
-                    position: 'absolute',
-                    top: Platform.OS === 'ios' ? 40 : 0,
-                    left: 0,
-                    right: 0,
-                    height: 56,
-                    alignContent: 'center',
-                    zIndex: 999,
-                  }}>
-                  <Pressable
-                    style={{marginTop: 4}}
-                    onPress={() => setShowModal(false)}>
-                    <Image
-                      source={require('@images/left_arrow.png')}
-                      style={{
-                        width: 23,
-                        height: 18,
-                        alignItems: 'center',
-                        marginLeft: 12,
-                      }}
-                    />
-                  </Pressable>
-                  <View style={{flex: 1, marginTop: -6, marginLeft: 12}}>
-                    <Text style={styles.innerHeaderTitle}>Continue to pay</Text>
                   </View>
                 </View>
-                <WebView
-                    cacheEnabled={false}
-                    style={{ marginTop: 50 }}
-                    source={{
-                      uri:
-                        config.NodeBaseURL +
-                        paymentURL +
-                        reqData,
+              ) : null}
+              </View>
+
+              <View style={styles.userEmail}>
+                <Text style={[styles.black_items, {fontWeight:'700'}]}>{userData.email}</Text>
+                <Text style={styles.orderInfo}>
+                  (Order information will be sent to your account e-mail.)
+                </Text>
+              </View>
+
+             
+
+              <View>
+                <View style={[styles.titleBorder, styles.safecontainer24]}>
+                  <Text style={styles.title}>Payment Method</Text>
+                </View>
+                <View style={styles.safecontainer20}>
+                  <Text style={styles.black_item}>
+                    {checkoutDataDetails.payment_gateway === 'PU' && 'Pay U'}
+                    {checkoutDataDetails.payment_gateway === 'PP' && 'Paypal'}
+                    {checkoutDataDetails.payment_gateway === 'PPU' &&
+                      'Paypal USA'}
+                  </Text>
+                  <Text style={styles.grey_items_small}>
+                    {checkoutDataDetails.payment_gateway === 'PU' &&
+                      'PayU Money supports all Debit cards, Credit cards and Net Banking options. On the next page, after you click Pay Now securely button, you will be taken to PayU money website,where you will be asked to enter your Card or Net banking details.'}
+                    {(checkoutDataDetails.payment_gateway === 'PP' ||
+                      checkoutDataDetails.payment_gateway === 'PPU') &&
+                      'Pay easily , fast and secure with paypal.'}
+                  </Text>
+                  <Image
+                    style={{
+                      width: '70%',
+                      height: 24,
+                      marginTop: 14,
                     }}
-                    onNavigationStateChange={(event) => {
+                    source={require('@images/payment_gateway_cards.png')}
+                  />
+                </View>
+              </View>
+<View style={[StyleCSS.styles.lineStyleLight, {marginTop:24}]}></View>
+              <View
+                style={StyleCSS.styles.modalButton}>
+              
+                  <TouchableOpacity
+                    style={StyleCSS.styles.cancelButton}
+                    onPress={() => navigation.navigate('BillingAddress')}>
+                    <Text style={StyleCSS.styles.cancelButtonText}>Back</Text>
+                  </TouchableOpacity>
+                 
+
+                <View style={{width: '100%'}}>
+                  {checkoutDataDetails.amount.pay_amount === '0.00' && (
+                    <TouchableOpacity
+                      style={StyleCSS.styles.submitButton}
+                      onPress={() => proceedPayment('DISCOUNT')}>
+                      <Text style={StyleCSS.styles.submitButtonText}>
+                        Complete Checkout
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  {checkoutDataDetails.amount.pay_amount != '0.00' && (
+                    <>
+                      {checkoutDataDetails.payment_gateway === 'PU' && (
+                        <TouchableOpacity
+                          style={StyleCSS.styles.submitButton}
+                          onPress={() => proceedGatewayPayment()}>
+                          <Text style={StyleCSS.styles.submitButtonText}>
+                            Pay Now Securely
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                      {checkoutDataDetails.payment_gateway === 'PP' && (
+                        <TouchableOpacity
+                          style={StyleCSS.styles.submitButton}
+                          onPress={() => proceedGatewayPayment()}>
+                          <Text style={StyleCSS.styles.submitButtonText}>
+                          Pay Now Securely
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                      {checkoutDataDetails.payment_gateway === 'PPU' && (
+                        <TouchableOpacity
+                          style={StyleCSS.styles.submitButton}
+                          onPress={() => proceedGatewayPayment()}>
+                          <Text style={StyleCSS.styles.submitButtonText}>
+                          Pay Now Securely
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </>
+                  )}
+                </View>
+              </View>
+              {/* <View style={{height: 50}}></View> */}
+              <View style={{marginTop: 0}}>
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={showModal}
+                  onRequestClose={() => setShowModal(false)}>
+                  <View
+                    style={{
+                      backgroundColor: 'rgb(232, 67, 53)',
+                      padding: 16,
+                      flexDirection: 'row',
+                      flex: 1,
+                      position: 'absolute',
+                      top: Platform.OS === 'ios' ? 40 : 0,
+                      left: 0,
+                      right: 0,
+                      height: 56,
+                      alignContent: 'center',
+                      zIndex: 999,
+                    }}>
+                    <Pressable
+                      style={{marginTop: 4}}
+                      onPress={() => setShowModal(false)}>
+                      <Image
+                        source={require('@images/left_arrow.png')}
+                        style={{
+                          width: 23,
+                          height: 18,
+                          alignItems: 'center',
+                          marginLeft: 12,
+                        }}
+                      />
+                    </Pressable>
+                    <View style={{flex: 1, marginTop: -6, marginLeft: 12}}>
+                      <Text style={styles.innerHeaderTitle}>
+                        Continue to pay
+                      </Text>
+                    </View>
+                  </View>
+                  <WebView
+                    cacheEnabled={false}
+                    style={{marginTop: 50}}
+                    source={{
+                      uri: config.NodeBaseURL + paymentURL + reqData,
+                    }}
+                    onNavigationStateChange={event => {
                       handleResponse(event);
                     }}
                     javaScriptEnabled={true}
                   />
-              </Modal>
-            </View>
-          </ScrollView>
-        </View>
-      )}
-    </View>
+                </Modal>
+              </View>
+            </ScrollView>
+          </View>
+        )}
+      </View>
     </>
   );
 };
@@ -708,49 +748,53 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    marginTop:109
+    marginTop: config.headerHeight + 32,
   },
   stepIndicator: {
     paddingHorizontal: 0,
-    marginTop: 12,
+    marginTop: 16,
   },
   headingWrapper: {
-    paddingLeft: 24,
-    paddingRight: 24,
-    marginTop: 30,
+    paddingLeft: 16,
+    paddingRight: 16,
+    marginTop: 16,
   },
   courseGenDetailsWrapper: {
-    paddingLeft: 24,
-    paddingRight: 24,
-    marginTop: 23,
+    paddingHorizontal: 16,
+    marginTop: 16,
   },
   courseName: {
-    fontSize: 18,
-    color: 'rgb(44, 54, 65)',
-    fontFamily: Helper.switchFont('medium'),
+    fontSize: 14,
+    marginTop: 5,
+    color: font1,
+    fontWeight: '600',
+    fontFamily: Helper.switchFont('semibold'),
   },
   rowItem: {
     flex: 1,
     paddingVertical: 0,
   },
   titleBorder: {
-    marginTop: 50,
-    borderLeftWidth: 2,
-    borderLeftColor: brandColor,
-    marginBottom: 20,
+    marginVertical: 16,
   },
   title: {
-    fontSize: 19,
+    fontSize: 18,
     margin: 0,
-    paddingLeft: 8,
-    color: 'rgb(44, 54, 65)',
+    color: font1,
+    fontWeight: '700',
     fontFamily: helper.switchFont('medium'),
   },
-  safecontainer24: {
-    marginLeft: 24,
-    marginRight: 24,
+  totalDueInfo: {
+    fontSize: 18,
+    color: font1,
+    fontFamily: Helper.switchFont('semibold'),
+    fontWeight: '600',
   },
-  safecontainer20: {paddingLeft: 20, paddingRight: 20},
+  safecontainer24: {
+    marginLeft: 16,
+    marginRight: 16,
+  },
+  safecontainer20: {paddingLeft: 16, paddingRight: 16},
   body: {
     flex: 1,
     fontSize: 15,
@@ -785,7 +829,8 @@ const styles = StyleSheet.create({
   },
   contentText: {
     fontSize: 14,
-    color: 'rgb(44, 54, 65)',
+    fontWeight: '500',
+    color: font1,
     fontFamily: helper.switchFont('medium'),
   },
   lineStyle4: {
@@ -798,33 +843,37 @@ const styles = StyleSheet.create({
   },
   grey_items: {
     fontSize: 14,
-    color: '#81878D',
-    fontFamily: helper.switchFont('regular'),
-    marginTop: 5,
+    color: font2,
+    fontWeight: '500',
+    lineHeight:20,
+    fontFamily: Helper.switchFont('medium'),
   },
   grey_items_value: {
     fontSize: 14,
-    color: 'rgb(44, 54, 65)',
+    color: font1,
     fontFamily: helper.switchFont('medium'),
     marginTop: 5,
   },
   black_item: {
     fontSize: 16,
-    lineHeight: 30,
-    color: 'rgb(44, 54, 65)',
-    fontFamily: helper.switchFont('medium'),
+    fontWeight:'600',
+    color: font1,
+    fontFamily: helper.switchFont('semibold'),
   },
   black_items: {
+    
     fontSize: 14,
     lineHeight: 21,
     color: 'rgb(44, 54, 65)',
     fontFamily: helper.switchFont('medium'),
   },
   grey_items_small: {
-    fontSize: 14,
-    color: '#81878D',
-    lineHeight: 21,
-    fontFamily: helper.switchFont('regular'),
+    marginTop:8,
+    fontSize: 12,
+    color: font2,
+    lineHeight: 20,
+    fontWeight:'500',
+    fontFamily: helper.switchFont('medium'),
   },
   backgroundImage: {
     flex: 1,
@@ -836,7 +885,7 @@ const styles = StyleSheet.create({
   },
   labelText: {
     fontSize: 14,
-    color: 'rgb(44, 54, 65)',
+    color: font2,
     fontFamily: helper.switchFont('medium'),
     marginTop: 0,
   },
@@ -860,15 +909,18 @@ const styles = StyleSheet.create({
     fontFamily: helper.switchFont('medium'),
   },
   priceSection: {
-    backgroundColor: 'rgb(233, 233, 233)',
-    marginTop: 24,
-    padding: 24,
+    backgroundColor: '#F1F4F6',
+    marginTop: 16,
+    // padding: 16,
+    marginHorizontal: 16,
+    borderRadius: 12,
   },
   noteText: {
-    fontSize: 11,
-    color: '#81878D',
-    lineHeight: 18,
-    fontFamily: Helper.switchFont('regular'),
+    fontSize: 12,
+    color: font2,
+    fontWeight: '500',
+    lineHeight: 20,
+    fontFamily: Helper.switchFont('medium'),
   },
   row_content: {
     color: 'rgb(44, 54, 65)',
@@ -883,9 +935,9 @@ const styles = StyleSheet.create({
   },
   priceDetails: {
     flex: 1,
+    marginBottom: 16,
     flexDirection: 'row',
-    marginBottom: 12,
-    alignSelf: 'flex-end',
+    justifyContent: 'space-between',
   },
   discount: {
     fontSize: 14,
@@ -899,23 +951,27 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
   },
   totalDueText: {
-    fontSize: 16,
-    fontFamily: Helper.switchFont('medium'),
-    color: 'rgb(44, 45, 65)',
+    fontSize: 14,
+    color: font1,
+    fontFamily: Helper.switchFont('semibold'),
+    fontWeight: '600',
   },
   brandColorText: {
     color: brandColor,
   },
   userEmail: {
-    backgroundColor: 'rgb(233, 233, 233)',
+    backgroundColor: '#F1F4F6',
     padding: 16,
-    marginTop: 30,
+    marginHorizontal:16,
+    marginTop: 24,
+    marginBottom:8,
+    borderRadius:12
   },
   orderInfo: {
     fontSize: 12,
-    color: '#81878D',
+    color: font2,
     fontFamily: Helper.switchFont('regular'),
-    marginTop: 4,
+    lineHeight:20
   },
   backButton: {
     padding: 12,
@@ -988,4 +1044,9 @@ const styles = StyleSheet.create({
     // top: 100,
   },
   formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
+  priceLabelWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '50%',
+  },
 });

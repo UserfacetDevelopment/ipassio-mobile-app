@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    marginTop:109,
+    marginTop:config.headerHeight,
   },
   loginImage: {
     height: 100,

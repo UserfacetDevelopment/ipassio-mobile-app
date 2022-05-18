@@ -428,7 +428,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
         title={''}
         back={true}
         navigation={navigation}/>
-        <ScrollView style={{marginTop:109}}>
+        <ScrollView style={{marginTop:config.headerHeight}}>
           {!loading && videoId ? (
             <View>
               {/* have to be changed to a non youtube specific carousal */}

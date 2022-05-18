@@ -47,7 +47,7 @@ const theme = {
      primary: dropdownBorder,
     accent: '#e1d',
     // underlineColor:'transparent',
-     placeholder: font2, 
+     placeholder: '#9AA6B2', 
           // text:font2,
           //  primary: 'white',
            underlineColor: 'transparent',    

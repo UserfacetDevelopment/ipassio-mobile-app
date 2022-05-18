@@ -11,7 +11,8 @@ import {
   Animated,
   ImageBackgroundComponent,
   Dimensions,
-  Linking
+  Linking,
+  Platform
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 // import Geolocation from 'react-native-geolocation-service';
@@ -161,11 +162,11 @@ export default function FindCourse({navigation, route}: Props) {
   // const [page, setPage] = useState<"find_course"|"home"|"">("home");
 
   let scrollY = new Animated.Value(0.01);
-  let changingHeight = scrollY.interpolate({
-    inputRange: [0.01, 50],
-    outputRange: [132, 109],
-    extrapolate: 'clamp',
-  });
+  // let changingHeight = scrollY.interpolate({
+  //   inputRange: [0.01, 50],
+  //   outputRange: [132, 109],
+  //   extrapolate: 'clamp',
+  // });
   let fixedHeight = scrollY.interpolate({
     inputRange: [0.01, 45],
     outputRange: [36, 24],
@@ -780,7 +781,7 @@ export default function FindCourse({navigation, route}: Props) {
         titleLeft={titleLeft}
         fixedHeight={fixedHeight}
         headFade={headFade}
-        courseHeight={changingHeight}
+        // courseHeight={config.headerHeight}
         title={'Courses'}
         logo={true}
         coursesSelected={true}
@@ -865,7 +866,7 @@ export default function FindCourse({navigation, route}: Props) {
               {/* <ScrollView contentInsetAdjustmentBehavior="always"> */}
               {/* COURSES ARE REPEATING */}
 
-              <View style={{marginBottom: 400, marginTop:26}}>
+              <View style={{marginBottom: 400, marginTop:Platform.OS === 'android' ? 6 : 8}}>
                 <FlatList
                   data={coursesArray}
                   renderItem={({item, index}) => loadCourse(item, index)}
@@ -1001,7 +1002,7 @@ const styles = StyleSheet.create({
   filterBox: {
     position:'absolute',
     zIndex:9999,
-    top:-35,
+    top: Platform.OS === 'android' ? -54 : -50,
     width:width-32,
     height: 50,
     backgroundColor: '#FFF',

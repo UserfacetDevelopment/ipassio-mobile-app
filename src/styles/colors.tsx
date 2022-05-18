@@ -16,6 +16,7 @@ export const background2 = '#F7F9FA';
 export const background3 = '#F3F5F8';
 export const background4 = '#E9EDF2';
 export const background5 = '#F7F8F9';
+export const background6= '#F4F6F8';
 export const intermediate = '#795DCA';
 export const beginner = '#C87D0C';
 export const superAdvanced = '#4171C1';

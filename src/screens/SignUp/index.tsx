@@ -6,7 +6,7 @@ import Google from '../../assets/images/google-logo.svg'
 import StyleCSS from '../../styles/style'
 import {TextInput, ProgressBar} from 'react-native-paper';
 import RNPasswordStrengthMeter from 'react-native-password-strength-meter';
-
+import config from '../../config/Config'
 export default function Signup() {
 
     const [username, setUsername] = useState('');
@@ -90,7 +90,7 @@ main:{
     paddingHorizontal:16,
 },
 scrollView:{
-marginTop:109
+marginTop:config.headerHeight
 },
 googleIconView: {
     // flex: 0.3,

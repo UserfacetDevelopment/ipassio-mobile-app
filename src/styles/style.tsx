@@ -13,6 +13,8 @@ import {
   font2,
   font3,
   lineColor,
+  secondaryColor,
+  secondaryColorBorder,
 } from '../styles/colors';
 const {height, width} = Dimensions.get('screen');
 import Helper from '../utils/helperMethods';
@@ -105,7 +107,7 @@ export default class StyleCSS {
 
       fontFamily: helper.switchFont('medium'),
       fontSize:14,
-      lineHeight:20,
+      // lineHeight:20,
       color:font1
     },
     lineStyleDashed: {
@@ -229,6 +231,48 @@ bottom:0,
     padding: 16,
     borderWidth: 1,
     borderColor: dropdownBorder,
+  },
+
+  submitButton:{
+    padding: 12,
+    // paddingTop: 18,
+    // paddingBottom: 18,
+    backgroundColor: brandColor,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    width: '48%',
+    zIndex: 1,
+  },
+  submitButtonText:{
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: '700',
+    fontFamily: Helper.switchFont('medium'),
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  cancelButton:{
+    padding: 12,
+    // paddingTop: 18,
+    // paddingBottom: 18,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    width: '49%',
+    zIndex: 1,
+    borderColor: secondaryColorBorder,
+    borderWidth:1,
+    marginRight: '3%',
+  },
+  cancelButtonText:{
+    color: secondaryColor,
+    textAlign: 'center',
+    fontWeight: '700',
+    fontFamily: Helper.switchFont('bold'),
+    fontSize: 14,
+    lineHeight: 18,
   }
   });
 }

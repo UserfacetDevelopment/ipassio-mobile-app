@@ -88,11 +88,11 @@ const {pageLoading} = useSelector(loaderState);
 const [modalTitle, setModalTitle] = useState<"Add Review"|"Edit Review">("Edit Review");
 
   let scrollY = new Animated.Value(0.01);
-  let changingHeight = scrollY.interpolate({
-    inputRange: [0.01, 50],
-    outputRange: [109, 109],
-    extrapolate: "clamp",
-  });
+  // let changingHeight = scrollY.interpolate({
+  //   inputRange: [0.01, 50],
+  //   outputRange: [109, 109],
+  //   extrapolate: "clamp",
+  // });
   let titleLeft = scrollY.interpolate({
     inputRange: [0.01, 35],
     outputRange: [0, 36],
@@ -308,12 +308,13 @@ setEditAttendanceModal(true)
      <>
         <HeaderInner
               iconTop={iconTop}
-              changingHeight={changingHeight}
+              changingHeight={config.headerHeight}
               titleSize={titleSize}
               titleTop={titleTop}
               titleLeft={titleLeft}
               title={"Attendance"}
               back={true}
+              removeRightHeader={true}
               backroute={ "DashboardPage"}
               navigation={navigation}
               type={"findCourse"}
@@ -772,7 +773,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
       paddingBottom: 50,
-      marginTop: 109,
+      marginTop: config.headerHeight,
     },
     row: {
       paddingVertical: 16,

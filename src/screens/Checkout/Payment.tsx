@@ -128,7 +128,7 @@ const Payment: FC<Props> = ({route, navigation}) => {
           <View
             style={{
               position: 'absolute',
-              top: 100,
+              top: config.headerHeight,
               zIndex: 2,
               height: 32,
               width: '100%',
@@ -169,7 +169,7 @@ const Payment: FC<Props> = ({route, navigation}) => {
             // )}
           >
             <View style={styles.safecontainer}>
-            <View style={[styles.stepIndicator, {marginTop: 20}]}>
+            <View style={[styles.stepIndicator, {marginTop:32}]}>
               <StepIndicator
                 customStyles={stepIndicatorStyles}
                 stepCount={4}
@@ -323,17 +323,7 @@ const Payment: FC<Props> = ({route, navigation}) => {
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    style={{
-                      padding: 12,
-                      // paddingTop: 18,
-                      // paddingBottom: 18,
-                      backgroundColor: brandColor,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 8,
-                      width: '48%',
-                      zIndex: 1,
-                    }}
+                    style={StyleCSS.styles.submitButton}
                     onPress={() => checkoutNextPage()}
                     >
                     <Text
@@ -363,7 +353,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    marginTop:109
+    marginTop:config.headerHeight
   },
   safecontainer: {
     marginHorizontal: 16,

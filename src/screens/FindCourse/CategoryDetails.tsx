@@ -511,7 +511,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                 backroute={route.params?.backroute}
                 ></HeaderInner>
               <ScrollView
-                style={{marginTop: 109}}
+                style={{marginTop: config.headerHeight}}
                 contentInsetAdjustmentBehavior="always">
                 <View style={{backgroundColor: '#fff'}}>
                   <Image

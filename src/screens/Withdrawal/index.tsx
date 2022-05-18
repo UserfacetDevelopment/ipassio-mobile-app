@@ -80,19 +80,14 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
   ] = useState(false);
   const routes = useRoute();
   let scrollY = new Animated.Value(0.01);
-  let changingHeight = scrollY.interpolate({
-    inputRange: [0.01, 70],
-    outputRange: [100, 100],
-    extrapolate: "clamp",
-  });
   let changingHeight2 = scrollY.interpolate({
     inputRange: [0.01, 70],
-    outputRange: [82, 47],
+    outputRange: [Platform.OS === 'android' ? 68 : 72, Platform.OS === 'android' ? 36 : 40],
     extrapolate: "clamp",
   });
   let titleSize = scrollY.interpolate({
     inputRange: [0.01, 35],
-    outputRange: [24, 18],
+    outputRange: [22, 18],
     extrapolate: "clamp",
   });
   let mainTitleSize = scrollY.interpolate({
@@ -110,12 +105,12 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
   });
   let titleSubTop = scrollY.interpolate({
     inputRange: [0.01, 50],
-    outputRange: [12, 12],
+    outputRange: [Platform.OS === 'android'? 8 : 12, Platform.OS === 'android'? 4 :8],
     extrapolate: "clamp",
   });
   let thirdTitleTop = scrollY.interpolate({
     inputRange: [0.01, 50],
-    outputRange: [48, 14],
+    outputRange: [Platform.OS === 'android' ? 36 : 40, Platform.OS === 'android' ? 6 : 10],
     extrapolate: "clamp",
   });
   let balanceSize = scrollY.interpolate({
@@ -128,6 +123,8 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
     outputRange: [16, 88],
     extrapolate: "clamp",
   });
+
+
   const height = scrollY.interpolate({
     inputRange:[0.01, 50],
     outputRange:[100, 0],
@@ -663,7 +660,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
               titleSubTop={titleSubTop}
               titleSize={titleSize}
               titleTop={titleTop}
-              changingHeight={changingHeight}
+              changingHeight={config.headerHeight}
               walletHeight={250}
               logo={true}
               title={"Withdraw"}
@@ -827,7 +824,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    marginTop:147
+    marginTop:Platform.OS === 'android' ? 122 : 130
   },
   walletWrapper: {
     zIndex: 1,

@@ -127,7 +127,7 @@ export default function CustomDropdown({
                 top: -8,
                 fontSize: 12,
                 paddingHorizontal: 4,
-                backgroundColor: '#fff',
+                backgroundColor: config.color,
                 left: 7,
                 color: font2,
               },

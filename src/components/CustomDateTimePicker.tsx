@@ -21,6 +21,7 @@ interface CustomDateTimePickerProps {
   onConfirm: any;
   onCancel: any;
   label: string;
+  width:any;
 }
 
 const width = Dimensions.get('screen').width;
@@ -34,11 +35,12 @@ export default function CustomDateTimePicker({
   onCancel,
   isVisible,
   label,
+  width
 }: CustomDateTimePickerProps) {
   return (
     <View>
       <TouchableOpacity
-        style={styles.input}
+        style={[styles.input, {width:width}]}
         onPress={() => {
           showDateTimePicker();
         }}>

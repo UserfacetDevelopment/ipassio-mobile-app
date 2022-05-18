@@ -485,11 +485,11 @@ export default function Dashboard({navigation}: Props) {
   const [selectedStudentID, setSelectedStudentID] = useState<string>('');
   const [checkoutToken , setCheckoutToken] = useState('');
   let scrollY = new Animated.Value(0.01);
-  let changingHeight = scrollY.interpolate({
-    inputRange: [0.01, 50],
-    outputRange: [userData.user_type === 'T' ? 109 : 191, 109],
-    extrapolate: 'clamp',
-  });
+  // let changingHeight = scrollY.interpolate({
+  //   inputRange: [0.01, 50],
+  //   outputRange: [conf],
+  //   extrapolate: 'clamp',
+  // });
   let fixedHeight = scrollY.interpolate({
     inputRange: [0.01, 45],
     outputRange: [36, 24],
@@ -1068,7 +1068,7 @@ export default function Dashboard({navigation}: Props) {
           profImageSize={profImageSize}
           headFade={headFade}
           logo={true}
-          dashboardHeight={changingHeight}
+          dashboardHeight={config.headerHeight}
           title={'Dashboard'}
           userImage={
             userData && userData.user_media
@@ -1217,7 +1217,7 @@ export default function Dashboard({navigation}: Props) {
             </>
           ) : userData.user_type === 'S' ? (
             <View style={{}}>
-              <View style={{marginTop: 20}}></View>
+              <View style={{marginTop: 16}}></View>
               {enrolledCoursesStatus === 'loading' ? (
                 <>
                   <View>{<LoaderDashboard/>}</View>
@@ -1252,7 +1252,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: background4,
-    marginTop:109
+    marginTop:config.headerHeight
   },
 
   cardTitle: {
@@ -1611,7 +1611,7 @@ fontWeight:'700',
     borderColor: secondaryColorBorder,
     borderRadius: 8,
   },
-  scrollView: {marginTop: 109,
+  scrollView: {marginTop: config.headerHeight,
   backgroundColor: background4},
   enrolledCoursesInfoWrapper: {
     marginTop: -16,

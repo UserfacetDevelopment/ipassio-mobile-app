@@ -200,7 +200,7 @@ const BillingAddress: FC<Props> = ({navigation}) => {
           <View
             style={{
               position: 'absolute',
-              top: 100,
+              top: config.headerHeight,
               zIndex: 2,
               height: 32,
               width: '100%',
@@ -220,7 +220,7 @@ const BillingAddress: FC<Props> = ({navigation}) => {
       {pageLoading ? (
         <PageLoader />
       ) : (
-        <SafeAreaView style={styles.safecontainer}>
+        <View>
           {/* <HeaderInner
               iconTop={this.iconTop}
               changingHeight={this.changingHeight}
@@ -240,7 +240,8 @@ const BillingAddress: FC<Props> = ({navigation}) => {
             // )}
           >
             <ScrollView>
-              <View style={[styles.stepIndicator]}>
+              <View style={styles.safecontainer}>
+              <View style={[styles.stepIndicator ,{marginTop:32}]}>
                 <StepIndicator
                   customStyles={stepIndicatorStyles}
                   stepCount={4}
@@ -391,6 +392,8 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                 /> */}
               </View>
 
+              
+              </View>
               <View style={[StyleCSS.styles.lineStyleLight,{marginVertical:16}]} />
 
               <Text style={styles.stepInfoText}>
@@ -426,71 +429,33 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                 </View> */}
                 <View
                   style={[
-                   StyleCSS.styles.modalButton, {marginHorizontal:-16}
+                   StyleCSS.styles.modalButton
                   ]}>
                   <TouchableOpacity
-                    style={{
-                      padding: 12,
-                      // paddingTop: 18,
-                      // paddingBottom: 18,
-                      backgroundColor: '#fff',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 8,
-                      width: '49%',
-                      zIndex: 1,
-                      borderColor: secondaryColorBorder,
-                      borderWidth:1,
-                      marginRight: '3%',
-                    }}
+                    style={StyleCSS.styles.cancelButton}
                     onPress={() => {
                       // navigation.goBack()
                      
                     }}>
                     <Text
-                      style={{
-                        color: secondaryColor,
-                        textAlign: 'center',
-                        fontWeight: '700',
-                        fontFamily: Helper.switchFont('bold'),
-                        fontSize: 14,
-                        lineHeight: 18,
-                      }}>
+                      style={StyleCSS.styles.cancelButtonText}>
                       Cancel
                     </Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    style={{
-                      padding: 12,
-                      // paddingTop: 18,
-                      // paddingBottom: 18,
-                      backgroundColor: brandColor,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 8,
-                      width: '48%',
-                      zIndex: 1,
-                    }}
+                    style={StyleCSS.styles.submitButton}
                     onPress={() => updateUserBillingAddress()}>
                     
                     <Text
-                      style={{
-                        color: '#fff',
-                        textAlign: 'center',
-                        fontWeight: '700',
-                        fontFamily: Helper.switchFont('medium'),
-                        fontSize: 14,
-                        lineHeight: 18,
-                      }}>
+                      style={StyleCSS.styles.submitButtonText}>
                       Next
                     </Text>
                   </TouchableOpacity>
                 </View>
-              {/* </View> */}
             </ScrollView>
           </KeyboardAwareScrollView>
-        </SafeAreaView>
+        </View>
       )}
     </View>
     </>
@@ -503,7 +468,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    marginTop:109
+    marginTop:config.headerHeight
   },
   stepIndicator: {
     paddingHorizontal: 0,
@@ -515,7 +480,7 @@ const styles = StyleSheet.create({
   },
   safecontainer: {
     marginHorizontal: 16,
-    marginTop: 16,
+    // marginTop: 16,
   },
   titleBorder: {
     marginTop:16,
@@ -631,6 +596,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   stepInfoText: {
+    marginHorizontal:16,
     fontSize: 12,
     lineHeight: 18,
     fontFamily: Helper.switchFont('regular'),

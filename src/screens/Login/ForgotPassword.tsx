@@ -14,7 +14,7 @@ import {
   Dimensions
 } from 'react-native';
 import {Container} from 'native-base';
-import {TextInput, RadioButton} from 'react-native-paper';
+import {TextInput, RadioButton, configureFonts} from 'react-native-paper';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -34,6 +34,7 @@ import { font2 } from '../../styles/colors';
 import HeaderInner from '../../components/HeaderInner';
 import { useRoute } from '@react-navigation/native';
 import TextField from '../../components/CustomTextField';
+import config from '../../config/Config'
 export interface ForgotPassswordInterface{
 email:string;
 type:string;
@@ -112,7 +113,7 @@ const routes = useRoute();
 
     />
     
-    <KeyboardAwareScrollView style={{marginTop:109}} keyboardShouldPersistTaps={'handled'}>
+    <KeyboardAwareScrollView style={{marginTop: config.headerHeight}} keyboardShouldPersistTaps={'handled'}>
       <View style={styles.container}>
         
         

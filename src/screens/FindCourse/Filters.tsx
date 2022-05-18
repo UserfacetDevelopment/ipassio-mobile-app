@@ -23,7 +23,7 @@ import {
   getLookups
 } from '../../reducers/courses.slice';
 import SheetCSS from '../../styles/style';
-import {Checkbox} from 'react-native-paper';
+import {Checkbox, configureFonts} from 'react-native-paper';
 import {CategoryInterface, Loader} from './index';
 import {
   NativeStackNavigationProp,
@@ -38,6 +38,7 @@ import {background, brandColor, font1,font2, lineColor} from '../../styles/color
 import Dropdown from '../../assets/images/dropdown.svg';
 //@ts-ignore
 import Drop2 from '../../assets/images/drop2.svg';
+import config from '../../config/Config'
 type Props = NativeStackScreenProps<RootParamList, 'FilterScreen'>;
 
 export default function Filters({navigation, route}: Props) {
@@ -535,7 +536,7 @@ console.log(catTemp)
   return (
     <>
       <HeaderInner
-      changingHeight={109}
+      changingHeight={config.headerHeight}
       back={true}
       // backroute = {routes.name}
         title={'Filter'}
@@ -627,7 +628,7 @@ console.log(catTemp)
           flexDirection: 'column',
           justifyContent: 'space-between',
         }}>
-        <ScrollView style={{marginTop: 109}}>
+        <ScrollView style={{marginTop: config.headerHeight}}>
           <View style={{paddingHorizontal:16, marginBottom:100}}>
           {/* {tabState === 'C'
             ? <>

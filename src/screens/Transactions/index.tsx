@@ -32,11 +32,13 @@ import {
   fetchTransactionsDataSuccess,
   withdrawalState,
 } from '../../reducers/withdrawal.slice';
+import config from '../../config/Config'
 import {background4, brandColor} from '../../styles/colors';
 import HeaderInner from '../../components/HeaderInner'
 import TransactionCard from '../../components/TransactionCard';
 import BottomNavigation from '../../components/BottomNavigation';
 import LinearGradient from 'react-native-linear-gradient';
+import { configureFonts } from 'react-native-paper';
 
 const width= Dimensions.get('screen').width;
 type Props = NativeStackScreenProps<RootParamList, 'Transactions'>;
@@ -49,24 +51,23 @@ const Transaction: FC<Props> = ({navigation}) => {
   const [selectedTransaction, setSelectedTransaction] = useState(0);
   const [walletBalance, setWalletBalance] = useState('0.00');
   const [refreshing, setRefreshing] = useState(false);
-  const headerHeight= 100;
 
 let scrollY= new Animated.Value(0.01);
 let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleTop, thirdTitleLeft;
 
-    changingHeight = scrollY.interpolate({
-      inputRange: [0.01, 70],
-      outputRange: [100, 100],
-      extrapolate: "clamp",
-    });
+    // changingHeight = scrollY.interpolate({
+    //   inputRange: [0.01, 70],
+    //   outputRange: [100, 100],
+    //   extrapolate: "clamp",
+    // });
     let changingHeight2 = scrollY.interpolate({
       inputRange: [0.01, 70],
-      outputRange: [82, 47],
+      outputRange: [Platform.OS === 'android' ? 68 : 72, Platform.OS === 'android' ? 36 : 40],
       extrapolate: "clamp",
     });
     titleSize = scrollY.interpolate({
       inputRange: [0.01, 35],
-      outputRange: [24, 18],
+      outputRange: [22, 18],
       extrapolate: "clamp",
     });
     mainTitleSize = scrollY.interpolate({
@@ -84,12 +85,12 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
     });
     titleSubTop = scrollY.interpolate({
       inputRange: [0.01, 50],
-      outputRange: [12, 12],
+      outputRange: [Platform.OS === 'android'? 8 : 12, Platform.OS === 'android'? 4 :8],
       extrapolate: "clamp",
     });
     thirdTitleTop = scrollY.interpolate({
       inputRange: [0.01, 50],
-      outputRange: [48, 14],
+      outputRange: [Platform.OS === 'android' ? 36 : 40, Platform.OS === 'android' ? 6 : 10],
       extrapolate: "clamp",
     });
     let balanceSize = scrollY.interpolate({
@@ -198,7 +199,7 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
             mainTitleSize={mainTitleSize}
             titleTop={titleTop}
             backroute={'Transactions'}
-            changingHeight={changingHeight}
+            changingHeight={config.headerHeight}
             title={"Transactions"}
             walletBalance={walletBalance}
             navigation={navigation}
@@ -208,12 +209,12 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
           />
            {userData.user_type === 'T' ?
                     <>
-                    <Animated.View style={{position:'absolute', top:headerHeight, height:changingHeight2}}>
+                    <Animated.View style={{position:'absolute', top:config.headerHeight, height:changingHeight2}}>
                     <Image
                 style={{flex: 1,
                   width: width,
                   flexDirection: 'row',
-                  height:140}}
+                  height:config.headerHeight}}
                 source={require('@images/transactions_bg.png')}
               />
               {/* <View style={{flex: 1,
@@ -239,7 +240,7 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
               zIndex:2,
               height: changingHeight2,
               position:'absolute',
-              top:headerHeight,
+              top:config.headerHeight,
               width:'100%'
               }}>
 
@@ -252,7 +253,7 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
                         marginTop: titleSubTop,
                         fontSize: titleSize,
                         position:'absolute',
-                        top:headerHeight,
+                        top:config.headerHeight,
                         fontWeight:'700',
                         marginLeft: thirdTitleLeft,
                         zIndex:4,
@@ -266,7 +267,7 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
                     style={[
                       styles.walletSubTitle,
                       {marginTop: thirdTitleTop, position:'absolute', fontSize: balanceSize,
-                      top:headerHeight, color:'#fff', opacity:0.9, fontWeight:'600', marginLeft: 16, marginBottom:12,
+                      top:config.headerHeight, color:'#fff', opacity:0.9, fontWeight:'600', marginLeft: 16, marginBottom:12,
                     },
                     ]}>
                     Balance
@@ -336,10 +337,10 @@ const styles = StyleSheet.create({
   },
   scrollViewS: {
     flex: 1,
-    marginTop:100
+    marginTop:config.headerHeight
   },
   scrollViewT:{
-    marginTop:147
+    marginTop:Platform.OS === 'android' ? 122 : 130
   },
 
   walletWrapper: {

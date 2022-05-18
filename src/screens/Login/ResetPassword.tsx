@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     
   },
   scrollView:{
-    marginTop:109,
+    marginTop:config.headerHeight,
   },
   resendOtpText: {
     textTransform:'capitalize',

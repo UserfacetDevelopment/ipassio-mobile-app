@@ -60,9 +60,10 @@ export default function TeacherDetails({navigation, route} :Props) {
       title={''}
       navigation={navigation}
       back={true}
+      changingHeight={config.headerHeight}
       />
       {pageLoading || categoryTeacher.length ===  0 ? <PageLoader/> :
-      <ScrollView style={{marginTop:109}}>
+      <ScrollView style={{marginTop:config.headerHeight}}>
       <View style={styles.main}>
           <Text style={[styles.subHeading, styles.center]}>
             Educator Profile

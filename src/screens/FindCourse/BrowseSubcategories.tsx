@@ -40,7 +40,7 @@ import Drop from '../../assets/images/Drop.svg';
 import {font1, selectedDrop} from '../../styles/colors';
 import Others from '../../assets/images/others.svg';
 import Dropdown from '../../assets/images/dropdown.svg';
-
+import config from '../../config/Config'
 type Props = NativeStackScreenProps<RootParamList, 'BrowseCategories'>;
 
 export default function BrowseSubcategories({navigation, route}: Props) {
@@ -58,7 +58,7 @@ const categories = route.params?.subcategory;
     <>
       <HeaderInner
         backroute={route.params?.backroute}
-        courseHeight={109}
+        changingHeight={config.headerHeight}
         title={'Browse'}
         browseSelected={true}
         navigation={navigation}
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   main: {
     backgroundColor: '#fff',
     height: height,
-    marginTop: 109,
+    marginTop: config.headerHeight,
   },
   category: {
     backgroundColor: '#2d3744',

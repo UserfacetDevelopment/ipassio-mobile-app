@@ -7,7 +7,7 @@ export default class Config {
   static build_number = Platform.OS === 'ios' ? 14 : 28;
   // static version = Platform.OS === "ios" ? "1.0.13" : "1.0.28";
   // static build_number = Platform.OS === "ios" ? 14 : 28;
-  static headerHeight= 100;
+  static headerHeight= Platform.OS === 'android' ? 86 : 90;
   static FrontendBaseURL = 'https://ipassio.com/student-signup';
   static GOOGLE_ID = '938249328963-o6gf6eao638mh7h1kl1p4sj1qd4jfrjd.apps.googleusercontent.com'
     //'142571675590-ujj8t4901kejoiddm2a1qop3ivekfisn.apps.googleusercontent.com';

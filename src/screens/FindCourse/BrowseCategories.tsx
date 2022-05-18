@@ -23,6 +23,7 @@ import {
   setPageLoading,
   loaderState,
 } from '../../reducers/loader.slice';
+import config from '../../config/Config';
 import PageLoader from '../../components/PageLoader';
 import helper from '../../utils/helperMethods';
 import style from '../../styles/style';
@@ -40,6 +41,7 @@ import Drop from '../../assets/images/Drop.svg';
 import {font1, selectedDrop} from '../../styles/colors';
 import Others from '../../assets/images/others.svg';
 import Dropdown from '../../assets/images/dropdown.svg';
+import { configureFonts } from 'react-native-paper';
 
 type Props = NativeStackScreenProps<RootParamList, 'BrowseCategories'>;
 
@@ -109,7 +111,7 @@ export default function BrowseCategories({navigation, route}: Props) {
     <>
       <HeaderInner
         backroute={route.params?.backroute}
-        courseHeight={109}
+        changingHeight={config.headerHeight}
         title={'Browse'}
         browseSelected={true}
         navigation={navigation}
@@ -357,7 +359,7 @@ const styles = StyleSheet.create({
   main: {
     backgroundColor: '#fff',
     height: height,
-    marginTop: 109,
+    marginTop: config.headerHeight,
   },
   category: {
     backgroundColor: '#2d3744',

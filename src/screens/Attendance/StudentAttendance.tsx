@@ -351,6 +351,7 @@ onRefresh();
             titleLeft={titleLeft}
             title={'Attendance'}
             back={true}
+            removeRightHeader={true}
             backroute={'DashboardPage'}
             navigation={navigation}
             type={'findCourse'}

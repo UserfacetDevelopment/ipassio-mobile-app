@@ -360,11 +360,11 @@ export default function Schedules({navigation}: Props) {
 
   }
   let scrollY = new Animated.Value(0.01);
-  let changingHeight = scrollY.interpolate({
-    inputRange: [0.01, 50],
-    outputRange: [100, 100],
-    extrapolate: 'clamp',
-  });
+  // let changingHeight = scrollY.interpolate({
+  //   inputRange: [0.01, 50],
+  //   outputRange: [100, 100],
+  //   extrapolate: 'clamp',
+  // });
   let titleSize = scrollY.interpolate({
     inputRange: [0.01, 50],
     outputRange: [28, 22],
@@ -473,7 +473,7 @@ export default function Schedules({navigation}: Props) {
           titleSize={titleSize}
           titleTop={titleTop}
           logo={true}
-          changingHeight={changingHeight}
+          changingHeight={config.headerHeight}
           title={'Schedules'}
           navigation={navigation}
           type={'findCourse'}

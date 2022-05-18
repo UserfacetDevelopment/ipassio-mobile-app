@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Keyboard,
   Alert,
+  Dimensions,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -20,6 +21,8 @@ import Add from '../assets/images/Add.svg';
 import {
   background,
   background2,
+  background5,
+  background6,
   brandColor,
   font1,
   font2,
@@ -28,6 +31,8 @@ import {
 } from '../styles/colors';
 import {useSelector} from 'react-redux';
 import {userState} from '../reducers/user.slice';
+import CustomDateTimePicker from './CustomDateTimePicker';
+const width = Dimensions.get('screen').width;
 
 export default function CustomForm({
   index,
@@ -68,7 +73,6 @@ export default function CustomForm({
     timeSlots[index].date = Moment(selectedDate).format('YYYY-MM-DD');
   };
 
-  
   // const addMoreSlots : any = (index:any) => {
   //   // if((timeSlots[index-1].date==='' || timeSlots[index-1].start_time==='' || timeSlots[index-1].end_time==='' || timeSlots[index-1].timezone==='')){
   //   //     Alert.alert('', "fill the empty slot first")
@@ -219,13 +223,43 @@ export default function CustomForm({
     <>
       <View
         style={{
-          backgroundColor: background2,
+          backgroundColor: background6,
           borderRadius: 15,
           padding: 16,
           marginBottom: 8,
         }}>
-        <View style={styles.formGroup}>
-          <TouchableOpacity
+        <View style={[{flexDirection:'row', justifyContent:'space-between'}]}>
+          <CustomDateTimePicker
+            width={width/1.54 - 70}
+            showDateTimePicker={showDateTimePicker}
+            selectedValue={selectedDate}
+            label={'Date*'}
+            minimumDate={new Date()}
+            isVisible={isDateTimePickerVisible}
+            mode="date"
+            onConfirm={(selectedDate: any) => {
+              handleDatePicked(selectedDate);
+            }}
+            onCancel={hideDateTimePicker}
+          />
+          <View style={{width:'40%'}}>
+            <View >
+          <CustomDropdown
+            topLabel={selectedTimezone ? 'Timezone' : undefined}
+            config={{color: background6}}
+            onChangeVal={getTimezone}
+            data={timezones}
+            selectedIds={[]}
+            label={selectedTimezone ? selectedTimezone.value : 'Timezone'}
+            backTitle={'Select Timezone'}
+          />
+          {selectedTimezone === undefined && submitRequested ? (
+            <Text style={styles.errorText}>Required *</Text>
+          ) : null}
+          </View>
+        </View>
+        </View>
+          {/* <TouchableOpacity
             onPress={() => {
               showDateTimePicker();
             }}>
@@ -246,7 +280,7 @@ export default function CustomForm({
               }}
               onCancel={hideDateTimePicker}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <View
             style={{
               flexDirection: 'row',
@@ -256,7 +290,7 @@ export default function CustomForm({
             <View style={{width: '48%'}}>
               <CustomDropdown
                 topLabel={startTime ? 'From' : undefined}
-                config={{color: '#81878D'}}
+                config={{color: background6}}
                 onChangeVal={changeStartTime}
                 data={startTimeRangeList}
                 selectedIds={[]}
@@ -268,7 +302,7 @@ export default function CustomForm({
             <View style={{width: '48%'}}>
               <CustomDropdown
                 topLabel={endTime ? 'To' : undefined}
-                config={{color: '#81878D'}}
+                config={{color: background6}}
                 onChangeVal={changeEndTime}
                 data={endTimeRangeList}
                 selectedIds={[]}
@@ -277,28 +311,16 @@ export default function CustomForm({
               />
             </View>
           </View>
-        </View>
-        <View style={styles.formGroup}>
-          <CustomDropdown
-            topLabel={selectedTimezone ? 'Timezone' : undefined}
-            config={{color: 'rgb(44, 54, 65)'}}
-            onChangeVal={getTimezone}
-            data={timezones}
-            selectedIds={[]}
-            label={selectedTimezone ? selectedTimezone.value : 'Timezone'}
-            backTitle={'Select Timezone'}
-          />
-          {selectedTimezone === undefined && submitRequested ? (
-            <Text style={styles.errorText}>Required *</Text>
-          ) : null}
-        </View>
-        {timeSlots.length > 1 ? (
+          {timeSlots.length > 1 ? (
           <TouchableOpacity
             onPress={() => removeTimeSlot(index)}
-            style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+            style={{flexDirection: 'row', justifyContent: 'flex-end', paddingTop:8}}>
             <Text style={{color: brandColor, fontSize: 14}}>Remove</Text>
           </TouchableOpacity>
         ) : null}
+        </View>
+        
+        
 
         {/* <Controller
                       control={control}
@@ -320,7 +342,7 @@ export default function CustomForm({
                     {errors.time_info && (
                       <Text style={styles.errorText}>This is required. *</Text>
                     )} */}
-      </View>
+      {/* </View> */}
       {index === timeSlots.length - 1 && timeSlots.length < 4 ? (
         <TouchableOpacity
           style={{
@@ -332,7 +354,7 @@ export default function CustomForm({
             borderRadius: 58,
             padding: 7,
             width: '48%',
-            marginTop: 8,
+            // marginTop: 8,
           }}
           onPress={() => addMoreSlots(index)}>
           <Add />

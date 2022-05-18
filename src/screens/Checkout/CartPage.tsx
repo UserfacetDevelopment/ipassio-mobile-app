@@ -92,7 +92,7 @@ export const stepIndicatorStyles = {
   stepIndicatorLabelFontSize: 12,
   currentStepIndicatorLabelFontSize: 12,
   stepIndicatorLabelCurrentColor: brandColor,
-  stepIndicatorLabelFinishedColor: '#E4E4E4',
+  stepIndicatorLabelFinishedColor: '#fff',
   stepIndicatorLabelUnFinishedColor: '#E4E4E4',
 };
 
@@ -572,7 +572,7 @@ const [couponSuccess, setCouponSuccess] = useState(false)
           <View
             style={{
               position: 'absolute',
-              top: 100,
+              top: config.headerHeight,
               zIndex: 2,
               height: 32,
               width: '100%',
@@ -700,11 +700,14 @@ const [couponSuccess, setCouponSuccess] = useState(false)
                       {checkoutData.amount?.coupon_code ? (
                         <View>
                           <View>
+                            <View style={{position:'absolute', zIndex:1000, top:20, left:80}}>
+                              <CouponAddedSuccess/>
+                              </View>
                             <TextField
                               mode="outlined"
-                              
+                              editable={false}
                               label="Coupon Code"
-                              value={<View><Text>{couponCode}</Text>{couponSuccess ? <CouponAddedSuccess/> : null}</View>}
+                              value={couponCode}
                               onChangeText={(text: string) =>
                                 setCouponCode(text)
                               }>
@@ -904,7 +907,7 @@ const [couponSuccess, setCouponSuccess] = useState(false)
                         <View style={styles.priceCalc}>
                         <View style={styles.priceLabelWrapper}>
                           <Text style={styles.totalDue}>Total Due</Text>
-                          <Text style={styles.bodyText}>:</Text>
+                          <Text style={styles.totalDue}>:</Text>
                           </View>
                           <Text style={styles.totalDueInfo}>
                             {checkoutData.amount?.currency_type === 'INR'
@@ -1215,3 +1218,4 @@ const styles = StyleSheet.create({
   priceLabelWrapper:{flexDirection:'row', justifyContent:'space-between', width:'50%'}
 });
 
+// {couponSuccess ? <CouponAddedSuccess/> : null}
