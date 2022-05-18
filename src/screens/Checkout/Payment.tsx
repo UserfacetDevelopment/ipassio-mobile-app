@@ -23,7 +23,7 @@ import PageLoader from '../../components/PageLoader';
 import {stepIndicatorStyles} from './CartPage';
 import {useSelector} from 'react-redux';
 import {loaderState, setPageLoading} from '../../reducers/loader.slice';
-import {brandColor} from '../../styles/colors';
+import {brandColor, font1, font2, secondaryColor, secondaryColorBorder} from '../../styles/colors';
 import helper from '.././../utils/helperMethods';
 import {checkoutState} from '../../reducers/checkout.slice';
 import {useAppDispatch} from '../../app/store';
@@ -35,6 +35,8 @@ import {
 import config from '../../config/Config';
 import CustomStatusBar from '../../components/CustomStatusBar';
 import HeaderInner from '../../components/HeaderInner';
+import Helper from '.././../utils/helperMethods';
+import StyleCSS from '../../styles/style';
 
 type PaymentGatewayType = 'PP' | 'PU' | 'PPU' | null;
 
@@ -114,17 +116,39 @@ const Payment: FC<Props> = ({route, navigation}) => {
     
     <>
       <HeaderInner
-      type={'findCourse'}
-      back={true}
-      navigation={navigation}
-      title={"Payment Mode"}
-      />
+            title={'Checkout'}
+            type={'findCourse'}
+            // backroute={route?.params?.backroute}
+            back={true}
+            removeRightHeader={true}
+            changingHeight={config.headerHeight}
+            navigation={navigation}
+            // backRoute={}
+          ></HeaderInner>
+          <View
+            style={{
+              position: 'absolute',
+              top: 100,
+              zIndex: 2,
+              height: 32,
+              width: '100%',
+            }}>
+            <Image
+              style={styles.formFillTimeImage}
+              source={require('@images/transactions_bg.png')}
+            />
+            <View style={styles.formFillTimeTextWrapper}>
+              <Text style={styles.formFillTimeText}>
+                Should take less than 48 seconds
+              </Text>
+            </View>
+          </View>
       <View style={styles.container}>
       <CustomStatusBar type={"inside"} />
       {pageLoading ? (
         <PageLoader />
       ) : (
-        <SafeAreaView style={styles.safecontainer}>
+        <View>
           {/* <HeaderInner
               iconTop={this.iconTop}
               changingHeight={this.changingHeight}
@@ -144,6 +168,7 @@ const Payment: FC<Props> = ({route, navigation}) => {
             //   { useNativeDriver: false }
             // )}
           >
+            <View style={styles.safecontainer}>
             <View style={[styles.stepIndicator, {marginTop: 20}]}>
               <StepIndicator
                 customStyles={stepIndicatorStyles}
@@ -166,9 +191,9 @@ const Payment: FC<Props> = ({route, navigation}) => {
                   }}>
                   <View style={styles.infoWrapper}>
                     <View style={styles.radioButtonWrapper}>
-                      <RadioButton
+                      <RadioButton.Android
                         value="first"
-                        color="#C3152D"
+                        color={brandColor}
                         uncheckedColor="#000"
                         status={'checked'}
                         // status={
@@ -212,9 +237,9 @@ const Payment: FC<Props> = ({route, navigation}) => {
                   }}>
                   <View style={styles.infoWrapper}>
                     <View style={styles.radioButtonWrapper}>
-                      <RadioButton
+                      <RadioButton.Android
                         value="first"
-                        color="#C3152D"
+                        color={brandColor}
                         uncheckedColor="#000"
                         status={'checked'}
                         // status={
@@ -253,23 +278,79 @@ const Payment: FC<Props> = ({route, navigation}) => {
               )}
             </View>
 
-            <View style={styles.lineStyle} />
+            </View>
+            <View style={[StyleCSS.styles.lineStyleLight,{marginTop:24, marginBottom:16}]} />
 
             <Text style={styles.paymentStepInfo}>
               This is Step 2 of 4. In the next page you can review your order
               and product information
             </Text>
 
-            <TouchableOpacity
-              style={styles.nextPageButton}
-              onPress={() => checkoutNextPage()}>
-              <Image
-                source={require('@images/right_arrow.png')}
-                style={styles.next}
-              />
-            </TouchableOpacity>
+            <View
+                  style={[
+                   StyleCSS.styles.modalButton,
+                  ]}>
+                  <TouchableOpacity
+                    style={{
+                      padding: 12,
+                      // paddingTop: 18,
+                      // paddingBottom: 18,
+                      backgroundColor: '#fff',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      width: '49%',
+                      zIndex: 1,
+                      borderColor: secondaryColorBorder,
+                      borderWidth:1,
+                      marginRight: '3%',
+                    }}
+                    onPress={() => {
+                      // navigation.goBack()
+                     
+                    }}>
+                    <Text
+                      style={{
+                        color: secondaryColor,
+                        textAlign: 'center',
+                        fontWeight: '700',
+                        fontFamily: Helper.switchFont('bold'),
+                        fontSize: 14,
+                        lineHeight: 18,
+                      }}>
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={{
+                      padding: 12,
+                      // paddingTop: 18,
+                      // paddingBottom: 18,
+                      backgroundColor: brandColor,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      width: '48%',
+                      zIndex: 1,
+                    }}
+                    onPress={() => checkoutNextPage()}
+                    >
+                    <Text
+                      style={{
+                        color: '#fff',
+                        textAlign: 'center',
+                        fontWeight: '700',
+                        fontFamily: Helper.switchFont('medium'),
+                        fontSize: 14,
+                        lineHeight: 18,
+                      }}>
+                      Next
+                    </Text>
+                  </TouchableOpacity>
+                </View>
           </ScrollView>
-        </SafeAreaView>
+        </View>
       )}
     </View>
     </>
@@ -285,13 +366,19 @@ const styles = StyleSheet.create({
     marginTop:109
   },
   safecontainer: {
-    marginHorizontal: 24,
+    marginHorizontal: 16,
     //borderWidth:1,
   },
-  
+  title: {
+    marginTop: 16,
+    fontSize: 18,
+    color: font1,
+    fontWeight: '700',
+    fontFamily: Helper.switchFont('bold'),
+  },
   stepIndicator: {
     paddingHorizontal: 0,
-    top: 20,
+    top: 16,
   },
   rowItem: {
     flex: 1,
@@ -324,49 +411,40 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   titleBorder: {
-    marginTop: 50,
-    borderLeftWidth: 2,
-    borderLeftColor: brandColor,
-    marginBottom:20
+    marginVertical:16
   },
-  title: {
-    fontSize: 19,
-    margin: 0,
-    paddingLeft: 8,
-    color: 'rgb(44, 54, 65)',
-    fontFamily: helper.switchFont('medium'),
-  },
+ 
   paymentModeButton: {
-    borderColor: brandColor,
-    borderWidth: 0.5,
-    paddingLeft: 17,
-    paddingRight: 17,
-    paddingTop: 17,
-    backgroundColor: '#E9E9E9',
-    marginVertical: 10,
+    // borderColor: brandColor,
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 12,
+    backgroundColor: '#F1F4F6',
+    // marginVertical: 10,
     borderRadius: 10,
   },
   infoWrapper: {
-    flex: 1,
+    flex: 1,  
     flexDirection: 'row',
-    paddingBottom: 30,
+    paddingBottom: 16,
   },
-  radioButtonWrapper: {width: 50, height: 50},
+  radioButtonWrapper: {width: 40, height: 40, justifyContent:'flex-start', flexDirection:'row'},
   paymentMethod: {width: '80%'},
   paymentMethodText: {
     paddingLeft: 0,
-    color: 'rgb(44, 54, 65)',
-    fontSize: 14,
-    fontFamily: helper.switchFont('medium'),
+    color: font1,
+    fontSize: 16,
+    fontFamily: helper.switchFont('semibold'),
+    fontWeight:'600',
     marginTop: 8,
   },
   paymentMethodInfoText: {
     paddingLeft: 0,
-    color: '#81878D',
-    fontSize: 11,
-    lineHeight: 18,
+    color: font2,
+    fontSize: 12,
+    lineHeight: 20,
     marginTop: 8,
-    fontFamily: helper.switchFont('regular'),
+    fontFamily: helper.switchFont('medium'),
   },
   paymentGatewayCards: {
     width: '90%',
@@ -379,9 +457,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   paymentStepInfo: {
-    fontSize: 11,
-    color: '#6B727A',
+    fontSize: 12,
+    color: font2,
+    fontWeight:'500',
     lineHeight: 18,
-    fontFamily: helper.switchFont('regular'),
+    marginHorizontal:16,
+    fontFamily: helper.switchFont('medium'),
   },
+  formFillTimeImage: {
+    height: '100%',
+    width: '100%',
+  },
+  formFillTimeTextWrapper: {
+    paddingLeft: 16,
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    height: 32,
+    width: '100%',
+    // top: 100,
+  },
+  formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
 });

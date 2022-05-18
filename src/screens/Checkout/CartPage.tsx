@@ -14,6 +14,7 @@ import {
   Platform,
 } from 'react-native';
 //import {TextInput} from 'react-native-paper';
+import TextField from '../../components/CustomTextField';
 import {useSelector} from 'react-redux';
 import StepIndicator from 'react-native-step-indicator';
 import {courseState, getCategoryDetails} from '../../reducers/courses.slice';
@@ -22,7 +23,15 @@ import {useForm, Controller} from 'react-hook-form';
 // import { LogBox } from 'react-native';
 import style from '../../styles/style';
 import {Column, Container} from 'native-base';
-import {brandColor} from '../../styles/colors';
+import {
+  brandColor,
+  font1,
+  font2,
+  font3,
+  lineColor,
+  secondaryColor,
+  secondaryColorBorder,
+} from '../../styles/colors';
 import {Picker} from '@react-native-picker/picker';
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 // import CustomDropdown from "@components/Elements/CustomDropdown";
@@ -40,6 +49,8 @@ import {
   setLoading,
   setPageLoading,
 } from '../../reducers/loader.slice';
+import DashedLine from 'react-native-dashed-line';
+import CouponAddedSuccess from '../../assets/images/coupon_add.svg'
 import {
   applyCoupon,
   cartDetails,
@@ -48,7 +59,7 @@ import {
   checkoutUpdate,
   removeCoupon,
   setCheckoutDataDetails,
-  detailsCheckoutToken
+  detailsCheckoutToken,
 } from '../../reducers/checkout.slice';
 import PageLoader from '../../components/PageLoader';
 import CustomDropdown from '../../components/CustomDropdown';
@@ -65,21 +76,21 @@ const MIN_CLASS_PER_WEEK = 1;
 const MAX_CLASS_PER_WEEK = 10;
 
 export const stepIndicatorStyles = {
-  stepIndicatorSize: 30,
-  currentStepIndicatorSize: 30,
-  separatorStrokeWidth: 2,
-  currentStepStrokeWidth: 2,
-  stepStrokeWidth: 2,
+  stepIndicatorSize: 24,
+  currentStepIndicatorSize: 24,
+  separatorStrokeWidth: 1,
+  currentStepStrokeWidth: 1,
+  stepStrokeWidth: 1,
   stepStrokeCurrentColor: brandColor,
-  stepStrokeUnFinishedColor: 'rgb(228, 228, 228)',
+  stepStrokeUnFinishedColor: lineColor,
   stepStrokeFinishedColor: brandColor,
   separatorFinishedColor: brandColor,
-  separatorUnFinishedColor: '#E4E4E4',
+  separatorUnFinishedColor: lineColor,
   stepIndicatorFinishedColor: brandColor,
   stepIndicatorUnFinishedColor: '#fff',
   stepIndicatorCurrentColor: '#ffffff',
-  stepIndicatorLabelFontSize: 14,
-  currentStepIndicatorLabelFontSize: 14,
+  stepIndicatorLabelFontSize: 12,
+  currentStepIndicatorLabelFontSize: 12,
   stepIndicatorLabelCurrentColor: brandColor,
   stepIndicatorLabelFinishedColor: '#E4E4E4',
   stepIndicatorLabelUnFinishedColor: '#E4E4E4',
@@ -213,7 +224,7 @@ export default function CartPage({navigation, route}: Props) {
     0,
   );
   const [couponCode, setCouponCode] = useState<string>('');
-
+const [couponSuccess, setCouponSuccess] = useState(false)
   // if(Object.keys(course) === 0){
 
   // }
@@ -227,29 +238,28 @@ export default function CartPage({navigation, route}: Props) {
   //       console.log('reached this scope')
   //        setCheckoutData(checkoutDataDetails)
   //     }
-      
+
   //   }, [checkoutDataDetails]),
   // );
 
-  useEffect(()=>{
- let data:any = {
-    checkoutToken : checkoutToken,
-    userToken: userData.token
-
- }
+  useEffect(() => {
+    let data: any = {
+      checkoutToken: checkoutToken,
+      userToken: userData.token,
+    };
     dispatch(setPageLoading(true));
     dispatch(detailsCheckoutToken(data))
-    .unwrap()
-    .then((response)=>{
-      dispatch(setPageLoading(false));
-      let APIData = response.data;
+      .unwrap()
+      .then(response => {
+        dispatch(setPageLoading(false));
+        let APIData = response.data;
         postResponseUpdate(APIData);
         console.log(response);
-    })
-    .catch((err) => {
-      dispatch(setPageLoading(false))
-    })
-  }, [])
+      })
+      .catch(err => {
+        dispatch(setPageLoading(false));
+      });
+  }, []);
 
   // useEffect(() => {
   //   if(page==='D'){
@@ -263,7 +273,6 @@ export default function CartPage({navigation, route}: Props) {
   //      setTotalNumberOfWeeks(checkoutDataDetails.amount.number_of_weeks);
   //   }
   // }, [checkoutDataDetails])
-
 
   // const getCartDetails = () => {
   //   const finalData: CartDetailsData = {
@@ -284,8 +293,8 @@ export default function CartPage({navigation, route}: Props) {
   //       dispatch(setPageLoading(false));
   //     });
   // };
-console.log(checkoutData);
-console.log(checkoutDataDetails)
+  console.log(checkoutData);
+  console.log(checkoutDataDetails);
   const postResponseUpdate = (APIData: any) => {
     if (APIData.status === 'success') {
       dispatch(setPageLoading(false));
@@ -312,7 +321,7 @@ console.log(checkoutDataDetails)
 
   // useEffect(()=>{
   //   setCheckoutData(checkoutDataDetails)
-    
+
   // }, [checkoutDataDetails])
   const {userData, isLoggedIn} = useSelector(userState);
 
@@ -450,6 +459,7 @@ console.log(checkoutDataDetails)
         .unwrap()
         .then(response => {
           if (response.data.status === 'success') {
+            setCouponSuccess(true)
             let APIData = checkoutData; //response.data;
             APIData.amount = response.data.data.amount;
             postResponseUpdate(APIData);
@@ -458,6 +468,7 @@ console.log(checkoutDataDetails)
             }, 3000);
           } else if (response.data.status === 'failure') {
             dispatch(setPageLoading(false));
+            setCouponSuccess(false);
             Alert.alert('', response.data.error_message.message, [
               {text: 'Okay', style: 'cancel'},
             ]);
@@ -548,19 +559,39 @@ console.log(checkoutDataDetails)
         <PageLoader />
       ) : (
         <>
-         <HeaderInner
-                title={"Checkout"}
-                type={'findCourse'}
-                backroute={route?.params?.backroute}
-                back={true}
-                navigation={navigation}
-                // backRoute={}
-                ></HeaderInner>
-        {Object.keys(checkoutData)!==0 ?
-        (
-          <View style={styles.container}>
-            <Container>
-              {/* <HeaderInner
+          <HeaderInner
+            title={'Checkout'}
+            type={'findCourse'}
+            backroute={route?.params?.backroute}
+            back={true}
+            removeRightHeader={true}
+            changingHeight={config.headerHeight}
+            navigation={navigation}
+            // backRoute={}
+          ></HeaderInner>
+          <View
+            style={{
+              position: 'absolute',
+              top: 100,
+              zIndex: 2,
+              height: 32,
+              width: '100%',
+            }}>
+            <Image
+              style={styles.formFillTimeImage}
+              source={require('@images/transactions_bg.png')}
+            />
+            <View style={styles.formFillTimeTextWrapper}>
+              <Text style={styles.formFillTimeText}>
+                Should take less than 48 seconds
+              </Text>
+            </View>
+          </View>
+
+          {Object.keys(checkoutData) !== 0 ? (
+            <View style={styles.container}>
+              <Container>
+                {/* <HeaderInner
               titleSize={this.titleSize}
               titleTop={this.titleTop}
               changingHeight={this.changingHeight}
@@ -571,338 +602,439 @@ console.log(checkoutDataDetails)
               titleLeft={this.titleLeft}
               backRoute={"Dashboard"}
             /> */}
-              <ScrollView
-                style={{width: width}}
-                contentInsetAdjustmentBehavior="always"
-                scrollEventThrottle={16}
-                // onScroll={Animated.event(
-                //   [{ nativeEvent: { contentOffset: { y: this.scrollY } } }],
-                //   { useNativeDriver: false }
-                // )}
-              >
-                <View style={styles.safecontainer}>
-                  <View style={styles.stepIndicator}>
-                    <StepIndicator
-                      customStyles={stepIndicatorStyles}
-                      stepCount={4}
-                      direction="horizontal"
-                      currentPosition={currentPage}
-                    />
-                  </View>
-                  <View style={styles.titleBorder}>
+                <ScrollView
+                  style={{width: width}}
+                  contentInsetAdjustmentBehavior="always"
+                  scrollEventThrottle={16}
+                  // onScroll={Animated.event(
+                  //   [{ nativeEvent: { contentOffset: { y: this.scrollY } } }],
+                  //   { useNativeDriver: false }
+                  // )}
+                >
+                  <View style={styles.safecontainer}>
+                    <View style={styles.stepIndicator}>
+                      <StepIndicator
+                        customStyles={stepIndicatorStyles}
+                        stepCount={4}
+                        direction="horizontal"
+                        currentPosition={currentPage}
+                      />
+                    </View>
+                    {/* <View style={styles.titleBorder}> */}
                     <Text style={styles.title}>Your Cart</Text>
-                  </View>
-                  <Text style={styles.courseTitle}>
-                    {checkoutData?.course?.title}
-                    {checkoutData?.class_type?.members === '1' ? (
-                      <Text>(1-on-1 Class)</Text>
-                    ) : (
-                      <Text>({checkoutData?.class_type?.members} Members)</Text>
-                    )}
-                  </Text>
-                  <View>
-                    <View style={{flexDirection: 'row', marginTop: 16}}>
-                      <View style={{width: '50%'}}>
-                        <Text style={styles.bodyText}>Cost Per Class</Text>
-                        <Text style={styles.info}>
-                          {checkoutData?.amount?.currency_type === 'INR'
-                            ? 'Rs.'
-                            : 'US$ '}{' '}
-                          {checkoutData?.amount?.price_per_class}
-                        </Text>
-                      </View>
-                      <View style={{width: '50%'}}>
-                        <Text style={styles.bodyText}>Number of Classes</Text>
-                        <Text style={styles.info}>{totalNumberOfClass}</Text>
-                      </View>
-                    </View>
-                    <View style={styles.row}>
-                      <Text style={styles.bodyText}>Classes Per Week</Text>
-                      <View style={styles.dropdown_custom}>
-                        <CustomDropdown
-                          config={{color: '#81878D'}}
-                          onChangeVal={handleClassPerWeekChange}
-                          data={itemsClassPerWeek}
-                          label={
-                            totalClassesPerWeek == '-'
-                              ? 'Select class per week'
-                              : totalClassesPerWeek == 1
-                              ? totalClassesPerWeek + ' Class'
-                              : totalClassesPerWeek + ' Classes'
-                          }
-                          backTitle={'Select Classes per week'}
-                        />
-                      </View>
-                    </View>
-                    <View style={styles.row}>
-                      <Text style={styles.bodyText}>
-                        Number of Weeks (to purchase for)
+                    {/* </View> */}
+                    <View style={{marginTop: 16}}>
+                      <Text style={styles.bodyText}>Course</Text>
+                      <Text style={styles.courseTitle}>
+                        {checkoutData?.course?.title}
+                        {checkoutData?.class_type?.members === '1' ? (
+                          <Text style={styles.courseTitle}>(1-on-1 Class)</Text>
+                        ) : (
+                          <Text>
+                            ({checkoutData?.class_type?.members} Members)
+                          </Text>
+                        )}
                       </Text>
-                      <View style={styles.dropdown_custom}>
-                        <CustomDropdown
-                          config={{color: '#81878D'}}
-                          onChangeVal={handleNoOfWeeksChange}
-                          data={itemsWeeks}
-                          label={
-                            totalNumberOfWeeks == '-'
-                              ? 'Select Number of Weeks'
-                              : totalNumberOfWeeks + ' Weeks'
-                          }
-                          backTitle={'Select Number of Weeks'}
-                        />
-                      </View>
-                      <Text> </Text>
                     </View>
-
-                    <View style={styles.lineStyle} />
+                    <View style={{marginVertical: 16}}>
+                      <DashedLine
+                        dashLength={5}
+                        dashThickness={1}
+                        dashGap={5}
+                        dashColor={lineColor}
+                      />
+                    </View>
                     <View>
-                      <View style={[styles.priceCalc]}>
-                        <Text style={styles.bodyText}>Actual Price:</Text>
-                        <Text style={[styles.contentText, {paddingLeft: 5}]}>
-                          {checkoutData?.amount?.currency_type === 'INR'
-                            ? 'Rs.'
-                            : 'US$ '}
-                          {checkoutData?.amount?.total_amount}
-                        </Text>
+                      <View style={{flexDirection: 'row'}}>
+                        <View style={{width: '50%'}}>
+                          <Text style={styles.bodyText}>Cost Per Class</Text>
+                          <Text style={styles.info}>
+                            {checkoutData?.amount?.currency_type === 'INR'
+                              ? 'Rs.'
+                              : 'US$ '}{' '}
+                            {checkoutData?.amount?.price_per_class}
+                          </Text>
+                        </View>
+                        <View style={{width: '50%'}}>
+                          <Text style={styles.bodyText}>Number of Classes</Text>
+                          <Text style={styles.info}>{totalNumberOfClass}</Text>
+                        </View>
                       </View>
-                      {checkoutData?.amount?.coupon_discount_amount !==
-                      '0.00' ? (
-                        <View style={styles.priceCalc}>
-                          <Text style={styles.labelText}>
-                            Discount{' '}
-                            {checkoutData?.amount?.percentage
-                              ? checkoutData?.amount?.percentage + '%'
-                              : 'Amount'}
-                            {': '}
-                          </Text>
-                          <Text style={[styles.contentText, {paddingLeft: 5}]}>
-                            {' - '}
-                            {checkoutData?.amount?.currency_type === 'INR'
-                              ? 'Rs.'
-                              : 'US$ '}
-                            {checkoutData?.amount?.coupon_discount_amount}
-                          </Text>
+                      <View style={styles.row}>
+                        <View>
+                          <CustomDropdown
+                            topLabel="Classes Per Week"
+                            config={{color: '#81878D'}}
+                            onChangeVal={handleClassPerWeekChange}
+                            data={itemsClassPerWeek}
+                            label={
+                              totalClassesPerWeek == '-'
+                                ? 'Select class per week'
+                                : totalClassesPerWeek == 1
+                                ? totalClassesPerWeek + ' Class'
+                                : totalClassesPerWeek + ' Classes'
+                            }
+                            backTitle={'Select Classes per week'}
+                          />
                         </View>
-                      ) : null}
-                      {checkoutData?.amount?.coupon_discount_amount !==
-                      '0.00' ? (
-                        <View style={styles.priceCalc}>
-                          <Text style={styles.labelText}>
-                            Price After Discount:
-                          </Text>
-                          <Text style={[styles.contentText, {paddingLeft: 5}]}>
-                            {checkoutData?.amount?.currency_type === 'INR'
-                              ? 'Rs.'
-                              : 'US$ '}
-                            {getDiscountAmount(checkoutData.amount)}
-                          </Text>
+                      </View>
+                      <View style={[styles.row]}>
+                        <View>
+                          <CustomDropdown
+                            topLabel="Number of Weeks (to purchase for)"
+                            config={{color: '#81878D'}}
+                            onChangeVal={handleNoOfWeeksChange}
+                            data={itemsWeeks}
+                            label={
+                              totalNumberOfWeeks == '-'
+                                ? 'Select Number of Weeks'
+                                : totalNumberOfWeeks + ' Weeks'
+                            }
+                            backTitle={'Select Number of Weeks'}
+                          />
                         </View>
-                      ) : null}
-                      {checkoutData?.cgst_applied && (
-                        <View style={styles.priceCalc}>
-                          <Text style={styles.labelText}>
-                            CGST ({checkoutData?.amount.cgst}%):
-                          </Text>
-                          <Text style={[styles.contentText, {paddingLeft: 5}]}>
-                            {checkoutData?.amount.currency_type === 'INR'
-                              ? 'Rs.'
-                              : 'US$ '}
-                            {checkoutData?.amount.cgst_amount}
-                          </Text>
+                      </View>
+
+                      <View style={[StyleCSS.styles.lineStyleLight, {marginVertical:24}]} />
+
+                      {checkoutData.amount?.coupon_code ? (
+                        <View>
+                          <View>
+                            <TextField
+                              mode="outlined"
+                              
+                              label="Coupon Code"
+                              value={<View><Text>{couponCode}</Text>{couponSuccess ? <CouponAddedSuccess/> : null}</View>}
+                              onChangeText={(text: string) =>
+                                setCouponCode(text)
+                              }>
+
+                              </TextField>
+                                                            {couponSuccess ? <Text style={styles.couponSuccessText}> Coupon Applied</Text> : null}
+
+                          </View>
+                          <TouchableHighlight
+                              underlayColor="#e0e2e5"
+                              onPress={() => {
+                                applyCouponSubmit('RC');
+                              }}
+                              style={{
+                                position: 'absolute',
+                                right: 16,
+                                top: 20,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                              }}>
+                              <Text
+                                style={{
+                                  color: secondaryColor,
+                                  fontWeight: '700',
+                                  fontFamily: Helper.switchFont('bold'),
+                                }}>
+                                Remove
+                              </Text>
+                            </TouchableHighlight>
+                        </View>
+                      ) : (
+                        <View
+                          style={{
+                            flex: 1,
+                            flexDirection: 'row',
+                          }}>
+                          <View style={{width: '100%'}}>
+                            <TextField
+                              // style={[styles.input]}
+                              mode="outlined"
+                              label="Coupon Code"
+                              onChangeText={text => setCouponCode(text)}
+                              value={couponCode}
+                              autoCapitalize="none"
+                              autoCorrect={false}
+                              clearTextOnFocus={false}
+                              enablesReturnKeyAutomatically={true}
+                              textAlignVertical="center"
+                              editable={true}
+                              onSubmitEditing={() => {
+                                applyCouponSubmit('AC');
+                              }}
+                              selectTextOnFocus={false}
+                            />
+                          </View>
+
+                          <View>
+                            <TouchableHighlight
+                              underlayColor="#e0e2e5"
+                              onPress={() => {
+                                applyCouponSubmit('AC');
+                              }}
+                              style={{
+                                position: 'absolute',
+                                right: 16,
+                                top: 20,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                              }}>
+                              <Text
+                                style={{
+                                  color: secondaryColor,
+                                  fontWeight: '700',
+                                  fontFamily: Helper.switchFont('bold'),
+                                }}>
+                                Apply
+                              </Text>
+                            </TouchableHighlight>
+                          </View>
                         </View>
                       )}
-                      {checkoutData?.sgst_applied ? (
-                        <View style={styles.priceCalc}>
-                          <Text style={styles.labelText}>
-                            SGST ({checkoutData?.amount?.sgst}%):
-                          </Text>
+                      <View style={{marginTop:16}}>
+                        <View style={[styles.priceCalc,]}>
+                          <View style={styles.priceLabelWrapper}>
+                          <Text style={styles.labelText}>Actual Price:</Text>
+                          <Text style={styles.labelText}>:</Text>
+                          </View>
                           <Text style={[styles.contentText, {paddingLeft: 5}]}>
                             {checkoutData?.amount?.currency_type === 'INR'
                               ? 'Rs.'
                               : 'US$ '}
-                            {checkoutData?.amount?.sgst_amount}
+                            {checkoutData?.amount?.total_amount}
                           </Text>
                         </View>
-                      ) : null}
-                      {checkoutData?.igst_applied && (
-                        <View style={styles.priceCalc}>
-                          <Text style={styles.labelText}>
-                            IGST ({checkoutData?.amount?.igst}%):
-                          </Text>
-                          <Text style={[styles.contentText, {paddingLeft: 5}]}>
-                            {checkoutData?.amount?.currency_type === 'INR'
-                              ? 'Rs.'
-                              : 'US$ '}
-                            {checkoutData?.amount?.igst_amount}
-                          </Text>
-                        </View>
-                      )}
-                      <View style={styles.priceCalc}>
-                        <Text style={styles.totalDue}>Total Due:</Text>
-                        <Text style={styles.totalDueInfo}>
-                          {checkoutData.amount?.currency_type === 'INR'
-                            ? 'Rs.'
-                            : 'US$ '}
-                          {checkoutData.amount?.pay_amount}
-                        </Text>
-                      </View>
+                        {checkoutData?.amount?.coupon_discount_amount !==
+                        '0.00' ? (
+                          <View style={styles.priceCalc}>
+                            <View style={styles.priceLabelWrapper}>
+                            <Text style={styles.labelText}>
+                              Discount{' '}
+                              {checkoutData?.amount?.percentage
+                                ? checkoutData?.amount?.percentage + '%'
+                                : 'Amount'}
+                              
+                            </Text>
+                            <Text style={styles.labelText}>:</Text>
+                            </View>
+                            <Text
+                              style={[styles.contentText, {paddingLeft: 5}]}>
+                              {' - '}
+                              {checkoutData?.amount?.currency_type === 'INR'
+                                ? 'Rs.'
+                                : 'US$ '}
+                              {checkoutData?.amount?.coupon_discount_amount}
+                            </Text>
+                          </View>
+                        ) : null}
+                        {checkoutData?.amount?.coupon_discount_amount !==
+                        '0.00' ? (
+                          <View style={styles.priceCalc}>
+                          <View style={styles.priceLabelWrapper}>
+                            <Text style={styles.labelText}>
+                              Price After Discount
+                            </Text>
+                            <Text style={styles.labelText}>:</Text>
+                            </View>
+                            <Text
+                              style={[styles.contentText, {paddingLeft: 5}]}>
+                              {checkoutData?.amount?.currency_type === 'INR'
+                                ? 'Rs.'
+                                : 'US$ '}
+                              {getDiscountAmount(checkoutData.amount)}
+                            </Text>
+                          </View>
+                        ) : null}
+                        {checkoutData?.cgst_applied && (
+                          <View style={styles.priceCalc}>
+                          <View style={styles.priceLabelWrapper}>
+                            <Text style={styles.labelText}>
+                              CGST ({checkoutData?.amount.cgst}%)
+                            </Text>
+                            <Text style={styles.labelText}>:</Text>
+                            </View>
+                            <Text
+                              style={[styles.contentText, {paddingLeft: 5}]}>
+                              {checkoutData?.amount.currency_type === 'INR'
+                                ? 'Rs.'
+                                : 'US$ '}
+                              {checkoutData?.amount.cgst_amount}
+                            </Text>
+                          </View>
+                        )}
+                        {checkoutData?.sgst_applied ? (
+                          <View style={styles.priceCalc}>
+                          <View style={styles.priceLabelWrapper}>
+                            <Text style={styles.labelText}>
+                              SGST ({checkoutData?.amount?.sgst}%)
+
+                            </Text>
+                            <Text style={styles.bodyText}>:</Text>
+                            </View>
+                            <Text
+                              style={[styles.contentText, {paddingLeft: 5}]}>
+                              {checkoutData?.amount?.currency_type === 'INR'
+                                ? 'Rs.'
+                                : 'US$ '}
+                              {checkoutData?.amount?.sgst_amount}
+                            </Text>
+                          </View>
+                         ) : null}
+                        {checkoutData?.igst_applied && (
+                          <View style={styles.priceCalc}>
+                          <View style={styles.priceLabelWrapper}>
+                            <Text style={styles.labelText}>
+                              IGST ({checkoutData?.amount?.igst}%)
+                            </Text>
+                            <Text style={styles.bodyText}>:</Text>
+                            </View>
+                            <Text
+                              style={[styles.contentText, {paddingLeft: 5}]}>
+                              {checkoutData?.amount?.currency_type === 'INR'
+                                ? 'Rs.'
+                                : 'US$ '}
+                              {checkoutData?.amount?.igst_amount}
+                             
+                            </Text>
+                          </View>
+                         )}
+                       <View style={{marginVertical: 8}}>
+                      <DashedLine
+                        dashLength={5}
+                        dashThickness={1}
+                        dashGap={5}
+                        dashColor={lineColor}
+                      />
                     </View>
-                    <View style={styles.lineStyle} />
-                    <View style={styles.coupon_code_text}>
+                        <View style={styles.priceCalc}>
+                        <View style={styles.priceLabelWrapper}>
+                          <Text style={styles.totalDue}>Total Due</Text>
+                          <Text style={styles.bodyText}>:</Text>
+                          </View>
+                          <Text style={styles.totalDueInfo}>
+                            {checkoutData.amount?.currency_type === 'INR'
+                              ? 'Rs.'
+                              : 'US$ '}
+                            {checkoutData.amount?.pay_amount}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={[StyleCSS.styles.lineStyleLight, {marginTop:16,marginBottom:24}]} />
+
+                     
+
                       <Text
                         style={{
                           fontSize: 14,
-                          color: '#81878D',
-                          fontFamily: Helper.switchFont('regular'),
-                        }}>
-                        Coupon code
-                      </Text>
-                    </View>
-                    {checkoutData.amount?.coupon_code ? (
-                      <View style={styles.flexDrow}>
-                        <View style={{width: '50%', marginTop: 10}}>
-                          <TextInput
-                            // mode="outlined"
-                            // label="Coupen Code"
-                            style={[
-                              styles.input,
-                              {
-                                backgroundColor: '#fff',
-                                fontWeight: 'bold',
-                              },
-                            ]}
-                            onChangeText={text => setCouponCode(text)}
-                            value={couponCode}
-                            // onSubmitEditing={() => {
-                            //   applyCouponSubmit('RC');
-                            // }}
-                            // selectTextOnFocus={false}
-                          />
-                        </View>
-
-                        <View style={{width: '50%', alignItems: 'flex-end'}}>
-                          <TouchableHighlight
-                            underlayColor="#e0e2e5"
-                            onPress={() => {
-                              applyCouponSubmit('RC');
-                            }}
-                            style={{
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              height: 50,
-                              backgroundColor: '#e0e2e5',
-                              borderRadius: 3,
-                              paddingHorizontal: 20,
-                              marginTop: 10,
-                              width: '80%',
-                            }}>
-                            <Text style={{color: 'rgb(44, 54, 65)'}}>
-                              Remove Coupon
-                            </Text>
-                          </TouchableHighlight>
-                        </View>
-                      </View>
-                    ) : (
-                      <View
-                        style={{
-                          flex: 1,
-                          flexDirection: 'row',
-                        }}>
-                        <View style={{width: '70%', marginTop: 10}}>
-                          <TextInput
-                            style={[styles.input]}
-                            onChangeText={text => setCouponCode(text)}
-                            value={couponCode}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            clearTextOnFocus={false}
-                            enablesReturnKeyAutomatically={true}
-                            textAlignVertical="center"
-                            editable={true}
-                            onSubmitEditing={() => {
-                              applyCouponSubmit('AC');
-                            }}
-                            selectTextOnFocus={false}
-                          />
-                        </View>
-
-                        <View style={{width: '30%', alignItems: 'flex-end'}}>
-                          <TouchableHighlight
-                            underlayColor="#e0e2e5"
-                            onPress={() => {
-                              applyCouponSubmit('AC');
-                            }}
-                            style={{
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              height: 50,
-                              backgroundColor: '#e0e2e5',
-                              borderRadius: 3,
-                              marginTop: 10,
-                              width: '80%',
-                            }}>
-                            <Text style={{color: 'rgb(44, 54, 65)'}}>
-                              Apply
-                            </Text>
-                          </TouchableHighlight>
-                        </View>
-                      </View>
-                    )}
-
-                    <View style={styles.lineStyle} />
-
-                    <Text
-                      style={{
-                        fontSize: 14,
-                        color: '#81878D',
-                        lineHeight: 21,
-                        fontFamily: Helper.switchFont('regular'),
-                      }}>
-                      We will send the order confirmation to the Email Address{' '}
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          color: 'rgb(44, 54, 65)',
-                          lineHeight: 21,
+                          color: font2,
+                          lineHeight: 20,
+                          fontWeight:'500',
                           fontFamily: Helper.switchFont('medium'),
                         }}>
-                        {userData.email}
+                        We will send the order confirmation to the Email Address{' '}
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            color: font1,
+                            fontWeight:'700',
+                            lineHeight: 20,
+                            fontFamily: Helper.switchFont('bold'),
+                          }}>
+                          {userData.email}
+                        </Text>
                       </Text>
-                    </Text>
 
-                    <View style={styles.lineStyle} />
+                      <View style={[StyleCSS.styles.lineStyleLight,{marginTop:24, marginBottom:16 , marginHorizontal: -16}]} />
 
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          lineHeight: 18,
+                          fontFamily: Helper.switchFont('regular'),
+                          color: font2,
+                        }}>
+                        This is Step 1 of 4. In the next page you can review
+                        your order and product information
+                      </Text>
+
+                      {/* safecontainer */}
+                    </View>
+                  </View>
+
+                  {/* <TouchableOpacity
+                    style={styles.nextPageButton}
+                    onPress={() => checkoutNextPage()}>
+                    <Image
+                      source={require('@images/right_arrow.png')}
+                      style={{
+                        width: 21,
+                        height: 16,
+                        alignItems: 'center',
+                      }}
+                    />
+                  </TouchableOpacity> */}
+                  <View
+                  style={[
+                   StyleCSS.styles.modalButton
+                  ]}>
+                  <TouchableOpacity
+                    style={{
+                      padding: 12,
+                      // paddingTop: 18,
+                      // paddingBottom: 18,
+                      backgroundColor: '#fff',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      width: '49%',
+                      zIndex: 1,
+                      borderColor: secondaryColorBorder,
+                      borderWidth:1,
+                      marginRight: '3%',
+                    }}
+                    onPress={() => {
+                      // navigation.goBack()
+                     
+                    }}>
                     <Text
                       style={{
-                        fontSize: 11,
+                        color: secondaryColor,
+                        textAlign: 'center',
+                        fontWeight: '700',
+                        fontFamily: Helper.switchFont('bold'),
+                        fontSize: 14,
                         lineHeight: 18,
-                        fontFamily: Helper.switchFont('regular'),
-                        color: '#81878D',
                       }}>
-                      This is Step 1 of 4. In the next page you can review your
-                      order and product information
+                      Cancel
                     </Text>
+                  </TouchableOpacity>
 
-                    {/* safecontainer */}
-                  </View>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.nextPageButton}
-                  onPress={() => checkoutNextPage()}>
-                  <Image
-                    source={require('@images/right_arrow.png')}
+                  <TouchableOpacity
                     style={{
-                      width: 21,
-                      height: 16,
+                      padding: 12,
+                      // paddingTop: 18,
+                      // paddingBottom: 18,
+                      backgroundColor: brandColor,
                       alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      width: '48%',
+                      zIndex: 1,
                     }}
-                  />
-                </TouchableOpacity>
-              </ScrollView>
-            </Container>
-          </View>
-        ) : null }
+                    onPress={() => checkoutNextPage()}
+                    >
+                    <Text
+                      style={{
+                        color: '#fff',
+                        textAlign: 'center',
+                        fontWeight: '700',
+                        fontFamily: Helper.switchFont('medium'),
+                        fontSize: 14,
+                        lineHeight: 18,
+                      }}>
+                      Next
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                </ScrollView>
+              </Container>
+            </View>
+          ) : null}
         </>
       )}
     </>
@@ -913,8 +1045,8 @@ const styles = StyleSheet.create({
   priceCalc: {
     flex: 1,
     flexDirection: 'row',
-    marginBottom: 12,
-    alignSelf: 'flex-end',
+    marginVertical: 8 ,
+    justifyContent:'space-between'
   },
   whiteBg: {
     backgroundColor: '#fff',
@@ -923,21 +1055,19 @@ const styles = StyleSheet.create({
   },
   bodyText: {
     fontSize: 14,
-    color: '#81878D',
-    fontFamily: Helper.switchFont('regular'),
+    color: font2,
+    fontWeight: '500',
+    fontFamily: Helper.switchFont('medium'),
   },
   textWhite: {
     color: '#fff',
   },
   container: {
     flex: 1,
-    marginTop:109,
+    marginTop: config.headerHeight + 30,
     backgroundColor: '#ffffff',
   },
-  flexDrow: {
-    flex: 1,
-    flexDirection: 'row',
-  },
+
   row: {
     marginTop: 24,
     // borderWidth:1
@@ -945,53 +1075,57 @@ const styles = StyleSheet.create({
   stepIndicator: {
     paddingHorizontal: 0,
     textAlign: 'center',
-    //top: 20,
   },
   rowItem: {
     flex: 1,
     paddingVertical: 0,
   },
   titleBorder: {
-    marginTop: 50,
-    borderLeftWidth: 2,
+    marginTop: 56,
     borderLeftColor: brandColor,
   },
   totalDue: {
-    fontSize: 16,
-    color: 'rgb(44, 54, 65)',
-    fontFamily: Helper.switchFont('regular'),
-    alignSelf: 'flex-end',
+    fontSize: 14,
+    color: font1,
+    fontFamily: Helper.switchFont('semibold'),
+    fontWeight:'600',
+
+    // alignSelf: 'flex-end',
   },
   totalDueInfo: {
-    fontSize: 16,
-    color: brandColor,
-    fontFamily: Helper.switchFont('regular'),
-    paddingLeft: 5,
-    textAlign: 'right',
-    alignSelf: 'flex-end',
+    fontSize: 18,
+    color: font1,
+    fontFamily: Helper.switchFont('semibold'),
+    fontWeight:'600',
+    // paddingLeft: 5,
+    // textAlign: 'right',
+    // alignSelf: 'flex-end',
   },
   safecontainer: {
-    marginHorizontal: 24,
-    //borderWidth:1,
+    marginHorizontal: 16,
+
+    paddingTop: 16,
   },
   info: {
     fontSize: 14,
-    color: 'rgb(44, 54, 65)',
+    color: font1,
+    fontWeight: '500',
     fontFamily: Helper.switchFont('medium'),
     marginTop: 5,
   },
   title: {
-    fontSize: 19,
-    margin: 0,
-    paddingLeft: 8,
-    color: 'rgb(44, 54, 65)',
-    fontFamily: Helper.switchFont('medium'),
+    marginTop: 16,
+    fontSize: 18,
+    color: font1,
+    fontWeight: '700',
+    fontFamily: Helper.switchFont('bold'),
   },
   courseTitle: {
-    fontSize: 19,
-    marginTop: 24,
-    color: 'rgb(44, 54, 65)',
-    fontFamily: Helper.switchFont('regular'),
+    fontSize: 14,
+    marginTop: 5,
+    color: font1,
+    fontWeight: '600',
+    fontFamily: Helper.switchFont('semibold'),
   },
   body: {
     flex: 1,
@@ -1004,7 +1138,6 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#E2E4E5',
     // marginHorizontal: 24,
-    marginVertical: 24,
   },
   coupon_code_text: {
     marginTop: 8,
@@ -1012,13 +1145,15 @@ const styles = StyleSheet.create({
 
   labelText: {
     fontSize: 14,
-    color: '#81878D',
-    fontFamily: Helper.switchFont('regular'),
+    color: font2,
+    fontWeight:'500',
+    fontFamily: Helper.switchFont('medium'),
   },
   contentText: {
     fontSize: 14,
-    color: 'rgb(44, 54, 65)',
-    fontFamily: Helper.switchFont('medium'),
+    color: font1,
+    fontWeight:'600',
+    fontFamily: Helper.switchFont('semibold'),
   },
   input: {
     color: 'rgb(44, 54, 65)',
@@ -1054,4 +1189,29 @@ const styles = StyleSheet.create({
     zIndex: 1,
     marginVertical: 24,
   },
+  formFillTimeImage: {
+    height: '100%',
+    width: '100%',
+  },
+  formFillTimeTextWrapper: {
+    paddingLeft: 16,
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    height: 32,
+    width: '100%',
+    // top: 100,
+  },
+  formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
+  couponSuccessText:{
+    marginTop:6,
+    color: font3,
+    fontSize:12,
+    fontStyle:'italic',
+    fontFamily:Helper.switchFont('medium'),
+    fontWeight:'500',
+  },
+  priceLabelWrapper:{flexDirection:'row', justifyContent:'space-between', width:'50%'}
 });
+

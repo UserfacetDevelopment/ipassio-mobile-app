@@ -14,7 +14,8 @@ import {
   Dimensions,
   RefreshControl,
   ToastAndroid,
-  Modal
+  Modal,
+  TouchableWithoutFeedback
 } from 'react-native';
 import {useSelector} from 'react-redux';
 // @ts-ignore
@@ -77,6 +78,7 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
       return true;
     }
   };
+
 
   const getDaysDiff = (current_date: string, start_date: string) => {
     let dateFormat = 'DD MMM YYYY hh:mm A';
@@ -354,7 +356,9 @@ export default function Schedules({navigation}: Props) {
   const [refreshing, setRefreshing] = useState(false);
   const [showAddSessionModal, setShowAddSessionModal] = useState(false);
   const routes = useRoute();
+  const doNothing = () =>{
 
+  }
   let scrollY = new Animated.Value(0.01);
   let changingHeight = scrollY.interpolate({
     inputRange: [0.01, 50],
@@ -439,7 +443,6 @@ export default function Schedules({navigation}: Props) {
   const onRefresh = async() => {
     setRefreshing(true);
     await getSchedules();
-
     setSelectedCard(0);
     setRefreshing(false);
   };
@@ -656,13 +659,17 @@ export default function Schedules({navigation}: Props) {
       presentationStyle='overFullScreen'
       transparent={true}
       >
-        <View  style={styles.modalBackground}>
-        <View style={styles.modalView}>
-          <View style={styles.modalLine}></View>
-          <Text style={{fontWeight:'700', fontSize: 18, color: font1, marginVertical:16}}>Add Session</Text>
-              <AddSessionCmp setShowAddSessionModal = {setShowAddSessionModal} navigation={navigation}/>
+        <TouchableOpacity activeOpacity={1}  onPressOut={()=>{setShowAddSessionModal(false)}}  style={SheetCSS.styles.modalBackground}>
+        <View style={SheetCSS.styles.modalView}>
+          <TouchableOpacity activeOpacity={1} onPress={doNothing}>
+            <>
+          <View style={SheetCSS.styles.modalLine}></View>
+          <Text style={SheetCSS.styles.modalTitle}>Add Session</Text>
+              <AddSessionCmp onRefresh={onRefresh} setShowAddSessionModal = {setShowAddSessionModal} navigation={navigation}/>
+              </>
+              </TouchableOpacity>
         </View>
-        </View>
+        </TouchableOpacity>
       </Modal>
       : null}
       <BottomNavigation navigation={navigation} selected={'S'}/>
@@ -776,24 +783,5 @@ borderRadius:12,
   addSessionButton:{ backgroundColor:brandColor, flexDirection:'row', justifyContent:'center', padding:11, borderRadius:8},
   addSession:{flexDirection:'row',alignItems:'center', width:'35%'},
   dropBackground:{borderRadius: 50, padding:6, backgroundColor:lineColor},
-  modalBackground: {
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    height: '100%',
-  },
-  modalView: {
-position:'absolute',
-bottom:0,
-    alignSelf: 'flex-end',
-    backgroundColor: '#fff',
-    // marginTop:150,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    padding: 16,
-    paddingTop:0,
-    //  top:252,
-    zIndex: 20,
-  },
-  modalLine:{alignSelf:'center', marginTop:8, borderRadius:5, borderColor: font2, borderWidth:1.5, width:56, opacity:0.3},
+ 
 });

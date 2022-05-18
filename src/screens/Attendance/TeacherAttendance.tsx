@@ -18,7 +18,7 @@ import {userState} from '../../reducers/user.slice';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import Helper from '../../utils/helperMethods';
-import {appBackground, brandColor, lineColor} from '../../styles/colors';
+import {appBackground, background4, brandColor, lineColor} from '../../styles/colors';
 //@ts-ignore
 import Textarea from 'react-native-textarea';
 // import StarRating from 'react-native-star-rating';
@@ -47,6 +47,7 @@ import {font1, dropdownBorder, secondaryColor, secondaryColorBorder, font2} from
 import DashedLine from 'react-native-dashed-line';
 import StyleCSS from '../../styles/style';
 import Calender from '../../assets/images/calender.svg';
+import CustomDateTimePicker from '../../components/CustomDateTimePicker';
 
 // type Props = NativeStackScreenProps<RootParamList, 'Attendance'>;
 
@@ -333,7 +334,7 @@ setEditAttendanceModal(true)
          
             <View style={styles.row}>
                 <View>
-              <Text style={styles.row_title}>Student Name:</Text>
+              <Text style={[styles.row_title, {fontWeight:'600'}]}>Student Name</Text>
               {attendancesStatus === 'loading' ? (
                 <Bubbles size={7} color={brandColor} />
               ) : (
@@ -356,7 +357,7 @@ setEditAttendanceModal(true)
           
         <View style={styles.row}>
               <View>
-            <Text style={styles.row_title}>Course Name:</Text>
+            <Text style={styles.row_title}>Course</Text>
             {attendancesStatus === 'loading' ? (
               <Bubbles size={7} color={brandColor} />
             ) : (
@@ -366,12 +367,12 @@ setEditAttendanceModal(true)
                   studentAttendanceList.selected_course_data.title}{' '}
                 {studentAttendanceList.selected_course_data &&
                   studentAttendanceList.selected_course_data.price_type && (
-                    <View>
-                      {studentAttendanceList.selected_course_data.price_type
+                    
+                      studentAttendanceList.selected_course_data.price_type
                         .members === '1' ? (
-                        <Text style={styles.row_content}>(1-on-1 Class)</Text>
+                        <Text style={[styles.row_content,{fontWeight:'600'}]}>(1-on-1 Class)</Text>
                       ) : (
-                        <Text style={styles.row_content}>
+                        <Text style={[styles.row_content,{fontWeight:'600'}]}>
                           (
                           {
                             studentAttendanceList.selected_course_data
@@ -379,8 +380,8 @@ setEditAttendanceModal(true)
                           }{' '}
                           Members)
                         </Text>
-                      )}
-                    </View>
+                      )
+                   
                   )}
               </Text>
             )}
@@ -396,7 +397,7 @@ setEditAttendanceModal(true)
           
           <View style={styles.row}>
               <View style={styles.halfWidth}>
-            <Text style={styles.row_title}>Total No. of Classes:</Text>
+            <Text style={styles.row_title}>Total No. of Classes</Text>
             {attendancesStatus === 'loading' ? (
               <Bubbles size={7} color={brandColor} />
             ) : (
@@ -408,7 +409,7 @@ setEditAttendanceModal(true)
 
           
           <View style={styles.halfWidth}>
-            <Text style={styles.row_title}>No. of Classes Completed:</Text>
+            <Text style={styles.row_title}>No. of Classes Completed</Text>
             {attendancesStatus === 'loading' ? (
               <Bubbles size={7} color={brandColor} />
             ) : (
@@ -426,7 +427,7 @@ setEditAttendanceModal(true)
             />
           <View style={styles.row}>
               <View style={styles.halfWidth}>
-            <Text style={styles.row_title}>No. of Classes Remaining:</Text>
+            <Text style={styles.row_title}>No. of Classes Remaining</Text>
             {attendancesStatus === 'loading' ? (
               <Bubbles size={7} color={brandColor} />
             ) : (
@@ -438,7 +439,7 @@ setEditAttendanceModal(true)
 
           
           <View style={styles.halfWidth}>
-            <Text style={styles.row_title}>No. of Classes Disputed:</Text>
+            <Text style={styles.row_title}>No. of Classes Disputed</Text>
             {attendancesStatus === 'loading' ? (
               <Bubbles size={7} color={brandColor} />
             ) : (
@@ -457,7 +458,7 @@ setEditAttendanceModal(true)
             />
           <View style={styles.row}>
               <View>
-            <Text style={styles.row_title}>No. of Classes Refunded:</Text>
+            <Text style={styles.row_title}>No. of Classes Refunded</Text>
             {attendancesStatus === 'loading' ? (
               <Bubbles size={7} color={brandColor} />
             ) : (
@@ -540,7 +541,10 @@ setEditAttendanceModal(true)
                         at.teacher_status === 'P' && (
                           <View style={styles.amountRefunded}>
                             <Text style={styles.amountRefundedText}>
-                              Payment released. Please submit your attendance.
+                              Payment released.
+                            </Text>
+                            <Text style={styles.amountRefundedText}>
+                              Please submit your attendance
                             </Text>
                           </View>
                         )}
@@ -583,7 +587,7 @@ setEditAttendanceModal(true)
                               onPress={() => {
                                 editAttendance(at, i);
                               }}>
-                              EDIT
+                              Edit
                             </Text>
                           )}
                         </View>
@@ -603,10 +607,10 @@ setEditAttendanceModal(true)
         /> */}
        {editAttendanceModal ?
         <Modal visible={editAttendanceModal} presentationStyle="overFullScreen" transparent={true}>
-          <View style={styles.modalBackground}>
-            <View style={styles.modalView}>
-              <View style={styles.modalLine}></View>
-              <Text style={styles.modalTitle}>{modalTitle}</Text>
+          <TouchableOpacity activeOpacity={1}  onPress={()=>setEditAttendanceModal(false)} style={StyleCSS.styles.modalBackground}>
+            <TouchableOpacity activeOpacity={1} onPress={()=>{}} style={StyleCSS.styles.modalView}>
+              <View style={StyleCSS.styles.modalLine}></View>
+              <Text style={StyleCSS.styles.modalTitle}>{modalTitle}</Text>
               <View style={styles.modal_row}>
                 <Text style={styles.row_title}>Class No. </Text>
                 <Text style={styles.row_content}>
@@ -614,7 +618,7 @@ setEditAttendanceModal(true)
                 </Text>
               </View>
               <View style={styles.modal_row}>
-                <Text
+                {/* <Text
                   style={styles.input}
                   onPress={() => {
                     showDateTimePicker();
@@ -651,7 +655,23 @@ setEditAttendanceModal(true)
                     handleDatePicked(selectedDate, attendances[index], index);
                   }}
                   onCancel={hideDateTimePicker}
-                />
+                /> */}
+                 <CustomDateTimePicker
+                  showDateTimePicker={showDateTimePicker}
+                  // style={{}}
+                  selectedValue={attendances[index].class_taken &&
+                    Moment(attendances[index].class_taken).format(
+                      'MMM DD, YYYY',
+                    )}
+                  label = {'Class Taken on *'}
+                  maximumDate={new Date()}
+                  isVisible={isDateTimePickerVisible}
+                  mode="date"
+                  onConfirm={(selectedDate : any) => {
+                    handleDatePicked(selectedDate, attendances[index], index);
+                  }}
+                  onCancel={hideDateTimePicker}
+                  />
               </View>
 
               
@@ -664,15 +684,7 @@ setEditAttendanceModal(true)
                           </Text>
                         </Text> */}
                   <Textarea
-                    containerStyle={{
-                      height: 158,
-                      width: width - 32,
-                      backgroundColor: 'rgb(255, 255, 255)',
-                      borderRadius: 12,
-                      padding: 10,
-                      borderWidth: 0.5,
-                      borderColor: lineColor,
-                    }}
+                    containerStyle={StyleCSS.styles.modalTextarea}
                     style={styles.reviewTextArea}
                     onChangeText={(text: string) => {
                       let attendanceTemp = attendances.map((o: any) => ({
@@ -683,14 +695,14 @@ setEditAttendanceModal(true)
                       setSelectedReview(text.trim());
                     }}
                     defaultValue={attendances[index].teacher_review}
-                    placeholder={'Review'}
+                    placeholder={'How was your experience? *'}
                     placeholderTextColor={font2}
                     underlineColorAndroid={'transparent'}
                   />
                 </View>
               </View>
-              <View style={[StyleCSS.styles.lineStyleLight, {marginTop: 24}]} />
-              <View style={[styles.row]}>
+              <View style={[StyleCSS.styles.lineStyleLight, {marginTop: 12}]} />
+              <View style={[StyleCSS.styles.modalButton]}>
                 <TouchableOpacity
                   style={styles.cancelButton}
                   onPress={() => {
@@ -706,8 +718,8 @@ setEditAttendanceModal(true)
                   <Text style={styles.submitAttendanceText}>Submit</Text>
                 </TouchableOpacity>
               </View>
-            </View>
-          </View>
+            </TouchableOpacity>
+          </TouchableOpacity>
         </Modal> :null}
      
       
@@ -749,6 +761,7 @@ const styles = StyleSheet.create({
     modal_row: {
       flexDirection: 'row',
       marginVertical: 12,
+      marginHorizontal:16,
     },
     lineStyle: {
       borderBottomWidth: 0.7,
@@ -786,18 +799,18 @@ const styles = StyleSheet.create({
     },
   
     attendanceListWrapper: {
-      backgroundColor: appBackground,
-      marginTop: 10,
-      paddingTop: 10,
-      paddingHorizontal: 10,
+      backgroundColor: background4,
+      // marginTop: 10,
+      paddingTop: 8,
+      paddingHorizontal: 16,
     },
     cardView: {
       width: '90%',
       flexDirection: 'column',
-      marginLeft: 10,
-      marginRight: 10,
-      padding: 20,
-      marginTop: 10,
+      // marginLeft: 10,
+      // marginRight: 10,
+      // padding: 20,
+      // marginTop: 10,
       marginBottom: 5,
       height: 150,
       justifyContent: 'center',
@@ -815,6 +828,8 @@ const styles = StyleSheet.create({
     },
     cardSplit: {
       flexDirection: 'row',
+      // borderWidth:1,
+      padding:0
     },
       cardSplitSingle: {
         
@@ -822,7 +837,8 @@ const styles = StyleSheet.create({
         // borderWidth:1
       },
     cardSplitSingleItem: {
-      marginBottom: 10,
+      marginBottom: 16,
+      // borderWidth:1
     },
     linkButton: {
       color: brandColor,
@@ -857,7 +873,7 @@ const styles = StyleSheet.create({
     reviewTextArea: {
       width: '100%',
       height: 150,
-      color: font2,
+      color: font1,
       fontSize: 14,
       textAlignVertical: 'top',
       borderRadius: 5,
@@ -976,7 +992,8 @@ const styles = StyleSheet.create({
     },
   
     amountRefunded: {
-      padding: 12,
+      paddingTop: 10,
+      paddingBottom: 12,
       backgroundColor: appBackground,
       justifyContent: 'center',
       marginTop: 8,

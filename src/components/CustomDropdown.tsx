@@ -8,9 +8,10 @@ import {
   TouchableOpacity,
   Pressable,
   TextInput,
+  Modal
 } from 'react-native';
-import Modal from 'react-native-modal';
-import {background3, dropdownBorder, font1, font2, lineColor} from '../styles/colors';
+// import Modal from 'react-native-modal';
+import {background3, brandColor, dropdownBorder, font1, font2, lineColor} from '../styles/colors';
 import Helper from '../utils/helperMethods';
 // @ts-ignore
 import Close from '../assets/images/close.svg';
@@ -20,6 +21,7 @@ import { scheduledDataSuccess } from '../reducers/schedule.slice';
 import SheetCss from '../styles/style';
 // @ts-ignore
 import Dropdown from '../assets/images/custom-dropdown.svg';
+import { widthPercentageToDP } from 'react-native-responsive-screen';
 
 interface CustomDropdownProps {
   data: any;
@@ -94,12 +96,12 @@ export default function CustomDropdown({
       <TouchableOpacity
         style={{
           alignItems: 'flex-start',
-          borderBottomWidth: 0.5,
+          borderBottomWidth: 1,
           borderColor: lineColor,
           minHeight: 60,
           justifyContent: 'center',
-          paddingLeft: 20,
-          paddingRight: 20,
+          paddingLeft: 16,
+          paddingRight: 16,
         }}
         onPress={() => selectVal(dt)}>
         <Text
@@ -140,7 +142,7 @@ export default function CustomDropdown({
                 //   config && config.color
                 //     ? config.color
                 //     : "rgb(44, 54, 65)",
-                color: font1,
+                color: topLabel ? font1 : font2,
               },
             ]}>
             {label}
@@ -161,27 +163,34 @@ export default function CustomDropdown({
         </View>
       </TouchableOpacity>
 
-      <Modal isVisible={isModalVisible}>
-        <View
+      <Modal transparent={true} visible={isModalVisible}>
+        <TouchableOpacity
+        // activeOpacity={1}
+        onPressOut={()=>setIsModalVisible(false)}
           style={{
+            backgroundColor:'rgba(0, 0, 0, 0.3)',
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            width: '100%',
+            height:'100%',
+            paddingHorizontal:16,
           }}>
-            <View style={{backgroundColor:'rgba(0,0,0,0.3)'}}>
-          <View
+        {/* <View style={{backgroundColor:'rgba(0,0,0,0.3)', height:'100%', width:'100%'}}> */}
+          <TouchableOpacity
+          activeOpacity={1}
+          onPress={()=>{
+
+          }}
             style={{
               // flexDirection:'row',
               backgroundColor: '#fff',
               borderRadius: 15,
-              width: '100%',
-              height: '90%',
+              // marginHorizontal:16,
+              height: '70%',
             }}>
               
             <View
               style={{
-                // backgroundColor: "rgb(232, 67, 53)",
                 padding: 16,
                 flexDirection: 'row',
                 borderTopRightRadius: 15,
@@ -195,7 +204,7 @@ export default function CustomDropdown({
                 alignContent: 'center',
                 zIndex: 999,
               }}>
-              <View style={{flex: 1, marginTop: 0, marginLeft: 12}}>
+              <View style={{flex: 1, marginTop: 0}}>
                 <Text style={styles.innerHeaderTitle}>{backTitle}</Text>
               </View>
               <Pressable onPress={() => toggleModal()}>
@@ -266,9 +275,9 @@ export default function CustomDropdown({
                 >
                   <Text style={styles.option_action_item}>Cancel</Text>
                 </TouchableOpacity> */}
-          </View>
-          </View>
-        </View>
+          </TouchableOpacity>
+          </TouchableOpacity>
+        {/* </View> */}
       </Modal>
     </View>
   );
@@ -288,21 +297,26 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
+    lineHeight:20,
+
     fontFamily: Helper.switchFont('regular'),
     flex:1,
   },
   option_item: {
     fontSize: 14,
-    color: 'rgb(44, 54, 65)',
-    fontFamily: Helper.switchFont('regular'),
-    padding: 10,
+    color: font1,
+    fontWeight:'500',
+    fontFamily: Helper.switchFont('medium'),
+    paddingVertical: 16,
+    lineHeight:20,
   },
   option_item_selected: {
     fontSize: 14,
-    // color: "#aaa",
-    color: 'rgb(44, 54, 65)',
+    color: brandColor,
+    fontWeight:'500',
     fontFamily: Helper.switchFont('medium'),
-    padding: 10,
+    paddingVertical: 16,
+    lineHeight:20,
   },
   option_action_item: {
     fontSize: 14,
@@ -313,9 +327,9 @@ const styles = StyleSheet.create({
   },
   innerHeaderTitle: {
     color: '#000',
-    fontSize: 20,
-    fontWeight: '600',
-    fontFamily: Helper.switchFont('medium'),
+    fontSize: 18,
+    fontWeight: '700',
+    fontFamily: Helper.switchFont('bold'),
   },
 
   inputWrapper: {
@@ -324,23 +338,19 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     flexDirection: 'row',
     alignItems: 'center',
-     paddingHorizontal: 16,
+     paddingLeft: 16,
     justifyContent: 'center',
-    marginTop: 60,
+    marginTop:56,
     backgroundColor: background3,
     borderRadius: 8,
   },
   input: {
     color: font2,
-
     fontSize: 14,
-    paddingHorizontal: 20,
-
-    // borderWidth: 1,
-    // borderColor: ,
-
+    paddingHorizontal: 12,
+fontWeight:'400',
     fontFamily: Helper.switchFont('regular'),
-    height: 50,
+    height: 48,
     width: '90%',
   },
   closeButton: {

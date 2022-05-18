@@ -1,5 +1,5 @@
 import React from 'react'
-import {View, Text, StyleSheet, Image} from 'react-native'
+import {View, Text, StyleSheet, Image, Platform} from 'react-native'
 import { TouchableOpacity } from 'react-native'
 import { font1 } from '../styles/colors'
 import {useSelector} from 'react-redux'
@@ -51,8 +51,17 @@ const styles= StyleSheet.create({
         fontSize:10,
         color:font1,
     },
-    tabStyle:{flexDirection:'row', alignItems:'center', height:64, position:'absolute', bottom:0, backgroundColor:'#fff', width:'100%' },
-    tabButton:{flexBasis:'20%', alignItems:'center'},
-
-
+    tabStyle:{
+    shadowColor: 'rgba(40, 47, 54)', 
+    shadowOffset:{
+        width:0,
+        height:-10,
+    },
+    shadowOpacity:0.16,
+    elevation:8,
+    shadowRadius: 30,
+    flexDirection:'row',
+    alignItems:'center', height: Platform.OS === 'android' ?  64 : 72, position:'absolute', bottom:0, backgroundColor:'#fff', width:'100%' },
+    tabButton:{flexBasis:'20%', alignItems:'center', marginBottom: Platform.OS === 'ios' ? 12 : 0},
+    
 })

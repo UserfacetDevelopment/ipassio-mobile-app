@@ -35,6 +35,7 @@ import StyleCSS from '../../styles/style';
 import {font2} from '../../styles/colors';
 import HeaderInner from '../../components/HeaderInner';
 import {useRoute} from '@react-navigation/native'
+import TextField from '../../components/CustomTextField';
 type Props = NativeStackScreenProps<RootParamList, 'ResetPassword'>;
 
 export interface ResetPasswordInterface{
@@ -166,14 +167,12 @@ const routes= useRoute();
             <Text style={styles.info}>{route.params?.messageDesc}</Text>
             <View style={styles.marginTop24}>
               {/* <Text style={styles.label}>Enter 6-digit OTP</Text> */}
-              <TextInput
+              <TextField
               style={StyleCSS.styles.input}
               mode="outlined"
               label="Enter 6-digit OTP"
-              theme={{colors: {primary: font2}}}
                 //style={styles.input}
-                onChangeText={text => setOtp(text)}
-                textAlignVertical="top"
+                onChangeText={(text:any) => setOtp(text)}
                 //tintColor="rgb(44, 54, 65)"
                 value={otp}
                 secureTextEntry={false}
@@ -190,14 +189,12 @@ const routes= useRoute();
               </TouchableOpacity>
               {/* <Text style={styles.label}>New Password</Text> */}
 
-              <TextInput
+              <TextField
               style={StyleCSS.styles.input}
                 label="New Password"
                 mode="outlined"
-                theme={{colors: {primary: font2}}}
-                onChangeText={text => setPassword1(text)}
+                onChangeText={(text : string) => setPassword1(text)}
                 //style={styles.input}
-                textAlignVertical="top"
                 secureTextEntry={!viewPassword1}
                 //tintColor="rgb(44, 54, 65)"
                 value={password1}
@@ -226,17 +223,14 @@ const routes= useRoute();
                 </TouchableOpacity>
               ) : null}
 {/* <Text style={styles.label}>Confirm Password</Text> */}
-              <TextInput
+              <TextField
               style={StyleCSS.styles.input}
               mode="outlined"
               label="Confirm Password"
-              theme={{colors: {primary: font2}}}
               //style={styles.input}
                 //label="Confirm Password"
-                onChangeText={text => setPassword2(text)}
-                textAlignVertical="top"
+                onChangeText={(text : string ) => setPassword2(text)}
                 secureTextEntry={!viewPassword2}
-                //tintColor="rgb(44, 54, 65)"
                 value={password2}
                 editable={true}
                 autoCapitalize="none"
@@ -338,7 +332,7 @@ const styles = StyleSheet.create({
     height: 15,
     alignSelf: 'center',
     marginRight: 16,
-    marginTop: -25,
+    marginTop: -13,
   },
   inputViewIconWrapper: {
     //backgroundColor: "#000",
@@ -359,17 +353,17 @@ const styles = StyleSheet.create({
     fontFamily: helper.switchFont('medium'),
     fontSize:16,
   },
-  input: {
-    color: font1,
-    marginBottom: 5,
-    fontSize: 18,
-    padding: 16,
-    height: 55,
-    backgroundColor: 'rgb(255, 255, 255)',
-    borderRadius: 5,
-    fontFamily: helper.switchFont('medium'),
-    borderWidth: 0.5,
-    borderColor: 'rgb(200, 200, 200)',
-  },
+  // input: {
+  //   color: font1,
+  //   marginBottom: 5,
+  //   fontSize: 18,
+  //   padding: 16,
+  //   height: 55,
+  //   backgroundColor: 'rgb(255, 255, 255)',
+  //   borderRadius: 5,
+  //   fontFamily: helper.switchFont('medium'),
+  //   borderWidth: 0.5,
+  //   borderColor: 'rgb(200, 200, 200)',
+  // },
   
 });

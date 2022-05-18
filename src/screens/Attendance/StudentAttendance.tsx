@@ -19,8 +19,11 @@ import {userState} from '../../reducers/user.slice';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import Helper from '../../utils/helperMethods';
+import DashedLine from 'react-native-dashed-line';
+
 import {
   appBackground,
+  background4,
   brandColor,
   dropdownBorder,
   font1,
@@ -36,7 +39,6 @@ import {Rating} from 'react-native-ratings';
 import Moment from 'moment';
 // import Modal from 'react-native-modal';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import config from '../../config/Config';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {useAppDispatch} from '../../app/store';
 import PushNotification from 'react-native-push-notification';
@@ -56,7 +58,9 @@ import CustomStatusBar from '../../components/CustomStatusBar';
 import HeaderInner from '../../components/HeaderInner';
 import StyleCSS from '../../styles/style';
 import Calender from '../../assets/images/calender.svg';
+import CustomDateTimePicker from '../../components/CustomDateTimePicker';
 // type Props = NativeStackScreenProps<RootParamList, 'Attendance'>;
+import config from '../../config/Config';
 
 export interface AttendanceListInterface {
   userType: string;
@@ -108,7 +112,7 @@ const StudentAttendance: FC<any> = ({
   let scrollY = new Animated.Value(0.01);
   let changingHeight = scrollY.interpolate({
     inputRange: [0.01, 50],
-    outputRange: [109, 109],
+    outputRange: [100, 100],
     extrapolate: 'clamp',
   });
   let titleLeft = scrollY.interpolate({
@@ -335,13 +339,13 @@ onRefresh();
   console.log(attendances);
   return (
     <View style={styles.container}>
-      <CustomStatusBar />
+      {/* <CustomStatusBar /> */}
       {pageLoading && <PageLoader />}
       {!pageLoading ? (
         <>
           <HeaderInner
             iconTop={iconTop}
-            changingHeight={changingHeight}
+            changingHeight={config.headerHeight}
             titleSize={titleSize}
             titleTop={titleTop}
             titleLeft={titleLeft}
@@ -365,7 +369,7 @@ onRefresh();
             <View style={[styles.infoWrapper]}>
               <View style={styles.row}>
                 <View>
-                  <Text style={styles.row_title}>Course Name:</Text>
+                  <Text style={styles.row_title}>Course</Text>
                   {attendancesStatus === 'loading' ? (
                     <Bubbles size={7} color={brandColor} />
                   ) : (
@@ -376,10 +380,10 @@ onRefresh();
                       {studentAttendanceList.selected_course_data &&
                         studentAttendanceList.selected_course_data
                           .price_type && (
-                          <View>
-                            {studentAttendanceList.selected_course_data
+                          
+                            studentAttendanceList.selected_course_data
                               .price_type.members === '1' ? (
-                              <Text style={styles.row_content}>
+                              <Text style={[styles.row_content, {fontWeight: '600'}]}>
                                 (1-on-1 Class)
                               </Text>
                             ) : (
@@ -391,19 +395,24 @@ onRefresh();
                                 }{' '}
                                 Members)
                               </Text>
-                            )}
-                          </View>
+                            )
+                          
                         )}
                     </Text>
                   )}
                 </View>
               </View>
 
-              <View style={StyleCSS.styles.lineStyleDashed} />
+              <DashedLine
+              dashLength={5}
+              dashThickness={1}
+              dashGap={5}
+              dashColor={lineColor}
+            />
 
               <View style={styles.row}>
                 <View style={styles.halfWidth}>
-                  <Text style={[styles.row_title]}>Teacher Name:</Text>
+                  <Text style={[styles.row_title]}>Teacher Name</Text>
                   {attendancesStatus === 'loading' ? (
                     <Bubbles size={7} color={brandColor} />
                   ) : (
@@ -415,7 +424,7 @@ onRefresh();
                   )}
                 </View>
                 <View style={styles.halfWidth}>
-                  <Text style={[styles.row_title]}>Total No. of Classes:</Text>
+                  <Text style={[styles.row_title]}>Total No. of Classes</Text>
                   {attendancesStatus === 'loading' ? (
                     <Bubbles size={7} color={brandColor} />
                   ) : (
@@ -426,7 +435,12 @@ onRefresh();
                 </View>
               </View>
 
-              <View style={StyleCSS.styles.lineStyleDashed} />
+              <DashedLine
+              dashLength={5}
+              dashThickness={1}
+              dashGap={5}
+              dashColor={lineColor}
+            />
               <View style={styles.row}>
                 <View style={styles.halfWidth}>
                   <Text style={styles.row_title}>
@@ -443,7 +457,7 @@ onRefresh();
 
                 <View style={styles.halfWidth}>
                   <Text style={styles.row_title}>
-                    No. of Classes Remaining:
+                    No. of Classes Remaining
                   </Text>
                   {attendancesStatus === 'loading' ? (
                     <Bubbles size={7} color={brandColor} />
@@ -455,10 +469,15 @@ onRefresh();
                 </View>
               </View>
 
-              <View style={StyleCSS.styles.lineStyleDashed} />
+              <DashedLine
+              dashLength={5}
+              dashThickness={1}
+              dashGap={5}
+              dashColor={lineColor}
+            />
               <View style={styles.row}>
                 <View style={styles.halfWidth}>
-                  <Text style={styles.row_title}>No. of Classes Disputed:</Text>
+                  <Text style={styles.row_title}>No. of Classes Disputed</Text>
                   {attendancesStatus === 'loading' ? (
                     <Bubbles size={7} color={brandColor} />
                   ) : (
@@ -469,7 +488,7 @@ onRefresh();
                 </View>
 
                 <View style={styles.halfWidth}>
-                  <Text style={styles.row_title}>No. of Classes Refunded:</Text>
+                  <Text style={styles.row_title}>No. of Classes Refunded</Text>
                   {attendancesStatus === 'loading' ? (
                     <Bubbles size={7} color={brandColor} />
                   ) : (
@@ -616,48 +635,61 @@ onRefresh();
         /> */}
       {editAttendanceModal ? (
         <Modal presentationStyle="overFullScreen" transparent={true}>
-          <View style={styles.modalBackground}>
-            <View style={styles.modalView}>
-              <View style={styles.modalLine}></View>
-              <Text style={styles.modalTitle}>{modalTitle}</Text>
-              <View style={styles.modal_row}>
+          <TouchableOpacity  activeOpacity={1} onPress={()=> setEditAttendanceModal(false)} style={StyleCSS.styles.modalBackground}>
+            <TouchableOpacity activeOpacity={1}  onPress={()=>{}} style={StyleCSS.styles.modalView}>
+              <>
+              <View style={StyleCSS.styles.modalLine}></View>
+              <Text style={StyleCSS.styles.modalTitle}>{modalTitle}</Text>
+              <View style={[styles.modal_row, {flexDirection:'row'}]}>
                 <Text style={styles.row_title}>Class No. </Text>
                 <Text style={styles.row_content}>
                   {attendances[index].class_info}
                 </Text>
               </View>
               <View style={styles.modal_row}>
-                <Text
-                  style={styles.input}
-                  onPress={() => {
-                    showDateTimePicker();
-                  }}>
-                  {attendances[index].class_taken
+              <CustomDateTimePicker
+                  showDateTimePicker={showDateTimePicker}
+                  // style={{}}
+                  selectedValue={attendances[index].class_taken &&
+                    Moment(attendances[index].class_taken).format(
+                      'MMM DD, YYYY',
+                    )}
+                  label = {'Class Taken on *'}
+                  maximumDate={new Date()}
+                  isVisible={isDateTimePickerVisible}
+                  mode="date"
+                  onConfirm={(selectedDate : any) => {
+                    handleDatePicked(selectedDate, attendances[index], index);
+                  }}
+                  onCancel={hideDateTimePicker}
+                  />
+                  {/* <TouchableOpacity 
+                     style={StyleCSS.styles.datePicker}
+                     onPress={() => {
+                      showDateTimePicker();
+                    }}
+                    >
+                    <Text
+                      style={{color:font1, fontSize:14, fontFamily: Helper.switchFont('medium')}}
+                     
+                      >
+                      {attendances[index].class_taken
                     ? attendances[index].class_taken &&
                       Moment(attendances[index].class_taken).format(
                         'MMM DD, YYYY',
                       )
                     : 'Class Taken on *'}
-                </Text>
-
-                {attendances[index].class_taken &&
+                    </Text>
+                    
+                    {attendances[index].class_taken &&
                 attendances[index].class_taken !== '' ? (
                   <Text
-                    style={{
-                      position: 'absolute',
-                      top: -10,
-                      left: 10,
-                      backgroundColor: '#fff',
-                      fontSize: 12,
-                      color: font2,
-                    }}>
+                    style={styles.topLabel}>
                     Class Taken on *
                   </Text>
                 ) : null}
-                <View style={{position: 'absolute', right: 16, top: 16}}>
-                  <Calender />
-                </View>
-                <DateTimePickerModal
+                    <View ><Calender/></View>
+                    <DateTimePickerModal
                   maximumDate={new Date()}
                   isVisible={isDateTimePickerVisible}
                   mode="date"
@@ -666,6 +698,9 @@ onRefresh();
                   }}
                   onCancel={hideDateTimePicker}
                 />
+
+                  </TouchableOpacity> */}
+                
               </View>
 
               <View style={styles.modal_row}>
@@ -677,9 +712,9 @@ onRefresh();
                     <Rating
                       // ratingImage={RATING}
                       ratingColor={secondaryColor}
-                      // tintColor='red'
+                       tintColor='#fff'
                       type="custom"
-                      //   ratingBackgroundColor='#c8c7c8'
+                         ratingBackgroundColor='#c8c7c8'
                       startingValue={attendances[index].rating}
                       onFinishRating={ratingCompleted}
                       ratingCount={5}
@@ -703,15 +738,7 @@ onRefresh();
                           </Text>
                         </Text> */}
                   <Textarea
-                    containerStyle={{
-                      height: 158,
-                      width: width - 32,
-                      backgroundColor: 'rgb(255, 255, 255)',
-                      borderRadius: 12,
-                      padding: 10,
-                      borderWidth: 0.5,
-                      borderColor: lineColor,
-                    }}
+                    containerStyle={StyleCSS.styles.modalTextarea}
                     style={styles.reviewTextArea}
                     onChangeText={(text: string) => {
                       let attendanceTemp = attendances.map((o: any) => ({
@@ -722,14 +749,14 @@ onRefresh();
                       setSelectedReview(text.trim());
                     }}
                     defaultValue={attendances[index].review}
-                    placeholder={'Review *'}
+                    placeholder={'How was your experience? *'}
                     placeholderTextColor={font2}
                     underlineColorAndroid={'transparent'}
                   />
                 </View>
               </View>
-              <View style={[StyleCSS.styles.lineStyleLight, {marginTop: 24}]} />
-              <View style={[styles.row]}>
+              <View style={[StyleCSS.styles.lineStyleLight, {marginTop: 16}]} />
+              <View style={[StyleCSS.styles.modalButton]}>
                 <TouchableOpacity
                   style={styles.cancelButton}
                   onPress={() => {
@@ -745,8 +772,9 @@ onRefresh();
                   <Text style={styles.submitAttendanceText}>Submit</Text>
                 </TouchableOpacity>
               </View>
-            </View>
-          </View>
+              </>
+            </TouchableOpacity>
+          </TouchableOpacity>
         </Modal>
       ) : null}
       {isRefillModalVisible ? (
@@ -768,7 +796,7 @@ onRefresh();
                 }}>
                 <Text
                   style={{
-                    color: 'rgb(108, 108, 108)',
+                    color: font2,
                     textAlign: 'center',
                     fontFamily: Helper.switchFont('regular'),
                     fontSize: 14,
@@ -841,6 +869,7 @@ const styles = StyleSheet.create({
   modal_row: {
     flexDirection: 'row',
     marginVertical: 12,
+    marginHorizontal:16
   },
   lineStyle: {
     borderBottomWidth: 0.7,
@@ -851,12 +880,12 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     paddingBottom: 50,
-    marginTop: 109,
+    marginTop: config.headerHeight,
   },
   row: {
     paddingVertical: 16,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
 
   row_title: {
@@ -878,10 +907,11 @@ const styles = StyleSheet.create({
   },
 
   attendanceListWrapper: {
-    backgroundColor: appBackground,
-    marginTop: 10,
-    paddingTop: 10,
-    paddingHorizontal: 10,
+    backgroundColor: background4,
+    // marginTop: 8,
+    height:'100%',
+    paddingTop: 8,
+    paddingHorizontal: 16,
   },
   cardView: {
     width: '90%',
@@ -945,11 +975,12 @@ const styles = StyleSheet.create({
   },
   rating: {
     flexDirection: 'row',
+    marginTop:8,
   },
   reviewTextArea: {
     width: '100%',
     height: 150,
-    color: font2,
+    color: font1,
     fontSize: 14,
     textAlignVertical: 'top',
     borderRadius: 5,
@@ -1000,7 +1031,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontWeight: '700',
-    fontFamily: Helper.switchFont('medium'),
+    fontFamily: Helper.switchFont('bold'),
     fontSize: 14,
     lineHeight: 18,
   },
@@ -1083,28 +1114,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: Helper.switchFont('medium'),
   },
-  modalLine: {
-    alignSelf: 'center',
-    marginTop: 8,
-    borderRadius: 5,
-    borderColor: font2,
-    borderWidth: 1.5,
-    width: 56,
-    opacity: 0.3,
-  },
-  modalBackground: {
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    height: '100%',
-  },
-  modalView: {
-    alignSelf: 'flex-end',
+
+  topLabel:{
+    position: 'absolute',
+    top: -10,
+    left: 10,
     backgroundColor: '#fff',
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    padding: 16,
-    //  top:252,
-    zIndex: 20,
-  },
+    fontSize: 12,
+    color: font2,
+  }
 });

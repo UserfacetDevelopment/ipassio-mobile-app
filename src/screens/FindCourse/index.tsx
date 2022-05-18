@@ -69,6 +69,7 @@ import {
   professional,
   lineColor2light,
   background4,
+  secondaryColor,
 } from '../../styles/colors';
 import SheetCSS from '../../styles/style';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -637,9 +638,10 @@ export default function FindCourse({navigation, route}: Props) {
                 <View style={{alignItems: 'center', flexDirection: 'row'}}>
                   <View style={styles.courseRating}>
                     <Rating
-                      ratingColor="#436CD7"
+                      ratingColor={secondaryColor}
                       type="custom"
-                      // tintColor="#fff"
+                      tintColor="#fff"
+                      ratingBackgroundColor='#c8c7c8'
                       startingValue={course.rating.avg_review}
                       readonly
                       ratingCount={5}
@@ -1010,6 +1012,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    shadowColor: 'rgba(40, 47, 54)', 
+    shadowOffset:{
+        width:0,
+        height:10,
+    },
+    shadowOpacity:0.1,
+    elevation:0.8,
+    shadowRadius: 30,
   },
   wrapper: {
     flexDirection: 'row',

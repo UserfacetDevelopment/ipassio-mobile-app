@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Alert,
   Animated,
+  Platform,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -40,6 +41,7 @@ import HeaderInner from '../../components/HeaderInner';
 import StyleCSS from '../../styles/style';
 import Time from '../../assets/images/time.svg';
 import Calender from '../../assets/images/calender.svg'
+import CustomDateTimePicker from '../../components/CustomDateTimePicker';
 
 type Props = NativeStackScreenProps<RootParamList, 'AddSession'>;
 
@@ -61,7 +63,7 @@ export interface CreateSessionInterfaceFinal {
   userToken: string;
 }
 
-const AddSession = ({setShowAddSessionModal, navigation}) =>
+const AddSession = ({setShowAddSessionModal, navigation, onRefresh}) =>
   // {navigation, route}: Props
   {
     const dispatch = useAppDispatch();
@@ -420,6 +422,7 @@ const meetingPlatforms = [
           setShowAddSessionModal(false);
           dispatch(setPageLoading(false));
           if (response.data.status == 'success') {
+           
             navigation.navigate('ActionStatus', {
               messageStatus: 'success',
               messageTitle: 'Congratulations!',
@@ -441,6 +444,7 @@ const meetingPlatforms = [
               backRoute: 'Schedules',
             });
           }
+          onRefresh();
         })
         .catch(error => {
           dispatch(setPageLoading(false));
@@ -470,10 +474,10 @@ const meetingPlatforms = [
                 style={{
                   marginBottom: 5,
                 }}></View> */}
-
+<View>
               <View
-              // style={styles.formWrapper}
-              >
+                // style={styles.formWrapper}
+                 >
                 <View style={styles.formElement}>
                  
                   <CustomDropdown
@@ -512,7 +516,7 @@ const meetingPlatforms = [
                     />
                   </View>
                 )}
-                <View>
+                <View style={{paddingHorizontal:16}}>
                   <Text style={[styles.labelContent]}>
                     Timezone: {userData.timezone}
                   </Text>
@@ -531,52 +535,20 @@ const meetingPlatforms = [
                   />
                 </View>
                 <View style={styles.formElement}>
+                  <CustomDateTimePicker
+                  showDateTimePicker={showDateTimePicker}
+                  selectedValue={selectedDate}
+                  label = {'Select Date *'}
+                  minimumDate={new Date()}
+                  isVisible={isDateTimePickerVisible}
+                  mode="date"
+                  onConfirm={(selectedDate: any) => {
+                    handleDatePicked(selectedDate);
+                  }}
+                  onCancel={hideDateTimePicker}
+                  />
+               
                   
-                  <View style={StyleCSS.styles.flexDirRow}>
-                    <Text
-                    style={{ paddingTop: 15,
-                      paddingBottom:15,
-                      paddingHorizontal: 16,
-                      flexDirection: 'row',
-                      flex: 1,
-                      alignItems:'center',
-                      borderWidth: 1,
-                      borderColor: dropdownBorder,
-                      borderRadius: 8,}}
-                      style={styles.input}
-                      onPress={() => {
-                        showDateTimePicker();
-                      }}>
-                      {selectedDate ? selectedDate : 'Select Date'}
-                    </Text>
-                    
-                    {selectedDate ? (
-                      <Text
-                        style={{
-                          position: 'absolute',
-                          top: -8,
-                          left: 7,
-                          paddingHorizontal: 4,
-                          backgroundColor: '#fff',
-                          fontSize: 12,
-                          color: font2,
-                        }}>
-                        Select Date *
-                        
-                      </Text>
-                    ) : null}
-                    <View ><Calender/></View>
-                    <DateTimePickerModal
-                  
-                      minimumDate={new Date()}
-                      isVisible={isDateTimePickerVisible}
-                      mode="date"
-                      onConfirm={selectedDate => {
-                        handleDatePicked(selectedDate);
-                      }}
-                      onCancel={hideDateTimePicker}
-                    />
-                  </View>
                 </View>
 
                 <View style={styles.formElement}>
@@ -606,18 +578,14 @@ const meetingPlatforms = [
                     backTitle={'Select Class End Time'}
                   />
                 </View>
-                <View
-                  style={[StyleCSS.styles.lineStyleLight, {marginTop: 24}]}
+                
+              </View>
+              <View
+                  style={[StyleCSS.styles.lineStyleLight, {marginTop: 12}]}
                 />
                 <View
                   style={[
-                    {
-                      alignItems: 'center',
-                      flexDirection: 'row',
-                      marginBottom: 20,
-                      
-                      paddingTop: 16,
-                    },
+                   StyleCSS.styles.modalButton
                   ]}>
                   <TouchableOpacity
                     style={{
@@ -643,7 +611,7 @@ const meetingPlatforms = [
                         color: secondaryColor,
                         textAlign: 'center',
                         fontWeight: '700',
-                        fontFamily: Helper.switchFont('medium'),
+                        fontFamily: Helper.switchFont('bold'),
                         fontSize: 14,
                         lineHeight: 18,
                       }}>
@@ -677,7 +645,7 @@ const meetingPlatforms = [
                     </Text>
                   </TouchableOpacity>
                 </View>
-              </View>
+                </View>
 
             </KeyboardAwareScrollView>
           </View>
@@ -702,18 +670,15 @@ const styles = StyleSheet.create({
     //marginTop: 189,
   },
   input: {
-    alignItems:'center',
-    color: font1,
-    margin: 0,
-    fontSize: 14,
-    padding: 12,
-    height: 48,
-    paddingLeft:16,
-    backgroundColor: 'transparent',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: dropdownBorder,
-    fontFamily: Helper.switchFont('regular'),
+    paddingVertical: 12,
+                      paddingHorizontal: 16,
+                      flexDirection: 'row',
+                      flex: 1,
+                      justifyContent:'space-between',
+                      alignItems:'center',
+                      borderWidth: 1,
+                      borderColor: dropdownBorder,
+                      borderRadius: 8
   },
   dropdown: {
     color: '#81878D',
@@ -738,6 +703,7 @@ const styles = StyleSheet.create({
   // },
   formElement: {
     paddingVertical: 12,
+    paddingHorizontal: 16,
   },
   labelContent: {
     fontFamily: Helper.switchFont('medium'),

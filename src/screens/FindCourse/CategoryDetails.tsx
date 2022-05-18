@@ -187,9 +187,10 @@ console.log(course)
                 <>
                   <View style={styles.courseRating}>
                     <Rating
-                      ratingColor="#436CD7"
+                      ratingColor={secondaryColor}
                       type="custom"
                       tintColor="#fff"
+                      ratingBackgroundColor='#c8c7c8'
                       startingValue={course.rating.avg_review}
                       readonly
                       ratingCount={5}
@@ -630,6 +631,8 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                         ratingColor={secondaryColor}
                         type="custom"
                         tintColor="#fff"
+                      ratingBackgroundColor='#c8c7c8'
+                       
                         startingValue={rating.avg_review}
                         readonly
                         ratingCount={5}
@@ -695,7 +698,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     })} */}
                   </View>
                 </View>
-                <View style={styles.whiteBg}>
+                {/* <View style={styles.whiteBg}>
                 <Image
                           style={{height:200, resizeMode:'contain'}}
                           source={{uri: category.detail_icon}}
@@ -713,12 +716,14 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     />
                   </View>
                 ) : null}
-                </View>
-                <StudentsLoveCourses
+                </View> */}
+                {/* WILL BE ADDED LATER */}
+                {/* <StudentsLoveCourses
                   studentTestimonial={studentTestimonial}
                   setStudentTestimonial={setStudentTestimonial}
-                />
-                <HowItWorks />
+                /> */}
+                 {/* WILL BE ADDED LATER */}
+                {/* <HowItWorks />
                 <View style={[styles.main, {backgroundColor:background5}]}>
                   <Text style={styles.section_title}> You May Also Like</Text>
                   {category.related_category.map((item: any, i: number) => {
@@ -739,8 +744,11 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     );
                   })}
                 </View>
-                <Queries />
-                <View style={[styles.main,{backgroundColor:background5}]}>
+                <Queries /> */}
+                
+                 {/* WILL BE ADDED LATER */}
+
+                {/* <View style={[styles.main,{backgroundColor:background5}]}>
                   <Text style={styles.section_title}>
                     About{' '}
                     {category && category.cover_picture_title
@@ -788,8 +796,9 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                       }}
                     />
                   ) : null}
-                </View>
-                {category.faq.length > 0 ? (
+                </View> */}
+                 {/* WILL BE ADDED LATER */}
+                {/* {category.faq.length > 0 ? (
                   <View style={styles.faq}>
                     <Text style={styles.faq_title}>FAQs</Text>
                     {category.faq.map((faq: any) => {
@@ -802,7 +811,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                       );
                     })}
                   </View>
-                ) : null}
+                ) : null} */}
               </ScrollView>
             </>
           )}

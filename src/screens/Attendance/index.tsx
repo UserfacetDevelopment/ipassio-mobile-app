@@ -24,7 +24,6 @@ import Textarea from 'react-native-textarea';
 import {Rating} from 'react-native-ratings';
 import Moment from 'moment';
 import Modal from 'react-native-modal';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import config from '../../config/Config';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {useAppDispatch} from '../../app/store';

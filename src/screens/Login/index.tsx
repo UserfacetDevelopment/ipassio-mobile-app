@@ -52,6 +52,7 @@ import { ScreenStackHeaderLeftView } from 'react-native-screens';
 import StyleCSS from '../../styles/style';
 import HeaderInner from '../../components/HeaderInner';
 import CustomStatusBar from '../../components/CustomStatusBar';
+import TextField from '../../components/CustomTextField';
 
 
 type Props = NativeStackScreenProps<RootParamList, 'Login'>;
@@ -312,27 +313,29 @@ const [active , setActive] = useState<boolean>(false);
 
           {/* <View> */}
           {/* <Text style={styles.inputLabel}>Username/Email</Text> */}
-          <TextInput
-          label='Username/Email'
+          <View style={styles.formInput}>
+          <TextField
+          label='Email'
           mode='outlined'
-          theme={{colors: {primary: font2}}}
+          
           onFocus={() => setActive(true)}
           onBlur={() => setActive(false)}
-            style={StyleCSS.styles.input}
-            onChangeText={text => {
+            onChangeText={(text : any ) => {
               setUsername(text);
-            }}></TextInput>
+            }}></TextField>
+            </View>
           {/* <Text style={styles.inputLabel}>Password</Text> */}
-          <TextInput
+          <View style={styles.formInput}>
+          <TextField
           label='Password'
           mode='outlined'
-          theme={{colors: {primary: font2}}}
-          style={[StyleCSS.styles.input, {marginBottom:0}]}
+
             secureTextEntry={!viewPassword}
             //style={styles.inputpassword}
-            onChangeText={text => {
+            onChangeText={(text: any) => {
               setPassword(text);
-            }}></TextInput>
+            }}></TextField>
+            </View>
           {password.length ? (
             <TouchableOpacity
               style={styles.inputViewIconWrapper}
@@ -577,4 +580,7 @@ const styles = StyleSheet.create({
   brandColorText: {
     color: brandColor,
   },
+  formInput:{
+    marginTop:24
+  }
 });

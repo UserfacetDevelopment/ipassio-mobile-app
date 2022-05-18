@@ -29,7 +29,7 @@ import {
 import {userState} from '../../reducers/user.slice';
 import {loaderState, setPageLoading} from '../../reducers/loader.slice';
 import PageLoader from '../../components/PageLoader';
-import {brandColor} from '../../styles/colors';
+import {brandColor, font1, font2, secondaryColor, secondaryColorBorder} from '../../styles/colors';
 import Helper from '../../utils/helperMethods';
 import CustomDropdown from '../../components/CustomDropdown';
 import config from '../../config/Config';
@@ -37,6 +37,7 @@ import {useAppDispatch} from '../../app/store';
 import { Select } from 'native-base';
 import CustomStatusBar from '../../components/CustomStatusBar';
 import StyleCSS from '../../styles/style';
+import TextField from '../../components/CustomTextField';
 
 type Props = NativeStackScreenProps<RootParamList, 'BillingAddress'>;
 
@@ -187,11 +188,33 @@ const BillingAddress: FC<Props> = ({navigation}) => {
   return (
     <>
     <HeaderInner
-      type={'findCourse'}
-      back={true}
-      navigation={navigation}
-      title={"Billing Address"}
-      />
+            title={'Checkout'}
+            type={'findCourse'}
+            // backroute={route?.params?.backroute}
+            back={true}
+            removeRightHeader={true}
+            changingHeight={config.headerHeight}
+            navigation={navigation}
+            // backRoute={}
+          ></HeaderInner>
+          <View
+            style={{
+              position: 'absolute',
+              top: 100,
+              zIndex: 2,
+              height: 32,
+              width: '100%',
+            }}>
+            <Image
+              style={styles.formFillTimeImage}
+              source={require('@images/transactions_bg.png')}
+            />
+            <View style={styles.formFillTimeTextWrapper}>
+              <Text style={styles.formFillTimeText}>
+                Should take less than 48 seconds
+              </Text>
+            </View>
+          </View>
     <View style={styles.container}>
       <CustomStatusBar type={"inside"} />
       {pageLoading ? (
@@ -230,27 +253,27 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                 <Text style={styles.title}>Billing Address</Text>
               </View>
 
-              <View>
+              <View style={styles.formInput}>
                 {/* <Text style={styles.inputLabel}>First Name *</Text> */}
 
-                <TextInput
+                <TextField
                 mode="outlined"
                 label='First Name'
-                style={StyleCSS.styles.input}
+                // style={StyleCSS.styles.input}
                   value={firstName}
-                  onChangeText={text => setFirstName(text)}
+                  onChangeText={(text : string)=> setFirstName(text)}
                   editable={true}
                   selectTextOnFocus={false}
                 />
               </View>
 
-              <View>
+              <View  style={styles.formInput}>
                 {/* <Text style={styles.inputLabel}>Last Name *</Text> */}
 
-                <TextInput
+                <TextField
                 mode="outlined"
                 label='Last Name'
-                style={StyleCSS.styles.input}
+                // style={StyleCSS.styles.input}
                   value={lastName}
                   onChangeText={text => setState(text)}
                   editable={true}
@@ -258,10 +281,10 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                 />
               </View>
 
-              <View>
+              <View  style={styles.formInput}>
                 {/* <Text style={styles.inputLabel}>Street Address *</Text> */}
 
-                <TextInput
+                <TextField
                 mode="outlined"
                 label='Street Address *'
                 style={StyleCSS.styles.input}
@@ -272,10 +295,10 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                 />
               </View>
 
-              <View>
+              <View  style={styles.formInput}>
                 {/* <Text style={styles.inputLabel}>City *</Text> */}
 
-                <TextInput
+                <TextField
                 mode="outlined"
                 label='City *'
                   style={StyleCSS.styles.input}
@@ -286,25 +309,26 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                 />
               </View>
 
-              <View>
+              <View  style={styles.formInput}>
                 {/* <Text style={styles.inputLabel}>Postal Code *</Text> */}
 
-                <TextInput
+                <TextField
                 mode="outlined"
                 label='Postal Code *'
-                style={StyleCSS.styles.input}
+                // style={StyleCSS.styles.input}
                   keyboardType="numeric"
                   value={postalCode ? postalCode : ''}
-                  onChangeText={text => setPostalCode(text)}
+                  onChangeText={(text:string) => setPostalCode(text)}
                   editable={true}
                   selectTextOnFocus={false}
                 />
               </View>
               {checkoutDataDetails && countryList ? (
                 <>
-                  <View>
-                    <Text style={styles.inputLabel}>Country *</Text>
+                  <View  style={styles.formInput}>
+                    {/* <Text style={styles.inputLabel}>Country *</Text> */}
                     <CustomDropdown
+                    topLabel='Country *'
                       config={{color: 'rgb(44, 54, 65)'}}
                       onChangeVal={getCountry}
                       data={countryList}
@@ -318,9 +342,10 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                     />
                   </View>
 
-                  <View>
-                    <Text style={styles.inputLabel}>State *</Text>
+                  <View  style={styles.formInput}>
+                    {/* <Text style={styles.inputLabel}>State *</Text> */}
                     <CustomDropdown
+                    topLabel='State *'
                       config={{color: 'rgb(44, 54, 65)'}}
                       onChangeVal={getSelState}
                       data={stateList}
@@ -334,15 +359,25 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                 </>
               ) : null}
 
+              <View  style={styles.formInput}>
               <View>
-              <TextInput
-                      multiline
-                      label="Order Commments"
-                      mode="outlined"
-                      style={[StyleCSS.styles.input, styles.textarea]}
-                      value={orderComment}
-                      onChangeText={(text: string) => setOrderComment(text)}
-                    />
+                  {/* <Text style={styles.row_title}>
+                          Review
+                          <Text style={styles.req}>
+                            *
+                          </Text>
+                        </Text> */}
+                  <Textarea
+                    containerStyle={StyleCSS.styles.modalTextarea}
+                    style={styles.reviewTextArea}
+                    onChangeText={(text: string) => setOrderComment(text)}
+                    defaultValue={orderComment}
+                    placeholder={'Order Comments'}
+                    placeholderTextColor={font2}
+                    underlineColorAndroid={'transparent'}
+                  />
+                </View>
+             
                 {/* <Text style={styles.inputLabel}>Order Comments</Text> */}
 
                 {/* <Textarea
@@ -356,15 +391,15 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                 /> */}
               </View>
 
-              <View style={[styles.lineStyle4]} />
+              <View style={[StyleCSS.styles.lineStyleLight,{marginVertical:16}]} />
 
               <Text style={styles.stepInfoText}>
                 This is Step 3 of 4. In the next page you can review your order
                 and product information
               </Text>
 
-              <View style={styles.buttonWrapper}>
-                <View style={styles.cancelButtonWrapper}>
+              {/* <View style={styles.buttonWrapper}> */}
+                {/* <View style={styles.cancelButtonWrapper}>
                   <TouchableOpacity
                     style={styles.cancelButton}
                     onPress={() => {
@@ -374,9 +409,9 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                     >
                     <Text style={styles.cancelText}>Cancel</Text>
                   </TouchableOpacity>
-                </View>
+                </View> */}
 
-                <View style={styles.reviewOrderButtonWrapper}>
+                {/* <View style={styles.reviewOrderButtonWrapper}>
                   <TouchableOpacity
                     style={styles.reviewOrderButton}
                     onPress={() => updateUserBillingAddress()}>
@@ -388,8 +423,71 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                       style={styles.next}
                     />
                   </TouchableOpacity>
+                </View> */}
+                <View
+                  style={[
+                   StyleCSS.styles.modalButton, {marginHorizontal:-16}
+                  ]}>
+                  <TouchableOpacity
+                    style={{
+                      padding: 12,
+                      // paddingTop: 18,
+                      // paddingBottom: 18,
+                      backgroundColor: '#fff',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      width: '49%',
+                      zIndex: 1,
+                      borderColor: secondaryColorBorder,
+                      borderWidth:1,
+                      marginRight: '3%',
+                    }}
+                    onPress={() => {
+                      // navigation.goBack()
+                     
+                    }}>
+                    <Text
+                      style={{
+                        color: secondaryColor,
+                        textAlign: 'center',
+                        fontWeight: '700',
+                        fontFamily: Helper.switchFont('bold'),
+                        fontSize: 14,
+                        lineHeight: 18,
+                      }}>
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={{
+                      padding: 12,
+                      // paddingTop: 18,
+                      // paddingBottom: 18,
+                      backgroundColor: brandColor,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      width: '48%',
+                      zIndex: 1,
+                    }}
+                    onPress={() => updateUserBillingAddress()}>
+                    
+                    <Text
+                      style={{
+                        color: '#fff',
+                        textAlign: 'center',
+                        fontWeight: '700',
+                        fontFamily: Helper.switchFont('medium'),
+                        fontSize: 14,
+                        lineHeight: 18,
+                      }}>
+                      Next
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-              </View>
+              {/* </View> */}
             </ScrollView>
           </KeyboardAwareScrollView>
         </SafeAreaView>
@@ -416,21 +514,19 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   safecontainer: {
-    marginHorizontal: 24,
-    marginTop: 20,
+    marginHorizontal: 16,
+    marginTop: 16,
   },
   titleBorder: {
-    marginTop: 50,
-    borderLeftWidth: 2,
-    borderLeftColor: brandColor,
-    marginBottom: 20,
+    marginTop:16,
+    marginBottom:4,
   },
   title: {
-    fontSize: 19,
-    margin: 0,
-    paddingLeft: 8,
-    color: 'rgb(44, 54, 65)',
-    fontFamily: Helper.switchFont('medium'),
+    marginTop: 16,
+    fontSize: 18,
+    color: font1,
+    fontWeight: '700',
+    fontFamily: Helper.switchFont('bold'),
   },
   body: {
     flex: 1,
@@ -535,11 +631,10 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   stepInfoText: {
-    fontSize: 11,
+    fontSize: 12,
     lineHeight: 18,
     fontFamily: Helper.switchFont('regular'),
-    color: '#81878D',
-    marginBottom: 24,
+    color: font2,
   },
   cancelButton: {
     backgroundColor: '#ffffff',
@@ -555,4 +650,30 @@ const styles = StyleSheet.create({
   },
   cancelButtonWrapper: {width: '30%', height: 50, zIndex: 1},
   reviewOrderButtonWrapper: {width: '70%', height: 50, alignItems: 'flex-end'},
+  formFillTimeImage: {
+    height: '100%',
+    width: '100%',
+  },
+  formFillTimeTextWrapper: {
+    paddingLeft: 16,
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    height: 32,
+    width: '100%',
+    // top: 100,
+  },
+  formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
+  formInput:{
+    marginVertical:12
+  },
+  reviewTextArea: {
+    width: '100%',
+    height: 150,
+    color: font1,
+    fontSize: 14,
+    textAlignVertical: 'top',
+    borderRadius: 5,
+  },
 });

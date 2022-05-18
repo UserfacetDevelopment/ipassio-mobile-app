@@ -38,10 +38,10 @@ export default function TransactionCard({
               setSelectedTransaction(0);
             }}>
             <View style={[styles.cardHeadSection]}>
-             <View style={{ height:56, width:56, borderWidth:1.3, borderColor:brandColor, justifyContent:'center', alignItems:'center', borderRadius: 30}}>
+             <View style={SheetCSS.styles.profilePicActive}>
                 <Image
                   source={{uri:userData.user_type === 'T' ?  data.student.profile_pic : userData.user_type === 'S' ? data.course.course_image : null}}
-                  style={[styles.profilePic]}
+                  style={[SheetCSS.styles.profilePic]}
                 />
               </View>
               <View style={[styles.cardTitleWrapper, {paddingVertical:userData.user_type === 'S' ? 0 : 6}]}>
@@ -163,7 +163,7 @@ export default function TransactionCard({
                
                   <Image
                     source={{uri: userData.user_type === 'T' ? data.student.profile_pic :  userData.user_type === 'S' ? data.course.course_image : null}}
-                    style={[styles.profilePic]}
+                    style={[SheetCSS.styles.profilePic]}
                   />
                
               </View>
@@ -284,12 +284,7 @@ const styles = StyleSheet.create({
   },
   cardTitleWrapperNS: {marginLeft: 16, flex:1},
 
-  profilePic: {
-    width: 48,
-    height: 48,
-    borderRadius: 25,
-    alignItems: 'center',
-  },
+  
 
   cardHeadSection: {
     flexDirection: 'row',

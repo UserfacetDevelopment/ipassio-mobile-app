@@ -34,7 +34,7 @@ import {RootNavigator} from './src/navigation/Navigators';
 import VersionCheck from 'react-native-version-check';
 import {BackHandler} from 'react-native';
 import {Linking} from 'react-native';
-import { brandColor, font1, font2, secondaryColor } from './src/styles/colors';
+import { brandColor, dropdownBorder, font1, font2, font3, lineColor, lineColor2, secondaryColor } from './src/styles/colors';
 import PushController from './src/utils/PushController'
 import { setFCMToken } from './src/reducers/user.slice';
 import SplashScreen from 'react-native-splash-screen'
@@ -43,9 +43,16 @@ const theme = {
   ...DefaultTheme,
   roundness: 8,
   colors: {
-    ...DefaultTheme.colors,
-    primary: "#CDD6E0",
-    accent: secondaryColor,
+    // ...DefaultTheme.colors,
+     primary: dropdownBorder,
+    accent: '#e1d',
+    // underlineColor:'transparent',
+     placeholder: font2, 
+          // text:font2,
+          //  primary: 'white',
+           underlineColor: 'transparent',    
+          // background : '#0f1a2b'
+          // activeUnderlineColor: '#e1d',
   },
 };
 

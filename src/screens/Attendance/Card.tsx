@@ -9,14 +9,14 @@ const Card = (props : any)=> {
 };
 const styles = StyleSheet.create({
   card: {
-    marginVertical:8,
+    marginVertical:4,
     shadowColor: 'rgba(186, 197, 208, 0.08)',
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
     shadowOpacity: 0.26,
     elevation: 8,
     backgroundColor: 'white',
-    padding: 20,
+    padding: 16,
     borderRadius: 8
   }
 });

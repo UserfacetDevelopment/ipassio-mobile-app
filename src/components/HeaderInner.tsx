@@ -298,7 +298,7 @@ const HeaderInner = (props: any) => {
               </Animated.Text>
               </View>
             </View>
-            {props.rightHeader ? null :
+            {props.removeRightHeader ? null :
             <>
             {console.log(props.backroute)}
             <Animated.View style={{flexDirection: 'row', alignItems:'center', justifyContent:'space-between', width:'30%'}}>

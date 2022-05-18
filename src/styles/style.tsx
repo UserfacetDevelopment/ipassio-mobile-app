@@ -8,6 +8,7 @@ import {
   appBackground,
   background4,
   brandColor,
+  dropdownBorder,
   font1,
   font2,
   font3,
@@ -15,6 +16,7 @@ import {
 } from '../styles/colors';
 const {height, width} = Dimensions.get('screen');
 import Helper from '../utils/helperMethods';
+import { HelperText } from 'react-native-paper';
 
 export default class StyleCSS {
   static styles = StyleSheet.create({
@@ -92,15 +94,18 @@ export default class StyleCSS {
 
       elevation: 0.8,
     },
+
     shadowWrapper: {
       backgroundColor: background4,
     },
     input: {
       backgroundColor: '#FFFFFF',
-      marginTop: 24,
+      // marginTop: 24,
       height: 48,
+
       fontFamily: helper.switchFont('medium'),
       fontSize:14,
+      lineHeight:20,
       color:font1
     },
     lineStyleDashed: {
@@ -157,5 +162,73 @@ export default class StyleCSS {
       opacity: 0.5,
       fontWeight: '600',
     },
+
+    //cards
+    profilePic: {
+      width: 48,
+      height: 48,
+      borderRadius: 25,
+      alignItems: 'center',
+    },
+    profilePicActive:{ 
+      height:56, 
+      width:56, 
+      borderWidth:1.3, 
+      borderColor:brandColor, 
+      justifyContent:'center', 
+    alignItems:'center', 
+    borderRadius: 30
+  },
+  datePicker: {
+    width:'100%',
+     paddingVertical: 12,
+                       paddingHorizontal: 16,
+                       flexDirection: 'row',
+                       flex: 1,
+                       justifyContent:'space-between',
+                       alignItems:'center',
+                       borderWidth: 1,
+                       borderColor: dropdownBorder,
+                       borderRadius: 8
+   },
+
+   //popup
+   modalBackground: {
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    height: '100%',
+  },
+  modalView: {
+position:'absolute',
+bottom:0,
+    alignSelf: 'flex-end',
+    backgroundColor: '#fff',
+    // marginTop:150,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    // padding: 16,
+    paddingTop:0,
+    //  top:252,
+    zIndex: 20,
+  },
+  modalLine:{alignSelf:'center', marginTop:8, borderRadius:5, borderColor: font2, borderWidth:1.5, width:56, opacity:0.3},
+  modalTitle:{fontWeight:'700', fontSize: 18, color: font1, marginVertical:12, marginHorizontal:16, fontFamily: Helper.switchFont('bold')},
+  modalButton: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingBottom: Platform.OS==='android' ? 16 :24,
+    paddingHorizontal:16,
+    paddingTop: 16,
+  },
+  modalTextarea:{
+    height: 158,
+    width: width - 32,
+    backgroundColor: 'rgb(255, 255, 255)',
+    borderRadius: 8,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: dropdownBorder,
+  }
   });
 }

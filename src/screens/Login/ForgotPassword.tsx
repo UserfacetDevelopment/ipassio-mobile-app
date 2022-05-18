@@ -33,6 +33,7 @@ import StyleCSS from '../../styles/style';
 import { font2 } from '../../styles/colors';
 import HeaderInner from '../../components/HeaderInner';
 import { useRoute } from '@react-navigation/native';
+import TextField from '../../components/CustomTextField';
 export interface ForgotPassswordInterface{
 email:string;
 type:string;
@@ -147,15 +148,13 @@ const routes = useRoute();
             style={styles.input}
             onChangeText={text => setEmail(text)}
             ></TextInput> */}
-            <TextInput
+            <TextField
               //   onSubmitEditing={() => {
               //     this.doFgtPassword();
               //   }}
               label="Email Address"
               mode="outlined"
-              theme={{colors: {primary: font2}}}
-              onChangeText={text => setEmail(text)}
-              style={StyleCSS.styles.input}
+              onChangeText={(text: string) => setEmail(text)}
               //textAlignVertical="top"
               //baseColor = '#C91F35'
               // value={email}

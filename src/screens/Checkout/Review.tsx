@@ -973,4 +973,19 @@ const styles = StyleSheet.create({
     fontFamily: Helper.switchFont('medium'),
     fontSize: 12,
   },
+  formFillTimeImage: {
+    height: '100%',
+    width: '100%',
+  },
+  formFillTimeTextWrapper: {
+    paddingLeft: 16,
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    height: 32,
+    width: '100%',
+    // top: 100,
+  },
+  formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
 });
