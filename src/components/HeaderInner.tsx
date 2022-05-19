@@ -256,7 +256,6 @@ const HeaderInner = (props: any) => {
     </View>
     {props.rightHeader ? null :
     <>
-    {console.log(props.backroute)}
     <Animated.View style={{flexDirection: 'row', alignItems:'center', justifyContent:'space-between', width:'30%'}}>
       <TouchableOpacity style={{height:48, width:48, zIndex: 9999, flexDirection: 'column', justifyContent:'center', alignItems:'center'}} onPress={()=>{props.navigation.navigate("Browse", {screen: 'Categories',params:{backroute:props.backroute}})}}>{props.browseSelected ? <BrowseActive/> : <Browse/>}<Text style={{fontSize:10, marginTop:2, color:'#fff', fontWeight:props.browseSelected ?'700' : '500', fontFamily:Helper.switchFont('regular')}}>Explore</Text></TouchableOpacity>
       <TouchableOpacity style={{height:48, width:50, zIndex:9999, flexDirection: 'column', justifyContent:'center', alignItems:'center'}} onPress={()=>{props.navigation.navigate('Browse', {screen : 'FindCourses', params:{backroute:props.backroute}})}}>{props.coursesSelected ? <CoursesActive/> : <Courses/> }<Text style={{fontSize:10, marginTop:2, color:'#fff', fontWeight:props.coursesSelected ?'700' : '500', fontFamily:Helper.switchFont('regular')}}>Courses</Text></TouchableOpacity>
@@ -299,7 +298,6 @@ const HeaderInner = (props: any) => {
             </View>
             {props.removeRightHeader ? null :
             <>
-            {console.log(props.backroute)}
             <Animated.View style={{flexDirection: 'row', alignItems:'center', justifyContent:'space-between', width:'30%'}}>
               <TouchableOpacity style={{height:48, width:48, zIndex: 9999, flexDirection: 'column', justifyContent:'center', alignItems:'center'}} onPress={()=>{props.navigation.navigate("Browse", {screen: 'Categories',params:{backroute:props.backroute}})}}>{props.browseSelected ? <BrowseActive/> : <Browse/>}<Text style={{fontSize:10, marginTop:2, color:'#fff', fontWeight:props.browseSelected ?'700' : '500', fontFamily:Helper.switchFont('regular')}}>Explore</Text></TouchableOpacity>
               <TouchableOpacity style={{height:48, width:50, zIndex:9999, flexDirection: 'column', justifyContent:'center', alignItems:'center'}} onPress={()=>{props.navigation.navigate('Browse', {screen : 'FindCourses', params:{backroute:props.backroute}})}}>{props.coursesSelected ? <CoursesActive/> : <Courses/> }<Text style={{fontSize:10, marginTop:2, color:'#fff', fontWeight:props.coursesSelected ?'700' : '500', fontFamily:Helper.switchFont('regular')}}>Courses</Text></TouchableOpacity>

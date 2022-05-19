@@ -8,6 +8,7 @@ import {
   Alert,
   Animated,
   Platform,
+  Dimensions
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -18,6 +19,7 @@ import CustomDropdown from '../../components/CustomDropdown';
 import CustomStatusBar from '../../components/CustomStatusBar';
 import {loaderState, setPageLoading} from '../../reducers/loader.slice';
 import {userState} from '../../reducers/user.slice';
+import { getLookups } from '../../reducers/courses.slice';
 import PageLoader from '../../components/PageLoader';
 import {ObjectTypeIndexer} from '@babel/types';
 import {getEnrolledCourses} from '../../reducers/dashboard.slice';
@@ -63,6 +65,7 @@ export interface CreateSessionInterfaceFinal {
   userToken: string;
 }
 
+const width = Dimensions.get('screen').width;
 const AddSession = ({setShowAddSessionModal, navigation, onRefresh}) =>
   // {navigation, route}: Props
   {
@@ -94,17 +97,56 @@ const AddSession = ({setShowAddSessionModal, navigation, onRefresh}) =>
     const [sameDay, setSameDay] = useState(false);
     const [dSelected, setDSelected] = useState<Date | undefined>(undefined);
 const [taughtOn , setTaughtOn] = useState(undefined)
+const [p, setP]= useState<any>(null);
+const[meetingPlatforms, setMeetingPlatforms] = useState<any>([])
 
+useEffect(() => {
+  dispatch(getLookups())
+  .unwrap()
+  .then((res) => {
+    console.log(res)
+    if (res.data.status === 'success') {
+      setP(res.data.data.course_platforms);
+      res.data.data.course_platforms.map((pt:any)=>{
+        meetingPlatforms.push({
+          label: pt.code,
+          value:pt.name
+        })
+      })}})
+      .catch((err)=>{
+        console.log(err)
+Alert.alert('', 'Something went wrong')
+      })
+    }, []);
+    
 
-const meetingPlatforms = [
-  {label:'GH', value:'Google Meet'},
-{label:'S', value:'Skype'},
-{label:'GD', value:'Google Duo'},
-{label:'WV', value:'WhatsApp Video'},
-{label:'B', value:'BOTIM'},
-{label:'Z', value:'Zoom'},
-{label:'I', value:'ipassio Video'}
-]
+//   useEffect(()=>{
+//     dispatch(getLookups())
+//     .unwrap()
+//     .then((res)=>{
+// // setP(res.data.data.course_platforms);
+//   res.data.data.course_platforms.map((pt:any)=>{
+//     meetingPlatform.push({
+//       label:pt.name,
+//       value: pt.code,
+//     })
+// }
+//   })
+//   .catch(()=>{
+
+//   })
+
+// }, []);
+
+// const meetingPlatforms = [
+//   {label:'GH', value:'Google Meet'},
+// {label:'S', value:'Skype'},
+// {label:'GD', value:'Google Duo'},
+// {label:'WV', value:'WhatsApp Video'},
+// {label:'B', value:'BOTIM'},
+// {label:'Z', value:'Zoom'},
+// {label:'I', value:'ipassio Video'}
+// ]
     // let scrollY= new Animated.Value(0.01);
     // let changingHeight;
     // let titleLeft, titleSize, titleTop, iconTop;
@@ -461,10 +503,10 @@ const meetingPlatforms = [
       <View style={styles.container}>
         {/* <CustomStatusBar type={"inside"} /> */}
 
-        {/* {pageLoading ? (
+        {pageLoading ? (
           // <></>
           <PageLoader />
-        ) : ( */}
+        ) : (
           <View>
            
             <KeyboardAwareScrollView
@@ -484,7 +526,7 @@ const meetingPlatforms = [
                     topLabel={
                       selectedCourseName !== '-' ? 'Select Course *' : undefined
                     }
-                    config={{color: '#81878D'}}
+                    config={{color: '#fff'}}
                     onChangeVal={getCourseId}
                     data={courses}
                     selectedIds={[]}
@@ -503,7 +545,7 @@ const meetingPlatforms = [
                       topLabel={
                         selectedStudentName ? 'Select Student *' : undefined
                       }
-                      config={{color: '#81878D'}}
+                      config={{color: '#fff'}}
                       onChangeVal={getStudentId}
                       data={studentList}
                       selectedIds={[]}
@@ -521,21 +563,22 @@ const meetingPlatforms = [
                     Timezone: {userData.timezone}
                   </Text>
                 </View>
-                <View style={styles.formElement}>
+                {meetingPlatforms ? <View style={styles.formElement}>
                   
                   <CustomDropdown
                  
                     topLabel={taughtOn ? 'Taught On *' : undefined}
-                    config={{color: font1}}
+                    config={{color: '#fff'}}
                     onChangeVal={getMeetingPlatform}
                     data={meetingPlatforms}
                     selectedIds={[]}
                     label={taughtOn ? taughtOn.value : 'Taught On'}
                     backTitle={'Select Meeting Platform'}
                   />
-                </View>
+                </View> : null }
                 <View style={styles.formElement}>
                   <CustomDateTimePicker
+                  width={width-32}
                   showDateTimePicker={showDateTimePicker}
                   selectedValue={selectedDate}
                   label = {'Select Date *'}
@@ -556,7 +599,7 @@ const meetingPlatforms = [
                   <CustomDropdown
                   customIcon = {<Time/>}
                     topLabel={startTime ? 'Start Time *' : undefined}
-                    config={{color: '#81878D'}}
+                    config={{color: '#fff'}}
                     onChangeVal={changeStartTime}
                     data={startTimeRangeList}
                     selectedIds={[]}
@@ -570,7 +613,7 @@ const meetingPlatforms = [
                   <CustomDropdown
                   customIcon = {<Time/>}
                     topLabel={endTime ? 'End Time *' : undefined}
-                    config={{color: font1}}
+                    config={{color: '#fff'}}
                     onChangeVal={changeEndTime}
                     data={endTimeRangeList}
                     selectedIds={[]}
@@ -649,7 +692,7 @@ const meetingPlatforms = [
 
             </KeyboardAwareScrollView>
           </View>
-        {/* )} */}
+       )}
         {/* <AppMessage
           status={appStatus}
           statusMessage={appStatusMessage}

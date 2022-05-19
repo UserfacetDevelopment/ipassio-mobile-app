@@ -65,6 +65,7 @@ export interface TeacherCalenderInterface {
 
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
+import CustomImage from '../../components/CustomImage';
 
 type Props = NativeStackScreenProps<RootParamList, 'CourseDetail'>;
 
@@ -494,9 +495,10 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
 
             {course.class_duration && (
               <View style={styles.iconWrapper}>
-                <SvgUri
+                <CustomImage  uri={`${config.media_url}images/course-detail/course-duration.svg`}/>
+                {/* <SvgUri
                   uri={`${config.media_url}images/course-detail/course-duration.svg`}
-                />
+                /> */}
                 <View style={styles.info}>
                   <Text style={styles.infoHead}>Course Duration</Text>
                   <Text style={styles.infoText}>

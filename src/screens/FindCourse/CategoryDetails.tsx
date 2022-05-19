@@ -78,15 +78,26 @@ import {useNavigation} from '@react-navigation/native';
 import HeaderInner from '../../components/HeaderInner';
 import StyleCSS from '../../styles/style';
 import CustomDropdown from '../../components/CustomDropdown';
+import LoginNavigation from '../../components/LoginNavigation';
+import CustomImage from '../../components/CustomImage';
 
 const CourseCard = ({course} : any) => {
+
+  useEffect(()=>{
+  //   function get_url_extension( url ) {
+  //     return url.split(/[#?]/)[0].split('.').pop().trim();
+  // }
+  // console.log(course.course_image.split(/[#?]/)[0].split('.').pop().trim())
+  },)
   const map = new Map();
   map.set('A', allLevels);
   map.set('I', intermediate);
   map.set('P', professional);
   map.set('B', beginner);
   map.set('S', superAdvanced);
-console.log(course)
+
+// console.log(course);
+
   const dispatch = useAppDispatch();
   const {isLoggedIn, userData, userLocation} = useSelector(userState);
   const navigation = useNavigation();
@@ -99,11 +110,14 @@ console.log(course)
         });
       }}
       style={styles.courseWrapper}>
-      <Image
+        <CustomImage
+         style={styles.courseImage}
+         uri={course.course_image}/>
+      {/* <Image
         defaultSource={require('@images/default_course_img.png')}
         style={styles.courseImage}
         source={{uri: course.course_image}}
-      />
+      /> */}
       {/* <View
         style={{
           position: 'absolute',
@@ -298,12 +312,12 @@ console.log(course)
       {!isLoggedIn
         ? userLocation?.data?.country === 'IN'
           ? course.teacher.ip_country === 'India'
-            ? `INR ${course.pricing[0].INR}`
+            ? `Rs ${course.pricing[0].INR}`
             : `US $${course.pricing[0].USD}`
           : `US $${course.pricing[0].USD}`
         : userData?.ip_country === 'India'
         ? course.teacher.ip_country === 'India'
-          ? `INR ${course.pricing[0].INR}`
+          ? `Rs ${course.pricing[0].INR}`
           : `US $${course.pricing[0].USD}`
         : `US $${course.pricing[0].USD}`}
 
@@ -362,7 +376,7 @@ export default function CategoryDetails({navigation, route}: Props) {
 
   const [courses, setCourses] = useState<any>(null)
 const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
-  console.log(courses);
+  // console.log(courses);
   const [studentTestimonial, setStudentTestimonial] = useState<boolean>(false);
   const [filter, setFilter] = useState<any>({value: 'Filter By', label: ''});
   const [sortBy, setSortBy] = useState<any>({value: 'Sort By', label: ''});
@@ -434,7 +448,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
       setOffset(offset + 10);
     }
   };
-  console.log(offset)
+  // console.log(offset)
   // const loadCourse = (course, index) => {
   //   return (
   //     <View style={styles.courseItemWrapper}>
@@ -477,7 +491,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
   //   );
   // };
 
-  console.log(categoryDetails);
+  // console.log(categoryDetails);
 
   const filterList = [
     {value: 'All Levels', label: 'A'},
@@ -514,7 +528,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                 style={{marginTop: config.headerHeight}}
                 contentInsetAdjustmentBehavior="always">
                 <View style={{backgroundColor: '#fff'}}>
-                  <Image
+                  {/* <Image
                     style={{
                       height: 200,
                       width: width,
@@ -522,7 +536,9 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                       position: 'absolute',
                     }}
                     source={{uri: category.cover_picture}}
-                  />
+                  /> */}
+                  <CustomImage
+                  uri={category.cover_picture}/>
 
                   <View style={styles.main}>
                     <View>
@@ -670,7 +686,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                       <View style={styles.filters}>
                         <CustomDropdown
                           topLabel={sortBy.label !== '' ? 'Sort By' : undefined}
-                          config={{color: font1}}
+                          config={{color: '#fff'}}
                           onChangeVal={getSortList}
                           data={sortList}
                           selectedIds={[]}
@@ -812,6 +828,9 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     })}
                   </View>
                 ) : null} */}
+                 {isLoggedIn ? null :
+      <View style={{marginBottom:40}}/>
+}
               </ScrollView>
             </>
           )}
@@ -824,10 +843,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
         />
       )}
       {isLoggedIn ? null :
-      <View style={{flexDirection:'row',position:'absolute', bottom:0, height:80, backgroundColor:'#fff', justifyContent:'center', alignItems:'center'}}>
-        <TouchableOpacity  onPress={()=>navigation.navigate('Login')} style={{width:'50%', alignItems:'center'}}><Text  style={{fontSize:14, color:font1}}> Sign in</Text></TouchableOpacity> 
-        <TouchableOpacity onPress={()=>Linking.openURL(config.FrontendBaseURL)} style={{width:'50%', alignItems:'center'}}><Text  style={{fontSize:14, color:font1}}>Sign up</Text></TouchableOpacity>
-      </View>
+      <LoginNavigation navigation={navigation}/>
 }
     </>
   );

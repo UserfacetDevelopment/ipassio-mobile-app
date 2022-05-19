@@ -330,7 +330,7 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                     {/* <Text style={styles.inputLabel}>Country *</Text> */}
                     <CustomDropdown
                     topLabel='Country *'
-                      config={{color: 'rgb(44, 54, 65)'}}
+                      config={{color: '#fff'}}
                       onChangeVal={getCountry}
                       data={countryList}
                       selectedIds={[]}
@@ -347,7 +347,7 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                     {/* <Text style={styles.inputLabel}>State *</Text> */}
                     <CustomDropdown
                     topLabel='State *'
-                      config={{color: 'rgb(44, 54, 65)'}}
+                    config={{color: '#fff'}}
                       onChangeVal={getSelState}
                       data={stateList}
                       selectedIds={[]}

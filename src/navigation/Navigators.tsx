@@ -477,49 +477,49 @@ const TeacherTabNavigator = () => {
   );
 };
 
-const RightHeader = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootParamList>>();
+// const RightHeader = () => {
+//   const navigation = useNavigation<NativeStackNavigationProp<RootParamList>>();
 
-  return (
-    <View style={styles.header}>
-      <TouchableOpacity
-        style={styles.headerButtonLeft}
-        // onPress={navigation}
-      >
-        <SvgUri
-          height="40"
-          uri={`${config.media_url}images/header/hamburg_menu_mobile.svg`}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity>
-        <SvgUri
-          height="40"
-          width="60"
-          uri={`${config.media_url}images/ipassio_logo.svg`}
-        />
-      </TouchableOpacity>
+//   return (
+//     <View style={styles.header}>
+//       <TouchableOpacity
+//         style={styles.headerButtonLeft}
+//         // onPress={navigation}
+//       >
+//         <SvgUri
+//           height="40"
+//           uri={`${config.media_url}images/header/hamburg_menu_mobile.svg`}
+//         />
+//       </TouchableOpacity>
+//       <TouchableOpacity>
+//         <SvgUri
+//           height="40"
+//           width="60"
+//           uri={`${config.media_url}images/ipassio_logo.svg`}
+//         />
+//       </TouchableOpacity>
 
-      <View style={styles.headerWrapper}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Categories')}
-          style={styles.headerButtonRight}>
-          <SvgUri
-            uri={`${config.media_url}images/header/mobile_navigation_browse.svg`}
-          />
-          <Text style={styles.headerText}>BROWSE</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('FindCourses')}
-          style={styles.headerButtonRight}>
-          <SvgUri
-            uri={`${config.media_url}images/header/mobile_navigation_courses.svg`}
-          />
-          <Text style={styles.headerText}>COURSES</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
+//       <View style={styles.headerWrapper}>
+//         <TouchableOpacity
+//           onPress={() => navigation.navigate('Categories')}
+//           style={styles.headerButtonRight}>
+//           <SvgUri
+//             uri={`${config.media_url}images/header/mobile_navigation_browse.svg`}
+//           />
+//           <Text style={styles.headerText}>BROWSE</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity
+//           onPress={() => navigation.navigate('FindCourses')}
+//           style={styles.headerButtonRight}>
+//           <SvgUri
+//             uri={`${config.media_url}images/header/mobile_navigation_courses.svg`}
+//           />
+//           <Text style={styles.headerText}>COURSES</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   );
+// };
 
 const CourseFlowNavigator = () => {
   const {loading, pageLoading} = useSelector(loaderState);
@@ -533,7 +533,7 @@ const CourseFlowNavigator = () => {
         options={{
           headerShown: false,
           //headerLeft: () => <LeftHeader />,
-          headerRight: () => <RightHeader />,
+          // headerRight: () => <RightHeader />,
         }}
       />
       <Stack.Screen
@@ -559,7 +559,7 @@ const CourseFlowNavigator = () => {
           headerShown: false,
           headerTitle: props => <LogoTitle {...props} />,
           //headerLeft: () => <LeftHeader />,
-          headerRight: () => <RightHeader />,
+          // headerRight: () => <RightHeader />,
         }}
       />
       <Stack.Screen
@@ -584,7 +584,7 @@ const CourseFlowNavigator = () => {
             </TouchableOpacity>
           ),
           //headerLeft: () => <LeftHeader />,
-          headerRight: () => <RightHeader />,
+          // headerRight: () => <RightHeader />,
         }}
       />
       <Stack.Screen

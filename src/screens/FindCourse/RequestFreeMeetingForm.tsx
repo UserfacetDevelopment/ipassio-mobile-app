@@ -29,7 +29,7 @@ import {
   secondaryColorBorder,
 } from '../../styles/colors';
 import {useSelector} from 'react-redux';
-import {courseState, requestFreeSession} from '../../reducers/courses.slice';
+import {courseState, requestFreeSession, getLookups} from '../../reducers/courses.slice';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import {userState} from '../../reducers/user.slice';
@@ -106,32 +106,29 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
   const [timezoneList, setTimezoneList] = useState([]);
   const [selectedGender, setSelectedGender] = useState<any>(undefined);
   const [meetingPlatform, setMeetingPlatform] = useState<any>(undefined);
-  const [platforms, setPlatforms] = useState<Array<any>>([
-    {
-      code: 'I',
-      label: 'ipassio videoconferencing(recommended)',
-      value: 'ipassio videoconferencing(recommended)',
-    },
-  ]);
+  const [platforms, setPlatforms] = useState<Array<any>>([]);
+  const [p, setP] = useState<any>(null);
   const [showField, setShowField] = useState<boolean>(false);
   const [fieldLabel, setFieldLabel] = useState('');
 
-  const showDateTimePicker = () => {
-    Keyboard.dismiss();
-    setIsDateTimePickerVisible(true);
-  };
+  
+
+  // const showDateTimePicker = () => {
+  //   Keyboard.dismiss();
+  //   setIsDateTimePickerVisible(true);
+  // };
 
   const hideDateTimePicker = () => {
     setIsDateTimePickerVisible(false);
   };
 
-  const handleDatePicked = (selectedDate: Date, index: number) => {
-    setDSelected(selectedDate);
-    setSelectedDate(Moment(selectedDate).format('MMM DD YYYY'));
-    setSelectedDateToPass(Moment(selectedDate).format('YYYY-MM-DD'));
-    hideDateTimePicker();
-    timeSlots[index].date = Moment(selectedDate).format('YYYY-MM-DD');
-  };
+  // const handleDatePicked = (selectedDate: Date, index: number) => {
+  //   setDSelected(selectedDate);
+  //   setSelectedDate(Moment(selectedDate).format('MMM DD YYYY'));
+  //   setSelectedDateToPass(Moment(selectedDate).format('YYYY-MM-DD'));
+  //   hideDateTimePicker();
+  //   timeSlots[index].date = Moment(selectedDate).format('YYYY-MM-DD');
+  // };
 
   let reasons = [
     {label: 'MT', value: 'Meet the teacher'},
@@ -269,7 +266,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
               dispatch(setPageLoading(false));
             });
         } else {
-          Alert.alert('', 'Add atleast onr time slot');
+          Alert.alert('', 'Enter date and time slots');
         }
       } else {
         Alert.alert('Fill details', 'Add your meeting platform details');
@@ -671,7 +668,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                           // theme={{colors: {primary: font2}}}
                           // style={styles.input}
                           mode="outlined"
-                          label="First Name *"
+                          label="First Name*"
                           value={value}
                           onBlur={onBlur}
                           onChangeText={value => onChange(value)}
@@ -680,7 +677,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                     />
                     {errors.guest_firstname && (
                       <Text style={styles.errorText}>
-                        First Name is required *
+                        Enter first name
                       </Text>
                     )}
                   </View>
@@ -695,7 +692,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                           // style={styles.input}
                           theme={{colors: {primary: font2}}}
                           mode="outlined"
-                          label="Last Name *"
+                          label="Last Name*"
                           value={value}
                           onBlur={onBlur}
                           onChangeText={value => onChange(value)}
@@ -704,7 +701,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                     />
                     {errors.guest_lastname && (
                       <Text style={styles.errorText}>
-                        Last Name is required *
+                        Enter last name
                       </Text>
                     )}
                   </View>
@@ -722,7 +719,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                           // style={styles.input}
                           mode="outlined"
                           theme={{colors: {primary: font2}}}
-                          label="Email Address *"
+                          label="Email Address*"
                           placeholder="Enter your email"
                           value={value}
                           onBlur={onBlur}
@@ -731,7 +728,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                       )}
                     />
                     {errors.guest_email && (
-                      <Text style={styles.errorText}>Email is required *</Text>
+                      <Text style={styles.errorText}>Enter an email address</Text>
                     )}
                     {errors.guest_email &&
                       errors.guest_email.type === 'pattern' && (
@@ -770,7 +767,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                       )}
                     />
                     {errors.number ? (
-                      <Text style={styles.errorText}>Required *</Text>
+                      <Text style={styles.errorText}>Enter mobile number</Text>
                     ) : null}
                   </View>
                   {/* <View style={styles.formGroup}>
@@ -829,7 +826,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                         backTitle={'Select Gender'}
                       />
                       {selectedGender === undefined && submitRequested ? (
-                        <Text style={styles.errorText}>Required *</Text>
+                        <Text style={styles.errorText}>Select gender</Text>
                       ) : null}
                     </View>
                     <View style={[styles.formGroup, {width: '48%'}]}>
@@ -851,7 +848,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                         )}
                       />
                       {errors.age && (
-                        <Text style={styles.errorText}>Age is required *</Text>
+                        <Text style={styles.errorText}>Enter age</Text>
                       )}
                       {errors.age && errors.age.type === 'pattern' && (
                         <Text style={styles.errorText}>
@@ -885,7 +882,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                         )}
                       />
                       {errors.city && (
-                        <Text style={styles.errorText}>Required *</Text>
+                        <Text style={styles.errorText}>Enter city / town</Text>
                       )}
                     </View>
                     <View style={[styles.formGroup, {width: '48%'}]}>
@@ -901,7 +898,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                         backTitle={'Select Country'}
                       />
                       {selectedCountry === undefined && submitRequested ? (
-                        <Text style={styles.errorText}>Required *</Text>
+                        <Text style={styles.errorText}>Enter Country</Text>
                       ) : null}
                     </View>
                   </View>
@@ -983,7 +980,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                     />
 
                     {reason === undefined && submitRequested ? (
-                      <Text style={styles.errorText}>Required *</Text>
+                      <Text style={styles.errorText}>Select the reason</Text>
                     ) : null}
                     {/* <Controller
               control={control}
@@ -1068,7 +1065,7 @@ zIndex={10000}
                     />
 
                     {meetingPlatform === undefined && submitRequested ? (
-                      <Text style={styles.errorText}>Required *</Text>
+                      <Text style={styles.errorText}>Select the meeting platform</Text>
                     ) : null}
                   </View>
                   {showField ? (
@@ -1311,6 +1308,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     marginTop: config.headerHeight + 32,
+    backgroundColor:'white'
   },
   safecontainer: {
     padding: 16,

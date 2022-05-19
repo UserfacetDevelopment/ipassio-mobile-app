@@ -42,6 +42,7 @@ import {font1, selectedDrop} from '../../styles/colors';
 import Others from '../../assets/images/others.svg';
 import Dropdown from '../../assets/images/dropdown.svg';
 import { configureFonts } from 'react-native-paper';
+import CustomImage from '../../components/CustomImage';
 
 type Props = NativeStackScreenProps<RootParamList, 'BrowseCategories'>;
 
@@ -69,7 +70,6 @@ export default function BrowseCategories({navigation, route}: Props) {
       .catch(() => dispatch(setLoading(false)));
   }, []);
 
-  console.log(categoryData);
 
   const loadCategory = (item: any, index: number): any => {
     return (
@@ -106,7 +106,6 @@ export default function BrowseCategories({navigation, route}: Props) {
       </TouchableOpacity>
     );
   };
-  console.log(route.params?.backroute);
   return (
     <>
       <HeaderInner
@@ -141,7 +140,7 @@ export default function BrowseCategories({navigation, route}: Props) {
                   {cd.is_master ? (
                     <>
 
-                    {console.log(cd.top_navigation_icon)}
+                    {/* {console.log(cd.top_navigation_icon)} */}
                       <View style={{paddingBottom: 20}}>
                         <View
                           style={{
@@ -150,7 +149,8 @@ export default function BrowseCategories({navigation, route}: Props) {
                             flexDirection: 'row',
                             alignItems: 'center',
                           }}>
-                            <SvgUri uri={cd.top_navigation_icon} />
+                            <CustomImage uri={cd.top_navigation_icon}/>
+                            {/* <SvgUri uri={cd.top_navigation_icon} /> */}
                           {/* <Image
                             style={{height: 100, width: 100, resizeMode:'cover'}}
                             source={{uri: cd.top_navigation_icon}}

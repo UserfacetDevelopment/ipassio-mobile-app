@@ -664,7 +664,7 @@ const [couponSuccess, setCouponSuccess] = useState(false)
                         <View>
                           <CustomDropdown
                             topLabel="Classes Per Week"
-                            config={{color: '#81878D'}}
+                            config={{color: '#fff'}}
                             onChangeVal={handleClassPerWeekChange}
                             data={itemsClassPerWeek}
                             label={
@@ -682,7 +682,7 @@ const [couponSuccess, setCouponSuccess] = useState(false)
                         <View>
                           <CustomDropdown
                             topLabel="Number of Weeks (to purchase for)"
-                            config={{color: '#81878D'}}
+                            config={{color: '#fff'}}
                             onChangeVal={handleNoOfWeeksChange}
                             data={itemsWeeks}
                             label={

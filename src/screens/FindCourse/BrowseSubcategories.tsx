@@ -51,7 +51,6 @@ export default function BrowseSubcategories({navigation, route}: Props) {
 const categories = route.params?.subcategory;
   const {loading} = useSelector(loaderState);
 
-  console.log(categories);
 
   return (
       

@@ -483,7 +483,7 @@ export default function Dashboard({navigation}: Props) {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [currentRoute, setCurrentRoute] = useState('Dashboard');
   const [selectedStudentID, setSelectedStudentID] = useState<string>('');
-  const [checkoutToken , setCheckoutToken] = useState('');
+  const [checkoutToken , setCheckoutToken] = useState<string|undefined>(undefined);
   let scrollY = new Animated.Value(0.01);
   // let changingHeight = scrollY.interpolate({
   //   inputRange: [0.01, 50],
@@ -633,6 +633,19 @@ export default function Dashboard({navigation}: Props) {
   //     });
   // };
 
+useEffect(()=>{
+  if(checkoutToken){
+    navigation.navigate('Checkout', {
+      screen: 'CartPage',
+      params: {
+        
+        checkoutToken: checkoutToken
+      },
+    });
+  }
+  
+}, [checkoutToken]);
+
   const addToCart = (data: any): void => {
     console.log(data)
     // dispatch(setCheckoutDataDetails({}));
@@ -650,13 +663,7 @@ export default function Dashboard({navigation}: Props) {
         dispatch(setPageLoading(true));
         if(response.data.status==="success"){
           setCheckoutToken(response.data.data.checkout_token);
-          navigation.navigate('Checkout', {
-            screen: 'CartPage',
-            params: {
-              
-              checkoutToken: checkoutToken
-            },
-          });
+          
         }
         else if(response.data.status==='failure'){
           dispatch(setPageLoading(false));

@@ -2,7 +2,7 @@ import {Platform, Alert, PermissionsAndroid, Linking} from 'react-native';
 import country_region_data from './country_region.json';
 
 export default class Config {
-  static env = 'dev';
+  static env = 'prod';
   static version = Platform.OS === 'ios' ? '2.0.4' : '2.0.2';
   static build_number = Platform.OS === 'ios' ? 14 : 28;
   // static version = Platform.OS === "ios" ? "1.0.13" : "1.0.28";

@@ -156,7 +156,7 @@ const Review: FC<Props> = ({navigation}) => {
               messageTitle: 'Congratulations!',
               messageDesc: response.data.error_message.message,
               timeOut: 4000,
-              backRoute: 'DashboardPage',
+              backRoute: 'Dashboard',
             });
           } else if (response.data.status === 'failure') {
             Alert.alert('', response.data.error_message.message, [
@@ -234,7 +234,7 @@ const Review: FC<Props> = ({navigation}) => {
               messageTitle: 'Congratulations!',
               messageDesc: response.data.error_message.message,
               timeOut: 4000,
-              backRoute: 'DashboardPage',
+              backRoute: 'Dashboard',
             });
           } else if (response.data.status === 'failure') {
             Alert.alert('', response.data.error_message.message, [
@@ -249,7 +249,7 @@ const Review: FC<Props> = ({navigation}) => {
             messageTitle: 'Sorry!',
             messageDesc: config.messages.common_error,
             timeOut: 4000,
-            backRoute: 'DashboardPage',
+            backRoute: 'Dashboard',
           });
         });
     } else if (data.title === 'cancel') {

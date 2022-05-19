@@ -273,6 +273,19 @@ bottom:0,
     fontFamily: Helper.switchFont('bold'),
     fontSize: 14,
     lineHeight: 18,
-  }
+  },
+  contentText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: font1,
+    fontFamily: helper.switchFont('medium'),
+  },
+  labelText: {
+    fontSize: 14,
+    color: font2,
+    fontWeight:'500',
+    fontFamily: Helper.switchFont('medium'),
+  },
+  
   });
 }

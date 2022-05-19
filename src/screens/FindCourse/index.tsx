@@ -79,6 +79,7 @@ import {Bubbles} from 'react-native-loader';
 import Drop from '../../assets/images/more_reviews.svg';
 import Filter from '../../assets/images/filter.svg';
 import BottomNavigation from '../../components/BottomNavigation';
+import LoginNavigation from '../../components/LoginNavigation';
 type Props = NativeStackScreenProps<RootParamList, 'FindCourses'>;
 const {width,height} = Dimensions.get('screen');
 
@@ -738,12 +739,12 @@ export default function FindCourse({navigation, route}: Props) {
                 {!isLoggedIn
                   ? userLocation?.data?.country === 'IN'
                     ? course.user.ip_country === 'India'
-                      ? `INR ${course.pricing[0].INR}`
+                      ? `Rs ${course.pricing[0].INR}`
                       : `US $${course.pricing[0].USD}`
                     : `US $${course.pricing[0].USD}`
                   : userData?.ip_country === 'India'
                   ? course.user.ip_country === 'India'
-                    ? `INR ${course.pricing[0].INR}`
+                    ? `Rs ${course.pricing[0].INR}`
                     : `US $${course.pricing[0].USD}`
                   : `US $${course.pricing[0].USD}`}
               </Text>
@@ -792,6 +793,7 @@ export default function FindCourse({navigation, route}: Props) {
       <View style={styles.main}>
         {!pageLoading && courseData.status === 'success' && courseData.data ? (
           <>
+         
             <View style={styles.safecontainer}>
               <View style={styles.filterBox}>
                 <View style={{flexDirection:'row', alignItems:'center'}}>
@@ -865,8 +867,8 @@ export default function FindCourse({navigation, route}: Props) {
 
               {/* <ScrollView contentInsetAdjustmentBehavior="always"> */}
               {/* COURSES ARE REPEATING */}
-
-              <View style={{marginBottom: 400, marginTop:Platform.OS === 'android' ? 6 : 8}}>
+{courseData.data.length === 0 ? <Text style={styles.wrongText}>No courses found</Text>:
+              <View style={{ marginBottom: 470,backgroundColor:background4, marginTop:Platform.OS === 'android' ? 6 : 8}}>
                 <FlatList
                   data={coursesArray}
                   renderItem={({item, index}) => loadCourse(item, index)}
@@ -874,15 +876,18 @@ export default function FindCourse({navigation, route}: Props) {
                   onEndReachedThreshold={0.5}
                   onEndReached={handleOffset}
                 />
+                {/* <View style={{marginBottom:200}}/> */}
               </View>
+}
 
               {loadingMoreCourses ? <Loader /> : null}
               {/* </ScrollView> */}
-              <View style={{height: 200}}></View>
+              <View style={{height: 200, backgroundColor:background4,}}></View>
             </View>
+
           </>
         ) : courseStatus === 'loading' ? (
-          <View style={{marginTop: 250}}>
+          <View style={{backgroundColor:background4,marginTop: 250}}>
             <Loader />
           </View>
         ) : (
@@ -890,10 +895,7 @@ export default function FindCourse({navigation, route}: Props) {
         )}
       </View>
       {isLoggedIn ? <BottomNavigation navigation={navigation}/> :
-      <View style={{flexDirection:'row',position:'absolute', bottom:0,  backgroundColor:'#fff', justifyContent:'center', alignItems:'center'}}>
-        <TouchableOpacity  onPress={()=>navigation.navigate('Login')} style={{width:'50%', alignItems:'center'}}><Text style={{fontSize:16, color:font1, padding:20, paddingVertical:35}}> Sign in</Text></TouchableOpacity> 
-        <TouchableOpacity onPress={()=>Linking.openURL(config.FrontendBaseURL)} style={{width:'50%', alignItems:'center'}}><Text style={{fontSize:16, color:font1, padding:20, paddingVertical:35}}>Sign up</Text></TouchableOpacity>
-      </View>
+      <LoginNavigation navigation={navigation}/>
 }
 
     </>
@@ -1135,6 +1137,9 @@ const styles = StyleSheet.create({
     marginTop: 250,
   },
   safecontainer: {
+    backgroundColor:background4,
+    zIndex:-1
+
     // marginTop: 105,
   },
   loader: {
