@@ -304,7 +304,7 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
               transactionsDataStatus === 'success' ? (
                 <NoData message={'No Transactions Found'} />
               ) : (
-                <View >
+                <View style={{paddingBottom:75}} >
                   <FlatList
                     data={transactionsData}
                     keyExtractor={(item, index) => index.toString()}

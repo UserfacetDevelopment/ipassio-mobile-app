@@ -1185,7 +1185,7 @@ useEffect(()=>{
                   ) : enrolledStudentsStatus === 'success' &&
                     enrolledStudents.data &&
                     enrolledStudents.data.length > 0 ? (
-                    <View style={[ {paddingTop:12}]}>
+                    <View style={[ {paddingTop:12, paddingBottom:75}]}>
                       <FlatList
                         keyExtractor={(item, index) => index.toString()}
                         data={enrolledStudents.data}

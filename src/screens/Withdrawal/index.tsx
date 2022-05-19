@@ -787,7 +787,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                 onPress={() => {
                   cancelSelections();
                 }}>
-                <Text style={styles.cancelText}>CANCEL</Text>
+                <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -802,7 +802,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                   ]);
                 }}>
                 <Text style={styles.withdrawText}>
-                  WITHDRAW ({selectedIds.length})
+                  Withdraw ({selectedIds.length})
                 </Text>
               </TouchableOpacity>
             </View>
@@ -997,11 +997,12 @@ fontWeight:'700',
   },
   bottomBarWrapper: {
     alignItems: 'center',
-    paddingVertical: 30, //10 after adding tab navigation
+    paddingVertical: 16, //10 after adding tab navigation
     flexDirection: 'row',
     backgroundColor: '#fff',
     paddingHorizontal: 16,
-    bottom:64
+    bottom:70,
+    zIndex:9999999999999999
     
   },
   cardHeadSelected:{marginLeft: 12, marginTop: 6, flex:1},

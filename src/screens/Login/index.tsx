@@ -386,7 +386,8 @@ const [active , setActive] = useState<boolean>(false);
             <Text style={styles.googleButtonText}>Continue with Google</Text>
             </View>
           </TouchableOpacity>
-
+          </>
+           : null}
           <TouchableOpacity
             style={styles.newUser}
             onPress={() => {
@@ -398,8 +399,7 @@ const [active , setActive] = useState<boolean>(false);
               <Text style={styles.signUp}>Sign Up From Website</Text>
             </Text>
           </TouchableOpacity>
-          </>
-           : null}
+         
         </View>
       </KeyboardAwareScrollView>
     </View>
@@ -439,15 +439,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop:8,
     color: secondaryColor,
-    fontWeight:'400',
-    // fontFamily: helper.switchFont('bold'),
+    fontWeight:'500',
+    fontFamily: helper.switchFont('bold'),
   },
   title: {
     fontSize: 24,
     color: font1,
     fontWeight:'700',
-    fontFamily: helper.switchFont('semibold'),
-    marginTop: 76,
+    fontFamily: helper.switchFont('bold'),
+    marginTop: 40,
     textAlign:'center',
     lineHeight:30
   },
@@ -455,13 +455,13 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     alignSelf: 'center',
     marginBottom: Platform.OS === 'ios' ? 60 : 36,
-    marginTop: 24,
+    marginTop: Platform.OS==='ios'? 0:  24,
   },
   newUserText: {
     fontSize: 14,
     fontFamily: helper.switchFont('regular'),
     color: font1,
-    fontWeight:'400',
+    fontWeight:'500',
     textAlign: 'center',
     alignSelf: 'center',
   },
@@ -537,7 +537,11 @@ const styles = StyleSheet.create({
   },
   signUp:{
     color:secondaryColor,
-    fontWeight:'400',
+    fontWeight:'500',
+    fontSize: 14,
+    fontFamily: helper.switchFont('medium'),
+    
+
 
   },
   inputTickIcon: {
@@ -551,7 +555,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 15,
     alignSelf: 'center',
-    marginRight: 16,
+    // marginRight: 16,
     marginTop: -2,
   },
   inputViewIconWrapper: {
@@ -571,7 +575,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: font2,
     fontFamily: helper.switchFont('regular'),
-    marginBottom: 24,
+    // marginBottom: 8,
     fontWeight:'400',
     marginTop:8,
     textAlign:'center',

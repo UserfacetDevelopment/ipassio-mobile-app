@@ -13,7 +13,10 @@ import {SvgUri} from 'react-native-svg';
 import RenderHTML from 'react-native-render-html';
 import helper from '../utils/helperMethods';
 import config from '../config/Config';
+import { background6, font1 } from '../styles/colors';
 const { width, height } = Dimensions.get('screen');
+import Expand from '../assets/images/expand.svg'
+import Collapse from '../assets/images/collapse.svg'
 
 interface AccordianInterface{
   title: string,
@@ -37,18 +40,22 @@ const Accordian = ({title, data}: AccordianInterface) : any => {
 
   return (
     <View>
-      <TouchableOpacity style={styles.row} onPress={toggleExpand}>
+      <TouchableOpacity style={[styles.row,{backgroundColor:expanded ? '#fff' : background6, marginBottom:expanded ? 0 : 16,}]} onPress={toggleExpand}>
         <Text style={[styles.title]}>{title}</Text>
         {!expanded ? (
-          <SvgUri
-            height="40"
-            uri={`${config.media_url}images/course-detail/expand-course-details.svg`}
-          />
+<Expand/>
+          // <SvgUri
+          //   height="40"
+          //   uri={`${config.media_url}images/course-detail/expand-course-details.svg`}
+          // />
         ) : (
-          <SvgUri
-            height="40"
-            uri={`${config.media_url}images/course-detail/collapse-course-details.svg`}
-          />
+          <View style={{width:24, height:24, alignItems:'center', justifyContent:'center'}}>
+          <Collapse/>
+          </View>
+          // <SvgUri
+          //   height="40"
+          //   uri={`${config.media_url}images/course-detail/collapse-course-details.svg`}
+          // />
         )}
       </TouchableOpacity>
 
@@ -68,21 +75,21 @@ export default Accordian;
 const styles = StyleSheet.create({
   title: {
     fontFamily: helper.switchFont('medium'),
-    fontSize: 18,
-    color: 'rgb(44, 54, 65)',
-    marginBottom: 20,
+    fontSize: 16,
+    color: font1,
+    // marginBottom: 20,
     overflow:'visible',
     maxWidth: '80%',
     flexWrap:'wrap'
   },
   row: {
-    paddingVertical:20,
+    padding:12,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomColor: '#f9f9fa',
-    borderBottomWidth: 1,
-    flexWrap:'wrap'
+    // alignItems: 'center',
+    flexWrap:'wrap',
+    borderRadius:10,
+    
   },
   button: {
     height: 30,
@@ -94,11 +101,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   child:{
-    fontFamily: helper.switchFont('light'),
-    fontSize:15,
-    color: 'rgb(44, 54, 65)',
+    fontFamily: helper.switchFont('regular'),
+    fontWeight:'400',
+    fontSize:14,
+    color: font1,
     flexWrap:'wrap',
     maxWidth:width,
+    paddingHorizontal:16,
+    marginBottom:16
 
   }
 });

@@ -45,14 +45,13 @@ const theme = {
   colors: {
     // ...DefaultTheme.colors,
      primary: dropdownBorder,
-    accent: '#e1d',
+    accent: secondaryColor,
     // underlineColor:'transparent',
      placeholder: '#9AA6B2', 
           // text:font2,
           //  primary: 'white',
            underlineColor: 'transparent',    
           // background : '#0f1a2b'
-          // activeUnderlineColor: '#e1d',
   },
 };
 

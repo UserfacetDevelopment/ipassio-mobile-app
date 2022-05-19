@@ -104,7 +104,6 @@ const StudentAttendance: FC<any> = ({
   const [editAttendanceModal, setEditAttendanceModal] = useState(false);
   const [reviewIndex, setReviewIndex] = useState<number|null>(null);
   const [index, setIndex] = useState<number>();
-  const RATING = require('../../assets/images/rating.png');
   const [modalTitle, setModalTitle] = useState<'Add Review' | 'Edit Review'>(
     'Edit Review',
   );

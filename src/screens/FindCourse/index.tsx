@@ -12,7 +12,7 @@ import {
   ImageBackgroundComponent,
   Dimensions,
   Linking,
-  Platform
+  Platform,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 // import Geolocation from 'react-native-geolocation-service';
@@ -80,8 +80,9 @@ import Drop from '../../assets/images/more_reviews.svg';
 import Filter from '../../assets/images/filter.svg';
 import BottomNavigation from '../../components/BottomNavigation';
 import LoginNavigation from '../../components/LoginNavigation';
+import StyleCSS from '../../styles/style';
 type Props = NativeStackScreenProps<RootParamList, 'FindCourses'>;
-const {width,height} = Dimensions.get('screen');
+const {width, height} = Dimensions.get('screen');
 
 const LoaderDashboard = (): any => {
   return (
@@ -543,12 +544,18 @@ export default function FindCourse({navigation, route}: Props) {
               course_slug: course.seo.seo_slug_url,
             });
           }}
-          style={styles.courseWrapper}>
-          <Image
-            defaultSource={require('@images/default_course_img.png')}
-            style={styles.courseImage}
-            source={{uri: course.course_image}}
-          />
+          style={[styles.courseWrapper, StyleCSS.styles.shadow]}>
+          <View
+            style={{
+              height: 180,
+              width: '100%',
+            }}>
+            <Image
+              defaultSource={require('@images/default_course_img.png')}
+              style={styles.courseImage}
+              source={{uri: course.course_image}}
+            />
+          </View>
           {/* <View
             style={{
               position: 'absolute',
@@ -614,23 +621,24 @@ export default function FindCourse({navigation, route}: Props) {
                 flexWrap: 'wrap',
               }}>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                {course.course_level && course.course_level.map((level: any, i: number) => {
-                  return (
-                    <View
-                      style={
-                        {
-                          // backgroundColor: map.get(level.code),
-                          // borderRadius: 43,
-                        }
-                      }>
-                      {i > 0 ? (
-                        <Text style={styles.cardDetail}>, {level.name}</Text>
-                      ) : (
-                        <Text style={styles.cardDetail}>{level.name}</Text>
-                      )}
-                    </View>
-                  );
-                })}
+                {course.course_level &&
+                  course.course_level.map((level: any, i: number) => {
+                    return (
+                      <View
+                        style={
+                          {
+                            // backgroundColor: map.get(level.code),
+                            // borderRadius: 43,
+                          }
+                        }>
+                        {i > 0 ? (
+                          <Text style={styles.cardDetail}>, {level.name}</Text>
+                        ) : (
+                          <Text style={styles.cardDetail}>{level.name}</Text>
+                        )}
+                      </View>
+                    );
+                  })}
               </View>
               <View style={{marginHorizontal: 12}}>
                 <Dot />
@@ -643,7 +651,7 @@ export default function FindCourse({navigation, route}: Props) {
                       ratingColor={secondaryColor}
                       type="custom"
                       tintColor="#fff"
-                      ratingBackgroundColor='#c8c7c8'
+                      ratingBackgroundColor="#c8c7c8"
                       startingValue={course.rating.avg_review}
                       readonly
                       ratingCount={5}
@@ -759,7 +767,7 @@ export default function FindCourse({navigation, route}: Props) {
                 session */}{' '}
                 class
                 {course.class_duration ? (
-                  <Text> | {course.class_duration} minutes</Text>
+                  <Text style={styles.perSession}> | {course.class_duration} minutes</Text>
                 ) : null}
                 {/* {course.classes_per_week ? (
                   <Text>, {course.classes_per_week} per week</Text>
@@ -793,18 +801,17 @@ export default function FindCourse({navigation, route}: Props) {
       <View style={styles.main}>
         {!pageLoading && courseData.status === 'success' && courseData.data ? (
           <>
-         
             <View style={styles.safecontainer}>
               <View style={styles.filterBox}>
-                <View style={{flexDirection:'row', alignItems:'center'}}>
-                <Search style={styles.searchIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Search Courses"
-                  value={searchText}
-                  placeholderTextColor={font2}
-                  onChangeText={(text: string) => handleSearch(text)}
-                />
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Search style={styles.searchIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Search Courses"
+                    value={searchText}
+                    placeholderTextColor={font2}
+                    onChangeText={(text: string) => handleSearch(text)}
+                  />
                 </View>
                 <TouchableOpacity
                   onPress={() => {
@@ -867,37 +874,44 @@ export default function FindCourse({navigation, route}: Props) {
 
               {/* <ScrollView contentInsetAdjustmentBehavior="always"> */}
               {/* COURSES ARE REPEATING */}
-{courseData.data.length === 0 ? <Text style={styles.wrongText}>No courses found</Text>:
-              <View style={{ marginBottom: 470,backgroundColor:background4, marginTop:Platform.OS === 'android' ? 6 : 8}}>
-                <FlatList
-                  data={coursesArray}
-                  renderItem={({item, index}) => loadCourse(item, index)}
-                  keyExtractor={item => item.id}
-                  onEndReachedThreshold={0.5}
-                  onEndReached={handleOffset}
-                />
-                {/* <View style={{marginBottom:200}}/> */}
-              </View>
-}
+              {courseData.data.length === 0 ? (
+                <Text style={styles.wrongText}>No courses found</Text>
+              ) : (
+                <View
+                  style={{
+                    marginBottom: 470,
+                    backgroundColor: background4,
+                    marginTop: Platform.OS === 'android' ? 6 : 8,
+                  }}>
+                  <FlatList
+                    data={coursesArray}
+                    renderItem={({item, index}) => loadCourse(item, index)}
+                    keyExtractor={item => item.id}
+                    onEndReachedThreshold={0.5}
+                    onEndReached={handleOffset}
+                  />
+                  {/* <View style={{marginBottom:200}}/> */}
+                </View>
+              )}
 
               {loadingMoreCourses ? <Loader /> : null}
               {/* </ScrollView> */}
-              <View style={{height: 200, backgroundColor:background4,}}></View>
+              <View style={{height: 200, backgroundColor: background4}}></View>
             </View>
-
           </>
         ) : courseStatus === 'loading' ? (
-          <View style={{backgroundColor:background4,marginTop: 250}}>
+          <View style={{backgroundColor: background4, marginTop: 250}}>
             <Loader />
           </View>
         ) : (
           <Text style={styles.wrongText}>No Data to show</Text>
         )}
       </View>
-      {isLoggedIn ? <BottomNavigation navigation={navigation}/> :
-      <LoginNavigation navigation={navigation}/>
-}
-
+      {isLoggedIn ? (
+        <BottomNavigation navigation={navigation} />
+      ) : (
+        <LoginNavigation navigation={navigation} />
+      )}
     </>
   );
 }
@@ -916,7 +930,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   courseImage: {
-    height: 180,
+    height: '100%',
     zIndex: -1,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
@@ -924,6 +938,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     resizeMode: 'cover',
+    // overflow:'scroll'
   },
 
   // courseDetails: {
@@ -1002,10 +1017,10 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   filterBox: {
-    position:'absolute',
-    zIndex:9999,
+    position: 'absolute',
+    zIndex: 9999,
     top: Platform.OS === 'android' ? -54 : -50,
-    width:width-32,
+    width: width - 32,
     height: 50,
     backgroundColor: '#FFF',
     marginTop: 10,
@@ -1015,13 +1030,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    shadowColor: 'rgba(40, 47, 54)', 
-    shadowOffset:{
-        width:0,
-        height:10,
+    shadowColor: 'rgba(40, 47, 54)',
+    shadowOffset: {
+      width: 0,
+      height: 10,
     },
-    shadowOpacity:0.1,
-    elevation:0.8,
+    shadowOpacity: 0.1,
+    elevation: 8,
     shadowRadius: 30,
   },
   wrapper: {
@@ -1080,10 +1095,12 @@ const styles = StyleSheet.create({
     color: font1,
   },
   filterButton: {
+    justifyContent:'flex-end',
+    paddingRight:16,
+    // borderWidth:1,
     marginVertical: 10,
     borderLeftWidth: 1,
     borderLeftColor: lineColor2light,
-    paddingLeft: 16,
   },
   authorName: {
     color: font1,
@@ -1137,8 +1154,8 @@ const styles = StyleSheet.create({
     marginTop: 250,
   },
   safecontainer: {
-    backgroundColor:background4,
-    zIndex:-1
+    backgroundColor: background4,
+    zIndex: -1,
 
     // marginTop: 105,
   },
@@ -1155,7 +1172,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(255, 255, 255)',
     // borderRadius: 5,
     fontFamily: helper.switchFont('medium'),
-    
   },
   loading: {
     justifyContent: 'center',

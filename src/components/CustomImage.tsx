@@ -8,6 +8,7 @@ interface CustomImageProps {
   // type: string;
   height?: string;
   width?: string;
+  local?:boolean
 }
 
 export default function CustomImage({
@@ -16,6 +17,7 @@ export default function CustomImage({
   // type,
   height,
   width,
+  local
 }: CustomImageProps) {
   const [extension, setExtension] = useState<string | undefined>(undefined);
 
@@ -33,12 +35,13 @@ export default function CustomImage({
         <Image style={style} source={{uri: uri}} />
       ) :
       (
+        // console.log(uri)
         <SvgUri 
-        // height='10%'
-        // {height} 
-        // width='40'
-        // {width} 
-        uri={uri} />
+        height= {height} 
+        width={width} 
+        uri={uri}
+        // uri={"https://media.ipassio.com/media/lookup/catagory/hindustani-vocals/cover_picture/hindustani-vocal-01.svg"}
+         />
       ) }
     </>
   );

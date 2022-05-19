@@ -101,6 +101,7 @@ const CourseCard = ({course} : any) => {
   const dispatch = useAppDispatch();
   const {isLoggedIn, userData, userLocation} = useSelector(userState);
   const navigation = useNavigation();
+  // console.log(course.course_image)
   return (
     <TouchableOpacity
       onPress={() => {
@@ -113,6 +114,7 @@ const CourseCard = ({course} : any) => {
         <CustomImage
          style={styles.courseImage}
          uri={course.course_image}/>
+        
       {/* <Image
         defaultSource={require('@images/default_course_img.png')}
         style={styles.courseImage}

@@ -22,10 +22,11 @@ import { HelperText } from 'react-native-paper';
 
 export default class StyleCSS {
   static styles = StyleSheet.create({
-    title: {
-      fontSize: 34,
-      color: 'rgb(44, 54, 65)',
-      fontFamily: helper.switchFont('light'),
+    mainTitle: {
+      fontSize: 24,
+      color:font1,
+      fontWeight:'700',
+      fontFamily: helper.switchFont('bold'),
     },
     flexDirRow: {
       flex: 1,
@@ -49,7 +50,7 @@ export default class StyleCSS {
       justifyContent: 'center',
       alignItems: 'center',
       width: '100%',
-      height: 50,
+      height: 48,
       backgroundColor: brandColor,
       borderRadius: 12,
       marginTop: 24,
@@ -59,6 +60,7 @@ export default class StyleCSS {
       color: '#fff',
       fontWeight: '700',
       fontSize: 16,
+      textTransform:'capitalize'
     },
     heading1: {
       fontSize: 36,
@@ -86,15 +88,14 @@ export default class StyleCSS {
       color: '#32363a',
     },
     shadow: {
-      shadowColor: 'rgba(223, 230, 237, 0.67)',
+      shadowColor: '#358FE9',//'rgba(223, 230, 237)',
       shadowOffset: {
-        width: 0,
-        height: 10,
+        width: 5,
+        height: -90,
       },
       shadowOpacity: 0,
       shadowRadius: 30,
-
-      elevation: 0.8,
+      elevation: 8,
     },
 
     shadowWrapper: {
@@ -286,6 +287,27 @@ bottom:0,
     fontWeight:'500',
     fontFamily: Helper.switchFont('medium'),
   },
-  
+  marginV16:{marginVertical: 16},
+  font12:{fontSize:12},
+  font14:{fontSize:14},
+  font16:{fontSize:16},
+  font18:{fontSize:18},
+  font24:{fontSize:24},
+  fdrCenter:{
+    flexDirection:'row',
+    alignItems:'center'
+  },
+  fw400:{
+    fontWeight:'400'
+  },
+  fw500:{
+    fontWeight:'500'
+  },
+  fw600:{
+    fontWeight:'600'
+  },
+  fw700:{
+    fontWeight:'700'
+  }
   });
 }

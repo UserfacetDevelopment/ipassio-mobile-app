@@ -27,7 +27,7 @@ import {resetPassword, doForgetPassword} from '../../reducers/user.slice';
 import {setLoading, loaderState} from '../../reducers/loader.slice';
 import DialogLoader from '../../components/DialogLoader';
 import helper from '../../utils/helperMethods';
-import {brandColor, font1} from '../../styles/colors';
+import {brandColor, font1, secondaryColor} from '../../styles/colors';
 import { useAppDispatch } from '../../app/store';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootParamList } from '../../navigation/Navigators';
@@ -52,7 +52,9 @@ export default function ResetPassword({navigation, route} : Props) {
   const [viewPassword1, setViewpassword1] = useState<boolean>(false);
   const [viewPassword2, setViewpassword2] = useState<boolean>(false);
   const [otp, setOtp] = useState<string>('');
-const routes= useRoute();
+  const [otpResent, setOtpResent] = useState(false);
+
+  const routes= useRoute();
   useEffect(() => {
     LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
   }, []);
@@ -123,6 +125,7 @@ const routes= useRoute();
   };
 
   const handleResendOtp = () => {
+    setOtpResent(true);
         dispatch(setLoading(true))
         let data = {
             email: route.params?.email,
@@ -148,32 +151,28 @@ const routes= useRoute();
       navigation={navigation}
       backroute={routes.name}
       backArrowRoute = {'ForgotPassword'}
+      removeRightHeader={true}
       back={true}
       />
       {/* {loading && <DialogLoader />} */}
     <KeyboardAwareScrollView style={styles.scrollView} keyboardShouldPersistTaps={'handled'}>
       <View style={style.styles.loginContainer}>
         <Container style={style.styles.loginSubContainer}>
-          {/* <View style={styles.imageWrapper}>
-            <Image
-              style={styles.backgroundImage}
-              source={require('@images/toolbar_inner_back.png')}
-            />
-          </View> */}
+        
           <View style={styles.innerContainer}>
-            <View style={styles.marginTop24}>
-              <Text style={style.styles.title}>Reset Password?</Text>
+            <View style={styles.marginTop40}>
+              <Text style={styles.title}>Reset Password?</Text>
             </View>
-            <Text style={styles.info}>{route.params?.messageDesc}</Text>
-            <View style={styles.marginTop24}>
+            <Text style={styles.info}>{otpResent ? route.params?.messageDesc : 'Enter the OTP sent to the registered email address.'}</Text>
+            <View >
               {/* <Text style={styles.label}>Enter 6-digit OTP</Text> */}
+              <View style={styles.formInput}>
               <TextField
               style={StyleCSS.styles.input}
               mode="outlined"
               label="Enter 6-digit OTP"
                 //style={styles.input}
                 onChangeText={(text:any) => setOtp(text)}
-                //tintColor="rgb(44, 54, 65)"
                 value={otp}
                 secureTextEntry={false}
                 editable={true}
@@ -182,13 +181,14 @@ const routes= useRoute();
                 autoCorrect={false}
                 selectTextOnFocus={false}
               />
+              </View>
               <TouchableOpacity
                 style={styles.resendOtp}
                 onPress={handleResendOtp}>
                 <Text style={styles.resendOtpText}>RESEND OTP </Text>
               </TouchableOpacity>
               {/* <Text style={styles.label}>New Password</Text> */}
-
+<View style={styles.formInput}>
               <TextField
               style={StyleCSS.styles.input}
                 label="New Password"
@@ -196,7 +196,6 @@ const routes= useRoute();
                 onChangeText={(text : string) => setPassword1(text)}
                 //style={styles.input}
                 secureTextEntry={!viewPassword1}
-                //tintColor="rgb(44, 54, 65)"
                 value={password1}
                 editable={true}
                 autoCapitalize="none"
@@ -205,7 +204,7 @@ const routes= useRoute();
                 autoCorrect={false}
                 selectTextOnFocus={false}
               />
-
+</View>
               {password1.length ? (
                 <TouchableOpacity
                   style={styles.inputViewIconWrapper}
@@ -223,6 +222,7 @@ const routes= useRoute();
                 </TouchableOpacity>
               ) : null}
 {/* <Text style={styles.label}>Confirm Password</Text> */}
+<View style={styles.formInput}>
               <TextField
               style={StyleCSS.styles.input}
               mode="outlined"
@@ -238,7 +238,7 @@ const routes= useRoute();
                 autoCorrect={false}
                 selectTextOnFocus={false}
               />
-
+</View>
               {password2.length ? (
                 <TouchableOpacity
                   style={styles.inputViewIconWrapper}
@@ -258,7 +258,7 @@ const routes= useRoute();
              <TouchableOpacity
                 // underlayColor={brandColor}
                 onPress={handleResetPassword}
-                style={style.styles.submit}>
+                style={[style.styles.submit]}>
                 <Text style={style.styles.submitText}>RESET NOW</Text>
               </TouchableOpacity>
             </View>
@@ -282,7 +282,7 @@ const routes= useRoute();
               <TouchableOpacity
                 // underlayColor={brandColor}
                 onPress={handleResetPassword}
-                style={style.styles.submit}>
+                style={[style.styles.submit,{}]}>
                 <Text style={style.styles.submitText}>RESET NOW</Text>
               </TouchableOpacity>
             </View>
@@ -310,49 +310,73 @@ const styles = StyleSheet.create({
   },
   resendOtp: {
     alignSelf: 'flex-end',
+    marginTop:8
     
   },
   scrollView:{
     marginTop:config.headerHeight,
+    backgroundColor:'#fff'
   },
   resendOtpText: {
     textTransform:'capitalize',
-    fontSize: 13,
-    color: brandColor,
+    fontSize: 14,
+    color: secondaryColor,
+    fontWeight:'500',
     fontFamily: helper.switchFont('regular'),
   },
   info: {
-    fontSize: 11,
+    fontSize: 14,
     color: font2,
-    fontFamily: helper.switchFont('regular'),
-    marginTop: 5,
+    fontWeight:'500',
+    fontFamily: helper.switchFont('medium'),
+    marginTop: 8,
   },
   inputViewIcon: {
     width: 20,
     height: 15,
     alignSelf: 'center',
-    marginRight: 16,
+    // marginRight: 16,
     marginTop: -13,
   },
   inputViewIconWrapper: {
     //backgroundColor: "#000",
-    width: 50,
-    height: 50,
+    width: 16,
+    height: 20,
+    marginRight:16,
     alignSelf: 'flex-end',
     marginTop: -20,
     alignItems: 'center',
   },
-  innerContainer: {
+innerContainer: {
     marginLeft: 16,
     marginRight: 16,
     flex: 1,
   },
   marginTop24: {marginTop: 24},
+  marginTop40: {marginTop: 40},
   label:{
     color: font1,
     fontFamily: helper.switchFont('medium'),
     fontSize:16,
   },
+  title: {
+    fontSize: 24,
+    color: font1,
+    fontWeight:'700',
+    textAlign:'center',
+    fontFamily: helper.switchFont('light'),
+  },
+  subTitle: {
+    fontSize: 16,
+    color: font2,
+    fontWeight:'400',
+    textAlign:'center',
+    marginTop:8,
+    fontFamily: helper.switchFont('regular'),
+  },
+  formInput:{
+    marginTop:24
+  }
   // input: {
   //   color: font1,
   //   marginBottom: 5,

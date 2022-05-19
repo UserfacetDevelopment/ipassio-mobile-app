@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  PlatformColor,
+  Platform,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useAppDispatch} from '../../app/store';
@@ -39,6 +41,7 @@ import Dropdown from '../../assets/images/dropdown.svg';
 //@ts-ignore
 import Drop2 from '../../assets/images/drop2.svg';
 import config from '../../config/Config'
+import Helper from '../../utils/helperMethods';
 type Props = NativeStackScreenProps<RootParamList, 'FilterScreen'>;
 
 export default function Filters({navigation, route}: Props) {
@@ -222,7 +225,7 @@ handleSecSubcategories(ct)
             );
           })}
           <TouchableOpacity
-          style={{flexDirection: 'row', paddingVertical:16, alignItems:'center'}}
+          style={{flexDirection: 'row', paddingVertical:8, alignItems:'center'}}
           onPress={() => setOthers(!others)}>
           <View style={styles.dropBackground}>
             <Dropdown />
@@ -680,7 +683,7 @@ console.log(catTemp)
             style={[
               {
                 // bottom: 95,
-                paddingVertical: 16, //10 after adding tab navigation
+                paddingTop: 16, //10 after adding tab navigation
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 backgroundColor: '#fff',
@@ -695,6 +698,7 @@ console.log(catTemp)
                 shadowOpacity: 0.2,
                 shadowRadius: 3.84,
                 elevation: 8,
+                paddingBottom : Platform.OS==='android'? 16 : 24,
               },
             ]}>
             <TouchableOpacity onPress={clearFilters}>
@@ -708,7 +712,7 @@ console.log(catTemp)
                 paddingVertical: 10,
                 paddingHorizontal: 24,
               }}>
-              <Text style={SheetCSS.styles.buttonText}>Apply</Text>
+              <Text style={styles.buttonText}>Apply</Text>
             </TouchableOpacity>
           </View>
         ) : null}
@@ -721,10 +725,15 @@ const styles = StyleSheet.create({
   textColor: {
     color: font1,
     fontSize:14,
+    fontWeight:'500',
+    fontFamily:Helper.switchFont('medium')
   },
   textColorNumber:{
     color: font2,
+    fontWeight:'500',
     fontSize:14,
+    fontFamily:Helper.switchFont('medium')
+
   },
   loader: {
     height: 20,
@@ -744,7 +753,9 @@ const styles = StyleSheet.create({
   },
   clearAll: {
     color: brandColor,
-    fontSize:18,
+    fontSize:16,
+    fontWeight:'500',
+    fontFamily:Helper.switchFont('medium')
   },
   moreSc:{
       flexDirection:'row',
@@ -759,12 +770,19 @@ const styles = StyleSheet.create({
   drop:{
       marginRight:9,
   },
-  dropBackground:{backgroundColor: background, padding:8, borderRadius:50, marginRight:9},
+  dropBackground:{backgroundColor: background, padding:6, borderRadius:50, marginRight:9},
   title:{
     fontSize:18,
     color:font1,
     fontWeight:'700',
     lineHeight:23,
-    marginVertical:16
+    marginVertical:16,
+    fontFamily:Helper.switchFont('bold')
+  },
+  buttonText:{
+    color: '#fff',
+    fontSize:14,
+    fontWeight:'700',
+    fontFamily:Helper.switchFont('medium')
   }
 });

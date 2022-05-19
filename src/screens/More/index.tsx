@@ -4,7 +4,7 @@ import {useSelector} from 'react-redux';
 // @ts-ignore
 import Background from '../../assets/images/more-bg.svg';
 import {userState, logoutUser} from '../../reducers/user.slice';
-import {appBackground, font1, font2, secondaryColor} from '../../styles/colors';
+import {appBackground, background4, font1, font2, secondaryColor} from '../../styles/colors';
 // @ts-ignore
 import Logout from '../../assets/images/logout.svg';
 // @ts-ignore
@@ -83,7 +83,7 @@ export default function More({navigation}: any) {
         ) : null}
       </View>
       <View
-        style={{backgroundColor: '#F3F5F8', padding: 16, height: '100%'}}>
+        style={{backgroundColor: background4, padding: 16, height: '100%'}}>
         {/* {isLoggedIn && userData.user_type === 'T' ? (
           <>
             <TouchableOpacity  style={styles.listItemWrapper}>

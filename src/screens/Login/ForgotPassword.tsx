@@ -20,7 +20,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {brandColor} from '../../styles/colors';
+import {brandColor, font1} from '../../styles/colors';
 import {doForgetPassword} from '../../reducers/user.slice';
 import { setLoading, loaderState } from '../../reducers/loader.slice';
 import PageLoader from '../../components/DialogLoader';
@@ -108,6 +108,7 @@ const routes = useRoute();
     type={"findCourse"}
     title={'Forgot Password'}
     back={true}
+    removeRightHeader={true}
     backroute={routes.name}
     navigation={navigation}
 
@@ -135,7 +136,7 @@ const routes = useRoute();
           </TouchableOpacity> */}
 
           <View style={styles.contentWrapper}>
-            <View style={{marginTop: 24}}>
+            <View style={{marginTop: 40}}>
               <Text style={styles.title}>Forgot Password?</Text>
               <Text style={styles.subTitle}>
                 Enter your Email address to continue...
@@ -149,6 +150,7 @@ const routes = useRoute();
             style={styles.input}
             onChangeText={text => setEmail(text)}
             ></TextInput> */}
+            <View style={styles.formInput}>
             <TextField
               //   onSubmitEditing={() => {
               //     this.doFgtPassword();
@@ -166,7 +168,7 @@ const routes = useRoute();
               // autoCorrect={false}
               // selectTextOnFocus={false}
             />
-
+</View>
             <Text style={styles.instructions}>
               Password reset instructions will be sent to your registered email
               address.
@@ -235,24 +237,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 34,
-    color: 'rgb(44, 54, 65)',
+    fontSize: 24,
+    color: font1,
+    fontWeight:'700',
+    textAlign:'center',
     fontFamily: helper.switchFont('light'),
   },
   subTitle: {
-    fontSize: 18,
-    color: '#81878D',
+    fontSize: 16,
+    color: font2,
+    fontWeight:'400',
+    textAlign:'center',
+    marginTop:8,
     fontFamily: helper.switchFont('regular'),
   },
   instructions: {
-    fontSize: 11,
-    color: '#81878D',
-    fontFamily: helper.switchFont('regular'),
-    marginTop: 24,
+    fontSize: 12,
+    lineHeight:18,
+    color: font2,
+    fontWeight:'500',
+    fontFamily: helper.switchFont('medium'),
+    marginTop: 8,
   },
   // contentWrapper: {
   //   marginLeft: 24,
   //   marginRight: 10,
   //   flex: 1,
   // },
+  formInput:{
+    marginTop:24
+  }
 });
