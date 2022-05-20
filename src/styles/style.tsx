@@ -88,12 +88,12 @@ export default class StyleCSS {
       color: '#32363a',
     },
     shadow: {
-      shadowColor: '#358FE9',//'rgba(223, 230, 237)',
+      shadowColor: 'rgba(223, 230, 237, 0.67)',
       shadowOffset: {
         width: 5,
-        height: -90,
+        height: 90,
       },
-      shadowOpacity: 0,
+      // shadowOpacity: 0,
       shadowRadius: 30,
       elevation: 8,
     },
@@ -194,7 +194,14 @@ export default class StyleCSS {
                        borderColor: dropdownBorder,
                        borderRadius: 8
    },
-
+   reviewTextArea: {
+    width: '100%',
+    height: 150,
+    color: font1,
+    fontSize: 14,
+    textAlignVertical: 'top',
+    borderRadius: 5,
+  },
    //popup
    modalBackground: {
     backgroundColor: 'rgba(0,0,0,0.3)',

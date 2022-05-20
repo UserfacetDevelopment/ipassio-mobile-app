@@ -540,6 +540,9 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     source={{uri: category.cover_picture}}
                   /> */}
                   <CustomImage
+                  height={'200'}
+                  width={'100%'}
+
                   uri={category.cover_picture}/>
 
                   <View style={styles.main}>

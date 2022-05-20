@@ -306,7 +306,7 @@ const Payment: FC<Props> = ({route, navigation}) => {
                       marginRight: '3%',
                     }}
                     onPress={() => {
-                      // navigation.goBack()
+                      navigation.goBack()
                      
                     }}>
                     <Text

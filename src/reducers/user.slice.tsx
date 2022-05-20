@@ -9,7 +9,7 @@ import {ResetPasswordInterface} from '../screens/Login/ResetPassword';
 export const getUserLocation = createAsyncThunk(
   'user/getUserLocation',
   async () => {
-    const response = await ApiGateway.get(config.api_urls.user_location, true);
+    const response = await ApiGateway.get('https://ipinfo.io/?token=ad519179ea355a', true);
     return response; // (this is the actual data which will be returned as a payload).
   },
 );
@@ -65,7 +65,7 @@ export const userState = (state: RootState) => state.user;
 export default userSlice.reducer;
 
 export const doLogin = createAsyncThunk('doLogin', async (data: Login) => {
-  const response = await ApiGateway.post(config.api_urls.login, data);
+  const response = await ApiGateway.post('account/login?format=json', data);
   return response.data; // (this is the actual data which will be returned as a payload).
 });
 
@@ -90,7 +90,7 @@ export const doLogin = createAsyncThunk('doLogin', async (data: Login) => {
 export const socialLogin = createAsyncThunk(
   'doSocialLogin',
   async (data: GoogleLogin) => {
-    const response = await ApiGateway.post(config.api_urls.social_login, data);
+    const response = await ApiGateway.post('account/google-login?format=json', data);
 
     return response.data; // (this is the actual data which will be returned as a payload).
   },
@@ -100,7 +100,7 @@ export const doForgetPassword = createAsyncThunk(
   'forgetPwd',
   async (data: ForgotPassswordInterface) => {
     const response = await ApiGateway.post(
-      config.api_urls.forgot_password,
+      'account/forgot-password-otp?format=json',
       data,
     );
     return response.data; // (this is the actual data which will be returned as a payload).
@@ -111,7 +111,7 @@ export const resetPassword = createAsyncThunk(
   'resetPwd',
   async (data: ResetPasswordInterface) => {
     const response = await ApiGateway.post(
-      config.api_urls.reset_password,
+      'account/verify-account?format=json',
       data,
     );
     return response.data; // (this is the actual data which will be returned as a payload).
@@ -119,7 +119,7 @@ export const resetPassword = createAsyncThunk(
 );
 
 export const resendOtp = createAsyncThunk('resendOTP', async data => {
-  const response = await ApiGateway.post(config.api_urls.resend_otp, data);
+  const response = await ApiGateway.post('account/send-otp?format=json', data);
   return response.data; // (this is the actual data which will be returned as a payload).
 });
 

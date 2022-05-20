@@ -37,7 +37,7 @@ import {CategoryInterface} from './index';
 import HeaderInner from '../../components/HeaderInner';
 import {useRoute} from '@react-navigation/native';
 import Drop from '../../assets/images/Drop.svg';
-import {font1, selectedDrop} from '../../styles/colors';
+import {brandColor, font1, selectedDrop} from '../../styles/colors';
 import Others from '../../assets/images/others.svg';
 import Dropdown from '../../assets/images/dropdown.svg';
 import config from '../../config/Config'
@@ -50,7 +50,7 @@ export default function BrowseSubcategories({navigation, route}: Props) {
   const routes = useRoute();
 const categories = route.params?.subcategory;
   const {loading} = useSelector(loaderState);
-
+const [active, setActive] = useState('');
 
   return (
       
@@ -83,8 +83,9 @@ const categories = route.params?.subcategory;
                 <View style={{paddingBottom: 20}}>
                         <View
                           style={{
-                            paddingHorizontal: 16,
-                            paddingVertical: 16,
+                            // paddingHorizontal: 16,
+                            paddingTop: 16,
+                            paddingBottom:12,
                             flexDirection: 'row',
                             alignItems: 'center',
                           }}>
@@ -99,6 +100,9 @@ const categories = route.params?.subcategory;
                             {categories.map((sc: any) => {
                               return (
                                 <TouchableOpacity
+                                activeOpacity={1}
+                                onPressIn={()=>{setActive(sc.seo.seo_slug_url)}}
+                                onPressOut={()=>{setActive('')}}
                                 onPress={() => {
                                   if (sc.subCategories && sc.subCategories.length !== 0) {
                                     navigation.navigate('Subcategories', {
@@ -118,7 +122,11 @@ const categories = route.params?.subcategory;
                                   }
                                 }}
                                   style={{
-                                    padding: 16,
+                                    backgroundColor: active === sc.seo.seo_slug_url ? '#EFF1F2' : '#fff',
+                                    borderLeftWidth:active === sc.seo.seo_slug_url ? 2 : 0,
+                                    borderLeftColor:active === sc.seo.seo_slug_url ? brandColor : '#fff',
+                                    paddingVertical : 16,
+                                    paddingRight:16,
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
@@ -181,13 +189,13 @@ const styles = StyleSheet.create({
     color: font1,
     fontSize: 16,
     marginLeft:16,
-    lineHeight: 20.16,
+    // lineHeight: 20.16,
   },
   backCategory: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: selectedDrop,
-    padding: 12,
+    padding: 16,
   },
   backCategoryText: {
     color: font1,
@@ -219,7 +227,7 @@ const styles = StyleSheet.create({
   subcategories: {
     color: font1,
     fontSize: 14,
-    fontWeight: '400',
+    fontWeight: '500',
     marginLeft:16
   },
   selectedDrop:{

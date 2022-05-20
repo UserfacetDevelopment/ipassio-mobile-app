@@ -59,7 +59,7 @@ export const addSession = createAsyncThunk(
   'scheduleSession/addSession',
   async (finalData: CreateSessionInterfaceFinal) => {
     let response = await ApiGateway.post(
-      config.api_urls.student.add_session,
+      'attendance/course-class?format=json',
       finalData.params,
       {
         headers: {

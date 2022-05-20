@@ -77,7 +77,9 @@ export type RootParamList = {
   CategoryDetails: any;
   FindCourses: undefined;
   Subcategories: undefined;
-  CourseDetail: any;
+  CourseDetail: {
+        course:any;
+  }
   TeacherDetails: any;
   TeacherReview: undefined;
   BrowseCategories: any;

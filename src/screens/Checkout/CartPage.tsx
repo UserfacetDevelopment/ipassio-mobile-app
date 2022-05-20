@@ -991,7 +991,7 @@ const [couponSuccess, setCouponSuccess] = useState(false)
                       marginRight: '3%',
                     }}
                     onPress={() => {
-                      // navigation.goBack()
+                      navigation.goBack()
                      
                     }}>
                     <Text

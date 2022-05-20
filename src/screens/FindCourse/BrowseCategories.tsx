@@ -38,11 +38,12 @@ import {CategoryInterface} from './index';
 import HeaderInner from '../../components/HeaderInner';
 import {useRoute} from '@react-navigation/native';
 import Drop from '../../assets/images/Drop.svg';
-import {font1, selectedDrop} from '../../styles/colors';
+import {brandColor, font1, selectedDrop} from '../../styles/colors';
 import Others from '../../assets/images/others.svg';
 import Dropdown from '../../assets/images/dropdown.svg';
 import { configureFonts } from 'react-native-paper';
 import CustomImage from '../../components/CustomImage';
+import Helper from '../../utils/helperMethods';
 
 type Props = NativeStackScreenProps<RootParamList, 'BrowseCategories'>;
 
@@ -52,7 +53,7 @@ export default function BrowseCategories({navigation, route}: Props) {
   // const [others, setOthers] = useState(true);
   const [othersSelected, setOthersSelected] = useState(false);
   const routes = useRoute();
-
+const [active, setActive] = useState('');
   const {loading} = useSelector(loaderState);
   useEffect(() => {
     dispatch(setLoading(true));
@@ -145,11 +146,13 @@ export default function BrowseCategories({navigation, route}: Props) {
                         <View
                           style={{
                             paddingHorizontal: 16,
-                            paddingVertical: 16,
+                            paddingTop: 16,
+                            paddingBottom:12,
                             flexDirection: 'row',
                             alignItems: 'center',
+                            // borderWidth:1
                           }}>
-                            <CustomImage uri={cd.top_navigation_icon}/>
+                            <CustomImage height={'32'} width={'32'} uri={cd.top_navigation_icon}/>
                             {/* <SvgUri uri={cd.top_navigation_icon} /> */}
                           {/* <Image
                             style={{height: 100, width: 100, resizeMode:'cover'}}
@@ -164,6 +167,9 @@ export default function BrowseCategories({navigation, route}: Props) {
                             {cd.subCategories.map((sc: any) => {
                               return (
                                 <TouchableOpacity
+                                activeOpacity={1}
+                                onPressIn={()=>{setActive(sc.seo.seo_slug_url)}}
+                                onPressOut={()=>{setActive('')}}
                                 onPress={() => {
                                   if (sc.subCategories && sc.subCategories.length !== 0) {
                                     navigation.navigate('Subcategories', {
@@ -183,7 +189,12 @@ export default function BrowseCategories({navigation, route}: Props) {
                                   }
                                 }}
                                   style={{
-                                    padding: 16,
+                                    // borderWidth:1,
+                                    backgroundColor: active === sc.seo.seo_slug_url ? '#EFF1F2' : '#fff',
+                                    borderLeftWidth:active === sc.seo.seo_slug_url ? 2 : 0,
+                                    borderLeftColor:active === sc.seo.seo_slug_url ? brandColor : '#fff',
+                                    paddingVertical: 16,
+                                    paddingRight:16,
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
@@ -223,6 +234,7 @@ export default function BrowseCategories({navigation, route}: Props) {
                   setOthersSelected(!othersSelected);
                 }}
                 style={{
+                  
                   paddingHorizontal: 16,
                   paddingVertical: 15,
                   flexDirection: 'row',
@@ -247,6 +259,9 @@ export default function BrowseCategories({navigation, route}: Props) {
                       <>
                         {!cd.is_master ? (
                           <TouchableOpacity
+                          activeOpacity={1}
+                          onPressIn={()=>{setActive(cd.seo.seo_slug_url)}}
+                                onPressOut={()=>{setActive('')}}
                           onPress={() => {
                             if (cd.subCategories && cd.subCategories.length !== 0) {
                               navigation.navigate('Subcategories', {
@@ -266,6 +281,9 @@ export default function BrowseCategories({navigation, route}: Props) {
                             }
                           }}
                             style={{
+                              backgroundColor: active === cd.seo.seo_slug_url ? '#EFF1F2' : '#fff',
+                              borderLeftWidth:active === cd.seo.seo_slug_url ? 2 : 0,
+                              borderLeftColor:active === cd.seo.seo_slug_url ? brandColor : '#fff',
                               padding: 16,
                               flexDirection: 'row',
                               alignItems: 'center',
@@ -379,7 +397,7 @@ const styles = StyleSheet.create({
     color: font1,
     fontSize: 16,
     marginLeft:16,
-    lineHeight: 20.16,
+    // lineHeight: 20.16,
   },
   backCategory: {
     flexDirection: 'row',
@@ -417,7 +435,8 @@ const styles = StyleSheet.create({
   subcategories: {
     color: font1,
     fontSize: 14,
-    fontWeight: '400',
+    fontWeight: '500',
+    fontFamily:Helper.switchFont('medium'),
     marginLeft:16
   },
   selectedDrop:{

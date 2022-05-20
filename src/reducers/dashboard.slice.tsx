@@ -42,7 +42,7 @@ export const getEnrolledStudents = createAsyncThunk('dashboard/getEnrolledStuden
 })
 
 export const getEnrolledCourses = createAsyncThunk('dashboard/getEnrolledCourses', async(token: string)=>{
-  const response =  await ApiGateway.get(config.api_urls.student.enrolled_courses_dashboard, false, {
+  const response =  await ApiGateway.get('courses/course-list-detail?format=json', false, {
     headers: {
       "Content-Type": "application/json",
       Authorization: "Token " + token,
@@ -190,7 +190,7 @@ async(data: AttendanceListInterface, {dispatch})=> {
 export const submitMarkedAttendance= createAsyncThunk('dashboard/submitMarkedAttendace', 
 async(data:any)=> {
   let response;
-    response = await ApiGateway.patch(config.api_urls.mark_attendance + data.data.attendance_token + "/",
+    response = await ApiGateway.patch('attendance/' + data.data.attendance_token + "/",
     data.finalData,
     {
       headers: {
@@ -203,7 +203,7 @@ async(data:any)=> {
 
 export const generateCertificate = createAsyncThunk('dashboard/generateCertificate',
   async(finalData: GenerateCertificateInterface) =>{
-    let response = await ApiGateway.post(config.api_urls.student.generate_certificate, finalData.data, {
+    let response = await ApiGateway.post('courses/request-certificate?format=json', finalData.data, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Token ' + finalData.userToken

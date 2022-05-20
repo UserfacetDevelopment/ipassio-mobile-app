@@ -46,7 +46,6 @@ type Props = NativeStackScreenProps<RootParamList, 'FilterScreen'>;
 
 export default function Filters({navigation, route}: Props) {
   const routes = useRoute();
-  console.log(routes.name)
   const dispatch = useAppDispatch();
   const {
     categoryData,
@@ -60,28 +59,37 @@ export default function Filters({navigation, route}: Props) {
   } = useSelector(courseState);
   const [tabState, setTabState] = useState<'C' | 'SC' | 'L'>('C');
   const [courseLevels, setCourseLevels] = useState([]);
-  const [levelTemp, setLevelTemp] = useState(selectedLevels);
-  const [categories, setCategories] = useState(selectedCategories);
+  const [levelTemp, setLevelTemp] = useState([]);
+  const [categories, setCategories] = useState([]);
   //extra state to store the categories according to master field
 const [categoryMaster, setCategoryMaster] = useState([]);
 const [categoryNonmaster, setCategoryNonMaster] = useState([]);
   
   let [catTemp, setCatTemp] = useState([]);
-  const [subCategories, setSubcategories] = useState(selectedSubcategories);
+  const [subCategories, setSubcategories] = useState([]);
   const levels =
     categoryData && categoryData.status === 'success' && categoryData.extra_data
       ? categoryData.extra_data
       : undefined;
   const [others, setOthers] = useState(false);
-  const [secSubCategories, setSecSubCategories] = useState(selectedSecsubcategories);
+  const [secSubCategories, setSecSubCategories] = useState([]);
   const {loading} = useSelector(loaderState);
 const [all, setAll] = useState(false);
 const [temp, setTemp] = useState([])
 
+useEffect(()=>{
+setCategories(selectedCategories);
+setSubcategories(selectedSecsubcategories);
+setSecSubCategories(selectedSecsubcategories)
+setLevelTemp(selectedLevels)
+
+},[])
+
+console.log(selectedCategories)
 console.log(secSubCategories,selectedSecsubcategories);
 console.log(categories, selectedCategories);
 console.log(subCategories ,selectedSubcategories);
-console.log(selectedLevels);
+console.log(levelTemp, selectedLevels);
 
   const handleCategories = (category: any) => {
       setAll(false);

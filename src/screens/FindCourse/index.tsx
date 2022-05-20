@@ -84,18 +84,6 @@ import StyleCSS from '../../styles/style';
 type Props = NativeStackScreenProps<RootParamList, 'FindCourses'>;
 const {width, height} = Dimensions.get('screen');
 
-const LoaderDashboard = (): any => {
-  return (
-    <View style={[SheetCSS.styles.shadow, styles.loaderWrapper]}>
-      <View style={styles.loaderTextWrapper}>
-        <Text style={styles.loaderText}>Please wait..</Text>
-        <Bubbles size={7} color={brandColor} />
-      </View>
-      <View style={styles.addBorderBottom} />
-      <View style={styles.loaderBottomView}></View>
-    </View>
-  );
-};
 
 interface FindCoursesInterface {
   query: string;
@@ -162,6 +150,8 @@ export default function FindCourse({navigation, route}: Props) {
   const [loadingMoreCourses, setLoadingMoreCourses] = useState<boolean>(false);
   // const [handleCourseState, sethandleCourseState] = useState<boolean>(false);
   // const [page, setPage] = useState<"find_course"|"home"|"">("home");
+
+
 
   let scrollY = new Animated.Value(0.01);
   // let changingHeight = scrollY.interpolate({
@@ -541,7 +531,7 @@ export default function FindCourse({navigation, route}: Props) {
           onPress={() => {
             dispatch(setPageLoading(true));
             navigation.navigate('CourseDetail', {
-              course_slug: course.seo.seo_slug_url,
+              course: course
             });
           }}
           style={[styles.courseWrapper, StyleCSS.styles.shadow]}>
@@ -807,8 +797,11 @@ export default function FindCourse({navigation, route}: Props) {
                   <Search style={styles.searchIcon} />
                   <TextInput
                     style={styles.input}
+                    autoFocus={true}
                     placeholder="Search Courses"
                     value={searchText}
+                    enablesReturnKeyAutomatically={true}
+                    keyboardAppearance='default'
                     placeholderTextColor={font2}
                     onChangeText={(text: string) => handleSearch(text)}
                   />
@@ -879,9 +872,9 @@ export default function FindCourse({navigation, route}: Props) {
               ) : (
                 <View
                   style={{
-                    marginBottom: 470,
+                    paddingBottom: 460,
                     backgroundColor: background4,
-                    marginTop: Platform.OS === 'android' ? 6 : 8,
+                    paddingTop: Platform.OS === 'android' ? 28 : 32,
                   }}>
                   <FlatList
                     data={coursesArray}
@@ -920,7 +913,8 @@ const styles = StyleSheet.create({
   main: {
     backgroundColor: background4,
     // paddingHorizontal: 16,
-    marginTop: 136,
+    marginTop: 120,
+    // borderWidth:3
   },
   courseWrapper: {
     position: 'relative',
@@ -931,6 +925,7 @@ const styles = StyleSheet.create({
   },
   courseImage: {
     height: '100%',
+    width:'100%',
     zIndex: -1,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
@@ -1019,9 +1014,9 @@ const styles = StyleSheet.create({
   filterBox: {
     position: 'absolute',
     zIndex: 9999,
-    top: Platform.OS === 'android' ? -54 : -50,
+    top: Platform.OS === 'android' ? -38 : -34,
     width: width - 32,
-    height: 50,
+    height: 56,
     backgroundColor: '#FFF',
     marginTop: 10,
     marginBottom: 10,

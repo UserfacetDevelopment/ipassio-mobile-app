@@ -9,6 +9,7 @@ import {
   Image,
   Alert,
   Keyboard,
+  Dimensions
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -49,7 +50,7 @@ import CustomForm from '../../components/CustomForm';
 import StyleCSS from '../../styles/style';
 import TextField from '../../components/CustomTextField';
 import Textarea from 'react-native-textarea';
-
+const width = Dimensions.get('screen').width;
 
 type Props = NativeStackScreenProps<RootParamList, 'RequestMeeting'>;
 
@@ -110,7 +111,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
   const [p, setP] = useState<any>(null);
   const [showField, setShowField] = useState<boolean>(false);
   const [fieldLabel, setFieldLabel] = useState('');
-
+const phoneInput = useRef();
   
 
   // const showDateTimePicker = () => {
@@ -148,6 +149,9 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
     // {
     //when user is not logged in and yob should be there + user logged in and yob not required
     //  if (selectedCountry !== undefined && reason !== undefined)
+    if(phoneInput.current?.isValidNumber(data.number)){
+      console.log('correct')
+    }
     if (
       selectedCountry !== undefined &&
       reason !== undefined &&
@@ -480,7 +484,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
       {pageLoading ? (
         <PageLoader />
       ) : (
-        <View>
+        <>
           {/* <View style={{position:'absolute', top:0, zIndex:1}}>
             
           <HeaderInner
@@ -505,6 +509,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
               </Text>
             </View>
           </View> */}
+          <View style={{position:'absolute', zIndex:1}}>
           <HeaderInner
             title={'Request Meeting'}
             type={'findCourse'}
@@ -518,10 +523,11 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
           <View
             style={{
               position: 'absolute',
-              top: config.headerHeight,
-              zIndex: 2,
+               top: 90,//config.headerHeight,
+               left:0,
+              zIndex: 10000,
               height: 32,
-              width: '100%',
+              width: width,
             }}>
             <Image
               style={styles.formFillTimeImage}
@@ -532,6 +538,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                 Should take less than 48 seconds
               </Text>
             </View>
+          </View>
           </View>
           <View>
             <ScrollView
@@ -746,6 +753,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                       name="number"
                       render={({field: {onChange, value, onBlur}}) => (
                         <PhoneInput
+                        ref={phoneInput}
                           containerStyle={styles.countryCode}
                           textContainerStyle={styles.mobileNumber}
                           defaultValue={value}
@@ -1296,7 +1304,7 @@ zIndex={10000}
               </View>
             </ScrollView>
           </View>
-        </View>
+        </>
       )}
     </>
   );
@@ -1305,10 +1313,13 @@ zIndex={10000}
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    // marginTop:40,
+    zIndex:1
   },
   scrollView: {
     marginTop: config.headerHeight + 32,
-    backgroundColor:'white'
+    backgroundColor:'white',
+    zIndex:-10
   },
   safecontainer: {
     padding: 16,
@@ -1508,6 +1519,7 @@ const styles = StyleSheet.create({
     fontFamily: Helper.switchFont('regular'),
   },
   formFillTimeImage: {
+    // top:0,
     height: '100%',
     width: '100%',
   },

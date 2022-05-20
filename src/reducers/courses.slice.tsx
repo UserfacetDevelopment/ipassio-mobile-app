@@ -1,9 +1,17 @@
 import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
-import { RootState } from '../app/store';
+import {RootState} from '../app/store';
 import ApiGateway from '../config/apiGateway';
-import { CategoryInterface, FindCoursesInterfaceFinal } from '../screens/FindCourse';
-import { CourseEnrollInterface, TeacherCalenderInterface, TeacherReviewInterface } from '../screens/FindCourse/CourseDetails';
-import { TeacherCategory } from '../screens/FindCourse/TeacherDetails';
+import {
+  CategoryInterface,
+  FindCoursesInterfaceFinal,
+} from '../screens/FindCourse';
+import {
+  CourseEnrollInterface,
+  GetCourseDataInterface,
+  TeacherCalenderInterface,
+  TeacherReviewInterface,
+} from '../screens/FindCourse/CourseDetails';
+import {TeacherCategory} from '../screens/FindCourse/TeacherDetails';
 
 // export const getCourses = createAsyncThunk(
 //   'course/getCourses',
@@ -38,17 +46,24 @@ import { TeacherCategory } from '../screens/FindCourse/TeacherDetails';
 export const getCategories = createAsyncThunk(
   'course/getCategories',
   async (data: CategoryInterface) => {
-    const response = await ApiGateway.get('courses/categories?page='+data.page+'&nationality='+data.nationality+'&format=json', false);
+    const response = await ApiGateway.get(
+      'courses/categories?page=' +
+        data.page +
+        '&nationality=' +
+        data.nationality +
+        '&format=json',
+      false,
+    );
     return response.data;
   },
 );
 
 export const getTeacherCalender = createAsyncThunk(
   'courses/getTeacherCalender',
-  (data :TeacherCalenderInterface) => {
+  (data: TeacherCalenderInterface) => {
     let teacherToken = data.teacherToken;
-    let classType= data.classType;
-    let courseID= data.courseID;
+    let classType = data.classType;
+    let courseID = data.courseID;
     let response;
     if (teacherToken && classType && courseID) {
       const response = ApiGateway.get(
@@ -59,7 +74,8 @@ export const getTeacherCalender = createAsyncThunk(
           teacherToken +
           '&course_id=' +
           courseID +
-          '&format=json', false
+          '&format=json',
+        false,
       );
       console.log('teacherToken && classType && courseID');
       console.log(response);
@@ -70,7 +86,8 @@ export const getTeacherCalender = createAsyncThunk(
           '&' +
           'tr_tk=' +
           teacherToken +
-          '&format=json', false
+          '&format=json',
+        false,
       );
       console.log('teacherToken && classType');
       // console.log(response);
@@ -78,19 +95,22 @@ export const getTeacherCalender = createAsyncThunk(
       response = ApiGateway.get(
         'attendance/get-upcoming-class-list?tr_tk=' +
           teacherToken +
-          '&format=json', false
+          '&format=json',
+        false,
       );
     } else if (classType) {
       response = ApiGateway.get(
         'attendance/get-upcoming-class-list?class_type=' +
           classType +
-          '&format=json', false
+          '&format=json',
+        false,
       );
     } else {
       response = ApiGateway.get(
         'attendance/get-upcoming-class-list?tr_tk=' +
           teacherToken +
-          '&format=json', false
+          '&format=json',
+        false,
       );
       console.log('else');
       // console.log(response);
@@ -101,29 +121,61 @@ export const getTeacherCalender = createAsyncThunk(
 
 export const getTeacherReviews = createAsyncThunk(
   'courses/getTeacherReviews',
-   (data: TeacherReviewInterface) => {
+  (data: TeacherReviewInterface) => {
     let response;
     let categorySlug = data.category;
     let teacherSlug = data.teacher;
-    
-      response =  ApiGateway.get("courses/course-testimonial?category_slug="+categorySlug+"&teacher_slug="+teacherSlug, false
+
+    response = ApiGateway.get(
+      'courses/course-testimonial?category_slug=' +
+        categorySlug +
+        '&teacher_slug=' +
+        teacherSlug,
+      false,
       //response =  ApiGateway.get("courses/course-testimonial?category_slug=dance-styles&teacher_slug=vikas-s-gopa"
-      );
+    );
     return response;
   },
 );
 
-
-
 export const getCourseDetail = createAsyncThunk(
   'courses/getCourseDetail',
-  async(courseSlug: string) => {
+  async (data: GetCourseDataInterface) => {
     let response;
-      response = await ApiGateway.get("courses/" + courseSlug + "/?format=json&call_by=URL",false);
-      if(response.data.status === 'success'){
-        return response.data.data
-      }
-      return {};
+    if (data.isLoggedIn) {
+      response = await ApiGateway.get(
+        'courses/course-detail-slug?category_slug=' +
+          data.category_slug +
+          '&teacher_slug=' +
+          data.teacher_slug +
+          '&course_slug=' +
+          data.course_slug,
+        false,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Token ' + data.userToken,
+          },
+        },
+      );
+      return response.data.data;
+    } else {
+      response = await ApiGateway.get(
+        'courses/course-detail-slug?category_slug=' +
+          data.category_slug +
+          '&teacher_slug=' +
+          data.teacher_slug +
+          '&course_slug=' +
+          data.course_slug,
+        false,
+      );
+      return response.data.data;
+    }
+    // response = await ApiGateway.get("courses/" + courseSlug + "/?format=json&call_by=URL",false);
+    // if(response.data.status === 'success'){
+    //   return response.data.data
+    // }
+    return {};
   },
 );
 
@@ -131,7 +183,10 @@ export const getCategoryDetails = createAsyncThunk(
   'courses/getCategoryDetails',
   async (data: any) => {
     let response;
-      response = await ApiGateway.get("courses/categories-detail?category_slug="+data.category_slug, false);
+    response = await ApiGateway.get(
+      'courses/categories-detail?category_slug=' + data.category_slug,
+      false,
+    );
     return response;
   },
 );
@@ -140,32 +195,43 @@ export const getCategoryCourseList = createAsyncThunk(
   'courses/getCategoryCourseList',
   async (data: any) => {
     let response;
-      response = await ApiGateway.get("courses/categories-course-list?category_slug="+data.category_slug+"&filter="+data.filter+"&sort_by="+data.sort_by+'&offset='+data.offset, false);
+    response = await ApiGateway.get(
+      'courses/categories-course-list?category_slug=' +
+        data.category_slug +
+        '&filter=' +
+        data.filter +
+        '&sort_by=' +
+        data.sort_by +
+        '&offset=' +
+        data.offset,
+      false,
+    );
     return response;
   },
 );
 
-
-export const getLookups = createAsyncThunk('courses/getLookups', 
-async()=>{
+export const getLookups = createAsyncThunk('courses/getLookups', async () => {
   let response = await ApiGateway.get('lookups/?format=json');
   return response;
-})
+});
 
 export const getCategoryTeacher = createAsyncThunk(
   'courses/getCategoryTeacher',
-  async (data : TeacherCategory) => {
+  async (data: TeacherCategory) => {
     const categorySlug = data.category_slug;
-    const teacherSlug= data.teacher_slug
+    const teacherSlug = data.teacher_slug;
     let response;
-      response = await ApiGateway.get("courses/teacher-course-slug?category_slug=" +
-      categorySlug +
-      "&teacher_slug=" +
-      teacherSlug, false);
-      if(response.data.status === 'success'){
-        return response.data.data
-      }
-      return [];
+    response = await ApiGateway.get(
+      'courses/teacher-course-slug?category_slug=' +
+        categorySlug +
+        '&teacher_slug=' +
+        teacherSlug,
+      false,
+    );
+    if (response.data.status === 'success') {
+      return response.data.data;
+    }
+    return [];
   },
 );
 
@@ -201,7 +267,6 @@ export const getCategoryTeacher = createAsyncThunk(
 //   discounts: courseDetail.discounts ? courseDetail.discounts : "",
 //   timezone: getCookiesData("sessionTimeZone"),
 // };
-
 
 // let finalReviewData = {};
 
@@ -249,7 +314,6 @@ export const getCategoryTeacher = createAsyncThunk(
 //     });
 // };
 
-
 //coupon
 
 // if (type === "AC") {
@@ -288,7 +352,6 @@ export const getCategoryTeacher = createAsyncThunk(
 //   }
 // };
 
-
 // const dispatchCheckoutUpdate = (courseCheckout, cpw, noc, now) => {
 //   let finalData = { ...courseCheckout };
 //   let ClassPerWeekData = {};
@@ -316,33 +379,33 @@ export const getCategoryTeacher = createAsyncThunk(
 //   setReviewSubmited(false);
 // };
 
-const initialState : any = {
+const initialState: any = {
   courseData: {},
   categoryData: {},
   categoryStatus: null,
   courseStatus: null,
   teacherAttendance: [],
-  categoryDetails:{},
-  course : {},
-  categoryDetailStatus:null,
+  categoryDetails: {},
+  course: {},
+  categoryDetailStatus: null,
   teacherReviews: [],
-  categoryTeacherLoading : false,
-  categoryTeacher:[],
-  courseDetailStatus:null,
-  teacherReviewsStatus:null,
-  searchText:'',
-  coursesArray : [],
+  categoryTeacherLoading: false,
+  categoryTeacher: [],
+  courseDetailStatus: null,
+  teacherReviewsStatus: null,
+  searchText: '',
+  coursesArray: [],
   showMore: true,
-  page: "home",
-  nationality:"",
-  selectedCategories:[],
-  selectedSubcategories:[],
-  selectedLevels:[],
-  offset : 0,
-  selectedSecsubcategories : [],
-  categoryCourseList:[],
+  page: 'home',
+  nationality: '',
+  selectedCategories: [],
+  selectedSubcategories: [],
+  selectedLevels: [],
+  offset: 0,
+  selectedSecsubcategories: [],
+  categoryCourseList: [],
   categoryCourseListStatus: null,
-}
+};
 
 export const courseSlice = createSlice({
   name: 'course',
@@ -355,93 +418,93 @@ export const courseSlice = createSlice({
     teacherAvailability: (state, action: PayloadAction<any>) => {
       state.teacherAttendance = action.payload;
     },
-    setTeacherReviews:(state, action: PayloadAction<any>)=>{
-      state.teacherReviews=action.payload;
+    setTeacherReviews: (state, action: PayloadAction<any>) => {
+      state.teacherReviews = action.payload;
     },
-    setCurrentCourse : (state, action: PayloadAction<any>) => {
-      state.course = action.payload
+    setCurrentCourse: (state, action: PayloadAction<any>) => {
+      state.course = action.payload;
     },
-    setSearchText : (state, action: PayloadAction<any>) => {
+    setSearchText: (state, action: PayloadAction<any>) => {
       state.searchText = action.payload;
     },
-    setShowMore : (state, action: PayloadAction<any>) => {
+    setShowMore: (state, action: PayloadAction<any>) => {
       state.showMore = action.payload;
     },
-    setPage : (state, action: PayloadAction<any>) => {
+    setPage: (state, action: PayloadAction<any>) => {
       state.page = action.payload;
     },
-    setNationality : (state, action: PayloadAction<any>) => {
+    setNationality: (state, action: PayloadAction<any>) => {
       state.nationality = action.payload;
     },
-    setSelectedCategories : (state, action : PayloadAction<any>) =>{
-      state.selectedCategories = action.payload
+    setSelectedCategories: (state, action: PayloadAction<any>) => {
+      state.selectedCategories = action.payload;
     },
-    setSelectedSubCategories : (state, action : PayloadAction<any>) =>{
-      state.selectedSubcategories =  action.payload;
+    setSelectedSubCategories: (state, action: PayloadAction<any>) => {
+      state.selectedSubcategories = action.payload;
     },
-    setSelectedLevels : (state, action : PayloadAction<any>) =>{
+    setSelectedLevels: (state, action: PayloadAction<any>) => {
       state.selectedLevels = action.payload;
     },
-    setOffset : (state, action:PayloadAction<any>) => {
-      state.offset= action.payload;
+    setOffset: (state, action: PayloadAction<any>) => {
+      state.offset = action.payload;
     },
-    setSecSubcategories : (state, action:PayloadAction<any>) => {
-      state.selectedSecsubcategories  = action.payload;
-    }
+    setSecSubcategories: (state, action: PayloadAction<any>) => {
+      state.selectedSecsubcategories = action.payload;
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder.addCase(getCourses.pending, state => {
       state.courseStatus = 'loading';
     }),
-    builder.addCase(getCourses.fulfilled, (state, action) => {
-      state.courseData = action.payload;
-      state.courseStatus = 'success';
-    }),
-    builder.addCase(getCourses.rejected, state => {
-      state.courseStatus = 'failed';
-    }),
-    builder.addCase(getCategories.pending, state => {
-      state.categoryStatus = 'loading';
-    }),
-    builder.addCase(getCategories.fulfilled, (state, action) => {
-      state.categoryData = action.payload;
-      state.categoryStatus = 'success';
-    }),
-    builder.addCase(getCategories.rejected, state => {
-      state.categoryStatus = 'failed';
-    }),
-    builder.addCase(getCategoryDetails.pending, state => {
-      state.categoryDetailStatus = 'loading';
-    }),
-    builder.addCase(getCategoryDetails.fulfilled, (state, action) => {
-      state.categoryDetails = action.payload;
-      state.categoryDetailStatus = 'success';
-    }),
-    builder.addCase(getCategoryDetails.rejected, state => {
-      state.categoryDetailStatus = 'failed';
-    }),
-    builder.addCase(getCategoryTeacher.pending, state => {
-      state.categoryTeacherLoading = true;
-    }),
-    builder.addCase(getCategoryTeacher.fulfilled, (state, action) => {
-      state.categoryTeacher = action.payload;
-      state.categoryTeacherLoading = false;
-    }),
-    builder.addCase(getCategoryTeacher.rejected, state => {
-      state.categoryTeacherLoading = false;
-    }),
-    builder.addCase(getCourseDetail.fulfilled, (state, action) => {
-      state.course = action.payload;
-      state.courseDetailStatus = 'success';
-    }),
-    builder.addCase(getCategoryCourseList.fulfilled, (state, action) => {
-      state.categoryCourseList = action.payload;
-      state.categoryCourseListStatus = 'success';
-    }),
-    builder.addCase(getCategoryCourseList.rejected, (state, action) => {
-      state.categoryCourseList = action.payload;
-      state.categoryCourseListStatus = 'failed';
-    })
+      builder.addCase(getCourses.fulfilled, (state, action) => {
+        state.courseData = action.payload;
+        state.courseStatus = 'success';
+      }),
+      builder.addCase(getCourses.rejected, state => {
+        state.courseStatus = 'failed';
+      }),
+      builder.addCase(getCategories.pending, state => {
+        state.categoryStatus = 'loading';
+      }),
+      builder.addCase(getCategories.fulfilled, (state, action) => {
+        state.categoryData = action.payload;
+        state.categoryStatus = 'success';
+      }),
+      builder.addCase(getCategories.rejected, state => {
+        state.categoryStatus = 'failed';
+      }),
+      builder.addCase(getCategoryDetails.pending, state => {
+        state.categoryDetailStatus = 'loading';
+      }),
+      builder.addCase(getCategoryDetails.fulfilled, (state, action) => {
+        state.categoryDetails = action.payload;
+        state.categoryDetailStatus = 'success';
+      }),
+      builder.addCase(getCategoryDetails.rejected, state => {
+        state.categoryDetailStatus = 'failed';
+      }),
+      builder.addCase(getCategoryTeacher.pending, state => {
+        state.categoryTeacherLoading = true;
+      }),
+      builder.addCase(getCategoryTeacher.fulfilled, (state, action) => {
+        state.categoryTeacher = action.payload;
+        state.categoryTeacherLoading = false;
+      }),
+      builder.addCase(getCategoryTeacher.rejected, state => {
+        state.categoryTeacherLoading = false;
+      }),
+      builder.addCase(getCourseDetail.fulfilled, (state, action) => {
+        state.course = action.payload;
+        state.courseDetailStatus = 'success';
+      }),
+      builder.addCase(getCategoryCourseList.fulfilled, (state, action) => {
+        state.categoryCourseList = action.payload;
+        state.categoryCourseListStatus = 'success';
+      }),
+      builder.addCase(getCategoryCourseList.rejected, (state, action) => {
+        state.categoryCourseList = action.payload;
+        state.categoryCourseListStatus = 'failed';
+      });
     // [getTeacherReviews.pending]: (state, action) => {
     //   state.teacherReviewsStatus = 'loading';
     // },
@@ -453,11 +516,23 @@ export const courseSlice = createSlice({
     //   state.teacherReviewsStatus = 'failed';
     // }
   },
-  
-  
 });
 
-export const {fetchCourseSuccess, teacherAvailability, setTeacherReviews, setCurrentCourse, setSearchText, setShowMore, setPage, setNationality, setSelectedCategories, setSelectedLevels, setSelectedSubCategories, setOffset, setSecSubcategories} = courseSlice.actions;
+export const {
+  fetchCourseSuccess,
+  teacherAvailability,
+  setTeacherReviews,
+  setCurrentCourse,
+  setSearchText,
+  setShowMore,
+  setPage,
+  setNationality,
+  setSelectedCategories,
+  setSelectedLevels,
+  setSelectedSubCategories,
+  setOffset,
+  setSecSubcategories,
+} = courseSlice.actions;
 
 export const courseState = (state: RootState) => state.course;
 
@@ -465,54 +540,103 @@ export default courseSlice.reducer;
 
 export const getCourses = createAsyncThunk(
   'course/getCourses',
-  async (final_data : FindCoursesInterfaceFinal) => {
-    console.log(final_data.offset)
+  async (final_data: FindCoursesInterfaceFinal) => {
+    console.log(final_data.offset);
     const response = await ApiGateway.post(
-      'courses/search?format=json&offset='+final_data.offset, final_data.data
+      'courses/search?format=json&offset=' + final_data.offset,
+      final_data.data,
     );
     return response.data;
   },
-)
+);
 
-export const requestFreeSession = createAsyncThunk('courses/requestFreeSession', async(data: any)=>{
-  console.log(data)
-  let response;
-  if(data.loggedIn){
-    response = ApiGateway.post("userrequests/free-session?format=json&offset=0", data.formData
-     ,{
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Token ' + data.userToken,
-      },
+export const requestFreeSession = createAsyncThunk(
+  'courses/requestFreeSession',
+  async (data: any) => {
+    console.log(data);
+    let response;
+    if (data.loggedIn) {
+      response = ApiGateway.post(
+        'userrequests/free-session?format=json&offset=0',
+        data.formData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Token ' + data.userToken,
+          },
+        },
+      );
+    } else {
+      response = ApiGateway.post(
+        'userrequests/free-session?format=json&offset=0',
+        data.formData,
+        //  ,{
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     Authorization: 'Token ' + userDataToken,
+        //   },
+        // }
+      );
     }
-    )
-  }
-  else{
-    response = ApiGateway.post("userrequests/free-session?format=json&offset=0", data.formData
-    //  ,{
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Authorization: 'Token ' + userDataToken,
-    //   },
-    // }
-    )
-  }
-  
-  
-  console.log(response)
-  return response;
-})
 
-export const enrollNow = createAsyncThunk('courses/enrollNow', async(finaldata: CourseEnrollInterface)=>{
-  let response = ApiGateway.post("checkoutcourses/checkout-course?format=json", finaldata.data, {
-    headers: {
+    console.log(response);
+    return response;
+  },
+);
+
+export const enrollNow = createAsyncThunk(
+  'courses/enrollNow',
+  async (finaldata: CourseEnrollInterface) => {
+    let response = ApiGateway.post(
+      'checkoutcourses/checkout-course?format=json',
+      finaldata.data,
+      {
+        headers: {
           'Content-Type': 'application/json',
           Authorization: 'Token ' + finaldata.userToken,
         },
-  })
-  
+      },
+    );
 
-  // console.log(response.data);
-  return response;
+    // console.log(response.data);
+    return response;
+  },
+);
 
-})
+export const iamInterestedinCourse = createAsyncThunk(
+  'course/iamInterestedinCourse',
+  async (final_data: any) => {
+    let response;
+    final_data.isLoggedIn
+      ? (response = await ApiGateway.post(
+          'userrequests/interested-user?format=json',
+          final_data.data,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Token ' + final_data.userToken,
+            },
+          },
+        ))
+      : (response = await ApiGateway.post(
+          'userrequests/interested-user?format=json',
+          final_data.data,
+        ));
+    return response;
+  },
+
+  // return axios.get(
+  //   API_URL +
+  //     "/courses/course-detail-slug?category_slug=" +
+  //     categorySlug +
+  //     "&teacher_slug=" +
+  //     teacherSlug +
+  //     "&course_slug=" +
+  //     courseSlug,
+  //   { headers: { Authorization: "Token " + session.token } }
+  // );
+);
+
+
+// https://neoapis.ipassio.com/api/courses/course-detail-slug?category_slug=bollywood-singing-classes&teacher_slug=shriram-iyer-music-academy&course_slug=advanced-bollywood-playback-singing-lessons
+// https://neoapis.ipassio.com/api/courses/course-detail-slug?category_slug=vocal-music&teacher_slug=shriram-iyer-music-academy&course_slug=advanced-bollywood-playback-singing-lesson

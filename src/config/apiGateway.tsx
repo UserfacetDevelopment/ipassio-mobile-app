@@ -2,7 +2,7 @@ import axios from 'axios';
 import config from './Config';
 
 export default class ApiGateway{
-    static post(endpoint: string, body : any, headers?:any){
+    static post(endpoint: string, body ?: any, headers?:any){
         const url=`${config.BaseURL}/${endpoint}`;
         return axios.post(url, body, headers);
     }
@@ -17,7 +17,7 @@ export default class ApiGateway{
         return axios.get(url, headers);
     }  
 
-    static patch(endpoint: string, body : any, auth?: any){
+    static patch(endpoint: string, body ?: any, auth?: any){
         const url=`${config.BaseURL}/${endpoint}`;
         return axios.patch(url, body, auth);
     }

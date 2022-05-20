@@ -46,7 +46,7 @@ export const cartDetails = createAsyncThunk('checkout/cartDetails',
   async(finalData: CartDetailsData) =>{
     let response = await ApiGateway
     .get(
-      config.api_urls.student.add_to_cart +finalData.courseToken+
+      'checkoutcourses/refil-course?course_token=' +finalData.courseToken+
         "&class_type=" +
         finalData.classType+
         "&device_type=" +
@@ -62,7 +62,7 @@ export const cartDetails = createAsyncThunk('checkout/cartDetails',
   export const applyCoupon = createAsyncThunk('checkout/applyCoupon',
   async(finalData: any) =>{
     let response = await ApiGateway
-    .post(config.api_urls.student.apply_coupon, finalData.couponData, {
+    .post('coupon/apply-coupon?format=json', finalData.couponData, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Token " + finalData.userToken,
@@ -109,7 +109,7 @@ export const cartDetails = createAsyncThunk('checkout/cartDetails',
   export const proceedToPayment = createAsyncThunk('checkout/proceedToPayment',
   async(finalData: any) =>{
     let response = await ApiGateway
-    .post(config.api_urls.student.payment_summary, finalData.dataPay, {
+    .post('checkoutcourses/payment-summary?format=json', finalData.dataPay, {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Token " + finalData.userToken,

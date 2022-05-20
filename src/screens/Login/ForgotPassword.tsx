@@ -36,7 +36,7 @@ import { useRoute } from '@react-navigation/native';
 import TextField from '../../components/CustomTextField';
 import config from '../../config/Config'
 export interface ForgotPassswordInterface{
-email:string;
+email:string|undefined;
 type:string;
 }
 type Props = NativeStackScreenProps<RootParamList, 'ForgotPassword'>;
@@ -45,7 +45,7 @@ const height = Dimensions.get('screen').height;
 export default function ForgotPassword({navigation}: Props) {
   const dispatch = useAppDispatch();
   const {loading} = useSelector(loaderState)
-  const [email, setEmail] = useState<string>('');
+  const [email, setEmail] = useState<string|undefined>('');
 const routes = useRoute();
   const handleForgotPassword = () => {
     Keyboard.dismiss();
@@ -54,7 +54,7 @@ const routes = useRoute();
       type: 'mail',
     };
 
-    if (finalData.email) {
+    if (finalData.email!=undefined) {
       // setIsLoading(true);
       setEmail('');
       dispatch(setLoading(true));

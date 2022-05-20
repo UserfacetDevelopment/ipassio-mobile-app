@@ -948,7 +948,7 @@ useEffect(()=>{
           />
         </View>
         <View style={styles.enrolledCoursesInfoWrapper}>
-          <View style={styles.enrolledCoursesCoursename}>
+          <View style={[styles.enrolledCoursesCoursename]}>
             <Text style={styles.cardTitle}>
               {data.course_name}{' '}
               {data.class_type.members === '1'
@@ -957,7 +957,7 @@ useEffect(()=>{
             </Text>
             {/* css */}
             <View style={[style.styles.flexDirRow, {marginTop: 8}]}>
-              <Text style={styles.enrolledCoursesTeacherName}>
+              <Text style={[styles.enrolledCoursesTeacherName]}>
                 by {Helper.strCapitalize(data.teacher_name)}
               </Text>
 
@@ -1185,7 +1185,7 @@ useEffect(()=>{
                   ) : enrolledStudentsStatus === 'success' &&
                     enrolledStudents.data &&
                     enrolledStudents.data.length > 0 ? (
-                    <View style={[ {paddingTop:12, paddingBottom:75}]}>
+                    <View style={[ {paddingTop:12, marginBottom:75}]}>
                       <FlatList
                         keyExtractor={(item, index) => index.toString()}
                         data={enrolledStudents.data}
@@ -1193,6 +1193,7 @@ useEffect(()=>{
                           loadEnrolledStudents(item, index)
                         }
                       />
+                      {/* <View style={{marginBottom:200}}/> */}
                     </View>
                   ) : (
                     <NoData
@@ -1235,7 +1236,7 @@ useEffect(()=>{
               ) : enrolledCoursesStatus === 'success' &&
                 enrolledCourses.data &&
                 enrolledCourses.data.length > 0 ? (
-                <View style={{backgroundColor:background4}}>
+                <View style={{backgroundColor:background4, paddingBottom: 88}}>
                   <FlatList
                     keyExtractor={(item, index) => index.toString()}
                     data={enrolledCourses.data}
@@ -1621,14 +1622,16 @@ fontWeight:'700',
   scrollView: {marginTop: config.headerHeight,
   backgroundColor: background4},
   enrolledCoursesInfoWrapper: {
-    marginTop: -16,
+  
+    // paddingVertical:16,
+    // marginTop: -16,
     backgroundColor: 'rgb(255, 255, 255)',
   },
   enrolledCoursesCoursename: {
     paddingHorizontal: 16,
     flex: 1,
-    marginTop: 24,
-    marginBottom: 12,
+    marginTop: 16,
+    marginBottom: 16,
   },
   enrolledCoursesTeacherName: {
     color: font2,

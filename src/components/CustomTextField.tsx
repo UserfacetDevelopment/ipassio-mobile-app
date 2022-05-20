@@ -20,21 +20,22 @@ interface TextInputProps {
     keyboardType?: any;
     multiline?: boolean;
     onSubmitEditing ?: any;
-
-
+    defaultValue ?: any;
+    onKeyPress
 }
 
-const TextField = ({ onSubmitEditing , keyboardType, multiline, label, onFocus, onBlur, mode, style, selectTextOnFocus, onChangeText, secureTextEntry,value,autoCorrect, editable, autoCapitalize, returnKeyType} : TextInputProps) => {
+const TextField = ({onKeyPress, defaultValue, onSubmitEditing , keyboardType, multiline, label, onFocus, onBlur, mode, style, selectTextOnFocus, onChangeText, secureTextEntry,value,autoCorrect, editable, autoCapitalize, returnKeyType} : TextInputProps) => {
 
     return(
         <TextInput
+        onKeyPress={onKeyPress}
         label={label}
         mode={mode}
         value={value}
         // underlineColor='transparent'
         onFocus={onFocus}
         onBlur={onBlur}
-        
+        defaultValue={defaultValue}
         theme = {{colors: {primary: secondaryColor}}}
         style={[StyleCSS.styles.input, style]}
         onChangeText= {onChangeText}

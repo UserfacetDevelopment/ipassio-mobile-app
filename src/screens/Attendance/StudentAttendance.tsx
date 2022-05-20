@@ -468,36 +468,40 @@ onRefresh();
                   )}
                 </View>
               </View>
-
-              <DashedLine
-              dashLength={5}
-              dashThickness={1}
-              dashGap={5}
-              dashColor={lineColor}
-            />
+              {studentAttendanceList && (studentAttendanceList.disputed_classes >0 || studentAttendanceList.refunded_classes>0) ?
+              <>
+                      <DashedLine
+                      dashLength={5}
+                      dashThickness={1}
+                      dashGap={5}
+                      dashColor={lineColor}
+                    />
               <View style={styles.row}>
-                <View style={styles.halfWidth}>
-                  <Text style={styles.row_title}>No. of Classes Disputed</Text>
-                  {attendancesStatus === 'loading' ? (
-                    <Bubbles size={7} color={brandColor} />
-                  ) : (
-                    <Text style={styles.row_content}>
-                      {studentAttendanceList.disputed_classes}
-                    </Text>
-                  )}
-                </View>
-
-                <View style={styles.halfWidth}>
-                  <Text style={styles.row_title}>No. of Classes Refunded</Text>
-                  {attendancesStatus === 'loading' ? (
-                    <Bubbles size={7} color={brandColor} />
-                  ) : (
-                    <Text style={styles.row_content}>
-                      {studentAttendanceList.refunded_classes}
-                    </Text>
-                  )}
-                </View>
+                  {studentAttendanceList && studentAttendanceList.disputed_classes && studentAttendanceList.disputed_classes>0 ?
+                  <View style={styles.halfWidth}>
+                    <Text style={styles.row_title}>No. of Classes Disputed</Text>
+                    {attendancesStatus === 'loading' ? (
+                      <Bubbles size={7} color={brandColor} />
+                    ) : (
+                      <Text style={styles.row_content}>
+                        {studentAttendanceList.disputed_classes}
+                      </Text>
+                    )}
+                  </View>: null }
+              
+                  {studentAttendanceList && studentAttendanceList.refunded_classes && studentAttendanceList.refunded_classes>0 ?
+                    <View style={styles.halfWidth}>
+                      <Text style={styles.row_title}>No. of Classes Refunded</Text>
+                      {attendancesStatus === 'loading' ? (
+                        <Bubbles size={7} color={brandColor} />
+                      ) : (
+                        <Text style={styles.row_content}>
+                          {studentAttendanceList.refunded_classes}
+                        </Text>
+                      )}
+                    </View> : null}
               </View>
+              </> : null }
             </View>
             <View style={styles.attendanceListWrapper}>
               {attendancesStatus === 'loading' ? (
@@ -648,6 +652,7 @@ onRefresh();
               </View>
               <View style={styles.modal_row}>
               <CustomDateTimePicker
+              width={width-32}
                   showDateTimePicker={showDateTimePicker}
                   // style={{}}
                   selectedValue={attendances[index].class_taken &&
@@ -739,7 +744,7 @@ onRefresh();
                         </Text> */}
                   <Textarea
                     containerStyle={StyleCSS.styles.modalTextarea}
-                    style={styles.reviewTextArea}
+                    style={StyleCSS.styles.reviewTextArea}
                     onChangeText={(text: string) => {
                       let attendanceTemp = attendances.map((o: any) => ({
                         ...o,
@@ -977,14 +982,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop:8,
   },
-  reviewTextArea: {
-    width: '100%',
-    height: 150,
-    color: font1,
-    fontSize: 14,
-    textAlignVertical: 'top',
-    borderRadius: 5,
-  },
+  
   cancelButton: {
     padding: 12,
     // paddingTop: 18,

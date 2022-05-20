@@ -13,7 +13,7 @@ import {SvgUri} from 'react-native-svg';
 import RenderHTML from 'react-native-render-html';
 import helper from '../utils/helperMethods';
 import config from '../config/Config';
-import { background6, font1 } from '../styles/colors';
+import { background6, font1, font2 } from '../styles/colors';
 const { width, height } = Dimensions.get('screen');
 import Expand from '../assets/images/expand.svg'
 import Collapse from '../assets/images/collapse.svg'
@@ -104,7 +104,8 @@ const styles = StyleSheet.create({
     fontFamily: helper.switchFont('regular'),
     fontWeight:'400',
     fontSize:14,
-    color: font1,
+    color: font2,
+    lineHeight:26,
     flexWrap:'wrap',
     maxWidth:width,
     paddingHorizontal:16,

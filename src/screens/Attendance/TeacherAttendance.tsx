@@ -438,7 +438,7 @@ setEditAttendanceModal(true)
             )}
           </View>
 
-          
+          {studentAttendanceList && studentAttendanceList.disputed_classes && studentAttendanceList.disputed_classes>0 ?
           <View style={styles.halfWidth}>
             <Text style={styles.row_title}>No. of Classes Disputed</Text>
             {attendancesStatus === 'loading' ? (
@@ -448,9 +448,11 @@ setEditAttendanceModal(true)
                 {studentAttendanceList.disputed_classes}
               </Text>
             )}
-          </View>
+          </View>: null}
           </View>
 
+{studentAttendanceList && studentAttendanceList.refunded_classes && studentAttendanceList.refunded_classes>0 ?
+<>
           <DashedLine
               dashLength={5}
               dashThickness={1}
@@ -468,7 +470,7 @@ setEditAttendanceModal(true)
               </Text>
             )}
             </View>
-          </View>
+          </View></>:null}
         </View>
         <View style={styles.attendanceListWrapper}>
           {attendancesStatus === 'loading' ? (
@@ -658,6 +660,7 @@ setEditAttendanceModal(true)
                   onCancel={hideDateTimePicker}
                 /> */}
                  <CustomDateTimePicker
+                 width={width-32}
                   showDateTimePicker={showDateTimePicker}
                   // style={{}}
                   selectedValue={attendances[index].class_taken &&

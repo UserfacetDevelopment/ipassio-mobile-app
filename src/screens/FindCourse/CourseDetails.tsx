@@ -11,6 +11,8 @@ import {
   Linking,
   ScrollView,
   Dimensions,
+  Modal,
+  Alert,
 } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 import {SvgUri} from 'react-native-svg';
@@ -29,8 +31,9 @@ import LearningFromArtist from '../../assets/images/course_details/learning_from
 import OnlineClasses from '../../assets/images/course_details/online-classes.svg';
 import PayAsYouGo from '../../assets/images/course_details/pay-as-you-go.svg';
 import Performers from '../../assets/images/course_details/world-class-performers.svg';
-import AgeGroups from '../../assets/images/course_details/age-groups.svg'
-import SuccessRate from '../../assets/images/course_details/success-rate.svg'
+import AgeGroups from '../../assets/images/course_details/age-groups.svg';
+import SuccessRate from '../../assets/images/course_details/success-rate.svg';
+import Card from '../../assets/images/course_details/card.svg';
 import {
   background6,
   brandColor,
@@ -58,6 +61,7 @@ import {
   getTeacherReviews,
   getCourseDetail,
   enrollNow,
+  iamInterestedinCourse,
 } from '../../reducers/courses.slice';
 import {
   setLoading,
@@ -70,11 +74,15 @@ import style from '../../styles/style';
 import Accordian from '../../components/Accordian';
 import TeacherReview from './TeacherReview';
 import {setCurrentCourse} from '../../reducers/courses.slice';
-import {setCheckoutDataDetails} from '../../reducers/checkout.slice';
+import {
+  setCheckoutDataDetails,
+  cartDetails,
+} from '../../reducers/checkout.slice';
 import {useAppDispatch} from '../../app/store';
 import {setPage} from '../../reducers/checkout.slice';
 import HeaderInner from '../../components/HeaderInner';
-
+import Textarea from 'react-native-textarea';
+import {CartDetailsData} from '../Dashboard';
 const {width, height} = Dimensions.get('screen');
 
 export interface TeacherReviewInterface {
@@ -87,6 +95,15 @@ export interface TeacherCalenderInterface {
   courseID: string | undefined;
   sortBy?: string | undefined;
 }
+
+export interface GetCourseDataInterface {
+  course_slug: string;
+  category_slug: string;
+  teacher_slug: string;
+  userToken: string;
+  isLoggedIn: boolean;
+}
+
 import VideoPlayer from 'react-native-video-player';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
@@ -94,6 +111,7 @@ import CustomImage from '../../components/CustomImage';
 import StyleCSS from '../../styles/style';
 import LineDashed from '../../components/LineDashed';
 import Helper from '../../utils/helperMethods';
+import TextField from '../../components/CustomTextField';
 
 type Props = NativeStackScreenProps<RootParamList, 'CourseDetail'>;
 
@@ -103,7 +121,7 @@ export interface CourseEnrollInterface {
 }
 
 const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
-  const course_slug: string = route.params?.course_slug;
+  const propCourse = route.params?.course;
   const [videoId, setVideoId] = useState<string>('');
   const {loading, pageLoading} = useSelector(loaderState);
   const {teacherAttendance, teacherReviews, course, courseDetailStatus} =
@@ -117,6 +135,31 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
   const dispatch = useAppDispatch();
   const [reviewModalVisible, setReviewModalVisible] = useState<boolean>(false);
   const cardW = width * 0.7;
+  const [readMoreSummary, setReadMoreSummary] = useState<boolean>(false);
+  const [readMoreDetail, setReadMoreDetail] = useState<boolean>(false);
+  const [interested, setInterested] = useState(false);
+  const [fullName, setFullName] = useState(
+    isLoggedIn ? userData.first_name + ' ' + userData.last_name : undefined,
+  );
+  const [email, setEmail] = useState(isLoggedIn ? userData.email : undefined);
+  const [mobile, setMobile] = useState(
+    isLoggedIn ? userData.phone_number : undefined,
+  );
+  const [message, setMessage] = useState<string | undefined>(undefined);
+  const [subject, setSubject] = useState<string | undefined>(course.title);
+  const [submitRequested, setSubmitRequested] = useState(false);
+  const [validEmail, setValidEmail] = useState(true);
+  const [checkoutToken, setCheckoutToken] = useState<string | undefined>(
+    undefined,
+  );
+
+  const errors = {
+    fullName: 'Enter full name',
+    email: 'Enter an email address',
+    mobile: 'Enter mobile number',
+    subject: 'Please add the subject.',
+    message: 'Enter a message of at least 20 characters',
+  };
   const dayList = [
     'Sunday',
     'Monday',
@@ -126,8 +169,38 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
     'Friday',
     'Saturday',
   ];
+
   useEffect(() => {
-    dispatch(getCourseDetail(course_slug))
+    let category_slug;
+    if (
+      propCourse &&
+      propCourse.second_sub_category_detail &&
+      propCourse.second_sub_category_detail.seo_slug_url
+    ) {
+      category_slug = propCourse.second_sub_category_detail.seo_slug_url;
+    } else if (
+      propCourse &&
+      propCourse.sub_category_detail &&
+      propCourse.sub_category_detail.seo_slug_url
+    ) {
+      category_slug = propCourse.sub_category_detail.seo_slug_url;
+    } else if (
+      propCourse &&
+      propCourse.sub_category_detail &&
+      propCourse.category_detail.seo_slug_url
+    ) {
+      category_slug = propCourse.category_detail.seo_slug_url;
+    }
+
+    let data: GetCourseDataInterface = {
+      course_slug: propCourse.seo.seo_slug_url,
+      category_slug: category_slug,
+      teacher_slug: propCourse.user.seo_slug_url,
+      userToken: isLoggedIn ? userData.token : undefined,
+      isLoggedIn: isLoggedIn,
+    };
+
+    dispatch(getCourseDetail(data))
       .unwrap()
       .then(response => {
         if (response.data.status === 'success') {
@@ -237,7 +310,10 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
   //     .catch(err => {
   //     });
   // }
-  console.log(course);
+
+  const validateEmail = () => {
+    setValidEmail(/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/.test(email));
+  };
 
   //function to handle the Enroll Now Button
   const handleEnrollment = (purchase_type: string) => {
@@ -291,7 +367,6 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
         .unwrap()
         .then(response => {
           dispatch(setPageLoading(false));
-          console.log(response);
           if (response.data.status === 'success') {
             dispatch(setCheckoutDataDetails(response.data.data));
             navigation.navigate('Checkout', {
@@ -424,12 +499,110 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
       </>
     );
   };
+  const addToCart = (data: any): void => {
+    // dispatch(setCheckoutDataDetails({}));
 
+    const finalData: CartDetailsData = {
+      courseToken: data.course_token,
+      classType: data.pricing[0].id,
+      userToken: userData.token,
+    };
+
+    dispatch(cartDetails(finalData))
+      .unwrap()
+      .then(response => {
+        dispatch(setPageLoading(true));
+        if (response.data.status === 'success') {
+          setCheckoutToken(response.data.data.checkout_token);
+        } else if (response.data.status === 'failure') {
+          dispatch(setPageLoading(false));
+          Alert.alert('', response.data.error_message.message, [
+            {text: 'Okay', style: 'cancel'},
+          ]);
+        }
+      })
+      .catch(err => {
+        dispatch(setPageLoading(false));
+      });
+  };
+  useEffect(() => {
+    if (checkoutToken) {
+      navigation.navigate('Checkout', {
+        screen: 'CartPage',
+        params: {
+          checkoutToken: checkoutToken,
+        },
+      });
+    }
+  }, [checkoutToken]);
+
+  const handleInterested = () => {
+    setInterested(true);
+  };
+  const handleInterestedData = () => {
+    setSubmitRequested(true);
+    if (fullName && mobile && email && subject && message) {
+      let interestedData;
+      if (isLoggedIn) {
+        interestedData = {
+          course: course.id,
+          guest_name: userData.first_name,
+          guest_email: email,
+          subject: course.title,
+          message: message,
+          phone_number: mobile,
+        };
+        // userToken = props.session.token;
+      } else {
+        interestedData = {
+          course: course.id,
+          guest_name: fullName,
+          guest_email: email,
+          subject: course.title,
+          message: message,
+          phone_number: mobile,
+        };
+      }
+
+      const finalData = {
+        data: interestedData,
+        userToken: isLoggedIn ? userData.token : undefined,
+        isLoggedIn: isLoggedIn,
+      };
+      dispatch(iamInterestedinCourse(finalData))
+        .unwrap()
+        .then((response: any) => {
+          setInterested(false);
+          dispatch(setPageLoading(false));
+          if (response?.data.status === 'success') {
+            navigation.navigate('ActionStatus', {
+              messageStatus: 'success',
+              messageTitle: 'Thank You!',
+              messageDesc: response.data.error_message.message,
+              timeOut: 4000,
+              backRoute: 'CourseDetail',
+            });
+          } else if (response?.data.status === 'failure') {
+            navigation.navigate('ActionStatus', {
+              messageStatus: 'failure',
+              messageTitle: 'Sorry!',
+              messageDesc: response?.data.error_message.message,
+              timeOut: 4000,
+              backRoute: 'CourseDetail',
+            });
+          }
+        })
+        .catch(error => {
+          dispatch(setPageLoading(false));
+          Alert.alert(error);
+        });
+    } else {
+    }
+  };
   const isCarousel = React.useRef(null);
   const course_benefits = 'Course Specific Benefits';
   const ipassio_edge = 'The ipassio Edge';
   const about_teacher = 'About Teacher';
-
   const handleFreeMeeting = () => {
     navigation.navigate('RequestMeeting');
   };
@@ -441,9 +614,12 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
         <PageLoader />
       ) : courseDetailStatus !== null ? (
         <>
-          <View style={styles.backButton}>
+          <StatusBar hidden={true} />
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}>
             <Back />
-          </View>
+          </TouchableOpacity>
           {/* <HeaderInner 
         type={'findCourse'}
         title={''}
@@ -453,37 +629,34 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
           // style={{marginTop:config.headerHeight}}
           >
             {!loading && videoId ? (
-              //   <View>
-              //     {/* have to be changed to a non youtube specific carousal */}
-              //     <YoutubePlayer height={297} play={false} videoId={`${videoId}`} />
-              //   </View>
-              // )
-              // : //   <View style={{height:220}}>
-              <VideoPlayer
-                video={{uri: course.video_url}}
-                // videoWidth={1600}
-                videoHeight={height}
-                thumbnail={{uri: 'https://i.picsum.photos/id/866/1600/900.jpg'}}
-              />
-            ) : //   <Video   // Can be a URL or a local file.
-            //    controls
-            // source={{uri: course.video_url}}                                    // Store reference
+              <View
+              // style={{top:0, }}
+              >
+                {/* have to be changed to a non youtube specific carousal */}
+                <YoutubePlayer
+                  height={222}
+                  play={false}
+                  videoId={`${videoId}`}
+                />
+              </View>
+            ) : // )
+            // : //   <View style={{height:220}}>
+            // <VideoPlayer
+            //   video={{uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4'}}
+            //   // videoWidth={1600}
+            //   videoHeight={height}
+            //   // thumbnail={{uri: 'https://i.picsum.photos/id/866/1600/900.jpg'}}
+            // />
+            //    <Video   // Can be a URL or a local file.
+            //   //  controls
+            // source={{uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4'}}                                    // Store reference
             // onError={()=>{console.log("not loading")}}       // Callback when video cannot be loaded
             // style={styles.backgroundVideo}
-            //  />
+            //  />):
             // </View>
             null}
 
             <View style={styles.main}>
-              {/* {(isLoggedIn && userData.user_type === 'S') || !isLoggedIn ? (
-              <TouchableOpacity
-                onPress={handleFreeMeeting}
-                style={styles.requestFreeMeetingButton}>
-                <Text style={styles.requestFreeMeetingText}>
-                  Request for a free meeting
-                </Text>
-              </TouchableOpacity>
-            ) : null} */}
               <View style={styles.courseWrapper}></View>
               <Text style={StyleCSS.styles.mainTitle}>{course.title}</Text>
               <TouchableOpacity
@@ -568,48 +741,218 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               <Text style={(StyleCSS.styles.contentText, styles.experience)}>
                 {course.experience} years experience
               </Text>
-              <View style={styles.courseInfo}>
-                <Text>
-                  {!isLoggedIn
-                    ? userLocation?.data?.country === 'IN'
-                      ? course?.user.ip_country === 'India'
-                        ? `Rs ${
-                            course && course.pricing && course?.pricing[0].INR
-                          }`
-                        : `$ ${
-                            course && course.pricing && course?.pricing[0].USD
-                          }`
-                      : `$ ${
-                          course && course.pricing && course?.pricing[0].USD
-                        }`
-                    : userData?.ip_country === 'India'
-                    ? course?.user.ip_country === 'India'
-                      ? `Rs ${
-                          course && course.pricing && course?.pricing[0].INR
-                        }`
-                      : `$ ${
-                          course && course.pricing && course?.pricing[0].USD
-                        }`
-                    : `$ ${
-                        course && course.pricing && course?.pricing[0].USD
-                      }`}{' '}
+              {course.user.spotlight ? (
+                <Text
+                  style={[
+                    StyleCSS.styles.contentText,
+                    StyleCSS.styles.fw400,
+                    {lineHeight: 20, marginTop: 16},
+                  ]}>
+                  {course.user.spotlight}
                 </Text>
-                <Text>for 1-on-1, {course.class_duration} mins session </Text>
-                <Text>Pay as you go, 2 classes at a time</Text>
-                <Text>Recommended</Text>
-                <Text>
+              ) : null}
+              <View style={styles.courseInfo}>
+                <Text style={styles.price}>
+                  {!isLoggedIn ? (
+                    userLocation?.data?.country === 'IN' ? (
+                      course?.user.ip_country === 'India' ? (
+                        <Text style={styles.price}>
+                          {`Rs ${
+                            course && course.pricing && course?.pricing[0].INR
+                          }`}{' '}
+                          <Text style={StyleCSS.styles.contentText}>
+                            per class (Tax Exclusive)
+                          </Text>
+                        </Text>
+                      ) : (
+                        `US $${
+                          course && course.pricing && course?.pricing[0].USD
+                        }`
+                      )
+                    ) : (
+                      `US $${
+                        course && course.pricing && course?.pricing[0].USD
+                      }`
+                    )
+                  ) : userData?.ip_country === 'India' ? (
+                    course?.user.ip_country === 'India' ? (
+                      <Text style={styles.price}>
+                        {`Rs ${
+                          course && course.pricing && course?.pricing[0].INR
+                        }`}{' '}
+                        <Text style={StyleCSS.styles.contentText}>
+                          per class (Tax Exclusive)
+                        </Text>
+                      </Text>
+                    ) : (
+                      `US $${
+                        course && course.pricing && course?.pricing[0].USD
+                      }`
+                    )
+                  ) : (
+                    `US $${course && course.pricing && course?.pricing[0].USD}`
+                  )}{' '}
+                </Text>
+                <Text style={[StyleCSS.styles.contentText, {marginTop: 5}]}>
+                  for 1-on-1, {course.class_duration} mins class{' '}
+                </Text>
+                <Text style={[StyleCSS.styles.labelText, {marginTop: 16}]}>
+                  Recommended
+                </Text>
+                <Text style={[StyleCSS.styles.contentText, {marginTop: 6}]}>
                   {course.classes_per_week}{' '}
                   {course.classes_per_week === 1 ? 'session' : 'sessions'} per
-                  week
+                  week{' '}
+                  <Text style={[StyleCSS.styles.labelText, {marginTop: 16}]}>
+                    {' '}
+                    |{' '}
+                  </Text>{' '}
+                  12-16 weeks to level up
                 </Text>
-                <TouchableOpacity
-                  style={styles.enrollButton}
-                  onPress={() => handleEnrollment('N')}>
+                <View style={[{marginTop: 16}, StyleCSS.styles.fdrCenter]}>
+                  <Card />
                   <Text
-                    style={[StyleCSS.styles.contentText, styles.enrollNowText]}>
-                    Enroll Now
+                    style={[
+                      StyleCSS.styles.contentText,
+                      StyleCSS.styles.fw600,
+                      {marginLeft: 8},
+                    ]}>
+                    Pay as you go, 2 classes at a time
                   </Text>
-                </TouchableOpacity>
+                </View>
+                {!isLoggedIn && course.allow_directly && (
+                    <TouchableOpacity
+                    style={styles.enrollButton}
+                    onPress={() => handleEnrollment('N')}>
+                    <Text
+                      style={[
+                        StyleCSS.styles.contentText,
+                        styles.enrollNowText,
+                      ]}>
+                      Enroll Now
+                    </Text>
+                  </TouchableOpacity>
+                  )}
+                  {!isLoggedIn && !course.allow_directly && (
+                    <TouchableOpacity
+                    style={styles.enrollButton}
+                    onPress={() => handleInterested()}>
+                    <Text
+                      style={[
+                        StyleCSS.styles.contentText,
+                        styles.enrollNowText,
+                      ]}>
+                      I am interested
+                    </Text>
+                  </TouchableOpacity>
+                  )}
+                  {isLoggedIn &&
+                  course &&
+                  userData.user_type === 'S' ? (
+                    !course.pricing[0].is_checkout ? (
+                      <TouchableOpacity
+                    style={styles.enrollButton}
+                    onPress={() => addToCart(course)}>
+                    <Text
+                      style={[
+                        StyleCSS.styles.contentText,
+                        styles.enrollNowText,
+                      ]}>
+                      Refill
+                    </Text>
+                  </TouchableOpacity>
+                    ) : course.allow_directly ? (
+                      <TouchableOpacity
+                    style={styles.enrollButton}
+                    onPress={() => handleEnrollment('N')}>
+                    <Text
+                      style={[
+                        StyleCSS.styles.contentText,
+                        styles.enrollNowText,
+                      ]}>
+                      Enroll Now
+                    </Text>
+                  </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                    style={styles.enrollButton}
+                    onPress={() => handleInterested()}>
+                    <Text
+                      style={[
+                        StyleCSS.styles.contentText,
+                        styles.enrollNowText,
+                      ]}>
+                      I am interested
+                    </Text>
+                  </TouchableOpacity>
+                    )
+                  ) : null}
+                  {isLoggedIn && userData.user_type !== 'S' ? (
+                   <TouchableOpacity
+                   style={styles.enrollButton}
+                   // onPress={() => handleInterested()}
+                   >
+                   <Text
+                     style={[
+                       StyleCSS.styles.contentText,
+                       styles.enrollNowText,
+                     ]}>
+                    Login as Student
+                   </Text>
+                 </TouchableOpacity>
+                  ): null}
+{/* {isLoggedIn && userData.user_type === 'S' ?
+                course.pricing && !course.pricing[0].is_checkout ? (
+                  <TouchableOpacity
+                    style={styles.enrollButton}
+                    onPress={() => addToCart(course)}>
+                    <Text
+                      style={[
+                        StyleCSS.styles.contentText,
+                        styles.enrollNowText,
+                      ]}>
+                      Refill
+                    </Text>
+                  </TouchableOpacity>
+                ) : course.allow_directly ? (
+                  <TouchableOpacity
+                    style={styles.enrollButton}
+                    onPress={() => handleEnrollment('N')}>
+                    <Text
+                      style={[
+                        StyleCSS.styles.contentText,
+                        styles.enrollNowText,
+                      ]}>
+                      Enroll Now
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.enrollButton}
+                    onPress={() => handleInterested()}>
+                    <Text
+                      style={[
+                        StyleCSS.styles.contentText,
+                        styles.enrollNowText,
+                      ]}>
+                      I am interested
+                    </Text>
+                  </TouchableOpacity>
+                ) : isLoggedIn && userData.user_type!=='S' ? 
+                <TouchableOpacity
+                    style={styles.enrollButton}
+                    // onPress={() => handleInterested()}
+                    >
+                    <Text
+                      style={[
+                        StyleCSS.styles.contentText,
+                        styles.enrollNowText,
+                      ]}>
+                     Login as Student
+                    </Text>
+                  </TouchableOpacity> : null
+              } */}
+
                 {(isLoggedIn && userData.user_type === 'S') || !isLoggedIn ? (
                   <TouchableOpacity
                     onPress={handleFreeMeeting}
@@ -719,11 +1062,39 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               <View style={styles.courseSummary}>
                 <Text style={styles.subHeading}>Course Summary</Text>
                 {course.course_summary ? (
-                  <RenderHtml
-                    baseStyle={styles.summary}
-                    contentWidth={cardW}
-                    source={{html: course.course_summary}}
-                  />
+                  readMoreSummary ? (
+                    <>
+                      <RenderHtml
+                        baseStyle={styles.summary}
+                        contentWidth={cardW}
+                        source={{html: course.course_summary}}
+                      />
+                      <TouchableOpacity
+                        onPress={() => {
+                          setReadMoreSummary(false);
+                        }}>
+                        <Text style={[styles.summary, {color: secondaryColor}]}>
+                          Read Less
+                        </Text>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <>
+                      <RenderHtml
+                        baseStyle={styles.summary}
+                        contentWidth={cardW}
+                        source={{html: course.course_summary.substring(0, 200)}}
+                      />
+                      <TouchableOpacity
+                        onPress={() => {
+                          setReadMoreSummary(true);
+                        }}>
+                        <Text style={[styles.summary, {color: secondaryColor}]}>
+                          Read More
+                        </Text>
+                      </TouchableOpacity>
+                    </>
+                  )
                 ) : null}
               </View>
               <View
@@ -766,71 +1137,112 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     )}
                   </View>
                 </View>
+                <View style={{marginTop: 24}}>
+                  {course.teacher_skills && course.teacher_skills.length > 0 ? (
+                    <View
+                      style={[
+                        StyleCSS.styles.fdrCenter,
+                        styles.teacherProfileList,
+                      ]}>
+                      <View>
+                        <TP1 />
+                      </View>
+                      <View style={styles.teacherProfileListText}>
+                        <Text
+                          style={[
+                            StyleCSS.styles.contentText,
+                            StyleCSS.styles.fw600,
+                          ]}>
+                          Teacher Skill Keywords
+                        </Text>
+                        <Text
+                          style={[
+                            StyleCSS.styles.labelText,
+                            StyleCSS.styles.fw400,
+                            {marginTop: 5},
+                          ]}>
+                          {course.teacher_skills.map(
+                            (skill: any, i: number) => (
+                              <Text
+                                style={[
+                                  StyleCSS.styles.labelText,
+                                  StyleCSS.styles.fw400,
+                                  {marginTop: 5},
+                                ]}
+                                key={i}>
+                                {i > 0 ? ', ' + skill.name : skill.name}
+                              </Text>
+                            ),
+                          )}
+                        </Text>
+                      </View>
+                    </View>
+                  ) : null}
+                  {course.user &&
+                  course.user.study_details &&
+                  course.user.study_details.length > 0 ? (
+                    <View
+                      style={[
+                        StyleCSS.styles.fdrCenter,
+                        styles.teacherProfileList,
+                      ]}>
+                      <View>
+                        <TP2 />
+                      </View>
+                      <View style={styles.teacherProfileListText}>
+                        <Text
+                          style={[
+                            StyleCSS.styles.contentText,
+                            StyleCSS.styles.fw600,
+                          ]}>
+                          Education
+                        </Text>
+                        <Text
+                          style={[
+                            StyleCSS.styles.contentText,
+                            StyleCSS.styles.fw600,
+                          ]}>
+                          {course.user.study_details.map(
+                            (s_detail: any, i: number) => (
+                              <Text
+                                style={[
+                                  StyleCSS.styles.labelText,
+                                  StyleCSS.styles.fw400,
+                                  {marginTop: 5},
+                                ]}
+                                key={i}>
+                                {s_detail.degree}{' '}
+                                {s_detail.university && (
+                                  <>from {s_detail.university}</>
+                                )}
+                              </Text>
+                            ),
+                          )}
+                        </Text>
+                      </View>
+                    </View>
+                  ) : null}
+                  {course.user.work_details &&
+                  course.user.work_details.length > 0 ? (
+                    <View
+                      style={[
+                        StyleCSS.styles.fdrCenter,
+                        styles.teacherProfileList,
+                      ]}>
+                      <View>
+                        <TP3 />
+                      </View>
+                      <View style={styles.teacherProfileListText}>
+                        <Text
+                          style={[
+                            StyleCSS.styles.contentText,
+                            StyleCSS.styles.fw600,
+                          ]}>
+                          Work Details
+                        </Text>
 
-                {course.teacher_skills && course.teacher_skills.length > 0 ? (
-                  <View
-                    style={[
-                      StyleCSS.styles.fdrCenter,
-                      styles.teacherProfileList,
-                    ]}>
-                    <View>
-                      <TP1 />
-                    </View>
-                    <View style={styles.teacherProfileListText}>
-                      <Text
-                        style={[
-                          StyleCSS.styles.contentText,
-                          StyleCSS.styles.fw600,
-                        ]}>
-                        Teacher Skill Keywords
-                      </Text>
-                      <Text
-                        style={[
-                          StyleCSS.styles.labelText,
-                          StyleCSS.styles.fw400,
-                          {marginTop: 5},
-                        ]}>
-                        {course.teacher_skills.map((skill: any, i: number) => (
-                          <Text
-                            style={[
-                              StyleCSS.styles.labelText,
-                              StyleCSS.styles.fw400,
-                              {marginTop: 5},
-                            ]}
-                            key={i}>
-                            {i > 0 ? ', ' + skill.name : skill.name}
-                          </Text>
-                        ))}
-                      </Text>
-                    </View>
-                  </View>
-                ) : null}
-                {course.user &&
-                course.user.study_details &&
-                course.user.study_details.length > 0 ? (
-                  <View
-                    style={[
-                      StyleCSS.styles.fdrCenter,
-                      styles.teacherProfileList,
-                    ]}>
-                    <View>
-                      <TP2 />
-                    </View>
-                    <View style={styles.teacherProfileListText}>
-                      <Text
-                        style={[
-                          StyleCSS.styles.contentText,
-                          StyleCSS.styles.fw600,
-                        ]}>
-                        Education
-                      </Text>
-                      <Text
-                        style={[
-                          StyleCSS.styles.contentText,
-                          StyleCSS.styles.fw600,
-                        ]}>
-                        {course.user.study_details.map(
-                          (s_detail: any, i: number) => (
+                        {course.user.work_details.map(
+                          (work: any, i: number) => (
                             <Text
                               style={[
                                 StyleCSS.styles.labelText,
@@ -838,50 +1250,14 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                                 {marginTop: 5},
                               ]}
                               key={i}>
-                              {s_detail.degree}{' '}
-                              {s_detail.university && (
-                                <>from {s_detail.university}</>
-                              )}
+                              {work.position + ' - ' + work.organisation}
                             </Text>
                           ),
                         )}
-                      </Text>
+                      </View>
                     </View>
-                  </View>
-                ) : null}
-                {course.user.work_details &&
-                course.user.work_details.length > 0 ? (
-                  <View
-                    style={[
-                      StyleCSS.styles.fdrCenter,
-                      styles.teacherProfileList,
-                    ]}>
-                    <View>
-                      <TP3 />
-                    </View>
-                    <View style={styles.teacherProfileListText}>
-                      <Text
-                        style={[
-                          StyleCSS.styles.contentText,
-                          StyleCSS.styles.fw600,
-                        ]}>
-                        Work Details
-                      </Text>
-
-                      {course.user.work_details.map((work: any, i: number) => (
-                        <Text
-                          style={[
-                            StyleCSS.styles.labelText,
-                            StyleCSS.styles.fw400,
-                            {marginTop: 5},
-                          ]}
-                          key={i}>
-                          {work.position + ' - ' + work.organisation}
-                        </Text>
-                      ))}
-                    </View>
-                  </View>
-                ) : null}
+                  ) : null}
+                </View>
                 <View
                   style={[
                     StyleCSS.styles.fdrCenter,
@@ -1130,13 +1506,45 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
 
             <View style={[styles.main, styles.courseSummary]}>
               <Text style={styles.subHeading}> About the Course</Text>
-              <RenderHtml
-                baseStyle={styles.summary}
-                contentWidth={width}
-                source={{html: removeEmptyTags(course.course_description)}}
-              />
+              {readMoreDetail ? (
+                <>
+                  <RenderHtml
+                    baseStyle={styles.summary}
+                    contentWidth={width}
+                    source={{html: removeEmptyTags(course.course_description)}}
+                  />
+                  <TouchableOpacity
+                    onPress={() => {
+                      setReadMoreDetail(false);
+                    }}>
+                    <Text style={[styles.summary, {color: secondaryColor}]}>
+                      Read Less
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <RenderHtml
+                    baseStyle={styles.summary}
+                    contentWidth={width}
+                    source={{
+                      html: removeEmptyTags(
+                        course.course_description.substring(0, 200),
+                      ),
+                    }}
+                  />
+                  <TouchableOpacity
+                    onPress={() => {
+                      setReadMoreDetail(true);
+                    }}>
+                    <Text style={[styles.summary, {color: secondaryColor}]}>
+                      Read More
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              )}
             </View>
-            <View style={styles.main}>
+            <View style={[styles.main, {paddingTop: 16}]}>
               {course.ipassio_edge ? (
                 <Accordian title={ipassio_edge} data={course.ipassio_edge} />
               ) : null}
@@ -1156,7 +1564,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     styles.teacherProfileList,
                   ]}>
                   <View>
-                    <AgeGroups/>
+                    <AgeGroups />
                   </View>
                   <View style={styles.teacherProfileListText}>
                     <Text
@@ -1176,7 +1584,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     styles.teacherProfileList,
                   ]}>
                   <View>
-                    <SuccessRate/>
+                    <SuccessRate />
                   </View>
                   <View style={styles.teacherProfileListText}>
                     <Text
@@ -1197,7 +1605,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                       {marginVertical: 8},
                     ]}></View>
                   <View>
-                    <Text style={{marginVertical: 12}}>What you get?</Text>
+                    <Text style={styles.whatYouGet}>What you get?</Text>
                   </View>
                   {course.course_includes.map((details: any) => {
                     return (
@@ -1267,18 +1675,28 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
             </View>
             <View>
               <View
-                // style={{position: 'absolute', top: 0, left: 0, width: '100%'}}
-                >
+              // style={{position: 'absolute', top: 0, left: 0, width: '100%'}}
+              >
                 {/* <CustomImage uri={}/> */}
                 {/* <LearningFromArtist /> */}
-                <Image style={{width:'100%', height:452}}
-                source={require('@images/course_details/learning_from_artist_mobile.png')} />
+                <Image
+                  style={{width: '100%', height: 452}}
+                  source={require('@images/course_details/learning_from_artist_mobile.png')}
+                />
               </View>
-              <View  style={{position: 'absolute', top: 40, marginBottom:16}}>
-              <Text style={styles.textOverImage}>Learning from a trained</Text>
-              <Text style={styles.textOverImage}>teacher is different from</Text>
-              <Text style={[styles.textOverImage, {color:brandColor}]}>learning from an artist.</Text>
-              <Text style={styles.textOverImageSmall}>Know about your teacher before you Enroll in a course.</Text>
+              <View style={{position: 'absolute', top: 40, marginBottom: 16}}>
+                <Text style={styles.textOverImage}>
+                  Learning from a trained
+                </Text>
+                <Text style={styles.textOverImage}>
+                  teacher is different from
+                </Text>
+                <Text style={[styles.textOverImage, {color: brandColor}]}>
+                  learning from an artist.
+                </Text>
+                <Text style={styles.textOverImageSmall}>
+                  Know about your teacher before you Enroll in a course.
+                </Text>
               </View>
             </View>
             {/* {course.course_includes ? (
@@ -1390,7 +1808,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               </View>
             )} */}
 
-            {teacherReviews.length > 0 ? (
+            {/* {teacherReviews.length > 0 ? (
               <View
                 style={[
                   styles.greyBg,
@@ -1404,15 +1822,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                 <TouchableOpacity style={[styles.arrow, styles.next]}>
                   <Text style={{fontSize: 20}}>&gt;</Text>
                 </TouchableOpacity>
-                {/* <FlatList
-                      horizontal
-                      pagingEnabled
-                      data={teacherReviews.length>2 ? teacherReviews.slice(0,2) : teacherReviews}
-                      // keyExtractor={(_, index) => index.toString()}
-                      // renderItem={({review, index}) => loadReviews(review, index)}
-                      renderItem={({item, index}) => loadReviews(item, index)}
-                      keyExtractor={item => item.id}
-                      /> */}
+                
                 <Carousel
                   ref={isCarousel}
                   data={
@@ -1447,7 +1857,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               {course.about_teacher ? (
                 <Accordian title={about_teacher} data={course.about_teacher} />
               ) : null}
-            </View>
+            </View> */}
             {course.faq && course.faq.length > 0 ? (
               <View style={[styles.main, {paddingTop: 24}]}>
                 <Text style={[styles.subHeading, {marginBottom: 16}]}>
@@ -1556,6 +1966,126 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
           </ScrollView>
         </>
       ) : null}
+
+      <Modal
+        visible={interested}
+        presentationStyle="overFullScreen"
+        transparent={true}>
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setInterested(false)}
+          style={StyleCSS.styles.modalBackground}>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => {}}
+            style={StyleCSS.styles.modalView}>
+            <ScrollView>
+              <View style={StyleCSS.styles.modalLine}></View>
+              <Text style={StyleCSS.styles.modalTitle}>I am Interested</Text>
+              <View style={styles.formInput}>
+                <TextField
+                  mode="outlined"
+                  label="Full Name*"
+                  // style={StyleCSS.styles.input}
+                  value={fullName}
+                  onChangeText={(text: string) => setFullName(text)}
+                  editable={true}
+                  selectTextOnFocus={false}
+                />
+                {submitRequested && !fullName ? (
+                  <Text style={styles.errorMessage}>{errors.fullName}</Text>
+                ) : null}
+              </View>
+              <View style={styles.formInput}>
+                <TextField
+                  mode="outlined"
+                  label="Email Address*"
+                  onKeyPress={validateEmail}
+                  // style={StyleCSS.styles.input}
+                  value={email}
+                  onChangeText={(text: string) => setEmail(text)}
+                  editable={true}
+                  selectTextOnFocus={false}
+                />
+                {submitRequested && !email ? (
+                  <Text style={styles.errorMessage}>{errors.email}</Text>
+                ) : null}
+                {validEmail ? null : (
+                  <Text style={styles.errorMessage}>
+                    This email address is invalid.
+                  </Text>
+                )}
+              </View>
+              <View style={styles.formInput}>
+                <TextField
+                  mode="outlined"
+                  label="Mobile Number (preferably WhatsApp number)*"
+                  // style={StyleCSS.styles.input}
+                  value={mobile}
+                  keyboardType="numeric"
+                  onChangeText={(text: string) => setMobile(text)}
+                  editable={true}
+                  selectTextOnFocus={false}
+                />
+                {submitRequested && !mobile ? (
+                  <Text style={styles.errorMessage}>{errors.mobile}</Text>
+                ) : null}
+              </View>
+              <View style={styles.formInput}>
+                <TextField
+                  mode="outlined"
+                  label="Subject"
+                  // multiline={true}
+                  // style={StyleCSS.styles.input}
+                  value={subject}
+                  defaultValue={course.title}
+                  onChangeText={(text: string) => setSubject(text)}
+                  editable={true}
+                  selectTextOnFocus={false}
+                />
+                {submitRequested && subject === '' ? (
+                  <Text style={styles.errorMessage}>{errors.subject}</Text>
+                ) : null}
+              </View>
+              <View style={styles.formInput}>
+                <Textarea
+                  containerStyle={StyleCSS.styles.modalTextarea}
+                  style={StyleCSS.styles.reviewTextArea}
+                  onChangeText={(text: string) => {
+                    setMessage(text);
+                  }}
+                  value={message}
+                  // defaultValue={attendances[index].review}
+                  placeholder={'Message *'}
+                  placeholderTextColor={font2}
+                  underlineColorAndroid={'transparent'}
+                />
+                {submitRequested && !message ? (
+                  <Text style={styles.errorMessage}>{errors.message}</Text>
+                ) : null}
+              </View>
+
+              <View style={[StyleCSS.styles.lineStyleLight, {marginTop: 16}]} />
+              <View style={[StyleCSS.styles.modalButton]}>
+                <TouchableOpacity
+                  style={StyleCSS.styles.cancelButton}
+                  onPress={() => {
+                    setInterested(false);
+                  }}>
+                  <Text style={StyleCSS.styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={StyleCSS.styles.submitButton}
+                  onPress={() => {
+                    handleInterestedData();
+                  }}>
+                  <Text style={StyleCSS.styles.submitButtonText}>Submit</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </>
   );
 };
@@ -1668,7 +2198,7 @@ const styles = StyleSheet.create({
 
     marginTop: 16,
     width: '100%',
-backgroundColor: brandColor,
+    backgroundColor: brandColor,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: brandColor,
@@ -1701,8 +2231,8 @@ backgroundColor: brandColor,
   },
   price: {
     fontFamily: helper.switchFont('medium'),
-    fontSize: 26,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: '800',
     color: font1,
   },
   priceDetail: {
@@ -1858,6 +2388,10 @@ backgroundColor: brandColor,
     width: '100%',
     justifyContent: 'space-between',
   },
+  formInput: {
+    marginVertical: 12,
+    paddingHorizontal: 16,
+  },
   teacherTimingWrapper: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -1873,6 +2407,13 @@ backgroundColor: brandColor,
     resizeMode: 'cover',
     marginRight: 30,
     borderRadius: 30,
+  },
+  errorMessage: {
+    fontSize: 12,
+    color: 'red',
+    fontFamily: Helper.switchFont('medium'),
+    fontWeight: '500',
+    marginTop: 3,
   },
   student: {
     flex: 1,
@@ -1904,8 +2445,8 @@ backgroundColor: brandColor,
     // backgroundColor: secondaryColor,
     height: 40,
     borderRadius: 8,
-    borderWidth:1,
-    borderColor:secondaryColor,
+    borderWidth: 1,
+    borderColor: secondaryColor,
     justifyContent: 'center',
     flexDirection: 'row',
     marginTop: 8,
@@ -1918,6 +2459,9 @@ backgroundColor: brandColor,
   },
   backButton: {
     position: 'absolute',
+    zIndex: 99,
+    top: 53,
+    left: 16,
   },
   cardDetail: {
     color: font1,
@@ -1928,8 +2472,9 @@ backgroundColor: brandColor,
   courseRatingCount: {
     marginLeft: 8,
     fontWeight: '400',
-    fontSize: 13,
-    lineHeight: 16.38,
+    fontSize: 14,
+    // lineHeight: 16.38,
+    color: font1,
   },
   courseRating: {
     alignItems: 'flex-start',
@@ -1938,6 +2483,7 @@ backgroundColor: brandColor,
   experience: {
     fontWeight: '400',
     marginTop: 5,
+    color: font1,
   },
   courseInfo: {
     backgroundColor: background6,
@@ -2012,20 +2558,39 @@ backgroundColor: brandColor,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  textOverImage:{
-    fontSize:24,
-    lineHeight:32,
-    fontWeight:'700',
-    color:'#fff',
-    textAlign:'center',
-    fontFamily:Helper.switchFont('bold'),
+  textOverImage: {
+    fontSize: 24,
+    lineHeight: 32,
+    fontWeight: '700',
+    color: '#fff',
+    textAlign: 'center',
+    fontFamily: Helper.switchFont('bold'),
   },
-  textOverImageSmall:{
-fontSize:16,
-fontWeight:'600',
-lineHeight:20,
-textAlign:'center',
-marginHorizontal:16,
-marginTop:16
-  }
+  textOverImageSmall: {
+    fontSize: 16,
+    fontWeight: '600',
+    lineHeight: 20,
+    textAlign: 'center',
+    marginHorizontal: 16,
+    marginTop: 16,
+  },
+  whatYouGet: {
+    marginVertical: 12,
+    fontWeight: '600',
+    fontSize: 16,
+    color: font1,
+    fontFamily: Helper.switchFont('semibold'),
+  },
 });
+
+{
+  /* <FlatList
+                      horizontal
+                      pagingEnabled
+                      data={teacherReviews.length>2 ? teacherReviews.slice(0,2) : teacherReviews}
+                      // keyExtractor={(_, index) => index.toString()}
+                      // renderItem={({review, index}) => loadReviews(review, index)}
+                      renderItem={({item, index}) => loadReviews(item, index)}
+                      keyExtractor={item => item.id}
+                      /> */
+}

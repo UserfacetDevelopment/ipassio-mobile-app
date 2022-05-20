@@ -8,6 +8,7 @@ import {userState} from '../reducers/user.slice'
 export default function BottomNavigation({navigation, selected}: any) {
 
  const {userData} = useSelector(userState);
+ 
 
   return (
     <View style={styles.tabStyle}>
@@ -34,7 +35,7 @@ export default function BottomNavigation({navigation, selected}: any) {
                 <Text style={styles.text}>Transactions</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={()=>{navigation.navigate('More') }} style={[styles.tabButton, {flexBasis: userData.user_type === 'T' ? '20%' : '25%'}]}>
-            <Image style={styles.tabImage} source={require('@images/more.png')}/>
+            <Image style={styles.tabImage} source={selected==='M' ? require('@images/more-active.png') : require('@images/more.png')}/>
                 <Text style={styles.text}>More</Text>
         </TouchableOpacity>
 

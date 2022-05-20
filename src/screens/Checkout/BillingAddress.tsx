@@ -434,7 +434,7 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                   <TouchableOpacity
                     style={StyleCSS.styles.cancelButton}
                     onPress={() => {
-                      // navigation.goBack()
+                      navigation.goBack()
                      
                     }}>
                     <Text
