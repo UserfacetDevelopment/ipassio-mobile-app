@@ -294,6 +294,21 @@ bottom:0,
     fontWeight:'500',
     fontFamily: Helper.switchFont('medium'),
   },
+  formFillTimeImage: {
+    height: '100%',
+    width: '100%',
+  },
+  formFillTimeTextWrapper: {
+    paddingLeft: 16,
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    height: 32,
+    width: '100%',
+    // top: 100,
+  },
+  formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
   marginV16:{marginVertical: 16},
   font12:{fontSize:12},
   font14:{fontSize:14},
@@ -315,6 +330,6 @@ bottom:0,
   },
   fw700:{
     fontWeight:'700'
-  }
+  },
   });
 }

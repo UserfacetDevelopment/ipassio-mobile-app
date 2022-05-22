@@ -1,7 +1,7 @@
 import React, {useEffect, useState, FC} from 'react';
 import {
   View,
-  Image,
+  // Image,
   StyleSheet,
   Text,
   ScrollView,
@@ -39,16 +39,17 @@ import {appBackground, brandColor, font1, font2, font3, lineColor} from '../../s
 import NoData from '../../components/NoData';
 import HeaderInner from '../../components/HeaderInner';
 import {useRoute} from '@react-navigation/native';
-import Dropdown from '../../assets/images/dropdown.svg'
+// import Dropdown from '../../assets/images/dropdown.svg'
 import config from '../../config/Config';
 const {width, height} = Dimensions.get('screen');
 
-import Copy from '../../assets/images/copy.svg'
-import AddSession from '../../assets/images/addSession.svg';
+// import Copy from '../../assets/images/copy.svg'
+// import AddSession from '../../assets/images/addSession.svg';
 import AddSessionCmp from './AddSession';
 import Clipboard from '@react-native-clipboard/clipboard';
 import BottomNavigation from '../../components/BottomNavigation';
 import DashedLine from 'react-native-dashed-line';
+import CustomImage from '../../components/CustomImage';
 
 type Props = NativeStackScreenProps<RootParamList, 'AddSession'>;
 
@@ -211,7 +212,7 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
           </Text>
         </View> */}
         <View style={selectedCard == data.class_token ? styles.dropBackground : null}>
-        <Dropdown/>
+        <CustomImage height={16} width={16} uri={`${config.media_url}dropdown.svg`} />
         </View>
         
         </View>
@@ -291,7 +292,7 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
             <View style={styles.itemRowItem}>
               <Text style={styles.contentLabel}>Taught On</Text>
               <View style={{flexDirection:'row', alignItems:'center'}} >
-                {data.taught_on.icon ? <Image style={{height:20, width:20, marginRight:8}} source={{uri:data.taught_on.icon}}/> : null}
+                {data.taught_on.icon ? <CustomImage style={{height:20, width:20, marginRight:8}} uri={data.taught_on.icon}/> : null}
               <Text style={styles.contentText}>{data.taught_on.name}</Text>
                 </View>
               
@@ -312,7 +313,10 @@ const LoadItem = ({data, index, selectedCard, setSelectedCard} : LoadItemInterfa
           //       data.class_token,
           //       upcoming.taught_on.code
           //     )
-              }</Text><TouchableOpacity onPress={()=>{Clipboard.setString(data.class_url)}} style={styles.copy}><Copy/></TouchableOpacity></View>
+              }</Text><TouchableOpacity onPress={()=>{Clipboard.setString(data.class_url)}} style={styles.copy}>
+                        <CustomImage height={24} width={24} uri={`${config.media_url}copy.svg`} />
+
+                </TouchableOpacity></View>
           
           </View>
           </> : null}
@@ -545,7 +549,10 @@ export default function Schedules({navigation}: Props) {
         ):null} */}
 
 <View style={styles.addSessionWrapper}>
-<TouchableOpacity onPress={addSession} style={styles.addSessionButton}><View style={styles.addSession}><AddSession/><Text style={{color:'#fff', fontFamily:Helper.switchFont('bold'), fontSize:14, fontWeight:'700', marginLeft:8, width:'100%'}}>Add Session</Text></View></TouchableOpacity>
+<TouchableOpacity onPress={addSession} style={styles.addSessionButton}><View style={styles.addSession}>
+          <CustomImage height={16} width={16} uri={`${config.media_url}addSession.svg`} />
+
+  <Text style={{color:'#fff', fontFamily:Helper.switchFont('bold'), fontSize:14, fontWeight:'700', marginLeft:8, width:'100%'}}>Add Session</Text></View></TouchableOpacity>
 </View>
         <ScrollView
           style={[styles.scrollView]}

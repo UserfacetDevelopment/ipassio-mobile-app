@@ -41,9 +41,10 @@ import {
 } from '../../reducers/schedule.slice';
 import HeaderInner from '../../components/HeaderInner';
 import StyleCSS from '../../styles/style';
-import Time from '../../assets/images/time.svg';
-import Calender from '../../assets/images/calender.svg'
+// import Time from '../../assets/images/time.svg';
+// import Calender from '../../assets/images/calender.svg'
 import CustomDateTimePicker from '../../components/CustomDateTimePicker';
+import CustomImage from '../../components/CustomImage';
 
 type Props = NativeStackScreenProps<RootParamList, 'AddSession'>;
 
@@ -597,7 +598,7 @@ Alert.alert('', 'Something went wrong')
                 <View style={styles.formElement}>
                   {/* <Text style={styles.labelContent}>Start Time *</Text> */}
                   <CustomDropdown
-                  customIcon = {<Time/>}
+                  customIcon = {<CustomImage height={24} width={24} uri={`${config.media_url}time.svg`} />}
                     topLabel={startTime ? 'Start Time *' : undefined}
                     config={{color: '#fff'}}
                     onChangeVal={changeStartTime}
@@ -611,7 +612,7 @@ Alert.alert('', 'Something went wrong')
                 <View style={styles.formElement}>
                   {/* <Text style={styles.labelContent}>End Time *</Text> */}
                   <CustomDropdown
-                  customIcon = {<Time/>}
+                  customIcon = {<CustomImage height={24} width={24} uri={`${config.media_url}time.svg`} />}
                     topLabel={endTime ? 'End Time *' : undefined}
                     config={{color: '#fff'}}
                     onChangeVal={changeEndTime}

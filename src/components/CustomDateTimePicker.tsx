@@ -9,7 +9,9 @@ import {
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {dropdownBorder, font1, font2} from '../styles/colors';
 import Helper from '../utils/helperMethods';
-import Calender from '../assets/images/calender.svg';
+// import Calender from '../assets/images/calender.svg';
+import CustomImage from './CustomImage';
+import Config from '../config/Config';
 
 interface CustomDateTimePickerProps {
   selectedValue: any;
@@ -68,7 +70,8 @@ export default function CustomDateTimePicker({
           </Text>
         ) : null}
         <View>
-          <Calender />
+          <CustomImage height={24} width={24} uri={`${Config.media_url}calender.svg`}/>
+          {/* <Calender /> */}
         </View>
         <DateTimePickerModal
           maximumDate={maximumDate}

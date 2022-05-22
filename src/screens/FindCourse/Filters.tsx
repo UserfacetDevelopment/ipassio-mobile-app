@@ -4,7 +4,7 @@ import {
   View,
   Animated,
   TouchableOpacity,
-  Image,
+  // Image,
   StyleSheet,
   PlatformColor,
   Platform,
@@ -36,12 +36,11 @@ import axios from 'axios';
 import {loaderState, setLoading} from '../../reducers/loader.slice';
 import {ScrollView} from 'native-base';
 import {background, brandColor, font1,font2, lineColor} from '../../styles/colors';
-// @ts-ignore
-import Dropdown from '../../assets/images/dropdown.svg';
-//@ts-ignore
-import Drop2 from '../../assets/images/drop2.svg';
+// import Dropdown from '../../assets/images/dropdown.svg';
+// import Drop2 from '../../assets/images/drop2.svg';
 import config from '../../config/Config'
 import Helper from '../../utils/helperMethods';
+import CustomImage from '../../components/CustomImage';
 type Props = NativeStackScreenProps<RootParamList, 'FilterScreen'>;
 
 export default function Filters({navigation, route}: Props) {
@@ -236,17 +235,18 @@ handleSecSubcategories(ct)
           style={{flexDirection: 'row', paddingVertical:8, alignItems:'center'}}
           onPress={() => setOthers(!others)}>
           <View style={styles.dropBackground}>
-            <Dropdown />
+            <CustomImage height={16} width={16} uri={`${config.media_url}dropdown.svg`}></CustomImage>
           </View>
           
           <Text style={styles.textColor}>{others ? 'Hide' : 'Others'}</Text>
-          {loading ? (
+          {/* {loading ? (
+            
             <Image
               style={styles.loader}
               source={require('@images/loading.gif')}
               resizeMode="contain"
             />
-          ) : null}
+          ) : null} */}
         </TouchableOpacity>
           {others ? 
           (<>
@@ -359,7 +359,13 @@ handleSecSubcategories(ct)
                   </View>
                   <View style={styles.moreSc}> 
                   
-                  {subCategories.indexOf(sc.seo.seo_slug_url) > -1 && sc.subCategories.length > 0 ? <View style={styles.dropBackground}><Dropdown/></View> : sc.subCategories.length > 0 ? <View style={styles.drop}><Drop2/></View> : null}
+                  {subCategories.indexOf(sc.seo.seo_slug_url) > -1 && sc.subCategories.length > 0 ? <View style={styles.dropBackground}>
+                  <CustomImage height={16} width={16} uri={`${config.media_url}dropdown.svg`}></CustomImage>
+
+                    </View> : sc.subCategories.length > 0 ? <View style={styles.drop}>
+                    <CustomImage height={16} width={16} uri={`${config.media_url}drop2.svg`}></CustomImage>
+
+                    </View> : null}
                   <Text style={[styles.textColorNumber, styles.moreScText]}>{sc.toral_course}</Text>
                   </View>
                 </TouchableOpacity>

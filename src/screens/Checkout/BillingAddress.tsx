@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
-  Image,
+  // Image,
   Animated,
   //TextInput,
 } from 'react-native';
@@ -38,6 +38,7 @@ import { Select } from 'native-base';
 import CustomStatusBar from '../../components/CustomStatusBar';
 import StyleCSS from '../../styles/style';
 import TextField from '../../components/CustomTextField';
+import CustomImage from '../../components/CustomImage';
 
 type Props = NativeStackScreenProps<RootParamList, 'BillingAddress'>;
 
@@ -205,12 +206,11 @@ const BillingAddress: FC<Props> = ({navigation}) => {
               height: 32,
               width: '100%',
             }}>
-            <Image
-              style={styles.formFillTimeImage}
-              source={require('@images/transactions_bg.png')}
-            />
-            <View style={styles.formFillTimeTextWrapper}>
-              <Text style={styles.formFillTimeText}>
+             <CustomImage
+              style={StyleCSS.styles.formFillTimeImage}
+              uri={`${config.media_url}transactions_bg.png`}/>
+             <View style={StyleCSS.styles.formFillTimeTextWrapper}>
+              <Text style={StyleCSS.styles.formFillTimeText}>
                 Should take less than 48 seconds
               </Text>
             </View>
@@ -616,21 +616,7 @@ const styles = StyleSheet.create({
   },
   cancelButtonWrapper: {width: '30%', height: 50, zIndex: 1},
   reviewOrderButtonWrapper: {width: '70%', height: 50, alignItems: 'flex-end'},
-  formFillTimeImage: {
-    height: '100%',
-    width: '100%',
-  },
-  formFillTimeTextWrapper: {
-    paddingLeft: 16,
-    position: 'absolute',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    height: 32,
-    width: '100%',
-    // top: 100,
-  },
-  formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
+  
   formInput:{
     marginVertical:12
   },

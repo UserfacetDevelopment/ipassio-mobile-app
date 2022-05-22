@@ -1,8 +1,8 @@
 import React from 'react';
-import {Text, View, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, 
+  // Image, 
+  StyleSheet, TouchableOpacity} from 'react-native';
 import {useSelector} from 'react-redux';
-// @ts-ignore
-import Background from '../../assets/images/more-bg.svg';
 import {userState, logoutUser} from '../../reducers/user.slice';
 import {
   appBackground,
@@ -11,22 +11,18 @@ import {
   font2,
   secondaryColor,
 } from '../../styles/colors';
-// @ts-ignore
-import Logout from '../../assets/images/logout.svg';
-// @ts-ignore
-import Drop from '../../assets/images/Drop.svg';
-// @ts-ignore
-import Recordings from '../../assets/images/recordings.svg';
-// @ts-ignore
-import CreatedCourses from '../../assets/images/created-courses.svg';
-// @ts-ignore
-import Student from '../../assets/images/student.svg';
-// @ts-ignore
-import Teacher from '../../assets/images/teacher.svg';
+// import Logout from '../../assets/images/logout.svg';
+// import Drop from '../../assets/images/Drop.svg';
+// import Recordings from '../../assets/images/recordings.svg';
+// import CreatedCourses from '../../assets/images/created-courses.svg';
+// import Student from '../../assets/images/student.svg';
+// import Teacher from '../../assets/images/teacher.svg';
 import {useAppDispatch} from '../../app/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigation from '../../components/BottomNavigation';
 import Helper from '../../utils/helperMethods';
+import Config from '../../config/Config';
+import CustomImage from '../../components/CustomImage';
 
 export default function More({navigation}: any) {
   const {userData, isLoggedIn} = useSelector(userState);
@@ -46,9 +42,9 @@ export default function More({navigation}: any) {
     <>
       <View style={{backgroundColor: '#fff'}}>
         <View>
-          <Image
+          <CustomImage
             style={{width: '100%', height: 218}}
-            source={require('@images/more-bg.png')}
+            uri={`${Config.media_url}more-bg.png`}
           />
           <View
             style={{
@@ -58,9 +54,9 @@ export default function More({navigation}: any) {
               zIndex: 9,
             }}>
             {isLoggedIn ? (
-              <Image
+              <CustomImage
                 style={{height: 130, width: 130, borderRadius: 230}}
-                source={{uri: userData.user_media.profile_pic}}
+                uri={userData.user_media.profile_pic}
               />
             ) : null}
           </View>
@@ -84,12 +80,22 @@ export default function More({navigation}: any) {
           {isLoggedIn ? (
             userData.user_type === 'T' ? (
               <View style={styles.userDesignationWrapper}>
-                <Teacher />
+                 <CustomImage
+                    height={17}
+                    width={15}
+                    uri={`${Config.media_url}teacher.svg`
+                    }
+                  />
                 <Text style={styles.userDesignation}>Teacher</Text>
               </View>
             ) : (
               <View style={styles.userDesignationWrapper}>
-                <Student />
+                <CustomImage
+                    height={17}
+                    width={15}
+                    uri={`${Config.media_url}student.svg`
+                    }
+                  />
                 <Text style={styles.userDesignation}>Student</Text>
               </View>
             )
@@ -143,7 +149,12 @@ export default function More({navigation}: any) {
               style={styles.listItemWrapper}>
               <View style={styles.listItem}>
                 <View style={{marginRight: 16}}>
-                  <Logout />
+                <CustomImage
+                    height={24}
+                    width={24}
+                    uri={`${Config.media_url}logout.svg`
+                    }
+                  />
                 </View>
                 <View>
                   <Text style={styles.header}>Logout</Text>
@@ -151,7 +162,12 @@ export default function More({navigation}: any) {
                 </View>
               </View>
               <View>
-                <Drop />
+              <CustomImage
+                    height={16}
+                    width={16}
+                    uri={`${Config.media_url}drop.svg`
+                    }
+                  />
               </View>
             </TouchableOpacity>
           ) : null}

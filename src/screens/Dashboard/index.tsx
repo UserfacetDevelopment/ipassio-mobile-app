@@ -7,7 +7,7 @@ import {
   Animated,
   TouchableOpacity,
   LayoutAnimation,
-  Image,
+  // Image,
   Alert,
   StyleSheet,
   Platform,
@@ -53,16 +53,17 @@ import config from '../../config/Config';
 import CustomStatusBar from '../../components/CustomStatusBar';
 import HeaderInner from '../../components/HeaderInner';
 // @ts-ignore
-import Certificate from '../../assets/images/certificate.svg';
+// import Certificate from '../../assets/images/certificate.svg';
 // @ts-ignore
 import Download from '../../assets/images/download.svg';
 import RNFetchBlob from 'rn-fetch-blob';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-// @ts-ignore
-import DropdownArrow from '../../assets/images/dropdown.svg';
+
+// import DropdownArrow from '../../assets/images/dropdown.svg';
 import { cartDetails } from '../../reducers/checkout.slice';
 import { courseState } from '../../reducers/courses.slice';
 import BottomNavigation from '../../components/BottomNavigation';
+import CustomImage from '../../components/CustomImage';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -342,7 +343,8 @@ console.log(RootDir);
         <View>
           <View style={[style.styles.flexDirRow, {alignItems: 'center'}]}>
             <View style={{marginLeft: 3, marginRight: 10}}>
-              <Certificate />
+            <CustomImage height={24} width={24} uri={`${config.media_url}certificate.svg}/>
+              // <Certificate />
             </View>
             <Text style={styles.certificate_text}>Certificate </Text>
             {!data.certificate ? <Text>(</Text> : null}
@@ -711,8 +713,9 @@ useEffect(()=>{
                   {/* <View> */}
                   <View style={{flexDirection:'row'}}>
                     <View style={{height:56, width:56, borderRadius:30, borderColor:brandColor, borderWidth:1.3, alignItems:'center', justifyContent:'center'}}>
-                      <Image
-                        source={{uri: data.profile_pic}}
+                      
+                      <CustomImage
+                        uri={data.profile_pic}
                         style={styles.enrolledStudentsProfilePic}
                       />
                     </View> 
@@ -739,7 +742,8 @@ useEffect(()=>{
 
                       // },
                     ]}>
-                    <DropdownArrow />
+                       <CustomImage height={16} width={16} uri={`${config.media_url}dropdown.svg`}/>
+                    {/* <DropdownArrow /> */}
                   </View>
                   
                   </View>
@@ -828,8 +832,8 @@ useEffect(()=>{
                 }}>
                 <View style={styles.enrolledStudentsIntroSection}>
                   <View style={{flexDirection:'row'}}>
-                  <Image
-                    source={{uri: data.profile_pic}}
+                  <CustomImage
+                    uri={data.profile_pic}
                     style={styles.enrolledStudentsProfilePic}
                   />
 
@@ -845,7 +849,9 @@ useEffect(()=>{
                   </View>
                  
                   <View style={[styles.dropdownIcon]}>
-                    <DropdownArrow />
+                  <CustomImage height={16} width={16} uri={`${config.media_url}dropdown.svg`}/>
+
+                    {/* <DropdownArrow /> */}
                   </View>
 
                   {/* <Image
@@ -891,8 +897,8 @@ useEffect(()=>{
     return (
       <View style={[style.styles.shadow, styles.createdCoursesWrapper]}>
         <View style={styles.createdCoursesImageWrapper}>
-          <Image
-            source={{uri: data.course_image}}
+          <CustomImage
+            uri={data.course_image}
             style={styles.createdCoursesImage}
           />
         </View>
@@ -942,8 +948,8 @@ useEffect(()=>{
               opacity: 0.5,
               width: '100%',
             }}></LinearGradient>
-          <Image
-            source={{uri: data.course_image}}
+          <CustomImage
+            uri={data.course_image}
             style={styles.enrolledCoursesImage}
           />
         </View>

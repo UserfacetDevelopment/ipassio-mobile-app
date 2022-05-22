@@ -5,6 +5,8 @@ import { Bubbles} from 'react-native-loader';
 import config from "../config/Config";
 import {brandColor} from '../styles/colors';
 import {loaderState } from '../reducers/loader.slice';
+import CustomImage from './CustomImage';
+import Config from '../config/Config';
 
 export default function PageLoader() {
   //const {pageLoading} = useSelector(loaderState)
@@ -12,7 +14,8 @@ export default function PageLoader() {
     <View style={/*pageLoading ?*/ styles.show_page /*: styles.hide_page*/}>
     <StatusBar backgroundColor = {brandColor} barStyle = "light-content" />
     {/* {pageLoading ? */}
-    <Image style = {styles.image} source = { require('@images/page_loader.gif') } />
+    <CustomImage style = {styles.image} uri={`${Config.media_url}page_loader.gif`}/>
+    {/* <Image style = {styles.image} source = { require('@images/page_loader.gif') } /> */}
      {/* : null */}
     {/* } */}
 

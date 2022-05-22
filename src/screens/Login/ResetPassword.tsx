@@ -4,7 +4,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
+  // Image,
   TouchableOpacity,
   StatusBar,
   //TextInput,
@@ -36,6 +36,7 @@ import {font2} from '../../styles/colors';
 import HeaderInner from '../../components/HeaderInner';
 import {useRoute} from '@react-navigation/native'
 import TextField from '../../components/CustomTextField';
+import CustomImage from '../../components/CustomImage';
 type Props = NativeStackScreenProps<RootParamList, 'ResetPassword'>;
 
 export interface ResetPasswordInterface{
@@ -211,12 +212,12 @@ export default function ResetPassword({navigation, route} : Props) {
                   onPress={() => {
                     setViewpassword1(!viewPassword1);
                   }}>
-                  <Image
+                  <CustomImage
                     style={styles.inputViewIcon}
-                    source={
+                    uri={
                       viewPassword1
-                        ? require('@images/view_icon.png')
-                        : require('@images/hide_icon.png')
+                        ? `${config.media_url}view_icon.png`
+                        : `${config.media_url}hide_icon.png`
                     }
                   />
                 </TouchableOpacity>
@@ -245,12 +246,12 @@ export default function ResetPassword({navigation, route} : Props) {
                   onPress={() => {
                     setViewpassword2(!viewPassword2);
                   }}>
-                  <Image
+                  <CustomImage
                     style={styles.inputViewIcon}
-                    source={
+                    uri={
                       viewPassword2
-                        ? require('@images/view_icon.png')
-                        : require('@images/hide_icon.png')
+                        ? `${config.media_url}view_icon.png`
+                        : `${config.media_url}hide_icon.png`
                     }
                   />
                 </TouchableOpacity>

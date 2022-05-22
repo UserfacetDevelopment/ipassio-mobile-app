@@ -6,8 +6,8 @@ interface CustomImageProps {
   uri: string;
   style?: any;
   // type: string;
-  height?: string;
-  width?: string;
+  height?: number;
+  width?: number;
   local?:boolean
 }
 
@@ -31,18 +31,18 @@ export default function CustomImage({
 // console.log(uri)
   return (
     <>
-    {extension==='webp' ||extension=== 'jpg' || extension=== 'png' ? (
+    {extension==='webp' ||extension=== 'jpg' || extension=== 'png' || extension=== 'gif' ? (
         <Image style={style} source={{uri: uri}} />
       ) :
-      (
+       (
         // console.log(uri)
-        <SvgUri 
+        extension==='svg' ? <SvgUri 
         height= {height} 
         width={width} 
         uri={uri}
         // uri={"https://media.ipassio.com/media/lookup/catagory/hindustani-vocals/cover_picture/hindustani-vocal-01.svg"}
-         />
-      ) }
+         />: null
+      )  }
     </>
   );
 }

@@ -10,7 +10,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
+  // Image,
   StatusBar,
   //TextInput,
   Linking,
@@ -39,7 +39,7 @@ import {
   logoutUser,
   setFCMToken
 } from '../../reducers/user.slice';
-import Google from '../../assets/images/google-logo.svg'
+// import Google from '../../assets/images/google-logo.svg'
 import {setLoading, setPageLoading, loaderState} from '../../reducers/loader.slice';
 import DialogLoader from '../../components/DialogLoader';
 import PageLoader from '../../components/PageLoader';
@@ -53,6 +53,7 @@ import StyleCSS from '../../styles/style';
 import HeaderInner from '../../components/HeaderInner';
 import CustomStatusBar from '../../components/CustomStatusBar';
 import TextField from '../../components/CustomTextField';
+import CustomImage from '../../components/CustomImage';
 
 
 type Props = NativeStackScreenProps<RootParamList, 'Login'>;
@@ -342,14 +343,11 @@ const [active , setActive] = useState<boolean>(false);
               onPress={() => {
                 setViewPassword(!viewPassword);
               }}>
-              <Image
+
+              <CustomImage
                 style={styles.inputViewIcon}
-                source={
-                  viewPassword
-                    ? require('@images/hide_icon.png')
-                    : require('@images/view_icon.png')
-                }
-              />
+                uri={viewPassword ? `${config.media_url}hide_icon.png` : `${config.media_url}view_icon.png` }
+               />
             </TouchableOpacity>
           ) : null}
           {/* </View> */}
@@ -381,7 +379,7 @@ const [active , setActive] = useState<boolean>(false);
                 style={styles.googleIcon}
                 source={require('@images/google.png')}
               /> */}
-              <Google/>
+              <CustomImage height={24} width={24} uri={`${config.media_url}google.svg`}/>
             
             <Text style={styles.googleButtonText}>Continue with Google</Text>
             </View>

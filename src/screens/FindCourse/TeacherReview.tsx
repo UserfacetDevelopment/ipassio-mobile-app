@@ -4,7 +4,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
+  // Image,
   ScrollView,
   Modal,
   Dimensions,
@@ -15,6 +15,7 @@ import moment from 'moment';
 import {brandColor} from '../../styles/colors';
 import helper from '../../utils/helperMethods';
 import {SvgUri} from 'react-native-svg';
+import CustomImage from '../../components/CustomImage';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -72,11 +73,10 @@ const TeacherReview: FC<TeacherReviewProps> = ({
             ) : null}
             <View style={styles.student}>
               {review.student && review.student.profile_pic ? (
-                <Image
+                
+                <CustomImage
                   style={styles.studentDp}
-                  source={{
-                    uri: review.student.profile_pic,
-                  }}
+                  uri={review.student.profile_pic}
                 />
               ) : null}
               <View>

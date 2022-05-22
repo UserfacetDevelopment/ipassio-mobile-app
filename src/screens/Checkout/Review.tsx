@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Image,
+  // Image,
   TouchableOpacity,
   Animated,
   Modal,
@@ -33,6 +33,7 @@ import axios from 'axios';
 import HeaderInner from '../../components/HeaderInner';
 import DashedLine from 'react-native-dashed-line';
 import PurchaseDot from '../../assets/images/purchase_dot.svg';
+import CustomImage from '../../components/CustomImage';
 const height = Dimensions.get('screen').height;
 const width = Dimensions.get('screen').width;
 
@@ -280,12 +281,11 @@ const Review: FC<Props> = ({navigation}) => {
           height: 32,
           width: '100%',
         }}>
-        <Image
-          style={styles.formFillTimeImage}
-          source={require('@images/transactions_bg.png')}
-        />
-        <View style={styles.formFillTimeTextWrapper}>
-          <Text style={styles.formFillTimeText}>
+         <CustomImage
+              style={StyleCSS.styles.formFillTimeImage}
+              uri={`${config.media_url}transactions_bg.png`}/>
+         <View style={StyleCSS.styles.formFillTimeTextWrapper}>
+              <Text style={StyleCSS.styles.formFillTimeText}>
             Should take less than 48 seconds
           </Text>
         </View>
@@ -545,10 +545,13 @@ const Review: FC<Props> = ({navigation}) => {
               </View>
               <View>
                 <View style={{width:'100%', marginHorizontal:16,top:-6}}>
-                  <Image
+                <CustomImage
+                        style={styles.purchaseDot}
+                        uri={`${config.media_url}purchase_dot.png`}/>
+                  {/* <Image
                     source={require('@images/purchase_dot.png')}
                     style={{width: '100%', height: 16, marginHorizontal: -16}}
-                  />
+                  /> */}
                 </View>
               </View>
 
@@ -617,14 +620,17 @@ const Review: FC<Props> = ({navigation}) => {
                       checkoutDataDetails.payment_gateway === 'PPU') &&
                       'Pay easily , fast and secure with paypal.'}
                   </Text>
-                  <Image
+                  <CustomImage
+                        style={styles.paymentGatewayCards}
+                        uri={`${config.media_url}payment_gateway_cards.png`}/>
+                  {/* <Image
                     style={{
                       width: '70%',
                       height: 24,
                       marginTop: 14,
                     }}
                     source={require('@images/payment_gateway_cards.png')}
-                  />
+                  /> */}
                 </View>
               </View>
 <View style={[StyleCSS.styles.lineStyleLight, {marginTop:24}]}></View>
@@ -705,15 +711,11 @@ const Review: FC<Props> = ({navigation}) => {
                     <Pressable
                       style={{marginTop: 4}}
                       onPress={() => setShowModal(false)}>
-                      <Image
-                        source={require('@images/left_arrow.png')}
-                        style={{
-                          width: 23,
-                          height: 18,
-                          alignItems: 'center',
-                          marginLeft: 12,
-                        }}
-                      />
+                        <CustomImage
+                        style={styles.leftArrow}
+                        uri={`${config.media_url}left_arrow.png`}/>
+                 
+                      
                     </Pressable>
                     <View style={{flex: 1, marginTop: -6, marginLeft: 12}}>
                       <Text style={styles.innerHeaderTitle}>
@@ -1029,24 +1031,22 @@ const styles = StyleSheet.create({
     fontFamily: Helper.switchFont('medium'),
     fontSize: 12,
   },
-  formFillTimeImage: {
-    height: '100%',
-    width: '100%',
-  },
-  formFillTimeTextWrapper: {
-    paddingLeft: 16,
-    position: 'absolute',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    height: 32,
-    width: '100%',
-    // top: 100,
-  },
-  formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
   priceLabelWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '50%',
   },
+  purchaseDot:{width: '100%', height: 16, marginHorizontal: -16},
+  paymentGatewayCards:{
+    width: '70%',
+    height: 24,
+    marginTop: 14,
+  },
+  leftArrow:{
+    width: 23,
+    height: 18,
+    alignItems: 'center',
+    marginLeft: 12,
+  }
+
 });

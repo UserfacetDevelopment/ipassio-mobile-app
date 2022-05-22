@@ -2,7 +2,7 @@ import {Platform, Alert, PermissionsAndroid, Linking} from 'react-native';
 import country_region_data from './country_region.json';
 
 export default class Config {
-  static env = 'dev';
+  static env = 'prod';
   static version = Platform.OS === 'ios' ? '2.0.4' : '2.0.2';
   static build_number = Platform.OS === 'ios' ? 14 : 28;
   // static version = Platform.OS === "ios" ? "1.0.13" : "1.0.28";
@@ -24,7 +24,7 @@ export default class Config {
       ? 'https://apps.apple.com/us/app/ipassio-learn-hobbies-online/id1449104526'
       : 'https://play.google.com/store/apps/details?id=com.ipassio.apps';
 
-  static media_url = 'https://media.ipassio.com/';
+  static media_url = 'https://media.ipassio.com/mobile_app/';
   static api_urls = {
     login: 'account/login?format=json',
     social_login: 'account/google-login?format=json',

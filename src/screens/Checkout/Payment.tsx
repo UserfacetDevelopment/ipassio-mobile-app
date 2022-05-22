@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
-  Image,
+  // Image,
   Alert,
   Animated,
 } from 'react-native';
@@ -37,6 +37,7 @@ import CustomStatusBar from '../../components/CustomStatusBar';
 import HeaderInner from '../../components/HeaderInner';
 import Helper from '.././../utils/helperMethods';
 import StyleCSS from '../../styles/style';
+import CustomImage from '../../components/CustomImage';
 
 type PaymentGatewayType = 'PP' | 'PU' | 'PPU' | null;
 
@@ -133,12 +134,11 @@ const Payment: FC<Props> = ({route, navigation}) => {
               height: 32,
               width: '100%',
             }}>
-            <Image
-              style={styles.formFillTimeImage}
-              source={require('@images/transactions_bg.png')}
-            />
-            <View style={styles.formFillTimeTextWrapper}>
-              <Text style={styles.formFillTimeText}>
+            <CustomImage
+              style={StyleCSS.styles.formFillTimeImage}
+              uri={`${config.media_url}transactions_bg.png`}/>
+             <View style={StyleCSS.styles.formFillTimeTextWrapper}>
+              <Text style={StyleCSS.styles.formFillTimeText}>
                 Should take less than 48 seconds
               </Text>
             </View>
@@ -218,10 +218,10 @@ const Payment: FC<Props> = ({route, navigation}) => {
                         Net banking details.
                       </Text>
 
-                      <Image
+                      <CustomImage
                         style={styles.paymentGatewayCards}
-                        source={require('@images/payment_gateway_cards.png')}
-                      />
+                        uri={`${config.media_url}payment_gateway_cards.png`}/>
+                        
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -268,10 +268,9 @@ const Payment: FC<Props> = ({route, navigation}) => {
                         Pay easily , fast and secure with paypal.
                       </Text>
 
-                      <Image
+                      <CustomImage
                         style={styles.paymentGatewayCards}
-                        source={require('@images/payment_gateway_cards.png')}
-                      />
+                        uri={`${config.media_url}payment_gateway_cards.png`}/>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -454,19 +453,5 @@ const styles = StyleSheet.create({
     marginHorizontal:16,
     fontFamily: helper.switchFont('medium'),
   },
-  formFillTimeImage: {
-    height: '100%',
-    width: '100%',
-  },
-  formFillTimeTextWrapper: {
-    paddingLeft: 16,
-    position: 'absolute',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    height: 32,
-    width: '100%',
-    // top: 100,
-  },
-  formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
+  
 });

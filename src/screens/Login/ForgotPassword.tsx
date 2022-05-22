@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   StyleSheet,
-  Image,
+  // Image,
   Alert,
   Keyboard,
   Dimensions

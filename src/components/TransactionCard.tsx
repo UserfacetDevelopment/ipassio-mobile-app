@@ -12,10 +12,12 @@ import {userState} from '../reducers/user.slice';
 import SheetCSS from '../styles/style';
 import Moment from 'moment';
 import Helper from '../utils/helperMethods';
-import Dropdown from '../assets/images/dropdown.svg';
+// import Dropdown from '../assets/images/dropdown.svg';
 import {brandColor, font1, font2, font3, lineColor} from '../styles/colors';
 import StyleCSS from '../styles/style';
 import DashedLine from 'react-native-dashed-line';
+import CustomImage from './CustomImage';
+import Config from '../config/Config';
 
 export default function TransactionCard({
   data,
@@ -74,7 +76,8 @@ export default function TransactionCard({
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                <Dropdown />
+                                  <CustomImage height={16} width={16} uri={`${Config.media_url}dropdown.svg`}/>
+
               </View>
             </View>
           </TouchableOpacity>
@@ -181,7 +184,8 @@ export default function TransactionCard({
                         ? ' (1-on-1 Class)'
                         : ' ( ' + data.class_type + ' Members)')}
                   </Text>
-                  <Dropdown/>
+                  <CustomImage height={16} width={16} uri={`${Config.media_url}dropdown.svg`}/>
+                   {/* <Dropdown/> */}
                 </View>
                 <View style={[styles.dateWrapper, {marginTop: userData.user_type === 'S' ? 8 : 5}]}>
                   <Text style={styles.date}>

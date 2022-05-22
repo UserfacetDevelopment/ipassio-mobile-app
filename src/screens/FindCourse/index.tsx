@@ -49,12 +49,9 @@ import {useAppDispatch} from '../../app/store';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import HeaderInner from '../../components/HeaderInner';
-// @ts-ignore
-import Search from '../../assets/images/search.svg';
-// @ts-ignore
-import Flag from '../../assets/images/flag.svg';
-// @ts-ignore
-import Dot from '../../assets/images/dot.svg';
+// import Search from '../../assets/images/search.svg';
+// import Flag from '../../assets/images/flag.svg';
+// import Dot from '../../assets/images/dot.svg';
 import LineDashed from '../../assets/images/line.svg';
 import {
   font1,
@@ -81,6 +78,7 @@ import Filter from '../../assets/images/filter.svg';
 import BottomNavigation from '../../components/BottomNavigation';
 import LoginNavigation from '../../components/LoginNavigation';
 import StyleCSS from '../../styles/style';
+import CustomImage from '../../components/CustomImage';
 type Props = NativeStackScreenProps<RootParamList, 'FindCourses'>;
 const {width, height} = Dimensions.get('screen');
 
@@ -630,12 +628,14 @@ export default function FindCourse({navigation, route}: Props) {
                     );
                   })}
               </View>
-              <View style={{marginHorizontal: 12}}>
-                <Dot />
-              </View>
+              
 
               {course.rating.total_count > 0 ? (
                 <View style={{alignItems: 'center', flexDirection: 'row'}}>
+                  <View style={{marginHorizontal: 12}}>
+              <CustomImage  height={5} width={5} uri={`${config.media_url}dot.svg`}></CustomImage>
+
+              </View>
                   <View style={styles.courseRating}>
                     <Rating
                       ratingColor={secondaryColor}
@@ -794,7 +794,10 @@ export default function FindCourse({navigation, route}: Props) {
             <View style={styles.safecontainer}>
               <View style={styles.filterBox}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Search style={styles.searchIcon} />
+                  <View style={styles.searchIcon}>
+                <CustomImage  height={24} width={24} uri={`${config.media_url}search.svg`}></CustomImage>
+                </View>
+                  {/* <Search style={styles.searchIcon} /> */}
                   <TextInput
                     style={styles.input}
                     autoFocus={true}

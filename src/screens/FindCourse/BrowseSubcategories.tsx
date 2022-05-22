@@ -31,7 +31,6 @@ import {useAppDispatch} from '../../app/store';
 const {width, height} = Dimensions.get('screen');
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
-//@ts-ignore
 import Back from '../../assets/images/arrow-dark.svg';
 import {CategoryInterface} from './index';
 import HeaderInner from '../../components/HeaderInner';
@@ -41,6 +40,7 @@ import {brandColor, font1, selectedDrop} from '../../styles/colors';
 import Others from '../../assets/images/others.svg';
 import Dropdown from '../../assets/images/dropdown.svg';
 import config from '../../config/Config'
+import CustomImage from '../../components/CustomImage';
 type Props = NativeStackScreenProps<RootParamList, 'BrowseCategories'>;
 
 export default function BrowseSubcategories({navigation, route}: Props) {
@@ -73,7 +73,9 @@ const [active, setActive] = useState('');
             onPress={() => {
               navigation.goBack();
             }}>
-            <Back/>
+             <CustomImage height={24} width={24} uri={`${config.media_url}arrow-dark.svg`}/>
+             
+            {/* <Back/> */}
             <Text style={styles.backCategoryText}>Back</Text>
           </TouchableOpacity>
           </>
@@ -142,7 +144,8 @@ const [active, setActive] = useState('');
                                     }}>
                                     {sc.subCategories &&
                                     sc.subCategories.length > 0 ? (
-                                      <Drop />
+                                      <CustomImage height={16} width={16} uri={`${config.media_url}drop.svg`}/>
+
                                     ) : null}
                                     <Text style={styles.subcategories}>
                                       {sc.toral_course}

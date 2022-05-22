@@ -1,7 +1,7 @@
 import React, {useEffect, useState, FC} from 'react';
 import {
   View,
-  Image,
+  // Image,
   StyleSheet,
   Text,
   ScrollView,
@@ -39,6 +39,7 @@ import TransactionCard from '../../components/TransactionCard';
 import BottomNavigation from '../../components/BottomNavigation';
 import LinearGradient from 'react-native-linear-gradient';
 import { configureFonts } from 'react-native-paper';
+import CustomImage from '../../components/CustomImage';
 
 const width= Dimensions.get('screen').width;
 type Props = NativeStackScreenProps<RootParamList, 'Transactions'>;
@@ -165,8 +166,8 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
       <View style={styles.loaderWrapper}>
         <View style={styles.transactionItem}>
           <View>
-            <Image
-              source={require('@images/default_dp.png')}
+            <CustomImage
+              uri={`${config.media_url}default_dp.png`}
               style={styles.profilePic}
             />
           </View>
@@ -210,12 +211,12 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
            {userData.user_type === 'T' ?
                     <>
                     <Animated.View style={{position:'absolute', top:config.headerHeight, height:changingHeight2}}>
-                    <Image
+                    <CustomImage
                 style={{flex: 1,
                   width: width,
                   flexDirection: 'row',
                   height:config.headerHeight}}
-                source={require('@images/transactions_bg.png')}
+                uri={`${config.media_url}transactions_bg.png`}
               />
               {/* <View style={{flex: 1,
                   width: width,

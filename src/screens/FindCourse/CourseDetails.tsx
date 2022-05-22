@@ -6,7 +6,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
+  // Image,
   StatusBar,
   Linking,
   ScrollView,
@@ -15,25 +15,24 @@ import {
   Alert,
 } from 'react-native';
 import RenderHtml from 'react-native-render-html';
-import {SvgUri} from 'react-native-svg';
+// import {SvgUri} from 'react-native-svg';
 import ReactPlayer from 'react-player';
 import moment from 'moment-timezone';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Rating} from 'react-native-ratings';
-import Back from '../../assets/images/back.svg';
+// import Back from '../../assets/images/back.svg';
 import Video from 'react-native-video';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import Carousel from 'react-native-snap-carousel';
 import config from '../../config/Config';
-import Whatsapp from '../../assets/images/whatsapp.svg';
-import Contact from '../../assets/images/contact.svg';
-import LearningFromArtist from '../../assets/images/course_details/learning_from_artist_mobile.svg';
-import OnlineClasses from '../../assets/images/course_details/online-classes.svg';
-import PayAsYouGo from '../../assets/images/course_details/pay-as-you-go.svg';
-import Performers from '../../assets/images/course_details/world-class-performers.svg';
-import AgeGroups from '../../assets/images/course_details/age-groups.svg';
-import SuccessRate from '../../assets/images/course_details/success-rate.svg';
-import Card from '../../assets/images/course_details/card.svg';
+// import Whatsapp from '../../assets/images/whatsapp.svg';
+// import Contact from '../../assets/images/contact.svg';
+// import OnlineClasses from '../../assets/images/course_details/online-classes.svg';
+// import PayAsYouGo from '../../assets/images/course_details/pay-as-you-go.svg';
+// import Performers from '../../assets/images/course_details/world-class-performers.svg';
+// import AgeGroups from '../../assets/images/course_details/age-groups.svg';
+// import SuccessRate from '../../assets/images/course_details/success-rate.svg';
+// import Card from '../../assets/images/course_details/card.svg';
 import {
   background6,
   brandColor,
@@ -43,15 +42,15 @@ import {
   lineColor,
   secondaryColor,
 } from '../../styles/colors';
-import Drop from '../../assets/images/Drop.svg';
-import Dot from '../../assets/images/dot.svg';
+// import Drop from '../../assets/images/Drop.svg';
+// import Dot from '../../assets/images/dot.svg';
 import {userState} from '../../reducers/user.slice';
-import TP1 from '../../assets/images/course_details/teacherProfile1';
-import TP2 from '../../assets/images/course_details/teacherProfile2';
+// import TP1 from '../../assets/images/course_details/teacherProfile1';
+// import TP2 from '../../assets/images/course_details/teacherProfile2';
 
-import TP3 from '../../assets/images/course_details/teacherProfile3';
+// import TP3 from '../../assets/images/course_details/teacherProfile3';
 
-import TP4 from '../../assets/images/course_details/teacherProfile4';
+// import TP4 from '../../assets/images/course_details/teacherProfile4';
 
 import {
   getTeacherCalender,
@@ -476,12 +475,14 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
           </TouchableOpacity>
           <View style={styles.student}>
             {review.item.student && review.item.student.profile_pic ? (
-              <Image
-                style={styles.studentDp}
-                source={{
-                  uri: review.item.student.profile_pic,
-                }}
-              />
+               <CustomImage  style={styles.studentDp} height={48} width={48} uri={review.item.student.profile_pic}/>
+
+              // <Image
+              //   style={styles.studentDp}
+              //   source={{
+              //     uri: review.item.student.profile_pic,
+              //   }}
+              // />
             ) : null}
             <View>
               {review.item.student && review.item.student.name ? (
@@ -618,7 +619,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}>
-            <Back />
+            {/* <Back /> */}
+            <CustomImage height={24} width={24} uri={`${config.media_url}back.svg`}/>
           </TouchableOpacity>
           {/* <HeaderInner 
         type={'findCourse'}
@@ -700,12 +702,14 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                         );
                       })}
                   </View>
-                  <View style={{marginHorizontal: 12}}>
-                    <Dot />
-                  </View>
+                 
 
                   {course.rating.total_count > 0 ? (
                     <View style={{alignItems: 'center', flexDirection: 'row'}}>
+                       <View style={{marginHorizontal: 12}}>
+                 
+                 <CustomImage  height={5} width={5} uri={`${config.media_url}dot.svg`}/>
+                 </View>
                       <View style={styles.courseRating}>
                         <Rating
                           ratingColor={secondaryColor}
@@ -724,7 +728,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                             {course.rating.total_count} reviews{' '}
                           </Text>
                           <View>
-                            <Drop />
+                          <CustomImage height={12} width={12} uri={`${config.media_url}drop.svg`}/>
+
                           </View>
                         </View>
                       </View>
@@ -810,7 +815,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                   12-16 weeks to level up
                 </Text>
                 <View style={[{marginTop: 16}, StyleCSS.styles.fdrCenter]}>
-                  <Card />
+       <CustomImage height={16} width={16} uri={`${config.media_url}course_details/card.svg`}/>
                   <Text
                     style={[
                       StyleCSS.styles.contentText,
@@ -1108,10 +1113,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                 <View style={[StyleCSS.styles.fdrCenter, {marginTop: 16}]}>
                   {course.user.profile_pic != '' && (
                     <View style={styles.educatorPicWrapper}>
-                      <Image
-                        style={styles.educatorProfilePic}
-                        source={{uri: course.user.profile_pic}}
-                      />
+                      <CustomImage  style={styles.educatorProfilePic} height={80} width={80} uri={course.user.profile_pic}/>
                     </View>
                   )}
                   <View style={{marginLeft: 16}}>
@@ -1145,7 +1147,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                         styles.teacherProfileList,
                       ]}>
                       <View>
-                        <TP1 />
+                        
+                      <CustomImage height={32} width={32} uri={`${config.media_url}course_details/teacherProfile1.svg`}/>
                       </View>
                       <View style={styles.teacherProfileListText}>
                         <Text
@@ -1187,7 +1190,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                         styles.teacherProfileList,
                       ]}>
                       <View>
-                        <TP2 />
+                      <CustomImage height={32} width={32} uri={`${config.media_url}course_details/teacherProfile2.svg`}/>
+
                       </View>
                       <View style={styles.teacherProfileListText}>
                         <Text
@@ -1230,7 +1234,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                         styles.teacherProfileList,
                       ]}>
                       <View>
-                        <TP3 />
+                      <CustomImage height={32} width={32} uri={`${config.media_url}course_details/teacherProfile3.svg`}/>
                       </View>
                       <View style={styles.teacherProfileListText}>
                         <Text
@@ -1269,7 +1273,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     },
                   ]}>
                   <View>
-                    <TP4 />
+                  <CustomImage  height={32} width={32} uri={`${config.media_url}course_details/teacherProfile4.svg`}/>
                   </View>
                   <View style={styles.teacherProfileListText}>
                     <Text
@@ -1361,9 +1365,9 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               {/* {course.class_duration && (
               <View style={styles.iconWrapper}>
                 <CustomImage  uri={`${config.media_url}images/course-detail/course-duration.svg`}/>
-                <SvgUri
-                  uri={`${config.media_url}images/course-detail/course-duration.svg`}
-                />
+                // <SvgUri
+                //   uri={`${config.media_url}images/course-detail/course-duration.svg`}
+                // />
                 <View style={styles.info}>
                   <Text style={styles.infoHead}>Course Duration</Text>
                   <Text style={styles.infoText}>
@@ -1564,7 +1568,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     styles.teacherProfileList,
                   ]}>
                   <View>
-                    <AgeGroups />
+                  <CustomImage height={32} width={32} uri={`${config.media_url}course_details/age-groups.svg`}/>
                   </View>
                   <View style={styles.teacherProfileListText}>
                     <Text
@@ -1584,7 +1588,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     styles.teacherProfileList,
                   ]}>
                   <View>
-                    <SuccessRate />
+                  <CustomImage height={32} width={32} uri={`${config.media_url}course_details/success-rate.svg`}/>
                   </View>
                   <View style={styles.teacherProfileListText}>
                     <Text
@@ -1615,7 +1619,9 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                           StyleCSS.styles.fdrCenter,
                           {paddingVertical: 12},
                         ]}>
-                        <SvgUri uri={details.icon} />
+                        <CustomImage height={24} width={24} uri={details.icon}/>
+
+                        {/* <SvgUri uri={details.icon} /> */}
 
                         <Text
                           style={[styles.courseIncludesHead, {marginLeft: 16}]}>
@@ -1647,7 +1653,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                       `whatsapp://send?phone=${+919740050326}&text=Hello`,
                     );
                   }}>
-                  <Whatsapp />
+                  <CustomImage  height={32} width={32} uri={`${config.media_url}whatsapp.svg`}/>
                   {/* <SvgUri
                       uri={`${config.media_url}images/course-detail/whatsapps.svg`}
                     /> */}
@@ -1666,7 +1672,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                   </Text>
                 </View>
                 <TouchableOpacity onPress={dialCall}>
-                  <Contact />
+                  <CustomImage height={32} width={32} uri={`${config.media_url}contact.svg`}/>
                   {/* <SvgUri
                       uri={`${config.media_url}images/course-detail/contacts.svg`}
                     /> */}
@@ -1679,10 +1685,9 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               >
                 {/* <CustomImage uri={}/> */}
                 {/* <LearningFromArtist /> */}
-                <Image
-                  style={{width: '100%', height: 452}}
-                  source={require('@images/course_details/learning_from_artist_mobile.png')}
-                />
+                <CustomImage  style={{width: '100%', height: 452}}
+                uri={`${config.media_url}course_details/learning_from_artist_mobile.png`} />
+                
               </View>
               <View style={{position: 'absolute', top: 40, marginBottom: 16}}>
                 <Text style={styles.textOverImage}>
@@ -1881,7 +1886,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               </Text>
               <View style={styles.courseIncludedWrapper}>
                 <View style={styles.svgWrapper}>
-                  <OnlineClasses />
+                <CustomImage height={140} width={219} uri={`${config.media_url}course_details/online-classes.svg`}/>
+
                 </View>
                 {/* <SvgUri
                 height="80"
@@ -1908,7 +1914,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               </View>
               <View style={styles.courseIncludedWrapper}>
                 <View style={styles.svgWrapper}>
-                  <PayAsYouGo />
+                <CustomImage height={140} width={219} uri={`${config.media_url}course_details/pay-as-you-go.svg`}/>
+
                 </View>
                 {/* <SvgUri
                 height="80"
@@ -1936,7 +1943,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               </View>
               <View style={styles.courseIncludedWrapper}>
                 <View style={styles.svgWrapper}>
-                  <Performers />
+                <CustomImage height={140} width={219} uri={`${config.media_url}course_details/world-class-performers.svg`}/>
                 </View>
                 {/* <SvgUri
                 height="80"

@@ -15,8 +15,9 @@ import helper from '../utils/helperMethods';
 import config from '../config/Config';
 import { background6, font1, font2 } from '../styles/colors';
 const { width, height } = Dimensions.get('screen');
-import Expand from '../assets/images/expand.svg'
-import Collapse from '../assets/images/collapse.svg'
+// import Expand from '../assets/images/expand.svg'
+// import Collapse from '../assets/images/collapse.svg'
+import CustomImage from './CustomImage';
 
 interface AccordianInterface{
   title: string,
@@ -43,14 +44,19 @@ const Accordian = ({title, data}: AccordianInterface) : any => {
       <TouchableOpacity style={[styles.row,{backgroundColor:expanded ? '#fff' : background6, marginBottom:expanded ? 0 : 16,}]} onPress={toggleExpand}>
         <Text style={[styles.title]}>{title}</Text>
         {!expanded ? (
-<Expand/>
-          // <SvgUri
-          //   height="40"
-          //   uri={`${config.media_url}images/course-detail/expand-course-details.svg`}
-          // />
+          <CustomImage
+            height={20}
+            width={20}
+            uri={`${config.media_url}expand.svg`}
+          />
         ) : (
           <View style={{width:24, height:24, alignItems:'center', justifyContent:'center'}}>
-          <Collapse/>
+            <CustomImage
+            height={20}
+            width={20}
+            uri={`${config.media_url}collapse.svg`}
+          />
+          {/* <Collapse/> */}
           </View>
           // <SvgUri
           //   height="40"

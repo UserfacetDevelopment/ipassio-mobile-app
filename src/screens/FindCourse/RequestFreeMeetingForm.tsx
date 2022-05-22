@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image,
+  // Image,
   Alert,
   Keyboard,
   Dimensions
@@ -44,12 +44,12 @@ import PageLoader from '../../components/PageLoader';
 import HeaderInner from '../../components/HeaderInner';
 import moment from 'moment';
 import timezones from '../../assets/json/timezones.json';
-import Add from '../../assets/images/Add.svg';
 import {CurvedTransition} from 'react-native-reanimated';
 import CustomForm from '../../components/CustomForm';
 import StyleCSS from '../../styles/style';
 import TextField from '../../components/CustomTextField';
 import Textarea from 'react-native-textarea';
+import CustomImage from '../../components/CustomImage';
 const width = Dimensions.get('screen').width;
 
 type Props = NativeStackScreenProps<RootParamList, 'RequestMeeting'>;
@@ -529,10 +529,14 @@ const phoneInput = useRef();
               height: 32,
               width: width,
             }}>
-            <Image
+              
+              <CustomImage  style={styles.formFillTimeImage} uri={`${config.media_url}transactions_bg.png`}></CustomImage>
+
+            
+            {/* <Image
               style={styles.formFillTimeImage}
               source={require('@images/transactions_bg.png')}
-            />
+            /> */}
             <View style={styles.formFillTimeTextWrapper}>
               <Text style={styles.formFillTimeText}>
                 Should take less than 48 seconds
@@ -548,9 +552,10 @@ const phoneInput = useRef();
                 <View style={[styles.safecontainer]}>
                   <View style={{flexDirection: 'row', marginBottom: 24}}>
                     <View>
-                      <Image
+                    <CustomImage  style={styles.courseImage} uri={course.course_image}></CustomImage>
+                      {/* <Image
                         source={{uri: course.course_image}}
-                        style={styles.courseImage}></Image>
+                        style={styles.courseImage}></Image> */}
                     </View>
                     <View
                       style={{

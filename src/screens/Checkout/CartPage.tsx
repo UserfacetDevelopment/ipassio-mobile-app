@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Image,
+  
   TouchableOpacity,
   Alert,
   Animated,
@@ -50,7 +50,7 @@ import {
   setPageLoading,
 } from '../../reducers/loader.slice';
 import DashedLine from 'react-native-dashed-line';
-import CouponAddedSuccess from '../../assets/images/coupon_add.svg'
+// import CouponAddedSuccess from '../../assets/images/coupon_add.svg'
 import {
   applyCoupon,
   cartDetails,
@@ -66,6 +66,7 @@ import CustomDropdown from '../../components/CustomDropdown';
 import {useFocusEffect} from '@react-navigation/native';
 import StyleCSS from '../../styles/style';
 import HeaderInner from '../../components/HeaderInner';
+import CustomImage from '../../components/CustomImage';
 const {width, height} = Dimensions.get('screen');
 
 type Props = NativeStackScreenProps<RootParamList, 'CartPage'>;
@@ -577,12 +578,15 @@ const [couponSuccess, setCouponSuccess] = useState(false)
               height: 32,
               width: '100%',
             }}>
-            <Image
+              <CustomImage
+              style={StyleCSS.styles.formFillTimeImage}
+              uri={`${config.media_url}transactions_bg.png`}/>
+            {/* <Image
               style={styles.formFillTimeImage}
               source={require('@images/transactions_bg.png')}
-            />
-            <View style={styles.formFillTimeTextWrapper}>
-              <Text style={styles.formFillTimeText}>
+            /> */}
+            <View style={StyleCSS.styles.formFillTimeTextWrapper}>
+              <Text style={StyleCSS.styles.formFillTimeText}>
                 Should take less than 48 seconds
               </Text>
             </View>
@@ -701,7 +705,7 @@ const [couponSuccess, setCouponSuccess] = useState(false)
                         <View>
                           <View>
                             <View style={{position:'absolute', zIndex:1000, top:20, left:80}}>
-                              <CouponAddedSuccess/>
+                              <CustomImage height={24} width={24} uri={`${config.media_url}coupon_add`}/>
                               </View>
                             <TextField
                               mode="outlined"
@@ -1192,10 +1196,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     marginVertical: 24,
   },
-  formFillTimeImage: {
-    height: '100%',
-    width: '100%',
-  },
+  
   formFillTimeTextWrapper: {
     paddingLeft: 16,
     position: 'absolute',

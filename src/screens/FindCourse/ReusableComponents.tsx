@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
+  // Image,
   StyleSheet,
   Dimensions,
   Linking,
@@ -18,6 +18,7 @@ import config from '../../config/Config';
 import {setCurrentCourse} from '../../reducers/courses.slice';
 import { setPageLoading } from '../../reducers/loader.slice';
 import { useAppDispatch } from '../../app/store';
+import CustomImage from '../../components/CustomImage';
 const {width, height} = Dimensions.get('screen');
 
 interface StudentsLoveCoursesProps{
@@ -37,11 +38,12 @@ export const StudentsLoveCourses : FC<StudentsLoveCoursesProps> = ({
         shared by our teachers can be put into use immediately.
       </Text>
       <TouchableOpacity onPress={() => setStudentTestimonial(true)}>
-        <Image
+        
+        <CustomImage
           style={styles.playButton}
-          source={{
-            uri: config.media_url + 'images/home-page-images/play-icon.png',
-          }}
+          
+            uri={config.media_url + 'images/home-page-images/play-icon.png'}
+
         />
       </TouchableOpacity>
       <Text style={styles.whatStudentsSay}>What our students say about us</Text>
@@ -54,19 +56,19 @@ export const HowItWorks: FC = () => {
     <View style={styles.whiteBg}>
       <Text style={styles.section_title}>How it Works</Text>
       <View style={styles.how_it_works}>
-        <SvgUri
+        <CustomImage
           width={80}
           height={80}
-          style={styles.how_it_works_image}
+          // style={styles.how_it_works_image}
           uri={`${config.media_url}images/category/how_it_work_1.svg`}
         />
         <Text style={styles.how_it_works_text}>Select your course</Text>
       </View>
       <View style={styles.how_it_works}>
-        <SvgUri
+        <CustomImage
           width={80}
           height={80}
-          style={styles.how_it_works_image}
+          // style={styles.how_it_works_image}
           uri={`${config.media_url}images/category/how_it_work_2.svg`}
         />
         <Text style={styles.how_it_works_text}>
@@ -74,26 +76,26 @@ export const HowItWorks: FC = () => {
         </Text>
       </View>
       <View style={styles.how_it_works}>
-        <SvgUri
+        <CustomImage
           width={80}
           height={80}
-          style={styles.how_it_works_image}
+          // style={styles.how_it_works_image}
           uri={`${config.media_url}images/category/how_it_work_3.svg`}
         />
         <Text style={styles.how_it_works_text}>Choose class timings</Text>
       </View>
       <View style={styles.how_it_works}>
-        <SvgUri
+        <CustomImage
           width={80}
           height={80}
-          style={styles.how_it_works_image}
+          // style={styles.how_it_works_image}
           uri={`${config.media_url}images/category/how_it_work_4.svg`}
           //uri={`${config.media_url}images/category/how_it_work_4.svg`}
         />
         <Text style={styles.how_it_works_text}>Make payment</Text>
       </View>
       <View style={styles.how_it_works}>
-        <SvgUri
+        <CustomImage
           width={80}
           height={80}
           style={styles.how_it_works_image}
@@ -185,12 +187,12 @@ export const Queries = () => {
               `whatsapp://send?phone=${+919740050326}&text=Hello`,
             );
           }}>
-          <SvgUri
+          <CustomImage
             uri={`${config.media_url}images/course-detail/whatsapps.svg`}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={dialCall}>
-          <SvgUri
+          <CustomImage
             uri={`${config.media_url}images/course-detail/contacts.svg`}
           />
         </TouchableOpacity>

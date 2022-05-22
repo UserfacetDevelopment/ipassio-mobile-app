@@ -15,8 +15,7 @@ import CustomDropdown from './CustomDropdown';
 import Moment from 'moment';
 import timezones from '../assets/json/timezones.json';
 import Helper from '../utils/helperMethods';
-//@ts-ignore
-import Add from '../assets/images/Add.svg';
+// import Add from '../assets/images/Add.svg';
 
 import {
   background,
@@ -32,6 +31,8 @@ import {
 import {useSelector} from 'react-redux';
 import {userState} from '../reducers/user.slice';
 import CustomDateTimePicker from './CustomDateTimePicker';
+import CustomImage from './CustomImage';
+import Config from '../config/Config';
 const width = Dimensions.get('screen').width;
 
 export default function CustomForm({
@@ -357,7 +358,8 @@ export default function CustomForm({
             // marginTop: 8,
           }}
           onPress={() => addMoreSlots(index)}>
-          <Add />
+            <CustomImage height={20} width={20} uri={`${Config.media_url}add.svg`}/>
+          {/* <Add /> */}
           <Text
             style={{
               color: secondaryColor,

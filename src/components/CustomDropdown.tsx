@@ -13,15 +13,17 @@ import {
 // import Modal from 'react-native-modal';
 import {background3, brandColor, dropdownBorder, font1, font2, lineColor} from '../styles/colors';
 import Helper from '../utils/helperMethods';
-// @ts-ignore
-import Close from '../assets/images/close.svg';
-// @ts-ignore
-import Search from '../assets/images/search.svg';
+
+// import Close from '../assets/images/close.svg';
+
+// import Search from '../assets/images/search.svg';
 import { scheduledDataSuccess } from '../reducers/schedule.slice';
 import SheetCss from '../styles/style';
-// @ts-ignore
-import Dropdown from '../assets/images/custom-dropdown.svg';
+
+// import Dropdown from '../assets/images/custom-dropdown.svg';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
+import CustomImage from './CustomImage';
+import Config from '../config/Config';
 
 interface CustomDropdownProps {
   data: any;
@@ -158,7 +160,9 @@ export default function CustomDropdown({
                 marginTop: 5,
               }}
             /> */}
-            {customIcon ? customIcon : <Dropdown/>}
+            {customIcon ? customIcon : 
+                                       <CustomImage uri={`${Config.media_url}custom-dropdown.svg`}/> 
+            }
           </View>
         </View>
       </TouchableOpacity>
@@ -208,7 +212,9 @@ export default function CustomDropdown({
                 <Text style={styles.innerHeaderTitle}>{backTitle}</Text>
               </View>
               <Pressable onPress={() => toggleModal()}>
-                <Close />
+                <CustomImage height={24} width={24} uri={`${Config.media_url}close.svg`}/> 
+
+                
                 {/* <Image
                       source={require("@images/left_arrow.png")}
                       style={{
@@ -223,8 +229,9 @@ export default function CustomDropdown({
               style={
                 styles.inputWrapper
               }>
-                
-              <Search />
+                          <CustomImage height={24} width={24} uri={`${Config.media_url}search.svg`}/>
+
+              {/* <Search /> */}
               <TextInput
                 autoFocus={true}
                 placeholderTextColor={font2}

@@ -1,7 +1,7 @@
 import React, {FC, useState, useEffect} from 'react';
 import {
   View,
-  Image,
+  // Image,
   StyleSheet,
   Text,
   ScrollView,
@@ -47,6 +47,7 @@ import {useAppDispatch} from '../../app/store';
 import HeaderInner from '../../components/HeaderInner'
 import BottomNavigation from '../../components/BottomNavigation';
 import DashedLine from 'react-native-dashed-line';
+import CustomImage from '../../components/CustomImage';
 
 type Props = NativeStackScreenProps<RootParamList, 'Withdraw'>;
 
@@ -279,8 +280,8 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
       <View style={[styles.transactionBox, SheetCSS.styles.shadow]}>
         <TouchableOpacity style={SheetCSS.styles.flexDirRow}>
           <View style={SheetCSS.styles.justifyContentCenter}>
-            <Image
-              source={require('@images/default_dp.png')}
+            <CustomImage
+              uri={`${config.media_url}default_dp.png`}
               style={styles.profilePic}
             />
           </View>
@@ -318,8 +319,8 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                 }}>
                 <View style={SheetCSS.styles.justifyContentCenter}>
                   <View style={{height:56, width:56, borderRadius:30, borderWidth:1.3, borderColor:brandColor, justifyContent:'center', alignItems:'center'}}>
-                  <Image
-                    source={{uri: data.student.profile_pic}}
+                  <CustomImage
+                    uri={data.student.profile_pic}
                     style={styles.profilePic}
                   />
                   </View>
@@ -517,8 +518,8 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
               <View 
               // style={SheetCSS.styles.justifyContentCenter}
               >
-                <Image
-                  source={{uri: data.student.profile_pic}}
+                <CustomImage
+                  uri={data.student.profile_pic}
                   style={styles.profilePic}
                 />
               </View>
@@ -671,12 +672,12 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
             />
             <>
             <Animated.View style={{position:'absolute', top:config.headerHeight, height:changingHeight2}}>
-                    <Image
+                    <CustomImage
                 style={{flex: 1,
                   width: width,
                   flexDirection: 'row',
                   height:140}}
-                source={require('@images/transactions_bg.png')}
+                uri={`${config.media_url}transactions_bg.png`}
               />
               {/* <View style={{flex: 1,
                   width: width,

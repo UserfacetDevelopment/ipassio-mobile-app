@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   Alert,
-  Image,
+  // Image,
   ScrollView,
 } from 'react-native';
 
@@ -32,15 +32,14 @@ import {useAppDispatch} from '../../app/store';
 const {width, height} = Dimensions.get('screen');
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
-//@ts-ignore
-import Back from '../../assets/images/arrow-dark.svg';
+// import Back from '../../assets/images/arrow-dark.svg';
 import {CategoryInterface} from './index';
 import HeaderInner from '../../components/HeaderInner';
 import {useRoute} from '@react-navigation/native';
-import Drop from '../../assets/images/Drop.svg';
+// import Drop from '../../assets/images/Drop.svg';
 import {brandColor, font1, selectedDrop} from '../../styles/colors';
-import Others from '../../assets/images/others.svg';
-import Dropdown from '../../assets/images/dropdown.svg';
+// import Others from '../../assets/images/others.svg';
+// import Dropdown from '../../assets/images/dropdown.svg';
 import { configureFonts } from 'react-native-paper';
 import CustomImage from '../../components/CustomImage';
 import Helper from '../../utils/helperMethods';
@@ -128,7 +127,9 @@ const [active, setActive] = useState('');
             onPress={() => {
               navigation.goBack();
             }}>
-            <Back/>
+                                     <CustomImage height={16} width={16} uri={`${config.media_url}arrow-dark.svg`}/>
+
+            {/* <Back/> */}
             <Text style={styles.backCategoryText}>Back</Text>
           </TouchableOpacity>
           </>
@@ -152,7 +153,7 @@ const [active, setActive] = useState('');
                             alignItems: 'center',
                             // borderWidth:1
                           }}>
-                            <CustomImage height={'32'} width={'32'} uri={cd.top_navigation_icon}/>
+                            <CustomImage height={32} width={32} style={{height:32, width:32}} uri={cd.top_navigation_icon}/>
                             {/* <SvgUri uri={cd.top_navigation_icon} /> */}
                           {/* <Image
                             style={{height: 100, width: 100, resizeMode:'cover'}}
@@ -210,7 +211,9 @@ const [active, setActive] = useState('');
                                     }}>
                                     {sc.subCategories &&
                                     sc.subCategories.length > 0 ? (
-                                      <Drop />
+                                      <CustomImage height={16} width={16} uri={`${config.media_url}drop.svg`}/>
+
+                                      // <Drop />
                                     ) : null}
                                     <Text style={styles.subcategories}>
                                       {sc.toral_course}
@@ -246,11 +249,14 @@ const [active, setActive] = useState('');
                           source={{uri: cd.home_icon}}
                         /> */}
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Others />
+                <CustomImage height={16} width={16} uri={`${config.media_url}others.svg`}/>
+
+                  {/* <Others /> */}
                   <Text style={styles.mainCategory}>Others</Text>
                 </View>
-                {othersSelected ? <View style={  styles.selectedDrop}><Dropdown /></View> : <Drop/>}
-                
+                {othersSelected ? <View style={  styles.selectedDrop}><CustomImage height={16} width={16} uri={`${config.media_url}dropdown.svg`}/>
+                </View> : <CustomImage height={16} width={16} uri={`${config.media_url}drop.svg`}/>
+}
               </TouchableOpacity>
               {othersSelected && categoryData.data ? (
                 <>
@@ -300,7 +306,8 @@ const [active, setActive] = useState('');
                                 width:'15%',
                                 justifyContent:'space-between'
                               }}>
-                              <Drop />
+                              {/* <Drop /> */}
+                              <CustomImage height={16} width={16} uri={`${config.media_url}drop.svg`}/>
 
                               <Text style={styles.subcategories}>
                                 {cd.toral_course}

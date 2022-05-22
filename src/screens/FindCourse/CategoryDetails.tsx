@@ -20,12 +20,12 @@ import {
   getCategoryCourseList,
 } from '../../reducers/courses.slice';
 import LinearGradient from 'react-native-linear-gradient';
-import FactDesign1 from '../../assets/images/fact1.svg';
-import FactDesign2 from '../../assets/images/fact2.svg';
-import IpassioDiff1 from '../../assets/images/ipassioDiff1.svg';
-import IpassioDiff2 from '../../assets/images/ipassioDiff2.svg';
-import IpassioDiff3 from '../../assets/images/ipassioDiff3.svg';
-import IpassioDiff4 from '../../assets/images/ipassioDiff4.svg';
+// import FactDesign1 from '../../assets/images/fact1.svg';
+// import FactDesign2 from '../../assets/images/fact2.svg';
+// import IpassioDiff1 from '../../assets/images/ipassioDiff1.svg';
+// import IpassioDiff2 from '../../assets/images/ipassioDiff2.svg';
+// import IpassioDiff3 from '../../assets/images/ipassioDiff3.svg';
+// import IpassioDiff4 from '../../assets/images/ipassioDiff4.svg';
 import Dot from '../../assets/images/dot.svg';
 
 //@ts-ignore
@@ -197,10 +197,13 @@ const CourseCard = ({course} : any) => {
                   );
                 })}
               </View>
-             <Dot/>
+             
+             {/* <Dot/> */}
              {/* <View></View> */}
               {course.rating.total_count > 0 ? (
                 <>
+                 <CustomImage height={5} width={5} uri={`${config.media_url}dot.svg`}/>
+
                   <View style={styles.courseRating}>
                     <Rating
                       ratingColor={secondaryColor}
@@ -563,7 +566,8 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                           left: 0,
                           opacity: 0.6,
                         }}>
-                        <FactDesign1 />
+                        <CustomImage height={175} width={175} uri={`${config.media_url}fact1.svg`}/>
+
                       </View>
                       <View
                         style={{
@@ -572,14 +576,17 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                           right: 0,
                           opacity: 0.6,
                         }}>
-                        <FactDesign2 />
+                        <CustomImage height={175} width={175} uri={`${config.media_url}fact2.svg`}/>
+
                       </View>
                       <View style={styles.factHeader}>
                         <Text style={styles.factHeaderText}>Today's Fact</Text>
-                        <TouchableOpacity style={styles.shareWrapper}>
-                          <Share />
+                        {/* <TouchableOpacity style={styles.shareWrapper}>
+                        <CustomImage height={24} width={24} uri={`${config.media_url}share.svg`}/>
+
+                          
                           <Text style={styles.shareText}>Share</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                       </View>
 
                       <Text style={styles.factDesc}>
@@ -593,7 +600,10 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                   <View style={styles.differentIpassio}>
                     <View style={styles.ipassioItems}>
                       <View style={styles.ipassioDifferentImg}>
-                        <IpassioDiff1 />
+                      <CustomImage height={40} width={40} uri={`${config.media_url}ipassioDiff1.svg`}/>
+                      {/* <CustomImage height={24} width={24} uri={`${config.media_url}share.svg`}/> */}
+
+                        {/* <IpassioDiff1 /> */}
                       </View>
                       <Text style={styles.ipassioDifferentText}>
                         Award-winning teachers who are masters of their craft
@@ -602,7 +612,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     <View style={styles.lineStyleWhite} />
                     <View style={styles.ipassioItems}>
                       <View style={styles.ipassioDifferentImg}>
-                        <IpassioDiff2 />
+                      <CustomImage height={40} width={40} uri={`${config.media_url}ipassioDiff2.svg`}/>
                       </View>
                       <Text style={styles.ipassioDifferentText}>
                         Personalized teaching to level up the learner
@@ -611,7 +621,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     <View style={styles.lineStyleWhite} />
                     <View style={styles.ipassioItems}>
                       <View style={styles.ipassioDifferentImg}>
-                        <IpassioDiff3 />
+                      <CustomImage height={40} width={40} uri={`${config.media_url}ipassioDiff3.svg`}/>
                       </View>
                       <Text style={styles.ipassioDifferentText}>
                         Interactive 1:1 sessions with learner getting undivided
@@ -621,7 +631,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     <View style={styles.lineStyleWhite} />
                     <View style={styles.ipassioItems}>
                       <View style={styles.ipassioDifferentImg}>
-                        <IpassioDiff4 />
+                      <CustomImage height={40} width={40} uri={`${config.media_url}ipassioDiff4.svg`}/>
                       </View>
                       <Text style={styles.ipassioDifferentText}>
                         System driven mechanisms to continuously drive learners
@@ -631,7 +641,8 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     <View style={styles.lineStyleWhite} />
                     <View style={styles.ipassioItems}>
                       <View style={styles.ipassioDifferentImg}>
-                        <IpassioDiff3 />
+                      <CustomImage height={40} width={40} uri={`${config.media_url}ipassioDiff3.svg`}/>
+
                       </View>
                       <Text style={styles.ipassioDifferentText}>
                         Pay as you go - 2 classes at a time

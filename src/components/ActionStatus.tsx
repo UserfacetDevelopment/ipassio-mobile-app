@@ -14,10 +14,12 @@ import helper from '../utils/helperMethods';
 import { brandColor } from '../styles/colors';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootParamList } from '../navigation/Navigators';
-import Close from '../assets/images/close-light.svg';
-import Success from '../assets/images/success.svg';
-import Error from '../assets/images/error.svg';
+// import Close from '../assets/images/close-light.svg';
+// import Success from '../assets/images/success.svg';
+// import Error from '../assets/images/error.svg';
 import LinearGradient from 'react-native-linear-gradient';
+import CustomImage from './CustomImage';
+import Config from '../config/Config';
 
 type Props = NativeStackScreenProps<RootParamList, 'ActionStatus'>;
 
@@ -117,7 +119,15 @@ useEffect(()=>{
               style={styles.closeButton}
             /> */}
             <View  style={styles.closeButton}>
-              <Close/>
+            <CustomImage
+            height={40}
+            uri={`${Config.media_url}close.svg`}
+          />
+              <CustomImage
+           height={24}
+           width={24}
+           uri={`${Config.media_url}close.svg`}
+         />
             </View>
           </TouchableOpacity>
         </View>
@@ -128,16 +138,17 @@ useEffect(()=>{
         <View >
           <View style={styles.animImageWrapper}>
             {route.params?.messageStatus == 'success'
-                  ? <Success/>
-                  : <Error/>}
-            {/* <Image
-              source={
-                route.params?.messageStatus == 'success'
-                  ? require('@images/success.gif')
-                  : require('@images/failure.gif')
-              }
-              style={styles.image}
-            /> */}
+                  ? 
+                  <CustomImage
+           
+            uri={`${Config.media_url}success.svg`}
+          />
+                  : 
+                  <CustomImage
+           
+            uri={`${Config.media_url}error.svg`}/>
+                  }
+          
           </View>
 
           <Text style={styles.title}>{route.params?.messageTitle}</Text>
