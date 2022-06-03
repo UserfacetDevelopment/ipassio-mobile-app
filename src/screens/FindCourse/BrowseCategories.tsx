@@ -54,21 +54,23 @@ export default function BrowseCategories({navigation, route}: Props) {
   const routes = useRoute();
 const [active, setActive] = useState('');
   const {loading} = useSelector(loaderState);
-  useEffect(() => {
-    dispatch(setLoading(true));
-  //   if (others) {
-  //     dispatch(setPage('find_course'));
-  //   } else {
-  //     dispatch(setPage(''));
-  //   }
-    const category_data: CategoryInterface = {
-      page: page,
-      nationality: nationality,
-    };
-    dispatch(getCategories(category_data))
-      .then(() => dispatch(setLoading(false)))
-      .catch(() => dispatch(setLoading(false)));
-  }, []);
+
+
+  // useEffect(() => {
+  //   dispatch(setLoading(true));
+  // //   if (others) {
+  // //     dispatch(setPage('find_course'));
+  // //   } else {
+  // //     dispatch(setPage(''));
+  // //   }
+  //   const category_data: CategoryInterface = {
+  //     page: page,
+  //     nationality: nationality,
+  //   };
+  //   dispatch(getCategories(category_data))
+  //     .then(() => dispatch(setLoading(false)))
+  //     .catch(() => dispatch(setLoading(false)));
+  // }, []);
 
 
   const loadCategory = (item: any, index: number): any => {
@@ -111,7 +113,7 @@ const [active, setActive] = useState('');
       <HeaderInner
         backroute={route.params?.backroute}
         changingHeight={config.headerHeight}
-        title={'Browse'}
+        title={'Explore'}
         browseSelected={true}
         navigation={navigation}
         type={'findCourse'}
@@ -145,14 +147,7 @@ const [active, setActive] = useState('');
                     {/* {console.log(cd.top_navigation_icon)} */}
                       <View style={{paddingBottom: 20}}>
                         <View
-                          style={{
-                            paddingHorizontal: 16,
-                            paddingTop: 16,
-                            paddingBottom:12,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            // borderWidth:1
-                          }}>
+                          style={styles.categoryIcon}>
                             <CustomImage height={32} width={32} style={{height:32, width:32}} uri={cd.top_navigation_icon}/>
                             {/* <SvgUri uri={cd.top_navigation_icon} /> */}
                           {/* <Image
@@ -189,17 +184,13 @@ const [active, setActive] = useState('');
                                     }
                                   }
                                 }}
-                                  style={{
+                                  style={[{
                                     // borderWidth:1,
                                     backgroundColor: active === sc.seo.seo_slug_url ? '#EFF1F2' : '#fff',
-                                    borderLeftWidth:active === sc.seo.seo_slug_url ? 2 : 0,
+                                    borderLeftWidth:active === sc.seo.seo_slug_url ? 3 : 0,
                                     borderLeftColor:active === sc.seo.seo_slug_url ? brandColor : '#fff',
-                                    paddingVertical: 16,
-                                    paddingRight:16,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                  }}>
+                                    
+                                  },styles.listItem]}>
                                   <Text style={styles.subcategories}>
                                     {sc.category_name}
                                   </Text>
@@ -286,26 +277,18 @@ const [active, setActive] = useState('');
                               }
                             }
                           }}
-                            style={{
+                            style={[{
                               backgroundColor: active === cd.seo.seo_slug_url ? '#EFF1F2' : '#fff',
-                              borderLeftWidth:active === cd.seo.seo_slug_url ? 2 : 0,
+                              borderLeftWidth:active === cd.seo.seo_slug_url ? 3 : 0,
                               borderLeftColor:active === cd.seo.seo_slug_url ? brandColor : '#fff',
-                              padding: 16,
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                            }}>
+                              
+                            }, styles.listItem]}>
                             <Text style={styles.subcategories}>
                               {cd.category_name}
                             </Text>
 
                             <View
-                              style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                width:'15%',
-                                justifyContent:'space-between'
-                              }}>
+                              style={styles.courseNumber}>
                               {/* <Drop /> */}
                               <CustomImage height={16} width={16} uri={`${config.media_url}drop.svg`}/>
 
@@ -450,5 +433,26 @@ const styles = StyleSheet.create({
     padding:8,
     backgroundColor:selectedDrop,
     borderRadius:16
+  },
+  categoryIcon:{
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom:12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    // borderWidth:1
+  },
+  listItem:{
+    paddingVertical: 16,
+                                    paddingRight:16,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+  },
+  courseNumber:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    width:'15%',
+    justifyContent:'space-between'
   }
 });

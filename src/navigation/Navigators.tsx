@@ -8,7 +8,7 @@ import {
   Animated,
   Platform,
 } from 'react-native';
-
+import messaging from '@react-native-firebase/messaging';
 import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
@@ -71,24 +71,25 @@ import StaticPage from '../screens/Pages/StaticPage';
 import Signup from '../screens/SignUp';
 import Recording from '../screens/Recording/Recording';
 
-import { font1, font2 } from '../styles/colors';
+import {font1, font2} from '../styles/colors';
 export type RootParamList = {
   Categories: any;
   CategoryDetails: any;
   FindCourses: undefined;
   Subcategories: undefined;
   CourseDetail: {
-        course:any;
-  }
+    course_slug: string;
+    category_slug: string;
+    teacher_slug: string;
+  };
   TeacherDetails: any;
   TeacherReview: undefined;
   BrowseCategories: any;
   BrowseSubcategories: any;
   Courses: undefined;
   CartPage: {
-    checkoutToken:any;
+    checkoutToken: any;
     backroute?: any;
-    
   };
   ActionStatus: {
     timeOut: number;
@@ -115,9 +116,15 @@ export type RootParamList = {
   Logout: any;
   Attendance: any;
   UserNavigator: any;
-  Review: undefined;
-  BillingAddress: undefined;
-  PaymentPage: undefined;
+  Review: {
+    checkoutToken: string;
+  };
+  BillingAddress: {
+    checkoutToken: string;
+  };
+  PaymentPage: {
+    checkoutToken: string;
+  };
   Checkout: any;
   DashboardPage: any;
   Transactions: any;
@@ -140,8 +147,12 @@ export type RootParamList = {
   StaticPage: any;
   MoreNav: any;
   Signup: any;
-  CreatedCourses : any;
+  CreatedCourses: any;
 };
+
+export interface CategoryInterface {
+  nationality: string;
+}
 
 const Stack = createNativeStackNavigator<RootParamList>();
 const Tab = createBottomTabNavigator<RootParamList>();
@@ -159,9 +170,8 @@ const StudentTabNavigator = () => {
       initialRouteName={'Dashboard'}
       screenOptions={({route}) => ({
         tabBarStyle: {
-
-          paddingBottom: Platform.OS==='android' ? 12 : 30 ,
-          height: Platform.OS==='android' ? 64 : 80,
+          paddingBottom: Platform.OS === 'android' ? 12 : 30,
+          height: Platform.OS === 'android' ? 64 : 80,
         },
         // tabBarLabelStyle​:{
         //   fontSize:10,
@@ -173,7 +183,6 @@ const StudentTabNavigator = () => {
           let iconW = 0;
           let iconH = 0;
           if (route.name === 'Dashboard') {
-
             iconName = focused
               ? require('@images/dashboard-active.png')
               : require('@images/dashboard.png');
@@ -254,11 +263,7 @@ const StudentTabNavigator = () => {
         component={Transaction}
         options={{headerShown: false}}
       />
-      <Tab.Screen
-        name="More"
-        component={More}
-        options={{headerShown: false}}
-      />
+      <Tab.Screen name="More" component={More} options={{headerShown: false}} />
     </Tab.Navigator>
   );
 };
@@ -271,8 +276,8 @@ const TabNavigator = () => {
       initialRouteName={'Dashboard'}
       screenOptions={({route}) => ({
         tabBarStyle: {
-          paddingBottom: Platform.OS==='android' ? 12 : 30 ,
-          height: Platform.OS==='android' ? 64 : 80,
+          paddingBottom: Platform.OS === 'android' ? 12 : 30,
+          height: Platform.OS === 'android' ? 64 : 80,
         },
         tabBarIcon: ({focused}) => {
           let iconName;
@@ -362,11 +367,7 @@ const TabNavigator = () => {
         component={Transaction}
         options={{headerShown: false}}
       />
-      <Tab.Screen
-        name="More"
-        component={More}
-        options={{headerShown: false}}
-      />
+      <Tab.Screen name="More" component={More} options={{headerShown: false}} />
     </Tab.Navigator>
   );
 };
@@ -379,8 +380,8 @@ const TeacherTabNavigator = () => {
       initialRouteName={'Dashboard'}
       screenOptions={({route}) => ({
         tabBarStyle: {
-          paddingBottom: Platform.OS==='android' ? 12 : 30 ,
-          height: Platform.OS==='android' ? 64 : 80,
+          paddingBottom: Platform.OS === 'android' ? 12 : 30,
+          height: Platform.OS === 'android' ? 64 : 80,
         },
         tabBarIcon: ({focused}) => {
           let iconName;
@@ -470,11 +471,7 @@ const TeacherTabNavigator = () => {
         component={Transaction}
         options={{headerShown: false}}
       />
-      <Tab.Screen
-        name="More"
-        component={More}
-        options={{headerShown: false}}
-      />
+      <Tab.Screen name="More" component={More} options={{headerShown: false}} />
     </Tab.Navigator>
   );
 };
@@ -543,7 +540,6 @@ const CourseFlowNavigator = () => {
         component={CategoryDetails}
         options={{
           headerShown: false,
-          
         }}
       />
       <Stack.Screen
@@ -551,7 +547,6 @@ const CourseFlowNavigator = () => {
         component={TeacherDetails}
         options={{
           headerShown: false,
-          
         }}
       />
       <Stack.Screen
@@ -560,8 +555,6 @@ const CourseFlowNavigator = () => {
         options={{
           headerShown: false,
           headerTitle: props => <LogoTitle {...props} />,
-          //headerLeft: () => <LeftHeader />,
-          // headerRight: () => <RightHeader />,
         }}
       />
       <Stack.Screen
@@ -603,7 +596,6 @@ const CourseFlowNavigator = () => {
           headerShown: false,
         }}
       />
-      
     </Stack.Navigator>
   );
 };
@@ -638,7 +630,6 @@ const LoginFlowNavigator = () => {
           component={Signup}
           options={{headerShown: false}}
         />
-        
       </>
     </Stack.Navigator>
   );
@@ -653,6 +644,13 @@ export const RootNavigator = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    let data: CategoryInterface = {
+      nationality: '',
+    };
+    const date = new Date();
+    
+    dispatch(getCategories(data));
+
     setIsLoading(true);
     if (!isLoggedIn) {
       AsyncStorage.getItem('USERDATA', (err, response) => {
@@ -660,6 +658,7 @@ export const RootNavigator = () => {
           dispatch(loginSuccess(JSON.parse(response)));
           dispatch(setLoading(true));
           dispatch(setPageLoading(true));
+
           // dispatch(getCategories());
           dispatch(getCourses())
             .then(() => {
@@ -685,7 +684,7 @@ export const RootNavigator = () => {
         <Splash />
       ) : (
         <NavigationContainer>
-          <RootStackNavigator/>
+          <RootStackNavigator />
         </NavigationContainer>
       )}
     </>
@@ -696,66 +695,173 @@ const CheckoutNavigator = () => {
   const {isLoggedIn} = useSelector(userState);
   return (
     <Stack.Navigator>
-          <Stack.Screen
-            name="CartPage"
-            component={CartPage}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="BillingAddress"
-            component={BillingAddress}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="PaymentPage"
-            component={Payment}
-            options={{headerShown: false}}
-          />
-          <Stack.Screen
-            name="Review"
-            component={Review}
-            options={{headerShown: false}}
-          />
+      <Stack.Screen
+        name="CartPage"
+        component={CartPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="BillingAddress"
+        component={BillingAddress}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PaymentPage"
+        component={Payment}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Review"
+        component={Review}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };
 
-
 const RootStackNavigator = () => {
-  let initialRoute;
-  const navigation= useNavigation();
+  const navigation = useNavigation();
+  // const {navigation} = useSelector(userState);
+  const [initialRoute, setInitialRoute] = useState('Dashboard');
   const {isLoggedIn, userData} = useSelector(userState);
 
-  useEffect(()=>{
-    if(isLoggedIn){
-      initialRoute = 'Dashboard'
+  useEffect(() => {
+    if (isLoggedIn) {
+      setInitialRoute('Dashboard');
       navigation.navigate('Dashboard');
-    }
-    else{
-      initialRoute="Browse"
+    } else {
+      setInitialRoute('Browse');
       navigation.navigate('Browse');
     }
-      },[isLoggedIn])
+  }, [isLoggedIn]);
+
+  const openActivityOnNotification = (key: string) => {
+    let nav;
+    switch (key) {
+      case 'weekly_attendance_reminder_to_student':
+        nav = 'Dashboard';
+        break;
+      case 'class_remainder':
+        nav = 'Schedules';
+        break;
+      case 'refill_remainder':
+        nav = 'Dashboard';
+        break;
+      case 'mobile_verified': //not handled
+        nav = 'Dashboard';
+        break;
+      case 'course_invoice_refilled': //not handled
+        nav = 'Dashboard';
+        break;
+      case 'course_teacher_refilled': //not handled
+        nav = 'Dashboard';
+        break;
+      case 'course_activated': //not handled
+        nav = 'Dashboard';
+        break;
+      case 'course_dispute':
+        nav = 'Dashboard';
+        break;
+      case 'course_invoice_enrolled':
+        nav = 'Dashboard';
+        break;
+      case 'course_created': //not handled
+        nav = 'Dashboard';
+        break;
+      case 'welcome_mail':
+        nav = 'Dashboard';
+        break;
+      // case 'reset_password_init':
+      //   nav = '';
+      //   break;
+      case 'attendance_reminder_by_teacher':
+        nav = 'Dashboard';
+        break;
+      case 'marked_attendance_teacher':
+        nav = 'Dashboard';
+        break;
+      case 'course_teacher_enrolled':
+        nav = 'Dashboard';
+        break;
+      case 'withdrawal_method_created':
+        nav = 'Withdraw';
+        break;
+      case 'withdrawal_request':
+        nav = 'Withdraw';
+        break;
+      case 'withdrawal_approved':
+        nav = 'Withdraw';
+        break;
+      case 'withdrawal_cancelled':
+        nav = 'Withdraw';
+        break;
+        default : nav='Dashboard'
+    }
+    return nav;
+  };
+
+  // useEffect(()=>{
+  //   messaging().onNotificationOpenedApp(remoteMessage => {
+  //     console.log(
+  //       'Notification caused app to open from background state:',
+  //       remoteMessage.notification,
+  //     );
+  //     if(remoteMessage && remoteMessage.data.type==='attendance'){
+  //       setInitialRoute("Attendance");
+  //     }
+
+  //   });
+  // },[])
+
+  useEffect(() => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      // console.log(
+      //   'Notification caused app to open from background state:',
+      //   remoteMessage,
+      // );
+      let nav = openActivityOnNotification(remoteMessage.data.type);
+
+      navigation.navigate(nav);
+
+      setInitialRoute(nav); //remoteMessage.data.type);
+    });
+
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          // console.log(remoteMessage);
+          // console.log(
+          //   'Notification caused app to open from quit state:',
+          //   remoteMessage,
+          // );
+          let nav = openActivityOnNotification(remoteMessage.data.type);
+          navigation.navigate(nav);
+          setInitialRoute(nav); //remoteMessage.data.type);
+        }
+      });
+  }, []);
+
 
   return (
     <Stack.Navigator
-    initialRouteName={initialRoute
-      // !isLoggedIn ? 'Browse' : 'Dashboard'
-       }>
+      initialRouteName={
+        initialRoute
+        // !isLoggedIn ? 'Browse' : 'Dashboard'
+      }>
       {!isLoggedIn ? (
         <>
-         
-        <Stack.Screen
-          name="Login"
-          component={LoginFlowNavigator}
-          options={{headerShown: false}}
-        /> 
-        <Stack.Screen
-          name="ActionStatus"
-          component={ActionStatus}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
+          <Stack.Screen
+            name="Login"
+            component={LoginFlowNavigator}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="ActionStatus"
+            component={ActionStatus}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
             name="Browse"
             component={CourseFlowNavigator}
             options={{
@@ -769,7 +875,6 @@ const RootStackNavigator = () => {
               headerShown: false,
             }}
           />
-          
         </>
       ) : (
         <>
@@ -784,14 +889,15 @@ const RootStackNavigator = () => {
           component={TeacherTabNavigator}
           options={{headerShown: false}}
         /> */}
-        <Stack.Screen
+       
+          <Stack.Screen
             name="Dashboard"
             component={Dashboard}
             options={{
               headerShown: false,
             }}
           />
-        <Stack.Screen
+          <Stack.Screen
             name="Attendance"
             component={Attendance}
             options={{headerShown: false}}
@@ -825,11 +931,11 @@ const RootStackNavigator = () => {
               headerShown: false,
             }}
           />
-           <Stack.Screen
-        name="Recording"
-        component={Recording}
-        options={{headerShown: false}}
-      />
+          <Stack.Screen
+            name="Recording"
+            component={Recording}
+            options={{headerShown: false}}
+          />
           <Stack.Screen
             name="Transactions"
             component={Transaction}
@@ -852,15 +958,15 @@ const RootStackNavigator = () => {
             }}
           />
           <Stack.Screen
-          name="Login"
-          component={LoginFlowNavigator}
-          options={{headerShown: false}}
-        /> 
-        <Stack.Screen
-          name="Withdraw"
-          component={Withdrawal}
-          options={{headerShown: false}}
-        /> 
+            name="Login"
+            component={LoginFlowNavigator}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Withdraw"
+            component={Withdrawal}
+            options={{headerShown: false}}
+          />
         </>
       )}
     </Stack.Navigator>
@@ -868,19 +974,14 @@ const RootStackNavigator = () => {
 };
 
 const styles = StyleSheet.create({
-  headerText: {
-    color: '#32363a',
-    padding: 4,
-    fontSize: 10,
-    textAlign: 'center',
-  },
+
   headerButtonRight: {
     alignItems: 'center',
     paddingRight: 5,
 
     // borderLeftWidth:0.2,
   },
-  icon: {},
+
   headerButtonLeft: {
     paddingBottom: 20,
     paddingLeft: 5,

@@ -35,6 +35,7 @@ import HeaderInner from '../../components/HeaderInner';
 import { useRoute } from '@react-navigation/native';
 import TextField from '../../components/CustomTextField';
 import config from '../../config/Config'
+import CustomStatusBar from '../../components/CustomStatusBar';
 export interface ForgotPassswordInterface{
 email:string|undefined;
 type:string;
@@ -46,6 +47,9 @@ export default function ForgotPassword({navigation}: Props) {
   const dispatch = useAppDispatch();
   const {loading} = useSelector(loaderState)
   const [email, setEmail] = useState<string|undefined>('');
+  const [errorMsg, setErrorMsg] = useState<string>('');
+  const [showError, setShowError] = useState<boolean>(false);
+  
 const routes = useRoute();
   const handleForgotPassword = () => {
     Keyboard.dismiss();
@@ -54,9 +58,10 @@ const routes = useRoute();
       type: 'mail',
     };
 
-    if (finalData.email!=undefined) {
+    if (email!=='') {
       // setIsLoading(true);
-      setEmail('');
+      // setEmail('');
+      
       dispatch(setLoading(true));
       dispatch(doForgetPassword(finalData))
         .unwrap()
@@ -71,6 +76,7 @@ const routes = useRoute();
             //   backRoute: 'LoginScreen',
             //   params: {},
             // });
+            setShowError(false);
             navigation.navigate('ResetPassword', {
               email : email,
               messageDesc: originalPromiseResult.error_message.message ,
@@ -79,14 +85,16 @@ const routes = useRoute();
             });
             
           } else if (originalPromiseResult.status === 'failure') {
-            navigation.navigate('ActionStatus', {
-              messageStatus: 'failure',
-              messageTitle: 'Sorry!',
-              messageDesc: originalPromiseResult.error_message.message,
-              timeOut: 4000,
-              backRoute: 'ForgotPassword',
-              params: {},
-            });
+            setErrorMsg(originalPromiseResult.error_message.message);
+            setShowError(true)
+            // navigation.navigate('ActionStatus', {
+            //   messageStatus: 'failure',
+            //   messageTitle: 'Sorry!',
+            //   messageDesc: originalPromiseResult.error_message.message,
+            //   timeOut: 4000,
+            //   backRoute: 'ForgotPassword',
+            //   params: {},
+            // });
           }
         })
         .catch(rejectedValueOrSerializedError => {
@@ -95,15 +103,17 @@ const routes = useRoute();
           Alert.alert('Oops', 'Something went wrong');
         });
     } else {
-      Alert.alert('', 'Please enter a valid Email address', [
-        {text: 'Okay', style: 'cancel'},
-      ]);
+      setShowError(true);
+      setErrorMsg("Enter an email address")
+      // Alert.alert('', 'Please enter a valid Email address', [
+      //   {text: 'Okay', style: 'cancel'},
+      // ]);
     }
   };
 
   return (
     <View>
-    
+    <CustomStatusBar/>
     <HeaderInner
     type={"findCourse"}
     title={'Forgot Password'}
@@ -139,7 +149,7 @@ const routes = useRoute();
             <View style={{marginTop: 40}}>
               <Text style={styles.title}>Forgot Password?</Text>
               <Text style={styles.subTitle}>
-                Enter your Email address to continue...
+              Enter your email address.
               </Text>
             </View>
 
@@ -157,7 +167,9 @@ const routes = useRoute();
               //   }}
               label="Email Address"
               mode="outlined"
-              onChangeText={(text: string) => setEmail(text)}
+              onChangeText={(text: string) => {
+                setShowError(false);
+                setEmail(text)}}
               //textAlignVertical="top"
               //baseColor = '#C91F35'
               // value={email}
@@ -168,7 +180,9 @@ const routes = useRoute();
               // autoCorrect={false}
               // selectTextOnFocus={false}
             />
+            {showError? <Text style={StyleCSS.styles.errorText}>{errorMsg}</Text> : null}
 </View>
+
             <Text style={styles.instructions}>
               Password reset instructions will be sent to your registered email
               address.

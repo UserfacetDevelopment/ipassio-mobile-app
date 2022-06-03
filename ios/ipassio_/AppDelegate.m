@@ -1,5 +1,5 @@
 #import "AppDelegate.h"
-
+#import "RNFBMessagingModule.h"
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
@@ -32,11 +32,16 @@ static void InitializeFlipper(UIApplication *application) {
 #ifdef FB_SONARKIT_ENABLED
   InitializeFlipper(application);
 #endif
+NSDictionary *appProperties = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
 
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
-                                                   moduleName:@"ipassio_"
-                                            initialProperties:nil];
+  // RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+  //                                                  moduleName:@"ipassio_"
+  //                                           initialProperties:nil];
+                                            // Find the `RCTRootView` instance and update the `initialProperties` with your `appProperties` instance
+RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+                                             moduleName:@"ipassio_"
+                                             initialProperties:appProperties];
 
   if (@available(iOS 13.0, *)) {
       rootView.backgroundColor = [UIColor systemBackgroundColor];

@@ -16,7 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.facebook.react.bridge.JSIModulePackage; // <- add
 import com.swmansion.reanimated.ReanimatedJSIModulePackage; // <- add
-import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage; // ADDED FOR PUSH NOTIFICATION
+//import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage; // ADDED FOR PUSH NOTIFICATION
 
 
 public class MainApplication extends Application implements ReactApplication {

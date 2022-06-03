@@ -75,7 +75,7 @@
               "client_id": "938249328963-8haukfgbirtkjjcvrecljk5muh0lgeog.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.ipassio_"
+                "bundle_id": "org.reactjs.native.example.ipassio-"
               }
             }
           ]

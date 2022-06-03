@@ -8,24 +8,26 @@ import {
   Alert,
   Animated,
   Platform,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import {useSelector} from 'react-redux';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import Moment from 'moment';
+// import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import Moment, {calendarFormat} from 'moment';
+import 'moment-timezone';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {useAppDispatch} from '../../app/store';
 import CustomDropdown from '../../components/CustomDropdown';
 import CustomStatusBar from '../../components/CustomStatusBar';
 import {loaderState, setPageLoading} from '../../reducers/loader.slice';
 import {userState} from '../../reducers/user.slice';
-import { getLookups } from '../../reducers/courses.slice';
+import {getLookups} from '../../reducers/courses.slice';
 import PageLoader from '../../components/PageLoader';
 import {ObjectTypeIndexer} from '@babel/types';
 import {getEnrolledCourses} from '../../reducers/dashboard.slice';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import Helper from '../../utils/helperMethods';
+import timezones from '../../assets/json/timezones.json';
 import {
   brandColor,
   dropdownBorder,
@@ -38,13 +40,14 @@ import config from '../../config/Config';
 import {
   addSession,
   getEnrolledStudentsList,
+  editSession,
 } from '../../reducers/schedule.slice';
-import HeaderInner from '../../components/HeaderInner';
 import StyleCSS from '../../styles/style';
 // import Time from '../../assets/images/time.svg';
 // import Calender from '../../assets/images/calender.svg'
 import CustomDateTimePicker from '../../components/CustomDateTimePicker';
 import CustomImage from '../../components/CustomImage';
+import {setCustomScrollView} from 'react-native-global-props';
 
 type Props = NativeStackScreenProps<RootParamList, 'AddSession'>;
 
@@ -57,20 +60,61 @@ interface CreateSessionInterface {
   timezone: any;
   start_time: any;
   end_time: any;
-  repeat: number;
+  repeat: string;
+  repeat_count: number | string;
   type: string;
 }
 
+interface EditClassInterface {
+  class_type: string;
+  course: number;
+  student: Array<number>;
+  end_time: any;
+  end_date: any;
+  id: number;
+  start_date: any;
+  start_time: any;
+  timezone: string;
+  class_url: string;
+  type: string;
+  class_taught_on: string;
+}
+
 export interface CreateSessionInterfaceFinal {
-  params: CreateSessionInterface;
+  params: CreateSessionInterface | EditClassInterface;
   userToken: string;
 }
 
 const width = Dimensions.get('screen').width;
-const AddSession = ({setShowAddSessionModal, navigation, onRefresh}) =>
+const height = Dimensions.get('screen').height;
+
+interface AddSessionInterface {
+  setShowAddSessionModal: any;
+  navigation: any;
+  onRefresh: any;
+  title: string;
+  editClassData?: any;
+  setShareLinkPopup: any;
+  setChildData: any;
+  setURL: any;
+  setTaughtOnCode: any;
+}
+
+const AddSession = ({
+  setShowAddSessionModal,
+  navigation,
+  onRefresh,
+  title,
+  editClassData,
+  setShareLinkPopup,
+  setChildData,
+  setURL,
+  setTaughtOnCode,
+}: AddSessionInterface) =>
   // {navigation, route}: Props
   {
     const dispatch = useAppDispatch();
+    const [timezone, setTimezone] = useState<any>(null);
     const {userData} = useSelector(userState);
     const {pageLoading} = useSelector(loaderState);
     const [selectedCourseName, setSelectedCourseName] = useState('-');
@@ -86,68 +130,118 @@ const AddSession = ({setShowAddSessionModal, navigation, onRefresh}) =>
     const [selectedCourse, setSelectedCourse] = useState<any>({});
     const [selectedCourseId, setSelectedCourseId] = useState(0);
     const [studentList, setStudentList] = useState<Array<any>>([]);
+    const [selectedTimezone, setSelectedTimezone] = useState<any>({label:userData.timezone, value:userData.timezone});
     const [isDateTimePickerVisible, setIsDateTimePickerVisible] =
       useState(false);
+    const [isEndDateTimePickerVisible, setIsEndDateTimePickerVisible] =
+      useState(false);
+    const [isStartDateTimePickerVisible, setIsStartDateTimePickerVisible] =
+      useState(false);
     const [completeCourseData, setCompleteCourseData] = useState(new Map());
-    const [startTime, setStartTime] = useState(null);
-    const [endTime, setEndTime] = useState(null);
+    const [startTime, setStartTime] = useState(
+      editClassData
+        ? Moment.tz(editClassData.start_time, userData.timezone).format(
+            'hh:mm A',
+          )
+        : null,
+    );
+    const [endTime, setEndTime] = useState(
+      editClassData
+        ? Moment.tz(editClassData.end_time, userData.timezone).format('hh:mm A')
+        : null,
+    );
     const [startTimeRangeList, setStartTimeRangeList] = useState<Array<any>>(
       [],
     );
     const [endTimeRangeList, setEndTimeRangeList] = useState<Array<any>>([]);
     const [sameDay, setSameDay] = useState(false);
     const [dSelected, setDSelected] = useState<Date | undefined>(undefined);
-const [taughtOn , setTaughtOn] = useState(undefined)
-const [p, setP]= useState<any>(null);
-const[meetingPlatforms, setMeetingPlatforms] = useState<any>([])
+    const [startDSelected, setStartDSelected] = useState<Date | undefined>(
+      editClassData ? new Date(editClassData.start_time) : undefined,
+    );
+    const [endDSelected, setEndDSelected] = useState<Date | undefined>(
+      editClassData ? new Date(editClassData.end_time) : undefined,
+    );
 
-useEffect(() => {
-  dispatch(getLookups())
-  .unwrap()
-  .then((res) => {
-    console.log(res)
-    if (res.data.status === 'success') {
-      setP(res.data.data.course_platforms);
-      res.data.data.course_platforms.map((pt:any)=>{
-        meetingPlatforms.push({
-          label: pt.code,
-          value:pt.name
+    const [startDate, setStartDate] = useState(
+      editClassData ? editClassData.start_time : null,
+    );
+    const [endDate, setEndDate] = useState(
+      editClassData ? editClassData.end_time : null,
+    );
+    const [minEndDate, setMinEndDate] = useState(
+      editClassData ? new Date(editClassData.start_time) : null,
+    );
+    const [taughtOn, setTaughtOn] = useState<any>(undefined);
+    const [p, setP] = useState<any>(null);
+    const [meetingPlatforms, setMeetingPlatforms] = useState<any>([]);
+    const [selectedStartDateToPass, setSelectedStartDateToPass] =
+      useState<any>(null);
+    const [selectedEndDateToPass, setSelectedEndDateToPass] =
+      useState<any>(null);
+    const [refillError, setRefillError] = useState<any>(null);
+    const [showError, setShowError] = useState(false);
+    const [dateError, setDateError] = useState(false);
+
+    useEffect(() => {
+      dispatch(getLookups())
+        .unwrap()
+        .then(res => {
+          if (res.data.status === 'success') {
+            setP(res.data.data.course_platforms);
+            res.data.data.course_platforms.map((pt: any) => {
+              meetingPlatforms.push({
+                label: pt.code,
+                value: pt.name,
+              });
+            });
+          }
         })
-      })}})
-      .catch((err)=>{
-        console.log(err)
-Alert.alert('', 'Something went wrong')
-      })
+        .catch(err => {
+          Alert.alert('', 'Something went wrong');
+        });
     }, []);
-    
 
-//   useEffect(()=>{
-//     dispatch(getLookups())
-//     .unwrap()
-//     .then((res)=>{
-// // setP(res.data.data.course_platforms);
-//   res.data.data.course_platforms.map((pt:any)=>{
-//     meetingPlatform.push({
-//       label:pt.name,
-//       value: pt.code,
-//     })
-// }
-//   })
-//   .catch(()=>{
+    useEffect(()=>{
+      
+if(startDSelected){
+  
+      if(!endDSelected || new Date(endDSelected).getTime()<new Date(startDSelected).getTime()){
+        setDateError(true);
+      }
+      else{
+        setDateError(false)
+      }
+    }
+    },[startDSelected, endDSelected])
 
-//   })
+    //   useEffect(()=>{
+    //     dispatch(getLookups())
+    //     .unwrap()
+    //     .then((res)=>{
+    // // setP(res.data.data.course_platforms);
+    //   res.data.data.course_platforms.map((pt:any)=>{
+    //     meetingPlatform.push({
+    //       label:pt.name,
+    //       value: pt.code,
+    //     })
+    // }
+    //   })
+    //   .catch(()=>{
 
-// }, []);
+    //   })
 
-// const meetingPlatforms = [
-//   {label:'GH', value:'Google Meet'},
-// {label:'S', value:'Skype'},
-// {label:'GD', value:'Google Duo'},
-// {label:'WV', value:'WhatsApp Video'},
-// {label:'B', value:'BOTIM'},
-// {label:'Z', value:'Zoom'},
-// {label:'I', value:'ipassio Video'}
-// ]
+    // }, []);
+
+    // const meetingPlatforms = [
+    //   {label:'GH', value:'Google Meet'},
+    // {label:'S', value:'Skype'},
+    // {label:'GD', value:'Google Duo'},
+    // {label:'WV', value:'WhatsApp Video'},
+    // {label:'B', value:'BOTIM'},
+    // {label:'Z', value:'Zoom'},
+    // {label:'I', value:'ipassio Video'}
+    // ]
     // let scrollY= new Animated.Value(0.01);
     // let changingHeight;
     // let titleLeft, titleSize, titleTop, iconTop;
@@ -186,6 +280,26 @@ Alert.alert('', 'Something went wrong')
       } else if (userData.user_type === 'S') {
         getEnrolledCoursesList();
       }
+setTimezone(timezones);
+
+setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0])
+    }, []);
+
+    useEffect(() => {
+      if (title === 'Add') {
+        setTaughtOn({label: 'I', value: 'ipassio Video'});
+      } else if (title === 'Edit') {
+        setSelectedStartDateToPass(Moment(startDate).format('YYYY-MM-DD'));
+
+        setSelectedEndDateToPass(Moment(endDate).format('YYYY-MM-DD'));
+        // setSelectedCourseId(editClassData.course.id);
+        setSelectedCourseName(editClassData.course.title);
+        // setSelectedCourse(editClassData.course);
+        setTaughtOn({
+          label: editClassData.taught_on.code,
+          value: editClassData.taught_on.name,
+        });
+      }
     }, []);
 
     const monthNames = [
@@ -222,7 +336,16 @@ Alert.alert('', 'Something went wrong')
         //interval = 1425-dTime;
         start = dTime;
       }
-
+      if (title === 'Edit') {
+        if (
+          startDSelected &&
+          startDSelected.getMonth() === month &&
+          startDSelected.getDate() === d &&
+          startDSelected.getFullYear() === rounded.getFullYear()
+        ) {
+          start = dTime;
+        }
+      }
       // let daytime = "am";
 
       // if(hour > 12){
@@ -236,7 +359,7 @@ Alert.alert('', 'Something went wrong')
 
       // populateTimeIntervalRange(hour*15*4, interval, "start");
       populateTimeIntervalRange(start, interval, 'start');
-    }, [selectedDate]);
+    }, [selectedDate, startDSelected, endDSelected]);
 
     const populateTimeIntervalRange = (
       min_time: number,
@@ -271,7 +394,6 @@ Alert.alert('', 'Something went wrong')
       }
     };
 
-    console.log(taughtOn && taughtOn.label)
     const changeStartTime = (data: any) => {
       setStartTime(data[0].value);
       setEndTime(null);
@@ -289,8 +411,33 @@ Alert.alert('', 'Something went wrong')
       populateTimeIntervalRange(time, 1425, 'end');
     };
 
+    useEffect(() => {
+      if (editClassData && startTime) {
+          let temp = startTime.split(' ');
+        let temp1 = temp[0].split(':');
+        let time = 0;
+        if (temp[1] === 'PM' && temp1[0] != 12) {
+          time = (parseInt(temp1[0]) + 12) * 60 + parseInt(temp1[1]) + 15;
+        } else {
+          if (temp1[0] == 12 && temp[1] === 'AM') {
+            temp1[0] = 0;
+          }
+          time = parseInt(temp1[0]) * 60 + parseInt(temp1[1]) + 15;
+        }
+        populateTimeIntervalRange(time, 1425, 'end');
+      }
+    }, []);
+
     const changeEndTime = (data: any) => {
       setEndTime(data[0].value);
+    };
+    const showEndDateTimePicker = () => {
+      // Keyboard.dismiss();
+      setIsEndDateTimePickerVisible(true);
+    };
+    const showStartDateTimePicker = () => {
+      // Keyboard.dismiss();
+      setIsStartDateTimePickerVisible(true);
     };
     const showDateTimePicker = () => {
       // Keyboard.dismiss();
@@ -304,12 +451,14 @@ Alert.alert('', 'Something went wrong')
         .unwrap()
         .then(response => {
           dispatch(setPageLoading(false));
-
           if (response.status === 'success') {
+            let courses = response.data;
+            // let filteredCourses = courses.filter(
+            //   (item: any) => item.unschedule_classe > 0,
+            // );
             let coursesData: Array<any> = [];
             let mapData = new Map();
-
-            response.data.map((cs: any, i: number) => {
+            courses.map((cs: any, i: number) => {
               coursesData.push({
                 id: cs.course_id,
                 value: cs.course_name,
@@ -330,6 +479,86 @@ Alert.alert('', 'Something went wrong')
           dispatch(setPageLoading(false));
         });
     };
+   
+    const editClass = () => {
+
+      const editData: EditClassInterface = {
+        class_type: editClassData.course.class_type.id,
+        course: editClassData.course.id,
+        student: [editClassData.class_student[0].id],
+        end_time: endTime,
+        end_date: selectedEndDateToPass,
+        id: editClassData.id,
+        start_date: selectedStartDateToPass,
+        start_time: startTime,
+        timezone: selectedTimezone.value,
+        class_url: editClassData.class_url,
+        type: 'C',
+        class_taught_on: taughtOn.label,
+      };
+      const editDataFinal: CreateSessionInterfaceFinal = {
+        params: editData,
+        userToken: userData.token,
+      };
+      if(!dateError){
+        dispatch(setPageLoading(true));
+        dispatch(editSession(editDataFinal))
+        .then((response :any) => {
+          onRefresh();
+          if (response.payload.data.status === 'success') {
+            setChildData(response.payload.data.data);
+            setShareLinkPopup(true);
+            setShowAddSessionModal(false);
+            dispatch(setPageLoading(false));
+          }
+        })
+        .catch(() => {
+          dispatch(setPageLoading(false));
+          setShowAddSessionModal(false);
+
+          // onHide();
+        });
+      }
+      
+    };
+
+    // const submitEditClass = () => {
+    //   setLoader(true);
+    //   const editClassFinalData = {
+    //     class_type: editClassData.course.class_type.id,
+    //     course: editClassData.course.id,
+    //     student: [editClassData.class_student[0].id],
+    //     end_time: endTime,
+    //     end_date: formatDate(endDate),
+    //     id: editClassData.id,
+    //     start_date: formatDate(startDate),
+    //     start_time: startTime,
+    //     timezone: timezoneValue,
+    //     class_url: editClassData.class_url,
+    //     type: "C",
+    //     class_taught_on: taughtOnValue,
+    //   };
+
+    //   dispatch(
+    //     teacherGA({ param1: editClassFinalData, param2: ENV_APP_ACTION_EDIT })
+    //   )
+    //     .then((response) => {
+    //       // onHide();
+    //       if (response.payload.taught_on.code) {
+    //         setLinkPopupOpen(true);
+    //       }
+    //       setSessionURL(response.payload.class_url);
+    //       setLoader(false);
+    //       getUpcomingClasses();
+    //       // setTimeout(() => {
+    //       //   window.location.reload();
+    //       // }, 1000);
+    //     })
+    //     .catch(() => {
+    //       setLoader(false);
+    //       // onHide();
+    //     });
+    // };
 
     //call teacher created courses
     const getEnrolledCourseStudentList = () => {
@@ -341,6 +570,8 @@ Alert.alert('', 'Something went wrong')
           if (response.data.status === 'success') {
             let coursesData: Array<any> = [];
             let mapData = new Map();
+            // let courses =  response.data;
+            // let filteredCourses = courses.filter((item:any)=> item.unschedule_classe > 0);
             response.data.data.map((cs: any, i: number) => {
               coursesData.push({
                 id: cs.course_id ? cs.course_id : cs.id,
@@ -369,26 +600,69 @@ Alert.alert('', 'Something went wrong')
       hideDateTimePicker();
     };
 
+    useEffect(() => {
+      if (editClassData) {
+        setStartDate(Moment(startDate).format('MMM DD YYYY'));
+        setEndDate(Moment(endDate).format('MMM DD YYYY'));
+      }
+    }, []);
+
+    const handleStartDatePicked = (selectedDate: Date) => {
+      setMinEndDate(selectedDate);
+      setStartDSelected(selectedDate);
+      setStartDate(Moment(selectedDate).format('MMM DD YYYY'));
+      setSelectedStartDateToPass(Moment(selectedDate).format('YYYY-MM-DD'));
+      hideStartDateTimePicker();
+    };
+
+    const handleEndDatePicked = (selectedDate: Date) => {
+      setEndDSelected(selectedDate);
+      setEndDate(Moment(selectedDate).format('MMM DD YYYY'));
+      setSelectedEndDateToPass(Moment(selectedDate).format('YYYY-MM-DD'));
+      hideEndDateTimePicker();
+    };
+
     const hideDateTimePicker = () => {
       setIsDateTimePickerVisible(false);
     };
+    const hideStartDateTimePicker = () => {
+      setIsStartDateTimePickerVisible(false);
+    };
+    const hideEndDateTimePicker = () => {
+      setIsEndDateTimePickerVisible(false);
+    };
 
     const getCourseId = (data: any) => {
-      setSelectedCourseId(data[0].id);
-      setSelectedCourseName(data[0].value);
-      setSelectedCourse(data[0].content);
-      if (userData.user_type === 'T') {
-        let sList: Array<any> = [];
-        data[0].content.enrolled_student.map(
-          (student: any, i: ObjectTypeIndexer) => {
+      if (
+        userData.user_type === 'S' &&
+        data[0].content.unschedule_classe === 0
+      ) {
+        setShowError(true);
+        setSelectedCourseName(data[0].value);
+        setRefillError('Please refill this course.');
+      } else {
+        setShowError(false);
+        setRefillError(null);
+        setSelectedCourseId(data[0].id);
+        setSelectedCourseName(data[0].value);
+        setSelectedCourse(data[0].content);
+        if (userData.user_type === 'T') {
+          let sList: Array<any> = [];
+
+          let students = data[0].content.enrolled_student;
+          let filteredStudents = students.filter(
+            (item: any) => item.unschedule_classe > 0,
+          );
+
+          filteredStudents.map((student: any, i: ObjectTypeIndexer) => {
             sList.push({
               id: student.id,
               value: student.name,
               content: student,
             });
-          },
-        );
-        setStudentList(sList);
+          });
+          setStudentList(sList);
+        }
       }
     };
 
@@ -401,10 +675,14 @@ Alert.alert('', 'Something went wrong')
       setTaughtOn(data[0]);
     };
 
+    const getTimezone = (data: any) => {
+      setSelectedTimezone(data[0]);
+    };
+
     //Create session
     const doCreateSession = () => {
       if (!selectedCourseId || !selectedDateToPass || !startTime || !endTime) {
-        Alert.alert('failure', config.messages.common_error_missing_fields, [
+        Alert.alert('', config.messages.common_error_missing_fields, [
           {text: 'Okay', style: 'cancel'},
         ]);
 
@@ -441,12 +719,13 @@ Alert.alert('', 'Something went wrong')
             : selectedCourse.class_type.id,
         start_date: selectedDateToPass,
         end_date: selectedDateToPass,
-        timezone: userData.timezone,
+        timezone: selectedTimezone.value,
         start_time: startTime,
         end_time: endTime,
         class_taught_on: taughtOn.label,
-        repeat: 1,
-        type: 'C',
+        repeat: 'Do not Repeat',
+        repeat_count: '',
+        // type: 'C',
       };
 
       if (userData.user_type === 'T') {
@@ -464,26 +743,36 @@ Alert.alert('', 'Something went wrong')
         .then(response => {
           setShowAddSessionModal(false);
           dispatch(setPageLoading(false));
-          if (response.data.status == 'success') {
-           
-            navigation.navigate('ActionStatus', {
-              messageStatus: 'success',
-              messageTitle: 'Congratulations!',
-              messageDesc: response.data.error_message.message,
-              timeOut: 4000,
-              backRoute: 'Schedules',
-              // params: {
-              //   appStatus: "success",
-              //   appStatusMessage: response.data.error_message.message,
-              //   appStatusId: appStatusId,
-              // },
-            });
+          if (response.data.status === 'success') {
+            if (
+              taughtOn.label === 'I' &&
+              response.data.data &&
+              response.data.data.class_url
+            ) {
+              setShareLinkPopup(true);
+              setURL(response.data.data.class_url);
+              setTaughtOnCode(taughtOn.label);
+              // setAPIresponse(response);
+            } else {
+              navigation.navigate('ActionStatus', {
+                messageStatus: 'success',
+                messageTitle: 'Success!',
+                messageDesc: response.data.error_message.message,
+                timeOut: 7000,
+                backRoute: 'Schedules',
+                // params: {
+                //   appStatus: "success",
+                //   appStatusMessage: response.data.error_message.message,
+                //   appStatusId: appStatusId,
+                // },
+              });
+            }
           } else if (response.data.status === 'failure') {
             navigation.navigate('ActionStatus', {
               messageStatus: 'failure',
               messageTitle: 'Sorry!',
               messageDesc: response.data.error_message.message,
-              timeOut: 4000,
+              timeOut: 7000,
               backRoute: 'Schedules',
             });
           }
@@ -495,21 +784,28 @@ Alert.alert('', 'Something went wrong')
             messageStatus: 'failure',
             messageTitle: 'Sorry!',
             messageDesc: config.messages.common_error,
-            timeOut: 4000,
+            timeOut: 7000,
             backRoute: 'Schedules',
           });
         });
     };
     return (
       <View style={styles.container}>
-        {/* <CustomStatusBar type={"inside"} /> */}
+        <CustomStatusBar />
 
         {pageLoading ? (
           // <></>
-          <PageLoader />
+          <View
+            style={{
+              width: width,
+              height: height - 350,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <PageLoader />
+          </View>
         ) : (
           <View>
-           
             <KeyboardAwareScrollView
               scrollEventThrottle={16}
               keyboardShouldPersistTaps={'handled'}>
@@ -517,183 +813,226 @@ Alert.alert('', 'Something went wrong')
                 style={{
                   marginBottom: 5,
                 }}></View> */}
-<View>
-              <View
+              <View>
+                <View
                 // style={styles.formWrapper}
-                 >
-                <View style={styles.formElement}>
-                 
-                  <CustomDropdown
-                    topLabel={
-                      selectedCourseName !== '-' ? 'Select Course *' : undefined
-                    }
-                    config={{color: '#fff'}}
-                    onChangeVal={getCourseId}
-                    data={courses}
-                    selectedIds={[]}
-                    label={
-                      selectedCourseName == '-'
-                        ? 'Select Course'
-                        : selectedCourseName
-                    }
-                    backTitle={'Select Course'}
-                  />
-                </View>
-                {userData.user_type === 'T' && (
-                  <View style={styles.formElement}>
-                    
+                >
+                  {!editClassData ? (
+                    <>
+                      <View style={styles.formElement}>
+                        <CustomDropdown
+                          topLabel={
+                            selectedCourseName !== '-'
+                              ? 'Select Course*'
+                              : undefined
+                          }
+                          config={{color: '#fff'}}
+                          onChangeVal={getCourseId}
+                          data={courses}
+                          selectedIds={[]}
+                          label={
+                            selectedCourseName == '-'
+                              ? 'Select Course*'
+                              : selectedCourseName
+                          }
+                          backTitle={'Select Course'}
+                        />
+                        {userData.user_type === 'S' ? (
+                          <Text style={StyleCSS.styles.errorText}>
+                            {refillError}
+                          </Text>
+                        ) : null}
+                      </View>
+                      {userData.user_type === 'T' && (
+                        <View style={styles.formElement}>
+                          <CustomDropdown
+                            topLabel={
+                              selectedStudentName
+                                ? 'Select Student*'
+                                : undefined
+                            }
+                            config={{color: '#fff'}}
+                            onChangeVal={getStudentId}
+                            data={studentList}
+                            selectedIds={[]}
+                            label={
+                              selectedStudentName
+                                ? selectedStudentName
+                                : 'Select Student*'
+                            }
+                            backTitle={'Select Student'}
+                          />
+                        </View>
+                      )}
+                    </>
+                  ) : null}
+                  {timezone ? <View style={styles.formElement}>
                     <CustomDropdown
-                      topLabel={
-                        selectedStudentName ? 'Select Student *' : undefined
-                      }
+                      timezone={true}
+                      topLabel={selectedTimezone ? 'Select Timezone*' : undefined}
                       config={{color: '#fff'}}
-                      onChangeVal={getStudentId}
-                      data={studentList}
+                      onChangeVal={getTimezone}
+                      data={timezone}
                       selectedIds={[]}
-                      label={
-                        selectedStudentName
-                          ? selectedStudentName
-                          : 'Select Student'
+                      label={selectedTimezone ? selectedTimezone.label : 'Select Timezone*'}
+                      backTitle={'Select Timezone'}
+                    />
+                  </View> : null}
+                  {/* <View style={{paddingHorizontal: 16}}>
+                    <Text style={[styles.labelContent]}>
+                      Timezone: {userData.timezone}
+                    </Text>
+                  </View> */}
+                  {meetingPlatforms ? (
+                    <View style={styles.formElement}>
+                      <CustomDropdown
+                        topLabel={taughtOn ? 'Taught On*' : undefined}
+                        config={{color: '#fff'}}
+                        onChangeVal={getMeetingPlatform}
+                        data={meetingPlatforms}
+                        selectedIds={[]}
+                        label={taughtOn ? taughtOn.value : 'Taught On*'}
+                        backTitle={'Select Meeting Platform'}
+                      />
+                    </View>
+                  ) : null}
+
+                  {editClassData ? (
+                    <>
+                      <View style={styles.formElement}>
+                        <CustomDateTimePicker
+                        config={{color:'#fff'}}
+                          width={width - 32}
+                          showDateTimePicker={showStartDateTimePicker}
+                          selectedValue={startDate}
+                          label={'Start Date*'}
+                          minimumDate={new Date()}
+                          isVisible={isStartDateTimePickerVisible}
+                          mode="date"
+                          onConfirm={(selectedDate: any) => {
+                            handleStartDatePicked(selectedDate);
+                          }}
+                          onCancel={hideStartDateTimePicker}
+                        />
+                      </View>
+                      <View style={styles.formElement}>
+                        <CustomDateTimePicker
+                          width={width - 32}
+                          config={{color:'#fff'}}
+                          showDateTimePicker={showEndDateTimePicker}
+                          selectedValue={endDate}
+                          label={'End Date *'}
+                          minimumDate={minEndDate}
+                          isVisible={isEndDateTimePickerVisible}
+                          mode="date"
+                          onConfirm={(selectedDate: any) => {
+                            handleEndDatePicked(selectedDate);
+                          }}
+                          onCancel={hideEndDateTimePicker}
+                        />
+                        {dateError ? <Text style={StyleCSS.styles.errorText}>End date should be after or same as start date</Text> : null}
+                      </View>
+                    </>
+                  ) : (
+                    <View style={styles.formElement}>
+                      <CustomDateTimePicker
+                        width={width - 32}
+                        showDateTimePicker={showDateTimePicker}
+                        selectedValue={selectedDate}
+                        label={'Select Date *'}
+                        minimumDate={new Date()}
+                        isVisible={isDateTimePickerVisible}
+                        mode="date"
+                        onConfirm={(selectedDate: any) => {
+                          handleDatePicked(selectedDate);
+                        }}
+                        onCancel={hideDateTimePicker}
+                      />
+                    </View>
+                  )}
+
+                  <View style={styles.formElement}>
+                    {/* <Text style={styles.labelContent}>Start Time *</Text> */}
+                    <CustomDropdown
+                      customIcon={
+                        <CustomImage
+                          height={24}
+                          width={24}
+                          uri={`${config.media_url}time.svg`}
+                        />
                       }
-                      backTitle={'Select Student'}
+                      topLabel={startTime ? 'Start Time*' : undefined}
+                      config={{color: '#fff'}}
+                      onChangeVal={changeStartTime}
+                      data={startTimeRangeList}
+                      selectedIds={[]}
+                      label={startTime ? startTime : 'Start Time*'}
+                      backTitle={'Select Class Start Time'}
                     />
                   </View>
-                )}
-                <View style={{paddingHorizontal:16}}>
-                  <Text style={[styles.labelContent]}>
-                    Timezone: {userData.timezone}
-                  </Text>
-                </View>
-                {meetingPlatforms ? <View style={styles.formElement}>
-                  
-                  <CustomDropdown
-                 
-                    topLabel={taughtOn ? 'Taught On *' : undefined}
-                    config={{color: '#fff'}}
-                    onChangeVal={getMeetingPlatform}
-                    data={meetingPlatforms}
-                    selectedIds={[]}
-                    label={taughtOn ? taughtOn.value : 'Taught On'}
-                    backTitle={'Select Meeting Platform'}
-                  />
-                </View> : null }
-                <View style={styles.formElement}>
-                  <CustomDateTimePicker
-                  width={width-32}
-                  showDateTimePicker={showDateTimePicker}
-                  selectedValue={selectedDate}
-                  label = {'Select Date *'}
-                  minimumDate={new Date()}
-                  isVisible={isDateTimePickerVisible}
-                  mode="date"
-                  onConfirm={(selectedDate: any) => {
-                    handleDatePicked(selectedDate);
-                  }}
-                  onCancel={hideDateTimePicker}
-                  />
-               
-                  
-                </View>
 
-                <View style={styles.formElement}>
-                  {/* <Text style={styles.labelContent}>Start Time *</Text> */}
-                  <CustomDropdown
-                  customIcon = {<CustomImage height={24} width={24} uri={`${config.media_url}time.svg`} />}
-                    topLabel={startTime ? 'Start Time *' : undefined}
-                    config={{color: '#fff'}}
-                    onChangeVal={changeStartTime}
-                    data={startTimeRangeList}
-                    selectedIds={[]}
-                    label={startTime ? startTime : 'Start Time'}
-                    backTitle={'Select Class Start Time'}
-                  />
+                  <View style={styles.formElement}>
+                    {/* <Text style={styles.labelContent}>End Time *</Text> */}
+                    <CustomDropdown
+                      customIcon={
+                        <CustomImage
+                          height={24}
+                          width={24}
+                          uri={`${config.media_url}time.svg`}
+                        />
+                      }
+                      topLabel={endTime ? 'End Time*' : undefined}
+                      config={{color: '#fff'}}
+                      onChangeVal={changeEndTime}
+                      data={endTimeRangeList}
+                      selectedIds={[]}
+                      label={endTime ? endTime : 'End Time*'}
+                      backTitle={'Select Class End Time'}
+                    />
+                  </View>
                 </View>
-
-                <View style={styles.formElement}>
-                  {/* <Text style={styles.labelContent}>End Time *</Text> */}
-                  <CustomDropdown
-                  customIcon = {<CustomImage height={24} width={24} uri={`${config.media_url}time.svg`} />}
-                    topLabel={endTime ? 'End Time *' : undefined}
-                    config={{color: '#fff'}}
-                    onChangeVal={changeEndTime}
-                    data={endTimeRangeList}
-                    selectedIds={[]}
-                    label={endTime ? endTime : 'End Time'}
-                    backTitle={'Select Class End Time'}
-                  />
-                </View>
-                
-              </View>
-              <View
+                <View
                   style={[StyleCSS.styles.lineStyleLight, {marginTop: 12}]}
                 />
-                <View
-                  style={[
-                   StyleCSS.styles.modalButton
-                  ]}>
+                <View style={[StyleCSS.styles.modalButton]}>
                   <TouchableOpacity
-                    style={{
-                      padding: 12,
-                      // paddingTop: 18,
-                      // paddingBottom: 18,
-                      backgroundColor: '#fff',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 8,
-                      width: '49%',
-                      zIndex: 1,
-                      borderColor: secondaryColorBorder,
-                      borderWidth:1,
-                      marginRight: '3%',
-                    }}
+                    style={StyleCSS.styles.cancelButton}
                     onPress={() => {
                       // navigation.goBack()
                       setShowAddSessionModal(false);
                     }}>
-                    <Text
-                      style={{
-                        color: secondaryColor,
-                        textAlign: 'center',
-                        fontWeight: '700',
-                        fontFamily: Helper.switchFont('bold'),
-                        fontSize: 14,
-                        lineHeight: 18,
-                      }}>
-                      Cancel
-                    </Text>
+                    <Text style={StyleCSS.styles.cancelButtonText}>Cancel</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={{
-                      padding: 12,
-                      // paddingTop: 18,
-                      // paddingBottom: 18,
-                      backgroundColor: brandColor,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 8,
-                      width: '48%',
-                      zIndex: 1,
-                    }}
-                    onPress={doCreateSession}>
-                    <Text
-                      style={{
-                        color: '#fff',
-                        textAlign: 'center',
-                        fontWeight: '700',
-                        fontFamily: Helper.switchFont('medium'),
-                        fontSize: 14,
-                        lineHeight: 18,
-                      }}>
-                      Add
-                    </Text>
-                  </TouchableOpacity>
+                  {editClassData ? (
+                    <TouchableOpacity
+                      style={StyleCSS.styles.submitButton}
+                      onPress={editClass}>
+                      <Text style={StyleCSS.styles.submitButtonText}>
+                        Submit
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      disabled={userData.user_type === 'S' && showError}
+                      style={[
+                        StyleCSS.styles.submitButton,
+                        {
+                          backgroundColor:
+                            userData.user_type === 'S' && showError
+                              ? '#ccc'
+                              : brandColor,
+                        },
+                      ]}
+                      onPress={doCreateSession}>
+                      <Text style={StyleCSS.styles.submitButtonText}>Add</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
-                </View>
-
+              </View>
             </KeyboardAwareScrollView>
           </View>
-       )}
+        )}
         {/* <AppMessage
           status={appStatus}
           statusMessage={appStatusMessage}
@@ -704,7 +1043,7 @@ Alert.alert('', 'Something went wrong')
 
 const styles = StyleSheet.create({
   container: {
-    overflow:'scroll',
+    overflow: 'scroll',
     flex: 1,
     backgroundColor: '#ffffff',
   },
@@ -715,14 +1054,14 @@ const styles = StyleSheet.create({
   },
   input: {
     paddingVertical: 12,
-                      paddingHorizontal: 16,
-                      flexDirection: 'row',
-                      flex: 1,
-                      justifyContent:'space-between',
-                      alignItems:'center',
-                      borderWidth: 1,
-                      borderColor: dropdownBorder,
-                      borderRadius: 8
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: dropdownBorder,
+    borderRadius: 8,
   },
   dropdown: {
     color: '#81878D',
@@ -755,7 +1094,7 @@ const styles = StyleSheet.create({
     color: font2,
     fontWeight: '500',
     marginBottom: 12,
-    marginTop:-4,
+    marginTop: -4,
     fontStyle: 'italic',
   },
 });

@@ -4,7 +4,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
+  // Image,
   StyleSheet,
   FlatList,
   TextInput,
@@ -30,7 +30,6 @@ import {
 } from '../../reducers/courses.slice';
 import {useScrollToTop} from '@react-navigation/native';
 import {OutlinedTextField} from 'react-native-material-textfield';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {ScrollView} from 'native-base';
 import helper from '../../utils/helperMethods';
 import {
@@ -52,7 +51,6 @@ import HeaderInner from '../../components/HeaderInner';
 // import Search from '../../assets/images/search.svg';
 // import Flag from '../../assets/images/flag.svg';
 // import Dot from '../../assets/images/dot.svg';
-import LineDashed from '../../assets/images/line.svg';
 import {
   font1,
   font2,
@@ -70,7 +68,6 @@ import {
   secondaryColor,
 } from '../../styles/colors';
 import SheetCSS from '../../styles/style';
-import DropDownPicker from 'react-native-dropdown-picker';
 //@ts-ignore
 import {Bubbles} from 'react-native-loader';
 import Drop from '../../assets/images/more_reviews.svg';
@@ -79,6 +76,8 @@ import BottomNavigation from '../../components/BottomNavigation';
 import LoginNavigation from '../../components/LoginNavigation';
 import StyleCSS from '../../styles/style';
 import CustomImage from '../../components/CustomImage';
+import LineDashed from '../../components/LineDashed';
+import CustomStatusBar from '../../components/CustomStatusBar';
 type Props = NativeStackScreenProps<RootParamList, 'FindCourses'>;
 const {width, height} = Dimensions.get('screen');
 
@@ -97,10 +96,10 @@ export interface FindCoursesInterfaceFinal {
   offset: number;
 }
 
-export interface CategoryInterface {
-  page: string;
-  nationality: string;
-}
+// export interface CategoryInterface {
+
+//   nationality: string;
+// }
 
 export const Loader = () => {
   return (
@@ -219,14 +218,14 @@ export default function FindCourse({navigation, route}: Props) {
   //   }
   // }, []);
 
-  useEffect(() => {
-    const category_data: CategoryInterface = {
-      page: 'home',
-      nationality: '',
-    };
+  // useEffect(() => {
+  //   const category_data: CategoryInterface = {
+  //     page: 'home',
+  //     nationality: '',
+  //   };
 
-    dispatch(getCategories(category_data));
-  }, []);
+  //   dispatch(getCategories(category_data));
+  // }, []);
 
   useEffect(() => {
     // if(!isLoggedIn){
@@ -284,6 +283,7 @@ export default function FindCourse({navigation, route}: Props) {
     offset,
   ]);
 
+  console.log(courseData);
   // useEffect(() => {
   //   // if(!isLoggedIn){
   //   dispatch(setLoading(true));
@@ -416,6 +416,32 @@ export default function FindCourse({navigation, route}: Props) {
     }
     return str;
   };
+
+const getCategorySlug=(propCourse: any)=>{
+  let category_slug;
+    if (
+      propCourse &&
+      propCourse.second_sub_category_detail &&
+      propCourse.second_sub_category_detail.seo_slug_url
+    ) {
+      category_slug = propCourse.second_sub_category_detail.seo_slug_url;
+    } else if (
+      propCourse &&
+      propCourse.sub_category_detail &&
+      propCourse.sub_category_detail.seo_slug_url
+    ) {
+      category_slug = propCourse.sub_category_detail.seo_slug_url;
+    } else if (
+      propCourse &&
+      propCourse.sub_category_detail &&
+      propCourse.category_detail.seo_slug_url
+    ) {
+      category_slug = propCourse.category_detail.seo_slug_url;
+    }
+
+    return category_slug;
+}
+
   const loadCourse = (course: any, index: number) => {
     return (
       <>
@@ -527,9 +553,11 @@ export default function FindCourse({navigation, route}: Props) {
         </View> */}
         <TouchableOpacity
           onPress={() => {
-            dispatch(setPageLoading(true));
+            // dispatch(setPageLoading(true));
             navigation.navigate('CourseDetail', {
-              course: course
+              course_slug: course.seo.seo_slug_url,
+              category_slug: getCategorySlug(course),
+              teacher_slug: course.user.seo_slug_url
             });
           }}
           style={[styles.courseWrapper, StyleCSS.styles.shadow]}>
@@ -538,10 +566,11 @@ export default function FindCourse({navigation, route}: Props) {
               height: 180,
               width: '100%',
             }}>
-            <Image
-              defaultSource={require('@images/default_course_img.png')}
+
+            <CustomImage
+              // defaultSource={require('@images/default_course_img.png')}
               style={styles.courseImage}
-              source={{uri: course.course_image}}
+              uri={course.course_image}
             />
           </View>
           {/* <View
@@ -666,12 +695,7 @@ export default function FindCourse({navigation, route}: Props) {
               {marginHorizontal: 16},
             ]}></View> */}
           <View style={{marginHorizontal: 16}}>
-            <DashedLine
-              dashLength={5}
-              dashThickness={1}
-              dashGap={5}
-              dashColor={lineColor}
-            />
+            <LineDashed/>
           </View>
 
           <View style={{padding: 16}}>
@@ -714,12 +738,7 @@ export default function FindCourse({navigation, route}: Props) {
           </View>
 
           <View style={{marginHorizontal: 16}}>
-            <DashedLine
-              dashLength={5}
-              dashThickness={1}
-              dashGap={5}
-              dashColor={lineColor}
-            />
+            <LineDashed/>
           </View>
           {/* <View
             style={[
@@ -774,6 +793,7 @@ export default function FindCourse({navigation, route}: Props) {
   return (
     <>
       {pageLoading && <PageLoader />}
+      <CustomStatusBar />
       <HeaderInner
         titleSize={titleSize}
         titleTop={titleTop}
@@ -793,15 +813,15 @@ export default function FindCourse({navigation, route}: Props) {
           <>
             <View style={styles.safecontainer}>
               <View style={styles.filterBox}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{flexDirection: 'row', alignItems: 'center',width:'73%'}}>
                   <View style={styles.searchIcon}>
                 <CustomImage  height={24} width={24} uri={`${config.media_url}search.svg`}></CustomImage>
                 </View>
                   {/* <Search style={styles.searchIcon} /> */}
                   <TextInput
                     style={styles.input}
-                    autoFocus={true}
-                    placeholder="Search Courses"
+                    // autoFocus={true}
+                    placeholder={`Search from ${courseData.extra_data.count.total_count} Courses`}
                     value={searchText}
                     enablesReturnKeyAutomatically={true}
                     keyboardAppearance='default'
@@ -820,7 +840,8 @@ export default function FindCourse({navigation, route}: Props) {
                     SheetCSS.styles.alignCenter,
                     styles.filterButton,
                   ]}>
-                  <Filter />
+                    <CustomImage  height={24} width={24} uri={`${config.media_url}filter.svg`}></CustomImage>
+                  {/* <Filter /> */}
                   <Text style={styles.filter}>Filter</Text>
                 </TouchableOpacity>
                 {/* <TouchableOpacity
@@ -875,9 +896,11 @@ export default function FindCourse({navigation, route}: Props) {
               ) : (
                 <View
                   style={{
-                    paddingBottom: 460,
+                    // borderWidth:2,
+                    // height:'100%',
+                    // paddingBottom: 460,
                     backgroundColor: background4,
-                    paddingTop: Platform.OS === 'android' ? 28 : 32,
+                    paddingTop: Platform.OS === 'android' ? 26 : 32,
                   }}>
                   <FlatList
                     data={coursesArray}
@@ -916,7 +939,7 @@ const styles = StyleSheet.create({
   main: {
     backgroundColor: background4,
     // paddingHorizontal: 16,
-    marginTop: 120,
+    marginTop: Platform.OS==='ios' ?  120 : 116,
     // borderWidth:3
   },
   courseWrapper: {
@@ -1027,7 +1050,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     shadowColor: 'rgba(40, 47, 54)',
     shadowOffset: {
       width: 0,
@@ -1094,7 +1117,7 @@ const styles = StyleSheet.create({
   },
   filterButton: {
     justifyContent:'flex-end',
-    paddingRight:16,
+    paddingHorizontal:16,
     // borderWidth:1,
     marginVertical: 10,
     borderLeftWidth: 1,
@@ -1154,7 +1177,9 @@ const styles = StyleSheet.create({
   safecontainer: {
     backgroundColor: background4,
     zIndex: -1,
-
+// borderWidth:1,
+height:'100%',
+paddingBottom:Platform.OS==='ios' ? 66 : 48
     // marginTop: 105,
   },
   loader: {
@@ -1164,7 +1189,7 @@ const styles = StyleSheet.create({
   input: {
     color: font1,
     margin: 0,
-    width: '52%',
+    width: '80%',
     fontSize: 14,
     height: 48,
     backgroundColor: 'rgb(255, 255, 255)',

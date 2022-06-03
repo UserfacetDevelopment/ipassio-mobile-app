@@ -59,32 +59,36 @@ export default function Filters({navigation, route}: Props) {
   const [tabState, setTabState] = useState<'C' | 'SC' | 'L'>('C');
   const [courseLevels, setCourseLevels] = useState([]);
   const [levelTemp, setLevelTemp] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(selectedCategories);
   //extra state to store the categories according to master field
-const [categoryMaster, setCategoryMaster] = useState([]);
-const [categoryNonmaster, setCategoryNonMaster] = useState([]);
+  const [categoryMaster, setCategoryMaster] = useState([]);
+  const [categoryNonmaster, setCategoryNonMaster] = useState([]);
   
   let [catTemp, setCatTemp] = useState([]);
-  const [subCategories, setSubcategories] = useState([]);
-  const levels =
-    categoryData && categoryData.status === 'success' && categoryData.extra_data
-      ? categoryData.extra_data
-      : undefined;
+  const [subCategories, setSubcategories] = useState(selectedSubcategories)
+  const levels = categoryData && categoryData.status === 'success' && categoryData.extra_data
+        ? categoryData.extra_data
+        : undefined;
   const [others, setOthers] = useState(false);
-  const [secSubCategories, setSecSubCategories] = useState([]);
+  const [secSubCategories, setSecSubCategories] = useState(selectedSecsubcategories);
   const {loading} = useSelector(loaderState);
-const [all, setAll] = useState(false);
-const [temp, setTemp] = useState([])
+  const [all, setAll] = useState(false);
+  const [temp, setTemp] = useState([])
+const [testState, setTestState] = useState(selectedCategories);
 
-useEffect(()=>{
-setCategories(selectedCategories);
-setSubcategories(selectedSecsubcategories);
-setSecSubCategories(selectedSecsubcategories)
-setLevelTemp(selectedLevels)
+console.log(testState);
+// useEffect(()=>{
+//   const date= new Date();
+//   console.log("checked", date.getHours()+':' +date.getMinutes()+":"+ date.getSeconds());
+//   console.log(selectedCategories)
+// setCategories(testState);
+// setSubcategories(selectedSecsubcategories);
+// setSecSubCategories(selectedSecsubcategories)
+// setLevelTemp(selectedLevels)
 
-},[])
+// },[selectedCategories, selectedSubcategories, selectedSecsubcategories])
 
-console.log(selectedCategories)
+// console.log(selectedCategories)
 console.log(secSubCategories,selectedSecsubcategories);
 console.log(categories, selectedCategories);
 console.log(subCategories ,selectedSubcategories);
@@ -127,7 +131,6 @@ console.log(levelTemp, selectedLevels);
         });
     }
 
-console.log(categoryData)
 
     let temp = [...subCategories];
     if (temp.includes(category.seo.seo_slug_url)) {
@@ -172,7 +175,6 @@ handleSecSubcategories(ct)
     dispatch(getLookups())
     .unwrap()
     .then((res) => {
-      console.log(res)
       if (res.data.status === 'success') {
         setCourseLevels(res.data.data.course_levels);
       }
@@ -210,7 +212,9 @@ handleSecSubcategories(ct)
         {categoryData && categoryData.status === 'success' ? (
           <>
           {categoryMaster.map((cd: any) => {
+             console.log(categories);
             return (
+             
               <TouchableOpacity
                 onPress={() => {
                   handleCategories(cd);
@@ -232,11 +236,14 @@ handleSecSubcategories(ct)
             );
           })}
           <TouchableOpacity
+          hitSlop={{top:20, bottom:20, right:20, left:20}}
           style={{flexDirection: 'row', paddingVertical:8, alignItems:'center'}}
           onPress={() => setOthers(!others)}>
-          <View style={styles.dropBackground}>
+          {others ? <View style={styles.dropBackground}>
             <CustomImage height={16} width={16} uri={`${config.media_url}dropdown.svg`}></CustomImage>
-          </View>
+          </View> : <View style={[styles.dropBackground, {backgroundColor:'#fff'}]}>
+            <CustomImage height={16} width={16} uri={`${config.media_url}dropdown.svg`}></CustomImage>
+          </View>}
           
           <Text style={styles.textColor}>{others ? 'Hide' : 'Others'}</Text>
           {/* {loading ? (
@@ -415,26 +422,26 @@ handleSecSubcategories(ct)
   };
 
   //calling the categories api 
-  useEffect(() => {
-      dispatch(setLoading(true));
-    const category_data: CategoryInterface = {
-      page: '',
-      nationality: '',
-    };
+//   useEffect(() => {
+//       dispatch(setLoading(true));
+//     const category_data: CategoryInterface = {
+//       page: '',
+//       nationality: '',
+//     };
 
-    dispatch(getCategories(category_data))
-.unwrap()
-    .then(()=> {dispatch(setLoading(false))
-        console.log(temp);
-        setCatTemp([]);
-      })
-    .catch(()=> dispatch(setLoading(false)))
+//     dispatch(getCategories(category_data))
+// .unwrap()
+//     .then(()=> {dispatch(setLoading(false))
+//         setCatTemp([]);
+//       })
+//     .catch(()=> dispatch(setLoading(false)))
 
-  }, []);
+//   }, []);
 
 //if others is false that means only master categories are being shown, then we can show category array according to hide and others.
 
 useEffect(()=>{
+  if(categoryData){
   for(let i=0; i<categoryData.data.length; i++){
     if(categoryData.data[i].is_master){
       temp.push(categoryData.data[i].seo.seo_slug_url);
@@ -443,14 +450,8 @@ useEffect(()=>{
     else{
       categoryNonmaster.push(categoryData.data[i]);
     }
-  }
-}, [])
-
-
-console.log(categoryMaster);
-console.log(categoryNonmaster);
-
-console.log(temp)
+  }}
+}, [categoryData])
 
 
 // useEffect(()=>{
@@ -487,40 +488,38 @@ console.log(temp)
 
 
 //updating the categories and the subcategories if the user chooses to hide the categories.
-useEffect(()=>{
-  let categoryTemp=[];
-let tempCatTemp: Array<any> = [];
-  if(!others){
-    setCatTemp([])
-    // if(categories.length>0){
-      for(let i=0; i<categories.length; i++){
-        for(let j=0; j<categoryMaster.length; j++){
-            if(categoryMaster[j].seo.seo_slug_url === categories[i]){
-              // console.log(categoryMaster[j])
-              // tempCatTemp.push(categoryMaster[j])
-              // console.log(tempCatTemp)
-                catTemp.push(categoryMaster[j]); 
-                // console.log('cateTemp', catTemp)
-                categoryTemp.push(categoryMaster[j].seo.seo_slug_url)
-            }
-        }
-    }
+// useEffect(()=>{
+//   let categoryTemp=[];
+// let tempCatTemp: Array<any> = [];
+//   if(!others){
+//     setCatTemp([])
+//     // if(categories.length>0){
+//       for(let i=0; i<categories.length; i++){
+//         for(let j=0; j<categoryMaster.length; j++){
+//             if(categoryMaster[j].seo.seo_slug_url === categories[i]){
+//               // console.log(categoryMaster[j])
+//               // tempCatTemp.push(categoryMaster[j])
+//               // console.log(tempCatTemp)
+//                 catTemp.push(categoryMaster[j]); 
+//                 // console.log('cateTemp', catTemp)
+//                 categoryTemp.push(categoryMaster[j].seo.seo_slug_url)
+//             }
+//         }
+//     }
 
-    // // setCatTemp([tempCatTemp]);
-    // }
+//     // // setCatTemp([tempCatTemp]);
+//     // }
     
-      setCategories(categoryTemp);
-      console.log(tempCatTemp)
-      // until catTemp emmpty issue is resolved, till then keeping the below line to clear the selecetd categories also
-      setCategories([]);
-      // setCatTemp([tempCatTemp]);
+//       setCategories(categoryTemp);
+//       // until catTemp emmpty issue is resolved, till then keeping the below line to clear the selecetd categories also
+//       setCategories([]);
+//       // setCatTemp([tempCatTemp]);
 
-    categoryTemp=[];
-    setSubcategories([]);
-  }
-}, [others])
+//     categoryTemp=[];
+//     setSubcategories([]);
+//   }
+// }, [others])
 
-console.log(catTemp)
   const applyCategories = () => {
     dispatch(setSelectedCategories(categories));
     dispatch(setSelectedSubCategories(subCategories));
@@ -546,10 +545,11 @@ console.log(catTemp)
   const handleAll = () => {
       setAll(!all);
       setCategories([]);
-    setSubcategories([]);
-    setLevelTemp([]);
-    setSecSubCategories([]);
+      setSubcategories([]);
+      setLevelTemp([]);
+      setSecSubCategories([]);
   }
+
   return (
     <>
       <HeaderInner
@@ -561,80 +561,6 @@ console.log(catTemp)
         backroute={'FindCourses'}
         navigation={navigation}
       />
-      {/* <>
-        <Animated.View style={{zIndex: -1, top: 75}}>
-          <Image
-            style={{width: '100%'}}
-            source={require('@images/header_bg.png')}
-          />
-
-          <TouchableOpacity
-            onPress={() => setTabState('C')}
-            style={[
-              {
-                position: 'absolute',
-                top: 60,
-                paddingLeft: 16,
-                paddingBottom: 10,
-                width: '30%',
-              },
-              tabState === 'C' ? SheetCSS.styles.activeBorder : null,
-            ]}>
-            <Text
-              style={
-                tabState === 'C'
-                  ? SheetCSS.styles.tabTextActive
-                  : SheetCSS.styles.tabTextInactive
-              }>
-              Categories
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setTabState('SC')}
-            style={[
-              {
-                position: 'absolute',
-                top: 60,
-                left: '30%',
-                paddingLeft: 12,
-                paddingBottom: 10,
-                width: '40%',
-              },
-              tabState === 'SC' ? SheetCSS.styles.activeBorder : null,
-            ]}>
-            <Text
-              style={
-                tabState === 'SC'
-                  ? SheetCSS.styles.tabTextActive
-                  : SheetCSS.styles.tabTextInactive
-              }>
-              Sub Categories
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setTabState('L')}
-            style={[
-              {
-                position: 'absolute',
-                top: 60,
-                paddingLeft: 20,
-                paddingBottom: 10,
-                right: 0,
-                width: '30%',
-              },
-              tabState === 'L' ? SheetCSS.styles.activeBorder : null,
-            ]}>
-            <Text
-              style={
-                tabState === 'L'
-                  ? SheetCSS.styles.tabTextActive
-                  : SheetCSS.styles.tabTextInactive
-              }>
-              Levels
-            </Text>
-          </TouchableOpacity>
-        </Animated.View>
-      </> */}
 
       <View
         style={{

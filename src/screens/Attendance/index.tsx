@@ -27,7 +27,6 @@ import Modal from 'react-native-modal';
 import config from '../../config/Config';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {useAppDispatch} from '../../app/store';
-import PushNotification from 'react-native-push-notification';
 import {
   dashboardState,
   getAttendenceList,

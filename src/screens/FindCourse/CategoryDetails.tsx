@@ -4,12 +4,12 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
+  // Image,
   StyleSheet,
   FlatList,
   Dimensions,
   TextInputBase,
-  Linking
+  Linking,
 } from 'react-native';
 // import Geolocation from 'react-native-geolocation-service';
 import {
@@ -18,19 +18,20 @@ import {
   getCategories,
   getCategoryDetails,
   getCategoryCourseList,
+  getLookups
 } from '../../reducers/courses.slice';
 import LinearGradient from 'react-native-linear-gradient';
+import LineDashed from '../../components/LineDashed';
 // import FactDesign1 from '../../assets/images/fact1.svg';
 // import FactDesign2 from '../../assets/images/fact2.svg';
 // import IpassioDiff1 from '../../assets/images/ipassioDiff1.svg';
 // import IpassioDiff2 from '../../assets/images/ipassioDiff2.svg';
 // import IpassioDiff3 from '../../assets/images/ipassioDiff3.svg';
 // import IpassioDiff4 from '../../assets/images/ipassioDiff4.svg';
-import Dot from '../../assets/images/dot.svg';
+// import Dot from '../../assets/images/dot.svg';
 
 //@ts-ignore
 import {OutlinedTextField} from 'react-native-material-textfield';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {ScrollView} from 'native-base';
 import {
   brandColor,
@@ -80,15 +81,15 @@ import StyleCSS from '../../styles/style';
 import CustomDropdown from '../../components/CustomDropdown';
 import LoginNavigation from '../../components/LoginNavigation';
 import CustomImage from '../../components/CustomImage';
+import { Item } from 'react-native-paper/lib/typescript/components/List/List';
 
-const CourseCard = ({course} : any) => {
-
-  useEffect(()=>{
-  //   function get_url_extension( url ) {
-  //     return url.split(/[#?]/)[0].split('.').pop().trim();
-  // }
-  // console.log(course.course_image.split(/[#?]/)[0].split('.').pop().trim())
-  },)
+const CourseCard = ({course}: any) => {
+  useEffect(() => {
+    //   function get_url_extension( url ) {
+    //     return url.split(/[#?]/)[0].split('.').pop().trim();
+    // }
+    // console.log(course.course_image.split(/[#?]/)[0].split('.').pop().trim())
+  });
   const map = new Map();
   map.set('A', allLevels);
   map.set('I', intermediate);
@@ -96,25 +97,23 @@ const CourseCard = ({course} : any) => {
   map.set('B', beginner);
   map.set('S', superAdvanced);
 
-// console.log(course);
 
   const dispatch = useAppDispatch();
   const {isLoggedIn, userData, userLocation} = useSelector(userState);
   const navigation = useNavigation();
-  // console.log(course.course_image)
   return (
     <TouchableOpacity
       onPress={() => {
         dispatch(setPageLoading(true));
         navigation.navigate('CourseDetail', {
           course_slug: course.seo_slug_url,
+          category_slug: course.category_slug_url,
+          teacher_slug: course.teacher.seo_slug_url,
         });
       }}
       style={styles.courseWrapper}>
-        <CustomImage
-         style={styles.courseImage}
-         uri={course.course_image}/>
-        
+      <CustomImage style={styles.courseImage} uri={course.course_image} />
+
       {/* <Image
         defaultSource={require('@images/default_course_img.png')}
         style={styles.courseImage}
@@ -173,66 +172,70 @@ const CourseCard = ({course} : any) => {
         <Text style={styles.title}>{course.title}</Text>
         {/* <Text style={styles.authorName}>by {course.teacher_name}</Text> */}
         <View
-              style={{
-                marginTop: 8,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-              }}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                {course.course_level && course.course_level.map((level: any, i: number) => {
-                  return (
-                    <View
-                      style={{
+          style={{
+            marginTop: 8,
+            flexDirection: 'row',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            {course.course_level &&
+              course.course_level.map((level: any, i: number) => {
+                return (
+                  <View
+                    style={
+                      {
                         // backgroundColor: map.get(level.code),
                         // borderRadius: 43,
-                      }}>
-                      {i > 0 ? (
-                        <Text style={styles.cardDetail}>, {level.name}</Text>
-                      ) : (
-                        <Text style={styles.cardDetail}>{level.name}</Text>
-                      )}
-                    </View>
-                  );
-                })}
-              </View>
-             
-             {/* <Dot/> */}
-             {/* <View></View> */}
-              {course.rating.total_count > 0 ? (
-                <>
-                 <CustomImage height={5} width={5} uri={`${config.media_url}dot.svg`}/>
+                      }
+                    }>
+                    {i > 0 ? (
+                      <Text style={styles.cardDetail}>, {level.name}</Text>
+                    ) : (
+                      <Text style={styles.cardDetail}>{level.name}</Text>
+                    )}
+                  </View>
+                );
+              })}
+          </View>
 
+          {/* <Dot/> */}
+          {/* <View></View> */}
+          {course.rating.total_count > 0 ? (
+                <View style={{alignItems: 'center', flexDirection: 'row'}}>
+                  <View style={{marginHorizontal: 12}}>
+              <CustomImage  height={5} width={5} uri={`${config.media_url}dot.svg`}></CustomImage>
+
+              </View>
                   <View style={styles.courseRating}>
                     <Rating
                       ratingColor={secondaryColor}
                       type="custom"
                       tintColor="#fff"
-                      ratingBackgroundColor='#c8c7c8'
+                      ratingBackgroundColor="#c8c7c8"
                       startingValue={course.rating.avg_review}
                       readonly
                       ratingCount={5}
                       imageSize={16}
                       fractions={10}
                     />
-                    <View style={{flexDirection:'row', alignItems:'center'}}>
-                  <Text style={styles.courseRatingCount}>
-                    {course.rating.total_count} reviews{' '}
-                  </Text>
-                  <View>
-                    <Drop/>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Text style={styles.courseRatingCount}>
+                        {course.rating.total_count} reviews{' '}
+                      </Text>
+                      <View>
+                        <Drop />
+                      </View>
+                    </View>
                   </View>
-                  </View>
-                  
                 </View>
-                </>
               ) : null}
-              {/* {course.rating.total_count > 0 ? (
+          
+          {/* {course.rating.total_count > 0 ? (
                 
               ) : null} */}
-            </View>
-            
+        </View>
+
         {/* <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           {course.experience ? (
             <Text style={styles.authorName}>
@@ -263,88 +266,82 @@ const CourseCard = ({course} : any) => {
           ) : null}
         </View> */}
       </View>
-      <View
-        style={[style.styles.lineStyleDashed, {marginHorizontal: 16}]}></View>
-        <View style={{padding: 16}}>
+      <View style={{marginHorizontal: 16}}>
+        <LineDashed />
+      </View>
+      <View style={{padding: 16}}>
         <Text style={styles.authorName}>{course.teacher_name}</Text>
-        <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              {course.experience ? (
-                <Text style={styles.experience}>
-                  {course.experience} years experience
-                </Text>
-              ) : null}
-            </View>
-      {course.teacher_spotlight !== '' ? (
-        <>
-          <View
-            style={[
-              {
-                
-                // paddingVertical: 8,
-                // flexDirection: 'row',
-                // alignItems: 'center',
-              },
-            ]}>
-            {/* <Flag /> */}
-            <Text
-              style={{
-                // marginLeft: 8,
-                fontSize: 12,
-                color: font2,
-                lineHeight: 20,
-              }}>
-              {course.teacher_spotlight}
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          {course.experience ? (
+            <Text style={styles.experience}>
+              {course.experience} years experience
             </Text>
-          </View>
-          
-        </>
-      ) : null}
-</View>
-<View
-            style={[
-              style.styles.lineStyleDashed,
-              {marginHorizontal: 16},
-            ]}></View>
+          ) : null}
+        </View>
+        {course.teacher_spotlight !== '' ? (
+          <>
+            <View
+              style={[
+                {
+                  // paddingVertical: 8,
+                  // flexDirection: 'row',
+                  // alignItems: 'center',
+                },
+              ]}>
+              {/* <Flag /> */}
+              <Text
+                style={{
+                  // marginLeft: 8,
+                  fontSize: 12,
+                  color: font2,
+                  lineHeight: 20,
+                }}>
+                {course.teacher_spotlight}
+              </Text>
+            </View>
+          </>
+        ) : null}
+      </View>
+      <View style={{marginHorizontal: 16}}>
+        <LineDashed />
+      </View>
       <View
         style={[
           styles.padding16,
           style.styles.flexDirRow,
           style.styles.alignCenter,
         ]}>
-        <View style={{flexDirection:'row', alignItems:'center'}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text style={styles.priceText}>
-      {!isLoggedIn
-        ? userLocation?.data?.country === 'IN'
-          ? course.teacher.ip_country === 'India'
-            ? `Rs ${course.pricing[0].INR}`
-            : `US $${course.pricing[0].USD}`
-          : `US $${course.pricing[0].USD}`
-        : userData?.ip_country === 'India'
-        ? course.teacher.ip_country === 'India'
-          ? `Rs ${course.pricing[0].INR}`
-          : `US $${course.pricing[0].USD}`
-        : `US $${course.pricing[0].USD}`}
-
-      
-    </Text>
-    <Text style={styles.perSession}>
-                {/* {course.class_duration ? (
+            {!isLoggedIn
+              ? userLocation?.data?.country === 'IN'
+                ? course.teacher.ip_country === 'India'
+                  ? `Rs ${course.pricing[0].INR}`
+                  : `US $${course.pricing[0].USD}`
+                : `US $${course.pricing[0].USD}`
+              : userData?.ip_country === 'India'
+              ? course.teacher.ip_country === 'India'
+                ? `Rs ${course.pricing[0].INR}`
+                : `US $${course.pricing[0].USD}`
+              : `US $${course.pricing[0].USD}`}
+          </Text>
+          <Text style={styles.perSession}>
+            {/* {course.class_duration ? (
                   <Text>{course.class_duration} min</Text>
                 ) : null}{' '} */}{' '}
-                per
-                {/* {course.pricing[0].members === '1'
+            per
+            {/* {course.pricing[0].members === '1'
                   ? '1-on-1'
                   : course.pricing[0].members}{' '}
                 session */}{' '}
-                class
-                {course.class_duration ? (
-                  <Text> | {course.class_duration} minutes</Text>
-                ) : null}
-                {/* {course.classes_per_week ? (
+            class
+            {course.class_duration ? (
+              <Text> | {course.class_duration} minutes</Text>
+            ) : null}
+            {/* {course.classes_per_week ? (
                   <Text>, {course.classes_per_week} per week</Text>
                 ) : null} */}
-              </Text>
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -379,20 +376,20 @@ export default function CategoryDetails({navigation, route}: Props) {
   //     ? categoryCourseList.data.data
   //     : null;
 
-  const [courses, setCourses] = useState<any>(null)
-const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
-  // console.log(courses);
+  const [courses, setCourses] = useState<any>(null);
+  const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
   const [studentTestimonial, setStudentTestimonial] = useState<boolean>(false);
   const [filter, setFilter] = useState<any>({value: 'Filter By', label: ''});
   const [sortBy, setSortBy] = useState<any>({value: 'Sort By', label: ''});
   const [offset, setOffset] = useState<number>(0);
-
+const [courseLevels, setCourseLevels] = useState(null);
+const [filterList, setFilterList] = useState([]);
   const sortList = [
-    {value: 'Experience', label: 'experience'},
-    {value: 'Price Low', label: 'price_low'},
-    {value: 'Price High', label: 'price_high'},
-    {value: 'Price Low(USD)', label: 'usd_price_low'},
-    {value: 'Price High(USD)', label: 'usd_price_high'},
+    {value: "Teacher's Experience", label: 'experience'},
+    {value: 'Price : Low to High', label: 'price_low'},
+    {value: 'Price : High to Low', label: 'price_high'},
+    {value: 'Price : Low to High(USD)', label: 'usd_price_low'},
+    {value: 'Price : High to Low(USD)', label: 'usd_price_high'},
     {value: 'Popularity', label: 'popularity'},
   ];
 
@@ -410,17 +407,14 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
     };
     dispatch(getCategoryDetails(data))
       .then(res => {
-        console.log(res);
         dispatch(setPageLoading(false));
       })
       .catch(() => {
         dispatch(setPageLoading(false));
       });
-
-    
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     let data: any = {
       category_slug: category_slug,
       filter: filter.label,
@@ -428,25 +422,21 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
       offset: offset,
     };
     dispatch(getCategoryCourseList(data))
-    .unwrap()
+      .unwrap()
       .then(res => {
-        if(res.data.status === 'success'){
-          if(offset === 0 ){
+        if (res.data.status === 'success') {
+          if (offset === 0) {
             setCourses(res.data.data);
-          }
-          else{
+          } else {
             setLoadingMoreCourses(false);
-            setCourses([...courses, ...res.data.data])
+            setCourses([...courses, ...res.data.data]);
           }
         }
-        
-        
       })
       .catch(() => {
         setLoadingMoreCourses(false);
-       
       });
-  },[filter, sortBy, offset])
+  }, [filter, sortBy, offset]);
 
   const handleOffset = () => {
     if (categoryCourseList.data.extra_data.course_count > offset + 10) {
@@ -498,14 +488,29 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
 
   // console.log(categoryDetails);
 
-  const filterList = [
-    {value: 'All Levels', label: 'A'},
-    {value: 'Super Advanced', label: 'S'},
-    {value: 'Professional', label: 'P'},
-    {value: 'Intermediate', label: 'I'},
-    {value: 'Beginner', label: 'B'},
-    {value: 'None', label: ''},
-  ];
+  useEffect(() => {
+    dispatch(getLookups())
+      .unwrap()
+      .then(res => {
+        if (res.data.status === 'success') {
+          setCourseLevels(res.data.data.course_levels);
+          res.data.data.course_levels.map((item: any) => filterList.push({value:item.name, label:item.code}));
+
+          filterList.push({value: 'None', label: ''})
+          }
+      });
+  }, []);
+
+
+  //make dynamic
+  // const filterList = [
+  //   {value: 'All Levels', label: 'A'},
+  //   {value: 'Beginner', label: 'B'},
+  //   {value: 'Intermediate', label: 'I'},
+  //   {value: 'Professional', label: 'P'},
+  //   {value: 'Super Advanced', label: 'S'},
+  //   {value: 'None', label: ''},
+  // ];
 
   const getFilter = (data: any) => {
     setOffset(0);
@@ -527,8 +532,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                 type={'findCourse'}
                 back={true}
                 navigation={navigation}
-                backroute={route.params?.backroute}
-                ></HeaderInner>
+                backroute={route.params?.backroute}></HeaderInner>
               <ScrollView
                 style={{marginTop: config.headerHeight}}
                 contentInsetAdjustmentBehavior="always">
@@ -542,114 +546,105 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     }}
                     source={{uri: category.cover_picture}}
                   /> */}
+                  
                   <CustomImage
-                  height={'200'}
-                  width={'100%'}
-
-                  uri={category.cover_picture}/>
-
+                    // height={500}
+                    width={400}
+                    style={{height:200, width:'100%', marginTop:16}}
+                    uri={category.cover_picture}
+                  />
                   <View style={styles.main}>
                     <View>
-                      <Text style={[styles.category_heading, {marginTop: 200}]}>
+                      <Text style={[styles.category_heading]}>
                         {category.cover_picture_title}
                       </Text>
                       <Text style={styles.category_desc}>
                         {category.cover_picture_description}
                       </Text>
                     </View>
-                    
-                {category.todays_facts ?<View style={[styles.todaysFactWrapper]}>
-                      <View
-                        style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          opacity: 0.6,
-                        }}>
-                        <CustomImage height={175} width={175} uri={`${config.media_url}fact1.svg`}/>
 
-                      </View>
-                      <View
-                        style={{
-                          position: 'absolute',
-                          bottom: 0,
-                          right: 0,
-                          opacity: 0.6,
-                        }}>
-                        <CustomImage height={175} width={175} uri={`${config.media_url}fact2.svg`}/>
-
-                      </View>
-                      <View style={styles.factHeader}>
-                        <Text style={styles.factHeaderText}>Today's Fact</Text>
-                        {/* <TouchableOpacity style={styles.shareWrapper}>
+                    {category.todays_facts && category.todays_facts.text? (
+                      <View style={[styles.todaysFactWrapper]}>
+                        <View
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            opacity: 0.6,
+                          }}>
+                          <CustomImage
+                            height={175}
+                            width={175}
+                            uri={`${config.media_url}fact1.svg`}
+                          />
+                        </View>
+                        <View
+                          style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            right: 0,
+                            opacity: 0.6,
+                          }}>
+                          <CustomImage
+                            height={175}
+                            width={175}
+                            uri={`${config.media_url}fact2.svg`}
+                          />
+                        </View>
+                        <View style={styles.factHeader}>
+                          <Text style={styles.factHeaderText}>
+                            Today's Fact
+                          </Text>
+                          {/* <TouchableOpacity style={styles.shareWrapper}>
                         <CustomImage height={24} width={24} uri={`${config.media_url}share.svg`}/>
 
                           
                           <Text style={styles.shareText}>Share</Text>
                         </TouchableOpacity> */}
-                      </View>
+                        </View>
 
-                      <Text style={styles.factDesc}>
-                      {category.todays_facts}
-                      </Text>
-                    </View>: null}
-                    <Text style={styles.subHead}>
-                      Why ipassio is different?
-                    </Text>
-                  </View>
-                  <View style={styles.differentIpassio}>
-                    <View style={styles.ipassioItems}>
-                      <View style={styles.ipassioDifferentImg}>
-                      <CustomImage height={40} width={40} uri={`${config.media_url}ipassioDiff1.svg`}/>
-                      {/* <CustomImage height={24} width={24} uri={`${config.media_url}share.svg`}/> */}
+                        <Text style={styles.factDesc}>
+                          {category.todays_facts.text}
+                        </Text>
+                        <Text style={[styles.factDesc, {color:font2, marginTop:5, fontSize:12}]}>
+                          {category.todays_facts.citation}
+                        </Text>
+                      </View>
+                    ) : null}
+                   <View style={{marginTop:24}}>
+                    {categoryDetails.data.data.ipassio_usp_title ? <Text style={[styles.subHead, {marginBottom:16}]}>
+                     {categoryDetails.data.data.ipassio_usp_title}
+                    </Text>:null}
+                    </View>
+                    {categoryDetails.data.data.ipassio_usps ? 
+categoryDetails.data.data.ipassio_usps.map((usps: any)=>{
+  return(
+    <>
+  <View style={styles.ipassioItems}>
+    <View style={styles.ipassioDifferentImg}>
+      <CustomImage
+        height={40}
+        width={40}
+        uri={usps.icon}
+      />
+      {/* <CustomImage height={24} width={24} uri={`${config.media_url}share.svg`}/> */}
 
-                        {/* <IpassioDiff1 /> */}
-                      </View>
-                      <Text style={styles.ipassioDifferentText}>
-                        Award-winning teachers who are masters of their craft
-                      </Text>
-                    </View>
-                    <View style={styles.lineStyleWhite} />
-                    <View style={styles.ipassioItems}>
-                      <View style={styles.ipassioDifferentImg}>
-                      <CustomImage height={40} width={40} uri={`${config.media_url}ipassioDiff2.svg`}/>
-                      </View>
-                      <Text style={styles.ipassioDifferentText}>
-                        Personalized teaching to level up the learner
-                      </Text>
-                    </View>
-                    <View style={styles.lineStyleWhite} />
-                    <View style={styles.ipassioItems}>
-                      <View style={styles.ipassioDifferentImg}>
-                      <CustomImage height={40} width={40} uri={`${config.media_url}ipassioDiff3.svg`}/>
-                      </View>
-                      <Text style={styles.ipassioDifferentText}>
-                        Interactive 1:1 sessions with learner getting undivided
-                        attention{' '}
-                      </Text>
-                    </View>
-                    <View style={styles.lineStyleWhite} />
-                    <View style={styles.ipassioItems}>
-                      <View style={styles.ipassioDifferentImg}>
-                      <CustomImage height={40} width={40} uri={`${config.media_url}ipassioDiff4.svg`}/>
-                      </View>
-                      <Text style={styles.ipassioDifferentText}>
-                        System driven mechanisms to continuously drive learners
-                        towards their goals
-                      </Text>
-                    </View>
-                    <View style={styles.lineStyleWhite} />
-                    <View style={styles.ipassioItems}>
-                      <View style={styles.ipassioDifferentImg}>
-                      <CustomImage height={40} width={40} uri={`${config.media_url}ipassioDiff3.svg`}/>
+      {/* <IpassioDiff1 /> */}
+    </View>
+    <Text style={styles.ipassioDifferentText}>
+     {usps.text}
+    </Text>
+  </View>
+   <View style={styles.lineStyleWhite} />
+   </>)
+})
 
-                      </View>
-                      <Text style={styles.ipassioDifferentText}>
-                        Pay as you go - 2 classes at a time
-                      </Text>
+
+                    :null}
                     </View>
-                    <View style={styles.lineStyleWhite} />
-                  </View>
+                  
+                  
+                    
 
                   <View style={styles.main}>
                     <Text style={styles.subHead}>
@@ -663,8 +658,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                         ratingColor={secondaryColor}
                         type="custom"
                         tintColor="#fff"
-                      ratingBackgroundColor='#c8c7c8'
-                       
+                        ratingBackgroundColor="#c8c7c8"
                         startingValue={rating.avg_review}
                         readonly
                         ratingCount={5}
@@ -689,7 +683,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                           topLabel={
                             filter.label !== '' ? 'Filter By' : undefined
                           }
-                          config={{color: font1}}
+                          config={{color: '#fff'}}
                           onChangeVal={getFilter}
                           data={filterList}
                           selectedIds={[]}
@@ -717,12 +711,14 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                   </View>
                   <View style={styles.cardBackground}>
                     <FlatList
-                    data={courses}
-                    renderItem={({item, index}) => <CourseCard course={item} />}
-                    keyExtractor={item => item.id}
-                    onEndReachedThreshold={0.5}
-                  onEndReached={handleOffset}
-                  />
+                      data={courses}
+                      renderItem={({item, index}) => (
+                        <CourseCard course={item} />
+                      )}
+                      keyExtractor={item => item.id}
+                      onEndReachedThreshold={0.5}
+                      onEndReached={handleOffset}
+                    />
                     {/* {course.map((course: any, i: number) => {
                       return (
                         <CourseCard key={i + ' ' + course.id} course={course} />
@@ -754,7 +750,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                   studentTestimonial={studentTestimonial}
                   setStudentTestimonial={setStudentTestimonial}
                 /> */}
-                 {/* WILL BE ADDED LATER */}
+                {/* WILL BE ADDED LATER */}
                 {/* <HowItWorks />
                 <View style={[styles.main, {backgroundColor:background5}]}>
                   <Text style={styles.section_title}> You May Also Like</Text>
@@ -777,8 +773,8 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                   })}
                 </View>
                 <Queries /> */}
-                
-                 {/* WILL BE ADDED LATER */}
+
+                {/* WILL BE ADDED LATER */}
 
                 {/* <View style={[styles.main,{backgroundColor:background5}]}>
                   <Text style={styles.section_title}>
@@ -829,7 +825,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     />
                   ) : null}
                 </View> */}
-                 {/* WILL BE ADDED LATER */}
+                {/* WILL BE ADDED LATER */}
                 {/* {category.faq.length > 0 ? (
                   <View style={styles.faq}>
                     <Text style={styles.faq_title}>FAQs</Text>
@@ -844,9 +840,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
                     })}
                   </View>
                 ) : null} */}
-                 {isLoggedIn ? null :
-      <View style={{marginBottom:40}}/>
-}
+                {isLoggedIn ? null : <View style={{marginBottom: 40}} />}
               </ScrollView>
             </>
           )}
@@ -858,9 +852,7 @@ const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
           setStudentTestimonial={setStudentTestimonial}
         />
       )}
-      {isLoggedIn ? null :
-      <LoginNavigation navigation={navigation}/>
-}
+      {isLoggedIn ? null : <LoginNavigation navigation={navigation} />}
     </>
   );
 }
@@ -876,7 +868,6 @@ const styles = StyleSheet.create({
   },
   whiteBg: {
     backgroundColor: '#fff',
-
   },
   courseSummary: {
     backgroundColor: '#2d3744',
@@ -891,8 +882,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: helper.switchFont('medium'),
     color: font1,
-    lineHeight:32,
-    fontWeight:'600'
+    lineHeight: 32,
+    fontWeight: '600',
   },
   courseItemWrapper: {
     paddingVertical: 32,
@@ -1234,7 +1225,12 @@ const styles = StyleSheet.create({
     color: font1,
   },
 
-  cardDetail: {color: font1, fontSize: 13, fontWeight: '500', lineHeight:16.38},
+  cardDetail: {
+    color: font1,
+    fontSize: 13,
+    fontWeight: '500',
+    lineHeight: 16.38,
+  },
   textSmall: {
     fontSize: 12,
     color: font1,
@@ -1319,7 +1315,7 @@ const styles = StyleSheet.create({
     color: font1,
     fontSize: 14,
     // marginTop: 12,
-    fontWeight:'600'
+    fontWeight: '600',
   },
   experience: {
     color: font2,
@@ -1356,7 +1352,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     lineHeight: 24,
-    color:font1,
+    color: font1,
   },
   // input: {
   //   color: font1,
@@ -1441,19 +1437,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: font1,
     fontWeight: '600',
-    lineHeight: 20,
   },
   perSession: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '400',
     color: font1,
-    lineHeight: 21.28,
   },
   courseRatingCount: {
     marginLeft: 8,
-    fontWeight:'400',
-    fontSize:13,
-    lineHeight:16.38,
+    fontWeight: '400',
+    fontSize: 13,
+    lineHeight: 16.38,
   },
   category_heading: {
     color: font1,
@@ -1475,7 +1469,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   todaysFactWrapper: {
-    marginVertical: 24,
+    marginTop: 24,
     backgroundColor: '#rgba(236, 164, 55, 0.2)',
     borderRadius: 8,
     padding: 24,

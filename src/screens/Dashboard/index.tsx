@@ -17,6 +17,7 @@ import {
 import {useSelector} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import Moment from 'moment';
+import 'moment-timezone';
 import {userState} from '../../reducers/user.slice';
 import {setLoading, setPageLoading} from '../../reducers/loader.slice';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -56,7 +57,7 @@ import HeaderInner from '../../components/HeaderInner';
 // import Certificate from '../../assets/images/certificate.svg';
 // @ts-ignore
 import Download from '../../assets/images/download.svg';
-import RNFetchBlob from 'rn-fetch-blob';
+// import RNFetchBlob from 'rn-fetch-blob';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 
 // import DropdownArrow from '../../assets/images/dropdown.svg';
@@ -134,9 +135,9 @@ const CardData = ({data, navigation}: any) => {
           navigation.navigate('ActionStatus', {
             //  navigator:'DashboardNav',
             messageStatus: 'success',
-            messageTitle: 'Congratulations!',
+             messageTitle: 'Success!',
             messageDesc: response.data.error_message.message,
-            timeOut: 4000,
+            timeOut: 7000,
             //backRoute: 'DrawerStudent',
             backRoute: 'DashboardPage', //till drawer student is not implemented
           });
@@ -145,7 +146,7 @@ const CardData = ({data, navigation}: any) => {
             // navigator:'UserNavigator',
             messageStatus: 'failure',
             messageTitle: 'Sorry!',
-            timeOut: 4000,
+            timeOut: 7000,
             messageDesc: response.data.error_message.message,
             //backRoute: 'DrawerStudent',
             backRoute: 'DashboardPage', //till drawer student is not implemented
@@ -163,121 +164,102 @@ const CardData = ({data, navigation}: any) => {
     return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
   };
 
-  const downloadFile = () => {
-    // Get today's date to add the time suffix in filename
-    let date = new Date();
-    // File URL which we want to download
-    let FILE_URL = fileUrl;
-    // Function to get extention of the file url
-    let file_ext = getFileExtention(FILE_URL);
+  // const downloadFile = () => {
+  //   // Get today's date to add the time suffix in filename
+  //   let date = new Date();
+  //   // File URL which we want to download
+  //   let FILE_URL = fileUrl;
+  //   // Function to get extention of the file url
+  //   let file_ext = getFileExtention(FILE_URL);
 
-    file_ext = '.' + file_ext[0];
+  //   file_ext = '.' + file_ext[0];
 
-    // config: To get response by passing the downloading related options
-    // fs: Root directory path to download
-    const {config, fs} = RNFetchBlob;
-    let RootDir =Platform.OS==='ios' ? fs.dirs.DocumentDir : fs.dirs.DownloadDir;
-console.log(RootDir);
-    const options = Platform.OS === 'ios' ? {fileCache: true,
-      path: `${RootDir}/${file_ext}`,
-      appendExt: file_ext,} :
-      {
-        fileCache: true,
-      addAndroidDownloads: {
-        path:
-          RootDir +
-          '/file_' +
-          Math.floor(date.getTime() + date.getSeconds() / 2) +
-          file_ext,
-        description: 'downloading file...',
-        notification: true,
-        // useDownloadManager works with Android only
-        useDownloadManager: true,
-      },
-      };
+  //   // config: To get response by passing the downloading related options
+  //   // fs: Root directory path to download
+  //   const {config, fs} = RNFetchBlob;
+  //   let RootDir =Platform.OS==='ios' ? fs.dirs.DocumentDir : fs.dirs.DownloadDir;
 
-    const configOptions = Platform.select({
-      ios: {
-        fileCache: true,
-        path: `${RootDir}/${file_ext}`,
-        appendExt: file_ext,
-      },
-      android : {
-        fileCache: true,
-      addAndroidDownloads: {
-        path:
-          RootDir +
-          '/file_' +
-          Math.floor(date.getTime() + date.getSeconds() / 2) +
-          file_ext,
-        description: 'downloading file...',
-        notification: true,
-        // useDownloadManager works with Android only
-        useDownloadManager: true,
-      },
-      }
-    });
+  //   const options = Platform.OS === 'ios' ? {fileCache: true,
+  //     path: `${RootDir}/${file_ext}`,
+  //     appendExt: file_ext,} :
+  //     {
+  //       fileCache: true,
+  //     addAndroidDownloads: {
+  //       path:
+  //         RootDir +
+  //         '/file_' +
+  //         Math.floor(date.getTime() + date.getSeconds() / 2) +
+  //         file_ext,
+  //       description: 'downloading file...',
+  //       notification: true,
+  //       // useDownloadManager works with Android only
+  //       useDownloadManager: true,
+  //     },
+  //     };
 
-    // let options = {
-    //   fileCache: true,
-    //   addAndroidDownloads: {
-    //     path:
-    //       RootDir +
-    //       '/file_' +
-    //       Math.floor(date.getTime() + date.getSeconds() / 2) +
-    //       file_ext,
-    //     description: 'downloading file...',
-    //     notification: true,
-    //     // useDownloadManager works with Android only
-    //     useDownloadManager: true,
-    //   },
-    // };
-    config(options)
-      .fetch('GET', FILE_URL)
-      .then(res => {
-        // Alert after successful downloading
-        console.log(res);
-        Alert.alert('File Downloaded Successfully.');
-      });
-  };
+  //   const configOptions = Platform.select({
+  //     ios: {
+  //       fileCache: true,
+  //       path: `${RootDir}/${file_ext}`,
+  //       appendExt: file_ext,
+  //     },
+  //     android : {
+  //       fileCache: true,
+  //     addAndroidDownloads: {
+  //       path:
+  //         RootDir +
+  //         '/file_' +
+  //         Math.floor(date.getTime() + date.getSeconds() / 2) +
+  //         file_ext,
+  //       description: 'downloading file...',
+  //       notification: true,
+  //       // useDownloadManager works with Android only
+  //       useDownloadManager: true,
+  //     },
+  //     }
+  //   });
 
-  //   useEffect(()=>{
-  // if(fileUrl){
-  //   checkPermission();
-  // }
-  //   }, [fileUrl])
 
-  const checkPermission = async (fileURL: any) => {
-    setFileURL(fileURL);
-    // Function to check the platform
-    // If Platform is Android then check for permissions.
+  //   config(options)
+  //     .fetch('GET', FILE_URL)
+  //     .then(res => {
+  //       // Alert after successful downloading
+  //       console.log(res);
+  //       Alert.alert('File Downloaded Successfully.');
+  //     });
+  // };
 
-    if (Platform.OS === 'ios') {
-      downloadFile();
-    } else {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'Storage Permission Required',
-            message:
-              'Application needs access to your storage to download File',
-          },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          // Start downloading
-          downloadFile();
-          console.log('Storage Permission Granted.');
-        } else {
-          // If permission denied then show alert
-          Alert.alert('Error', 'Storage Permission Not Granted');
-        }
-      } catch (err) {
-        // To handle permission related exception
-        console.log('++++' + err);
-      }
-    }
-  };
+  // const checkPermission = async (fileURL: any) => {
+  //   setFileURL(fileURL);
+  //   // Function to check the platform
+  //   // If Platform is Android then check for permissions.
+
+  //   if (Platform.OS === 'ios') {
+  //     downloadFile();
+  //   } else {
+  //     try {
+  //       const granted = await PermissionsAndroid.request(
+  //         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+  //         {
+  //           title: 'Storage Permission Required',
+  //           message:
+  //             'Application needs access to your storage to download File',
+  //         },
+  //       );
+  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //         // Start downloading
+  //         downloadFile();
+  //         console.log('Storage Permission Granted.');
+  //       } else {
+  //         // If permission denied then show alert
+  //         Alert.alert('Error', 'Storage Permission Not Granted');
+  //       }
+  //     } catch (err) {
+  //       // To handle permission related exception
+  //       console.log('++++' + err);
+  //     }
+  //   }
+  // };
 
   return (
     <>
@@ -540,7 +522,7 @@ export default function Dashboard({navigation}: Props) {
 
   useEffect(() => {
     getDefaultDashboard();
-  }, []);
+  }, [userData]);
 
   const getDefaultDashboard = () => {
     if (userData.user_type === 'T') {
@@ -552,6 +534,9 @@ export default function Dashboard({navigation}: Props) {
       dispatch(getEnrolledStudents(userData.token));
     } else if (userData.user_type === 'S') {
       dispatch(getEnrolledCourses(userData.token));
+      // .unwrap()
+      // .then(res=> console.log(res));
+      ;
     }
   };
 
@@ -669,6 +654,7 @@ useEffect(()=>{
         }
         else if(response.data.status==='failure'){
           dispatch(setPageLoading(false));
+          console.log(response.data.error_message.message)
       Alert.alert('', response.data.error_message.message, [
         {text: 'Okay', style: 'cancel'},
       ]);
@@ -1068,7 +1054,7 @@ useEffect(()=>{
 
   return (
     <>
-      {/* <CustomStatusBar /> */}
+      <CustomStatusBar />
       {/* <Loader isLoading={isLoadingTop} /> */}
       
         <HeaderInner
@@ -1598,7 +1584,7 @@ fontWeight:'700',
     padding: 10,
   },
   colorBlack: {
-    color: 'rgb(44, 54, 65)',
+    color: font1,
   },
   refillButton: {
     borderRadius: 8,

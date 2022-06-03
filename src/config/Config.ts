@@ -1,14 +1,14 @@
 import {Platform, Alert, PermissionsAndroid, Linking} from 'react-native';
-import country_region_data from './country_region.json';
 
 export default class Config {
   static env = 'prod';
   static version = Platform.OS === 'ios' ? '2.0.4' : '2.0.2';
   static build_number = Platform.OS === 'ios' ? 14 : 28;
-  // static version = Platform.OS === "ios" ? "1.0.13" : "1.0.28";
-  // static build_number = Platform.OS === "ios" ? 14 : 28;
+ 
   static headerHeight= Platform.OS === 'android' ? 86 : 90;
+
   static FrontendBaseURL = 'https://ipassio.com/student-signup';
+
   static GOOGLE_ID = '938249328963-o6gf6eao638mh7h1kl1p4sj1qd4jfrjd.apps.googleusercontent.com'
     //'142571675590-ujj8t4901kejoiddm2a1qop3ivekfisn.apps.googleusercontent.com';
   static BaseURL =
@@ -25,54 +25,14 @@ export default class Config {
       : 'https://play.google.com/store/apps/details?id=com.ipassio.apps';
 
   static media_url = 'https://media.ipassio.com/mobile_app/';
-  static api_urls = {
-    login: 'account/login?format=json',
-    social_login: 'account/google-login?format=json',
-    forgot_password: 'account/forgot-password-otp?format=json',
-    logout: 'account/logout?format=json',
-    chat_users: 'chat/chat-userlist?format=json&call_by=URL',
-    chat_messages: 'chat/chat-detail?ur_tk=',
-    user_location: 'https://ipinfo.io/?token=ad519179ea355a',
-    auth_token: 'get-authorization?_format=json',
-    fbase_token: 'fbase-token?_format=json',
-    user_profile: 'user?_format=json',
-    check_username: 'check-username?_format=json',
-    reset_password: 'account/verify-account?format=json',
-    resend_otp: 'account/send-otp?format=json',
-
-    student: {
-      enrolled_courses_dashboard: 'courses/course-list-detail?format=json',
-      enrolled_courses: 'attendance/enrolled-course-student?format=json',
-      enrolled_courseList: 'courses/course-list-detail?format=json',
-      generate_certificate: 'courses/request-certificate?format=json',
-      add_session: 'attendance/course-class?format=json',
-      add_to_cart: 'checkoutcourses/refil-course?course_token=',
-      add_to_cart_update: 'checkoutcourses/checkout-course?format=json',
-      apply_coupon: 'coupon/apply-coupon?format=json',
-      payment_summary: 'checkoutcourses/payment-summary?format=json',
-      my_cart: 'api/my-cart?_format=json',
-      cart_to_view: 'api/cart-to-review?_format=json',
-    },
-    teacher: {
-      created_courses: 'courses/?format=json&user_token=',
-      enrolled_students: 'checkoutcourses/enrolled-student-list?format=json',
-      withdraw_request: 'withdrawal/withdrawlist?format=json',
-      enrolled_course_studentList:
-        'attendance/enrolled-course-student?format=json',
-      add_session: 'attendance/course-class?format=json',
-    },
-    admin: {
-      list_users: '',
-    },
-    mark_attendance: 'attendance/',
-  };
+  
   static messages = {
     forgot_password_msg: 'We have sent further instructions to your email.',
     common_error: 'Something went wrong! Please try again!',
     withdraw_warn: 'Are you sure you want to proceed?',
     coupon_empty: 'Please enter coupon code.',
     coupon_remove_warn: 'Are you sure you want to remove coupon?',
-    common_error_missing_fields: 'Please fill up mandatory fields.',
+    common_error_missing_fields: 'Fill in all the required fields. ',
     no_certificate: 'Certificate is not available!',
     download_error: 'Download failed. Please try again later!',
     denied_permission: 'Download failed as you denied permission.',
@@ -100,6 +60,4 @@ export default class Config {
   };
 
   static chat_file_types_allowed = 'jpg, jpeg, gif, png'; //txt, doc, xls, pdf, ppt, pps, odt, ods, odp, docx, pptx, xlsx, mp3, mp4, ogg, avi, mkv
-
-  static country_listing = country_region_data;
 }

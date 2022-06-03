@@ -9,6 +9,8 @@ import React, {useEffect} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
 import {StyleSheet, useColorScheme, Alert} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 
 import {
   Colors,
@@ -35,7 +37,7 @@ import VersionCheck from 'react-native-version-check';
 import {BackHandler} from 'react-native';
 import {Linking} from 'react-native';
 import { brandColor, dropdownBorder, font1, font2, font3, lineColor, lineColor2, secondaryColor } from './src/styles/colors';
-import PushController from './src/utils/PushController'
+// import PushController from './src/utils/PushController'
 import { setFCMToken } from './src/reducers/user.slice';
 import SplashScreen from 'react-native-splash-screen'
 
@@ -68,20 +70,26 @@ setCustomText(customTextProps);
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const Stack = createNativeStackNavigator();
-  
   // const [userDataLoaded, setUserDataLoaded] = useState(false);
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+     
+      // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+
+    return unsubscribe;
+  }, []);
   
   //   const latestVersion = await VersionCheck.getLatestVersion();
   // const currentVersion = VersionCheck.getCurrentVersion()
 
   useEffect(() => {
     
-    //checkUpdateNeeded();
+    checkUpdateNeeded();
     SplashScreen.hide();
   },[]);
 
@@ -90,7 +98,7 @@ const App = () => {
 
   const checkUpdateNeeded = async () => {
     let updateNeeded = await VersionCheck.needUpdate();
-    console.warn(updateNeeded)
+    console.log(updateNeeded)
     if (updateNeeded.isNeeded) {
       //Alert the user and direct to the app url
       Alert.alert(
@@ -116,6 +124,7 @@ const App = () => {
           <RootNavigator />
         </NativeBaseProvider>
       </PaperProvider>
+      <Toast />
     </Provider>
   );
 };

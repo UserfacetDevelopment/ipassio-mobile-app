@@ -26,6 +26,7 @@ import NoData from '../../components/NoData';
 import {Bubbles} from 'react-native-loader';
 //import HeaderInner from "@components/Elements/HeaderInner.js";
 import Moment from 'moment';
+import 'moment-timezone';
 import {RootParamList} from '../../navigation/Navigators';
 import {useSelector} from 'react-redux';
 import {userState} from '../../reducers/user.slice';
@@ -237,9 +238,9 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
         if (response.data.status == 'success') {
           navigation.navigate('ActionStatus', {
             messageStatus: 'success',
-            messageTitle: 'Congratulations!',
+            messageTitle: 'Success!',
             messageDesc: response.data.error_message.message,
-            timeOut: 4000,
+            timeOut: 7000,
             backRoute: 'Withdraw',
           });
           getWithdrawList();
@@ -249,7 +250,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
             messageStatus: 'failure',
             messageTitle: 'Sorry!',
             messageDesc: response.data.error_message.message,
-            timeOut: 4000,
+            timeOut: 7000,
             backRoute: 'Withdraw',
           });
         }
@@ -258,10 +259,10 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
         // this.setState({ isLoadingPost: false });
 
         navigation.navigate('ActionStatus', {
-          messageStatus: '',
+          messageStatus: 'failure',
           messageTitle: 'Sorry!',
           messageDesc: config.messages.common_error,
-          timeOut: 4000,
+          timeOut: 7000,
           backRoute: 'Withdraw',
         });
       });

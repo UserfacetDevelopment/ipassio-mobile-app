@@ -9,14 +9,13 @@ import {
   Dimensions,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
-import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import CustomDropdown from './CustomDropdown';
 import Moment from 'moment';
-import timezones from '../assets/json/timezones.json';
+import 'moment-timezone';
+import timezoneList from '../assets/json/timezones.json';
 import Helper from '../utils/helperMethods';
 // import Add from '../assets/images/Add.svg';
-
 import {
   background,
   background2,
@@ -33,6 +32,7 @@ import {userState} from '../reducers/user.slice';
 import CustomDateTimePicker from './CustomDateTimePicker';
 import CustomImage from './CustomImage';
 import Config from '../config/Config';
+
 const width = Dimensions.get('screen').width;
 
 export default function CustomForm({
@@ -53,9 +53,10 @@ export default function CustomForm({
   const [endTimeRangeList, setEndTimeRangeList] = useState<Array<any>>([]);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
-  const [selectedTimezone, setSelectedTimezone] = useState('');
+  const [selectedTimezone, setSelectedTimezone] = useState<any>('');
   const [submitRequested, setSubmitRequested] = useState<boolean>(false);
   const {isLoggedIn, userData, userLocation} = useSelector(userState);
+const [timezones,setTimezones] = useState<any>(null)
 
   const showDateTimePicker = () => {
     Keyboard.dismiss();
@@ -191,7 +192,8 @@ export default function CustomForm({
     let tz = isLoggedIn
       ? {label: userData.timezone, value: userData.timezone}
       : {label: userLocation.data.timezone, value: userLocation.data.timezone};
-    setSelectedTimezone(tz);
+      setTimezones(timezoneList);
+      setSelectedTimezone(timezoneList.filter((timezone: any) => timezone.value===tz.value)[0]) 
     timeSlots[index].timezone = isLoggedIn
       ? userData.timezone
       : userLocation.data.timezone;
@@ -222,16 +224,11 @@ export default function CustomForm({
 
   return (
     <>
-      <View
-        style={{
-          backgroundColor: background6,
-          borderRadius: 15,
-          padding: 16,
-          marginBottom: 8,
-        }}>
-        <View style={[{flexDirection:'row', justifyContent:'space-between'}]}>
+      <View style={styles.formWrapper}>
+        <View style={[{flexDirection: 'row', justifyContent: 'space-between'}]}>
           <CustomDateTimePicker
-            width={width/1.54 - 70}
+            width={width -64}
+            config={{color: background6}}
             showDateTimePicker={showDateTimePicker}
             selectedValue={selectedDate}
             label={'Date*'}
@@ -243,24 +240,11 @@ export default function CustomForm({
             }}
             onCancel={hideDateTimePicker}
           />
-          <View style={{width:'40%'}}>
-            <View >
-          <CustomDropdown
-            topLabel={selectedTimezone ? 'Timezone' : undefined}
-            config={{color: background6}}
-            onChangeVal={getTimezone}
-            data={timezones}
-            selectedIds={[]}
-            label={selectedTimezone ? selectedTimezone.value : 'Timezone'}
-            backTitle={'Select Timezone'}
-          />
-          {selectedTimezone === undefined && submitRequested ? (
-            <Text style={styles.errorText}>Required *</Text>
-          ) : null}
+          <View style={{width: '40%'}}>
+            <View></View>
           </View>
         </View>
-        </View>
-          {/* <TouchableOpacity
+        {/* <TouchableOpacity
             onPress={() => {
               showDateTimePicker();
             }}>
@@ -282,48 +266,58 @@ export default function CustomForm({
               onCancel={hideDateTimePicker}
             />
           </TouchableOpacity> */}
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginTop: 12,
-            }}>
-            <View style={{width: '48%'}}>
-              <CustomDropdown
-                topLabel={startTime ? 'From' : undefined}
-                config={{color: background6}}
-                onChangeVal={changeStartTime}
-                data={startTimeRangeList}
-                selectedIds={[]}
-                label={startTime ? startTime : 'From'}
-                backTitle={'Select Class Start Time'}
-              />
-            </View>
-
-            <View style={{width: '48%'}}>
-              <CustomDropdown
-                topLabel={endTime ? 'To' : undefined}
-                config={{color: background6}}
-                onChangeVal={changeEndTime}
-                data={endTimeRangeList}
-                selectedIds={[]}
-                label={endTime ? endTime : 'To'}
-                backTitle={'Select Class End Time'}
-              />
-            </View>
+        <View style={styles.formRow}>
+          <View style={{width: '48%'}}>
+            <CustomDropdown
+              topLabel={startTime ? 'From' : undefined}
+              config={{color: background6}}
+              onChangeVal={changeStartTime}
+              data={startTimeRangeList}
+              selectedIds={[]}
+              label={startTime ? startTime : 'From'}
+              backTitle={'Select Class Start Time'}
+            />
           </View>
-          {timeSlots.length > 1 ? (
+
+          <View style={{width: '48%'}}>
+            <CustomDropdown
+              topLabel={endTime ? 'To' : undefined}
+              config={{color: background6}}
+              onChangeVal={changeEndTime}
+              data={endTimeRangeList}
+              selectedIds={[]}
+              label={endTime ? endTime : 'To'}
+              backTitle={'Select Class End Time'}
+            />
+          </View>
+        </View>
+        {timezones ? <View style={{marginTop:16}}>
+          <View>
+            <CustomDropdown
+            timezone={true}
+              topLabel={selectedTimezone ? 'Timezone' : undefined}
+              config={{color: background6}}
+              onChangeVal={getTimezone}
+              data={timezones}
+              selectedIds={[]}
+              label={selectedTimezone ? selectedTimezone.label : 'Timezone'}
+              backTitle={'Select Timezone'}
+            />
+            {selectedTimezone === undefined && submitRequested ? (
+              <Text style={styles.errorText}>Required *</Text>
+            ) : null}
+          </View> 
+        </View>:null}
+        {timeSlots.length > 1 ? (
           <TouchableOpacity
             onPress={() => removeTimeSlot(index)}
-            style={{flexDirection: 'row', justifyContent: 'flex-end', paddingTop:8}}>
-            <Text style={{color: brandColor, fontSize: 14}}>Remove</Text>
+            style={styles.removeButton}>
+            <Text style={styles.removeButtonText}>Remove</Text>
           </TouchableOpacity>
         ) : null}
-        </View>
-        
-        
+      </View>
 
-        {/* <Controller
+      {/* <Controller
                       control={control}
                       name="time_info"
                       rules={{required: true}}
@@ -346,29 +340,15 @@ export default function CustomForm({
       {/* </View> */}
       {index === timeSlots.length - 1 && timeSlots.length < 4 ? (
         <TouchableOpacity
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            borderWidth: 1,
-            borderColor: secondaryColorBorder,
-            borderRadius: 58,
-            padding: 7,
-            width: '48%',
-            // marginTop: 8,
-          }}
+          style={styles.addMoreSlots}
           onPress={() => addMoreSlots(index)}>
-            <CustomImage height={20} width={20} uri={`${Config.media_url}add.svg`}/>
+          <CustomImage
+            height={20}
+            width={20}
+            uri={`${Config.media_url}add.svg`}
+          />
           {/* <Add /> */}
-          <Text
-            style={{
-              color: secondaryColor,
-              fontSize: 14,
-              fontWeight: '600',
-              marginLeft: 12,
-            }}>
-            Add More Slots
-          </Text>
+          <Text style={styles.addMoreSlotsText}>Add More Slots</Text>
         </TouchableOpacity>
       ) : null}
     </>
@@ -512,5 +492,45 @@ const styles = StyleSheet.create({
     borderWidth: 0.7,
     borderColor: font2,
     fontFamily: Helper.switchFont('regular'),
+  },
+  formWrapper: {
+    backgroundColor: background6,
+    borderRadius: 15,
+    padding: 16,
+    marginBottom: 8,
+  },
+  formRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  removeButton: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingTop: 8,
+  },
+  removeButtonText: {
+    color: brandColor,
+    fontSize: 14,
+    fontFamily: Helper.switchFont('medium'),
+    fontWeight: '500',
+  },
+  addMoreSlotsText: {
+    color: secondaryColor,
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 12,
+    fontFamily: Helper.switchFont('semibold'),
+  },
+  addMoreSlots: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    borderWidth: 1,
+    borderColor: secondaryColorBorder,
+    borderRadius: 58,
+    padding: 7,
+    width: '48%',
+    // marginTop: 8,
   },
 });

@@ -18,14 +18,14 @@ import {
 } from '../styles/colors';
 const {height, width} = Dimensions.get('screen');
 import Helper from '../utils/helperMethods';
-import { HelperText } from 'react-native-paper';
+import {HelperText} from 'react-native-paper';
 
 export default class StyleCSS {
   static styles = StyleSheet.create({
     mainTitle: {
       fontSize: 24,
-      color:font1,
-      fontWeight:'700',
+      color: font1,
+      fontWeight: '700',
       fontFamily: helper.switchFont('bold'),
     },
     flexDirRow: {
@@ -60,7 +60,7 @@ export default class StyleCSS {
       color: '#fff',
       fontWeight: '700',
       fontSize: 16,
-      textTransform:'capitalize'
+      textTransform: 'capitalize',
     },
     heading1: {
       fontSize: 36,
@@ -107,9 +107,9 @@ export default class StyleCSS {
       height: 48,
 
       fontFamily: helper.switchFont('medium'),
-      fontSize:14,
+      fontSize: 14,
       // lineHeight:20,
-      color:font1
+      color: font1,
     },
     lineStyleDashed: {
       borderRadius: 0.5,
@@ -173,163 +173,196 @@ export default class StyleCSS {
       borderRadius: 25,
       alignItems: 'center',
     },
-    profilePicActive:{ 
-      height:56, 
-      width:56, 
-      borderWidth:1.3, 
-      borderColor:brandColor, 
-      justifyContent:'center', 
-    alignItems:'center', 
-    borderRadius: 30
-  },
-  datePicker: {
-    width:'100%',
-     paddingVertical: 12,
-                       paddingHorizontal: 16,
-                       flexDirection: 'row',
-                       flex: 1,
-                       justifyContent:'space-between',
-                       alignItems:'center',
-                       borderWidth: 1,
-                       borderColor: dropdownBorder,
-                       borderRadius: 8
-   },
-   reviewTextArea: {
-    width: '100%',
-    height: 150,
-    color: font1,
-    fontSize: 14,
-    textAlignVertical: 'top',
-    borderRadius: 5,
-  },
-   //popup
-   modalBackground: {
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    height: '100%',
-  },
-  modalView: {
-position:'absolute',
-bottom:0,
-    alignSelf: 'flex-end',
-    backgroundColor: '#fff',
-    // marginTop:150,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    // padding: 16,
-    paddingTop:0,
-    //  top:252,
-    zIndex: 20,
-  },
-  modalLine:{alignSelf:'center', marginTop:8, borderRadius:5, borderColor: font2, borderWidth:1.5, width:56, opacity:0.3},
-  modalTitle:{fontWeight:'700', fontSize: 18, color: font1, marginVertical:12, marginHorizontal:16, fontFamily: Helper.switchFont('bold')},
-  modalButton: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingBottom: Platform.OS==='android' ? 16 :24,
-    paddingHorizontal:16,
-    paddingTop: 16,
-  },
-  modalTextarea:{
-    height: 158,
-    width: width - 32,
-    backgroundColor: 'rgb(255, 255, 255)',
-    borderRadius: 8,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: dropdownBorder,
-  },
+    profilePicActive: {
+      height: 56,
+      width: 56,
+      borderWidth: 1.3,
+      borderColor: brandColor,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 30,
+    },
+    datePicker: {
+      width: '100%',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      flexDirection: 'row',
+      flex: 1,
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: dropdownBorder,
+      borderRadius: 8,
+    },
+    reviewTextArea: {
+      width: '100%',
+      height: 150,
+      color: font1,
+      fontSize: 14,
+      textAlignVertical: 'top',
+      borderRadius: 5,
+    },
+    //popup
+    modalBackground: {
+      backgroundColor: 'rgba(0,0,0,0.3)',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+      height: '100%',
+    },
+    modalView: {
+      position: 'absolute',
+      bottom: 0,
+      alignSelf: 'flex-end',
+      backgroundColor: '#fff',
+      // marginTop:150,
+      borderTopLeftRadius: 15,
+      borderTopRightRadius: 15,
+      // padding: 16,
+      paddingTop: 0,
+      //  top:252,
+      zIndex: 20,
+    },
+    modalLine: {
+      alignSelf: 'center',
+      marginTop: 8,
+      borderRadius: 5,
+      borderColor: font2,
+      borderWidth: 1.5,
+      width: 56,
+      opacity: 0.3,
+    },
+    modalTitle: {
+      fontWeight: '700',
+      fontSize: 18,
+      color: font1,
+      marginVertical: 12,
+      marginHorizontal: 16,
+      fontFamily: Helper.switchFont('bold'),
+    },
+    modalButton: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      paddingBottom: Platform.OS === 'android' ? 16 : 24,
+      paddingHorizontal: 16,
+      paddingTop: 16,
+    },
+    modalTextarea: {
+      height: 158,
+      width: width - 32,
+      backgroundColor: 'rgb(255, 255, 255)',
+      borderRadius: 8,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: dropdownBorder,
+    },
 
-  submitButton:{
-    padding: 12,
-    // paddingTop: 18,
-    // paddingBottom: 18,
-    backgroundColor: brandColor,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 8,
-    width: '48%',
-    zIndex: 1,
-  },
-  submitButtonText:{
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: '700',
-    fontFamily: Helper.switchFont('medium'),
-    fontSize: 14,
-    lineHeight: 18,
-  },
-  cancelButton:{
-    padding: 12,
-    // paddingTop: 18,
-    // paddingBottom: 18,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 8,
-    width: '49%',
-    zIndex: 1,
-    borderColor: secondaryColorBorder,
-    borderWidth:1,
-    marginRight: '3%',
-  },
-  cancelButtonText:{
-    color: secondaryColor,
-    textAlign: 'center',
-    fontWeight: '700',
-    fontFamily: Helper.switchFont('bold'),
-    fontSize: 14,
-    lineHeight: 18,
-  },
-  contentText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: font1,
-    fontFamily: helper.switchFont('medium'),
-  },
-  labelText: {
-    fontSize: 14,
-    color: font2,
-    fontWeight:'500',
-    fontFamily: Helper.switchFont('medium'),
-  },
-  formFillTimeImage: {
-    height: '100%',
-    width: '100%',
-  },
-  formFillTimeTextWrapper: {
-    paddingLeft: 16,
-    position: 'absolute',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    height: 32,
-    width: '100%',
-    // top: 100,
-  },
-  formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
-  marginV16:{marginVertical: 16},
-  font12:{fontSize:12},
-  font14:{fontSize:14},
-  font16:{fontSize:16},
-  font18:{fontSize:18},
-  font24:{fontSize:24},
-  fdrCenter:{
-    flexDirection:'row',
-    alignItems:'center'
-  },
-  fw400:{
-    fontWeight:'400'
-  },
-  fw500:{
-    fontWeight:'500'
-  },
-  fw600:{
-    fontWeight:'600'
-  },
-  fw700:{
-    fontWeight:'700'
-  },
+    submitButton: {
+      padding: 12,
+      // paddingTop: 18,
+      // paddingBottom: 18,
+      backgroundColor: brandColor,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 8,
+      width: '48%',
+      zIndex: 1,
+    },
+    submitButtonText: {
+      color: '#fff',
+      textAlign: 'center',
+      fontWeight: '700',
+      fontFamily: Helper.switchFont('medium'),
+      fontSize: 14,
+      lineHeight: 18,
+    },
+    cancelButton: {
+      padding: 12,
+      // paddingTop: 18,
+      // paddingBottom: 18,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 8,
+      width: '49%',
+      zIndex: 1,
+      borderColor: secondaryColorBorder,
+      borderWidth: 1,
+      marginRight: '3%',
+    },
+    cancelButtonText: {
+      color: secondaryColor,
+      textAlign: 'center',
+      fontWeight: '700',
+      fontFamily: Helper.switchFont('bold'),
+      fontSize: 14,
+      lineHeight: 18,
+    },
+    errorText: {
+      color: 'rgb(255,0,0)',
+      fontFamily: Helper.switchFont('regular'),
+      fontSize: 12,
+      // marginBottom: 5,
+    },
+    contentText: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: font1,
+      fontFamily: helper.switchFont('medium'),
+    },
+    labelText: {
+      fontSize: 14,
+      color: font2,
+      fontWeight: '500',
+      fontFamily: Helper.switchFont('medium'),
+    },
+    formFillTimeImage: {
+      height: '100%',
+      width: '100%',
+    },
+    formFillTimeTextWrapper: {
+      paddingLeft: 16,
+      position: 'absolute',
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.2)',
+      height: 32,
+      width: '100%',
+      // top: 100,
+    },
+    formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
+    marginV16: {marginVertical: 16},
+    readMore: {
+      color: secondaryColor,
+    },
+    font12: {fontSize: 12},
+    font14: {fontSize: 14},
+    font16: {fontSize: 16},
+    font18: {fontSize: 18},
+    font24: {fontSize: 24},
+    fdrCenter: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    fw400: {
+      fontWeight: '400',
+    },
+    fw500: {
+      fontWeight: '500',
+    },
+    fw600: {
+      fontWeight: '600',
+    },
+    fw700: {
+      fontWeight: '700',
+    },
+    mt8: {
+      marginTop: 8,
+    },
+    mt5: {
+      marginTop: 5,
+    },
+    mt12:{
+      marginTop:12
+    }
   });
 }

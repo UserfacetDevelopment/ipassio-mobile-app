@@ -19,7 +19,8 @@ const initialState: any = {
   isLoggedIn: false,
   userLocation: {},
   locationStatus: null,
-  fcmToken: null
+  fcmToken: null,
+  navigation:null,
 };
 export const userSlice = createSlice({
   name: 'user',
@@ -35,6 +36,9 @@ export const userSlice = createSlice({
     },
     setFCMToken: (state, action: PayloadAction<any>)=>{
       state.fcmToken = action.payload;
+    },
+    setNavigation : (state, action:PayloadAction<any>) =>{
+      state.navigation = action.payload;
     }
   },
   extraReducers: builder => {
@@ -58,7 +62,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const {loginSuccess, logoutUser, setFCMToken} = userSlice.actions;
+export const {loginSuccess, logoutUser, setFCMToken, setNavigation} = userSlice.actions;
 
 export const userState = (state: RootState) => state.user;
 
@@ -69,23 +73,7 @@ export const doLogin = createAsyncThunk('doLogin', async (data: Login) => {
   return response.data; // (this is the actual data which will be returned as a payload).
 });
 
-// export const doLogin = (data, navigation) => dispatch => {
-//   ApiGateway.post(
-//     config.api_urls.login,
-//     data,
-//   )
-//     .then(response => {
-//       if (response?.data.status === 'success') {
-//         dispatch(loginSuccess(response.data));
-//         navigation.navigate('Dashboard');
-//       } else if (response.status === 'failure') {
-//         dispatch(loginFailure());
-//       }
-//     })
-//     .catch(error => {
-//       dispatch(loginFailure());
-//     });
-// };
+
 
 export const socialLogin = createAsyncThunk(
   'doSocialLogin',

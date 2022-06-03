@@ -1782,16 +1782,6 @@
   resolved "https://registry.npmjs.org/@react-native-google-signin/google-signin/-/google-signin-7.0.4.tgz"
   integrity sha512-N5uVDlTp/mgpa5gFr6VIr8pldt68jlmHOlqcTSnSwBuZXusXMiK53DCIOWuYk4OJ1rlb8Esa9J4FJwUB0psU9Q==
 
-"@react-native-picker/picker@^1.8.3":
-  version "1.16.8"
-  resolved "https://registry.npmjs.org/@react-native-picker/picker/-/picker-1.16.8.tgz"
-  integrity sha512-pacdQDX6V6EmjF+HoiIh6u++qx4mTK0WnhgUHRc01B+Qt5eoeUwseBqmqfTSXTx/aHDEd6PiIw7UGvKgFoqgFQ==
-
-"@react-native-picker/picker@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.4.0.tgz"
-  integrity sha512-duGZc3a8Qa21YPrA4U3oR9NAUzBA66FTjubGK2CodA6rNjiwN+xC32hOZ5unkf4qD3DqLWeoPjg3fYf54bVMjA==
-
 "@react-native/assets@1.0.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@react-native/assets/-/assets-1.0.0.tgz"
@@ -2483,11 +2473,6 @@
     "@types/react" "*"
     "@types/react-native" "*"
 
-"@types/react-native-push-notification@^8.1.0":
-  version "8.1.0"
-  resolved "https://registry.npmjs.org/@types/react-native-push-notification/-/react-native-push-notification-8.1.0.tgz"
-  integrity sha512-Pi6SuNa6p09h3603oWq74erIdVEqURC9AdNYcA3eawiDPC6C8neghISqNpJOhrQUu4RFcIa29LzdADbwvUQR8w==
-
 "@types/react-native-snap-carousel@^3.8.5":
   version "3.8.5"
   resolved "https://registry.npmjs.org/@types/react-native-snap-carousel/-/react-native-snap-carousel-3.8.5.tgz"
@@ -2498,7 +2483,7 @@
 
 "@types/react-native-video-player@^0.10.3":
   version "0.10.3"
-  resolved "https://registry.yarnpkg.com/@types/react-native-video-player/-/react-native-video-player-0.10.3.tgz#bedfa478eb69e5f1e513aa555c789bb5f0f8dec7"
+  resolved "https://registry.npmjs.org/@types/react-native-video-player/-/react-native-video-player-0.10.3.tgz"
   integrity sha512-7ME/pS1uKq+zu3jELgriweYJi83c6nZZvKojLRDvabOPuJNDC2AtQom8UwwRrbnZt9tRFpQcQ6DX9R7Hj+f3pw==
   dependencies:
     "@types/react" "*"
@@ -2507,7 +2492,7 @@
 
 "@types/react-native-video@*":
   version "5.0.13"
-  resolved "https://registry.yarnpkg.com/@types/react-native-video/-/react-native-video-5.0.13.tgz#4a6df3156c5d9ad4e3a37edb320199eaeb22ea20"
+  resolved "https://registry.npmjs.org/@types/react-native-video/-/react-native-video-5.0.13.tgz"
   integrity sha512-pXdF+uM5Kqmsx90eQzOArkz06QOzKQi8uekdcqD+KeNXuQfwJ6hiuGTiC46VcgxGdQVCKAa1AYMg6oUMPaygew==
   dependencies:
     "@types/react" "*"
@@ -3110,7 +3095,7 @@ balanced-match@^1.0.0:
   resolved "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-base-64@0.1.0, base-64@^0.1.0:
+base-64@^0.1.0:
   version "0.1.0"
   resolved "https://registry.npmjs.org/base-64/-/base-64-0.1.0.tgz"
   integrity sha1-eAqZyE59YAJgNhURxId2E78k9rs=
@@ -4712,18 +4697,6 @@ glob-parent@^5.1.2:
   integrity sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==
   dependencies:
     is-glob "^4.0.1"
-
-glob@7.0.6:
-  version "7.0.6"
-  resolved "https://registry.npmjs.org/glob/-/glob-7.0.6.tgz"
-  integrity sha1-IRuvr0nlJbjNkyYNFKsTYVKz9Xo=
-  dependencies:
-    fs.realpath "^1.0.0"
-    inflight "^1.0.4"
-    inherits "2"
-    minimatch "^3.0.2"
-    once "^1.3.0"
-    path-is-absolute "^1.0.0"
 
 glob@7.1.6:
   version "7.1.6"
@@ -6665,7 +6638,7 @@ modal-react-native-web@0.2.0:
 
 moment-timezone@^0.5.34:
   version "0.5.34"
-  resolved "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.34.tgz"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.34.tgz#a75938f7476b88f155d3504a9343f7519d9a405c"
   integrity sha512-3zAEHh2hKUs3EXLESx/wsgw6IQdusOT8Bxm3D9UrHPQR7zlMmzwybC8zHEM1tQ4LJwP7fcxrWr8tuBg05fFCbg==
   dependencies:
     moment ">= 2.9.0"
@@ -7551,16 +7524,6 @@ react-native-dashed-line@^1.1.0:
   resolved "https://registry.npmjs.org/react-native-dashed-line/-/react-native-dashed-line-1.1.0.tgz"
   integrity sha512-eO1YxTSYuE/1eaOO/mnV/DSQ45e7LQ690D6iv24Oyl9FcZFFiIIwoCurHnS+myJQvydppsshY1d0WwaQroNx/Q==
 
-react-native-dropdown-picker@^5.3.0:
-  version "5.3.0"
-  resolved "https://registry.npmjs.org/react-native-dropdown-picker/-/react-native-dropdown-picker-5.3.0.tgz"
-  integrity sha512-LUctVMAWiDir1X0WrFX1784psvqzBXRxRujYbvlvKz1Owa6cujrVN98rP356hIXFzX19E7SkbA942fGfMvoEWQ==
-
-react-native-encrypted-storage@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.npmjs.org/react-native-encrypted-storage/-/react-native-encrypted-storage-4.0.2.tgz"
-  integrity sha512-vneDkHGDuTvLQjUBztqb2YI8QoH1zxdJonPGTS+g57lfJZff9fAjoLSSb6NgMBebpXFcK3I3sEresGyL+3AArw==
-
 react-native-exception-handler@^2.10.10:
   version "2.10.10"
   resolved "https://registry.npmjs.org/react-native-exception-handler/-/react-native-exception-handler-2.10.10.tgz"
@@ -7717,10 +7680,10 @@ react-native-modal@^13.0.0:
     prop-types "^15.6.2"
     react-native-animatable "1.3.3"
 
-react-native-pager-view@^5.4.15:
-  version "5.4.15"
-  resolved "https://registry.npmjs.org/react-native-pager-view/-/react-native-pager-view-5.4.15.tgz"
-  integrity sha512-5NssD840wFCuOL4B1ZRiRADvt+Vx2Dgify4SmAUqHXCx03yiGPnRWmFjYXyQeK6gq/8VY+gPGE4bTy9ahzBbDw==
+react-native-pager-view@^5.4.23:
+  version "5.4.24"
+  resolved "https://registry.npmjs.org/react-native-pager-view/-/react-native-pager-view-5.4.24.tgz"
+  integrity sha512-dRMB7i3B+mu4NCeIN6gqbR/kC/rr2wzqO0gisXDdJwJr78G24sWoTNpLEDFo3G8TFHY9nTMutVl5CUvkN2dp6g==
 
 react-native-paper@^4.12.0:
   version "4.12.0"
@@ -7748,14 +7711,6 @@ react-native-phone-number-input@^2.1.0:
     google-libphonenumber "^3.2.10"
     react-native-country-picker-modal "^2.0.0"
 
-react-native-picker-select@^8.0.4:
-  version "8.0.4"
-  resolved "https://registry.npmjs.org/react-native-picker-select/-/react-native-picker-select-8.0.4.tgz"
-  integrity sha512-orBjPIwBkV5oipyVw263YNMI56f6Kj3p/ejabZoCYYNSG3AiLVVhC2RqsxMgDA7IayyURAW+AlV+mDJyVqLBkg==
-  dependencies:
-    "@react-native-picker/picker" "^1.8.3"
-    lodash.isequal "^4.5.0"
-
 react-native-pie@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/react-native-pie/-/react-native-pie-1.1.2.tgz"
@@ -7765,11 +7720,6 @@ react-native-popup-menu@^0.15.12:
   version "0.15.12"
   resolved "https://registry.npmjs.org/react-native-popup-menu/-/react-native-popup-menu-0.15.12.tgz"
   integrity sha512-33zMqHW+7rt5m2Bgg7xM8jy1guIdUCE8qJfznYYNRlIt4+fJX/rDcwmJIrkSGrvfhlhhEaG3otW6h25uFZLFfg==
-
-react-native-push-notification@^8.1.1:
-  version "8.1.1"
-  resolved "https://registry.npmjs.org/react-native-push-notification/-/react-native-push-notification-8.1.1.tgz"
-  integrity sha512-XpBtG/w+a6WXTxu6l1dNYyTiHnbgnvjoc3KxPTxYkaIABRmvuJZkFxqruyGvfCw7ELAlZEAJO+dthdTabCe1XA==
 
 react-native-ratings@^8.1.0:
   version "8.1.0"
@@ -7816,10 +7766,10 @@ react-native-responsive-screen@^1.4.2:
   resolved "https://registry.npmjs.org/react-native-responsive-screen/-/react-native-responsive-screen-1.4.2.tgz"
   integrity sha512-BLYz0UUpeohrib7jbz6wDmtBD5OmiuMRko4IT8kIF63taXPod/c5iZgmWnr5qOnK8hMuKiGMvsM3sC+eHX/lEQ==
 
-react-native-safe-area-context@^4.2.4:
-  version "4.2.4"
-  resolved "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-4.2.4.tgz"
-  integrity sha512-OOX+W2G4YYufvryonn6Kw6YnyT8ZThkxPHZBD04NLHaZmicUaaDVII/PZ3M5fD1o5N62+T+8K4bCS5Un2ggvkA==
+react-native-safe-area-context@^4.2.5:
+  version "4.2.5"
+  resolved "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-4.2.5.tgz"
+  integrity sha512-nUil2de1gk/8ZB9IzIxFyGCiKeAYcHzJb/Tks2NzSkev1qH4MNR05DWYDSmW6vLT+y4mospLVyG/H5dyUd+KQQ==
 
 react-native-screens@^3.13.0, react-native-screens@^3.4.0:
   version "3.13.0"
@@ -7828,11 +7778,6 @@ react-native-screens@^3.13.0, react-native-screens@^3.4.0:
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
-
-react-native-select-dropdown@^1.13.0:
-  version "1.13.0"
-  resolved "https://registry.npmjs.org/react-native-select-dropdown/-/react-native-select-dropdown-1.13.0.tgz"
-  integrity sha512-UGXWbuEqsG6B6O+tle77yJH3+DXfmh4cpit0v8az824y0rZLUWuRzlfeLYlaeZ80mqIF6Xtvx/pBtIsG1OdaLg==
 
 react-native-simple-dialogs@^1.4.0:
   version "1.4.0"
@@ -7896,6 +7841,11 @@ react-native-textarea@^1.0.4:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-toast-message@^2.1.5:
+  version "2.1.5"
+  resolved "https://registry.npmjs.org/react-native-toast-message/-/react-native-toast-message-2.1.5.tgz"
+  integrity sha512-mk3rELtBEhrhWBCN6CTaw0gypgL9ZNauX3xx1LUs4uee9vc0pVsghrKxO57vroUCcNL2hDeZSLJWdQNMCkGeaQ==
+
 react-native-vector-icons@^4.5.0:
   version "4.6.0"
   resolved "https://registry.npmjs.org/react-native-vector-icons/-/react-native-vector-icons-4.6.0.tgz"
@@ -7925,7 +7875,7 @@ react-native-version-check@^3.4.2:
 
 react-native-video-player@^0.12.0:
   version "0.12.0"
-  resolved "https://registry.yarnpkg.com/react-native-video-player/-/react-native-video-player-0.12.0.tgz#4e4d8a27c99b906da0f2b414be88eaab449be6a2"
+  resolved "https://registry.npmjs.org/react-native-video-player/-/react-native-video-player-0.12.0.tgz"
   integrity sha512-7h288hwlvjxxBOJ1UOoUctW8auPyq22Lxltc1FIxSJAF/tYyPcnBxAtaWOxI7CGflRn51BLVlUTclXC4CB3BZA==
 
 react-native-video@^5.2.0:
@@ -8325,14 +8275,6 @@ rimraf@~2.6.2:
   integrity sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==
   dependencies:
     glob "^7.1.3"
-
-rn-fetch-blob@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.npmjs.org/rn-fetch-blob/-/rn-fetch-blob-0.12.0.tgz"
-  integrity sha512-+QnR7AsJ14zqpVVUbzbtAjq0iI8c9tCg49tIoKO2ezjzRunN7YL6zFSFSWZm6d+mE/l9r+OeDM3jmb2tBb2WbA==
-  dependencies:
-    base-64 "0.1.0"
-    glob "7.0.6"
 
 rsvp@^4.8.4:
   version "4.8.5"

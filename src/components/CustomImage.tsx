@@ -25,7 +25,6 @@ export default function CustomImage({
     if(uri!==undefined){
       let ext = uri.split(/[#?]/)[0].split('.').pop().trim();
       setExtension(ext.toLowerCase());
-      console.log(extension);
     }
   }, [uri]);
 // console.log(uri)
@@ -37,6 +36,7 @@ export default function CustomImage({
        (
         // console.log(uri)
         extension==='svg' ? <SvgUri 
+        style={style}
         height= {height} 
         width={width} 
         uri={uri}

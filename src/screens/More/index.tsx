@@ -11,6 +11,7 @@ import {
   font2,
   secondaryColor,
 } from '../../styles/colors';
+import messaging from '@react-native-firebase/messaging';
 // import Logout from '../../assets/images/logout.svg';
 // import Drop from '../../assets/images/Drop.svg';
 // import Recordings from '../../assets/images/recordings.svg';
@@ -30,6 +31,7 @@ export default function More({navigation}: any) {
   const dispatch = useAppDispatch();
 
   const doLogout = async () => {
+    await messaging().deleteToken();
     await AsyncStorage.removeItem('USERDATA');
     await AsyncStorage.removeItem('USERDEVICETOKEN');
     await AsyncStorage.removeItem('USER_NOT_FIRST');
@@ -108,9 +110,9 @@ export default function More({navigation}: any) {
             padding: 16,
             height: '100%',
           }}>
-          {/* {isLoggedIn && userData.user_type === 'T' ? (
+          {isLoggedIn && userData.user_type === 'T' ? (
           <>
-            <TouchableOpacity  style={styles.listItemWrapper}>
+            {/* <TouchableOpacity  style={styles.listItemWrapper}>
               <View style={styles.listItem}>
                 <View style={{marginRight: 16}}>
                   <CreatedCourses />
@@ -123,12 +125,17 @@ export default function More({navigation}: any) {
               <View>
                 <Drop />
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
-            <TouchableOpacity style={styles.listItemWrapper}>
+            {/* <TouchableOpacity onPress={()=> navigation.navigate('Recording')} style={styles.listItemWrapper}>
               <View style={styles.listItem}>
                 <View style={{marginRight: 16}}>
-                  <Recordings />
+                <CustomImage
+                    height={24}
+                    width={24}
+                    uri={`${Config.media_url}recordings.svg`
+                    }
+                  />
                 </View>
                 <View>
                   <Text style={styles.header}>Recordings</Text>
@@ -138,11 +145,16 @@ export default function More({navigation}: any) {
                 </View>
               </View>
               <View>
-                <Drop />
+              <CustomImage
+                    height={16}
+                    width={16}
+                    uri={`${Config.media_url}drop.svg`
+                    }
+                  />
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </>
-        ) : null} */}
+        ) : null}
           {isLoggedIn ? (
             <TouchableOpacity
               onPress={() => doLogout()}

@@ -37,6 +37,7 @@ import HeaderInner from '../../components/HeaderInner';
 import {useRoute} from '@react-navigation/native'
 import TextField from '../../components/CustomTextField';
 import CustomImage from '../../components/CustomImage';
+import CustomStatusBar from '../../components/CustomStatusBar';
 type Props = NativeStackScreenProps<RootParamList, 'ResetPassword'>;
 
 export interface ResetPasswordInterface{
@@ -54,6 +55,8 @@ export default function ResetPassword({navigation, route} : Props) {
   const [viewPassword2, setViewpassword2] = useState<boolean>(false);
   const [otp, setOtp] = useState<string>('');
   const [otpResent, setOtpResent] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string>('');
+  const [showError, setShowError] = useState<boolean>(false);
 
   const routes= useRoute();
   useEffect(() => {
@@ -63,20 +66,22 @@ export default function ResetPassword({navigation, route} : Props) {
   const handleResetPassword = () => {
     Keyboard.dismiss();
     if(!otp){
-      Alert.alert('', 'Please enter the OTP!', [
-        {text: 'Okay', style: 'cancel'},
-      ]);
+      // Alert.alert('', 'Please enter the OTP!', [
+      //   {text: 'Okay', style: 'cancel'},
+      // ]);
+      setShowError(true);
+      setErrorMsg('Enter the OTP')
     }
     else if (!password1 || !password2) {
       Alert.alert('', 'Please enter both fields!', [
         {text: 'Okay', style: 'cancel'},
       ]);
     } else if (password1 !== password2) {
-      Alert.alert('', 'Password mismatches', [{text: 'Okay', style: 'cancel'}]);
+      Alert.alert('', 'The passwords do not match. Try again.', [{text: 'Okay', style: 'cancel'}]);
     } else if (!helper.validatePasswordFormat(password1)) {
       Alert.alert(
         '',
-        'password does not meet the requirements (one special character, one alphabet in uppercase, one numerical value and minimum 8 characters)',
+        'The password must contain 8 to 15 characters and at least 1 lowercase letter, uppercase letter, number and special character.',
         [{text: 'Okay', style: 'cancel'}],
       );
     } else {
@@ -95,30 +100,34 @@ export default function ResetPassword({navigation, route} : Props) {
         .then(response => {
           dispatch(setLoading(false));
           if (response.status === 'success') {
+            setShowError(false);
             navigation.navigate('ActionStatus', {
               messageStatus: 'success',
               messageTitle: 'Success!',
               messageDesc: response.error_message.message,
-              timeOut: 4000,
+              timeOut: 7000,
               backRoute: 'LoginScreen',
               params: {
                 email: route.params?.email,
               },
             });
           } else if (response.status === 'failure') {
-            navigation.navigate('ActionStatus', {
-              messageStatus: 'failure',
-              email: route.params?.email,
-              messageTitle: 'Sorry!',
-              messageDesc: response.error_message.message,
-              timeOut: 4000,
-              backRoute: 'ResetPassword',
-              params: {
-                email: route.params?.email,
-              },
-            });
+            setErrorMsg(response.error_message.message);
+            setShowError(true);
+            // navigation.navigate('ActionStatus', {
+            //   messageStatus: 'failure',
+            //   email: route.params?.email,
+            //   messageTitle: 'Sorry!',
+            //   messageDesc: response.error_message.message,
+            //   timeOut: 4000,
+            //   backRoute: 'ResetPassword',
+            //   params: {
+            //     email: route.params?.email,
+            //   },
+            // });
           }
-        })
+        }
+        )
         .catch(err => {
           dispatch(setLoading(false));
         });
@@ -146,6 +155,7 @@ export default function ResetPassword({navigation, route} : Props) {
 
   return (
       <>
+      <CustomStatusBar/>
       <HeaderInner
       type={'findCourse'}
       title={"Reset Password"}
@@ -173,8 +183,11 @@ export default function ResetPassword({navigation, route} : Props) {
               mode="outlined"
               label="Enter 6-digit OTP"
                 //style={styles.input}
-                onChangeText={(text:any) => setOtp(text)}
+                onChangeText={(text:any) => {
+                  setShowError(false); 
+                  setOtp(text)}}
                 value={otp}
+                keyboardType="numeric"
                 secureTextEntry={false}
                 editable={true}
                 autoCapitalize="none"
@@ -183,11 +196,13 @@ export default function ResetPassword({navigation, route} : Props) {
                 selectTextOnFocus={false}
               />
               </View>
+              {showError && <Text style={StyleCSS.styles.errorText}>{errorMsg}</Text>}
               <TouchableOpacity
                 style={styles.resendOtp}
                 onPress={handleResendOtp}>
-                <Text style={styles.resendOtpText}>RESEND OTP </Text>
+                <Text style={styles.resendOtpText}>Resend OTP </Text>
               </TouchableOpacity>
+             
               {/* <Text style={styles.label}>New Password</Text> */}
 <View style={styles.formInput}>
               <TextField
@@ -319,7 +334,6 @@ const styles = StyleSheet.create({
     backgroundColor:'#fff'
   },
   resendOtpText: {
-    textTransform:'capitalize',
     fontSize: 14,
     color: secondaryColor,
     fontWeight:'500',
@@ -329,6 +343,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: font2,
     fontWeight:'500',
+    flexWrap:'wrap',
     fontFamily: helper.switchFont('medium'),
     marginTop: 8,
   },

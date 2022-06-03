@@ -59,6 +59,24 @@ export const addSession = createAsyncThunk(
   'scheduleSession/addSession',
   async (finalData: CreateSessionInterfaceFinal) => {
     let response = await ApiGateway.post(
+      'attendance/create-class?format=json',
+      finalData.params,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Token ' + finalData.userToken,
+        },
+      },
+    );
+
+    return response;
+  },
+);
+
+export const editSession = createAsyncThunk(
+  'scheduleSession/editSession',
+  async (finalData: CreateSessionInterfaceFinal) => {
+    let response = await ApiGateway.patch(
       'attendance/course-class?format=json',
       finalData.params,
       {
@@ -73,11 +91,28 @@ export const addSession = createAsyncThunk(
   },
 );
 
+export const deleteSession = createAsyncThunk(
+  'scheduleSession/deleteClass',
+  async (finalData: any) => {
+    let response = await ApiGateway.post(
+      'attendance/delete-class?format=json',
+      finalData.data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Token ' + finalData.userToken,
+        },
+      },
+    );
+    return response;
+  },
+);
+
 export const getEnrolledStudentsList = createAsyncThunk(
   'scheduleSession/getEnrolledStudentsList',
   async (userToken: string) => {
     let response = await ApiGateway.get(
-      config.api_urls.teacher.enrolled_course_studentList,
+      'attendance/enrolled-course-student?format=json',
       false,
       {
         headers: {

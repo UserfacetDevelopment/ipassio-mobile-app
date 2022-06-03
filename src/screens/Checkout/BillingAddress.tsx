@@ -25,6 +25,7 @@ import {
   checkoutState,
   checkoutToNextPage,
   setCheckoutDataDetails,
+  detailsCheckoutToken
 } from '../../reducers/checkout.slice';
 import {userState} from '../../reducers/user.slice';
 import {loaderState, setPageLoading} from '../../reducers/loader.slice';
@@ -39,11 +40,13 @@ import CustomStatusBar from '../../components/CustomStatusBar';
 import StyleCSS from '../../styles/style';
 import TextField from '../../components/CustomTextField';
 import CustomImage from '../../components/CustomImage';
+import country_listing from '../../assets/json/country_region.json';
 
 type Props = NativeStackScreenProps<RootParamList, 'BillingAddress'>;
 
-const BillingAddress: FC<Props> = ({navigation}) => {
+const BillingAddress: FC<Props> = ({route, navigation}) => {
   const currentPage = 2;
+  const teacherAvailability = route.params?.teacher_availability
   const dispatch = useAppDispatch();
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
@@ -64,6 +67,26 @@ const BillingAddress: FC<Props> = ({navigation}) => {
   const {userData} = useSelector(userState);
   const {pageLoading} = useSelector(loaderState);
   const [countryArr, setCountryArr] = useState<Array<any>>([]);
+const checkoutToken = route.params?.checkoutToken;
+
+   useEffect(() => {
+    let data: any = {
+      checkoutToken: checkoutToken,
+      userToken: userData.token,
+    };
+    dispatch(setPageLoading(true));
+    dispatch(detailsCheckoutToken(data))
+      .unwrap()
+      .then(response => {
+        
+        dispatch(setPageLoading(false));
+      dispatch(setCheckoutDataDetails(response.data.data))
+        console.log(response);
+      })
+      .catch(err => {
+        dispatch(setPageLoading(false));
+      });
+  }, []);
 
   useEffect(() => {
     setFirstName(checkoutDataDetails.billing_first_name);
@@ -75,7 +98,7 @@ const BillingAddress: FC<Props> = ({navigation}) => {
     setCountry(checkoutDataDetails.billing_country);
     setOrderComment(checkoutDataDetails.order_comments);
 
-    let clist = config.country_listing;
+    let clist = country_listing;
 
     setCountryArr(
       clist.filter(i => {
@@ -86,7 +109,7 @@ const BillingAddress: FC<Props> = ({navigation}) => {
     if (countryList) {
       setCountryList(clist);
     }
-  }, []);
+  }, [checkoutDataDetails]);
 
   useEffect(() => {
     if (countryArr && countryArr.length > 0) {
@@ -171,7 +194,10 @@ const BillingAddress: FC<Props> = ({navigation}) => {
 
         if (response.data.status === 'success') {
           dispatch(setCheckoutDataDetails(response.data.data));
-          navigation.navigate('Review');
+          navigation.navigate('Review',{
+            checkoutToken:checkoutToken,
+            teacher_availability: teacherAvailability
+          });
         } else if (response.data.status === 'failure') {
           Alert.alert('', response.data.error_message.message, [
             {text: 'Okay', style: 'cancel'},
@@ -188,7 +214,14 @@ const BillingAddress: FC<Props> = ({navigation}) => {
 
   return (
     <>
-    <HeaderInner
+    
+    <View style={styles.container}>
+      <CustomStatusBar type={"inside"} />
+      {pageLoading ? (
+        <PageLoader />
+      ) : (
+        <View>
+          <HeaderInner
             title={'Checkout'}
             type={'findCourse'}
             // backroute={route?.params?.backroute}
@@ -199,13 +232,7 @@ const BillingAddress: FC<Props> = ({navigation}) => {
             // backRoute={}
           ></HeaderInner>
           <View
-            style={{
-              position: 'absolute',
-              top: config.headerHeight,
-              zIndex: 2,
-              height: 32,
-              width: '100%',
-            }}>
+            style={styles.timerBg}>
              <CustomImage
               style={StyleCSS.styles.formFillTimeImage}
               uri={`${config.media_url}transactions_bg.png`}/>
@@ -215,12 +242,6 @@ const BillingAddress: FC<Props> = ({navigation}) => {
               </Text>
             </View>
           </View>
-    <View style={styles.container}>
-      <CustomStatusBar type={"inside"} />
-      {pageLoading ? (
-        <PageLoader />
-      ) : (
-        <View>
           {/* <HeaderInner
               iconTop={this.iconTop}
               changingHeight={this.changingHeight}
@@ -233,15 +254,17 @@ const BillingAddress: FC<Props> = ({navigation}) => {
               type={"innerpage"}
             /> */}
           <KeyboardAwareScrollView
+          keyboardShouldPersistTaps='never'
+          style={styles.scrollView}
             scrollEventThrottle={16}
             // onScroll={Animated.event(
             //   [{ nativeEvent: { contentOffset: { y: this.scrollY } } }],
             //   { useNativeDriver: false }
             // )}
           >
-            <ScrollView>
+            {/* <ScrollView> */}
               <View style={styles.safecontainer}>
-              <View style={[styles.stepIndicator ,{marginTop:32}]}>
+              <View style={[styles.stepIndicator]}>
                 <StepIndicator
                   customStyles={stepIndicatorStyles}
                   stepCount={4}
@@ -453,7 +476,7 @@ const BillingAddress: FC<Props> = ({navigation}) => {
                     </Text>
                   </TouchableOpacity>
                 </View>
-            </ScrollView>
+            {/* </ScrollView> */}
           </KeyboardAwareScrollView>
         </View>
       )}
@@ -468,11 +491,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    marginTop:config.headerHeight
+    // marginTop:config.headerHeight
+  },
+  scrollView:{
+    marginTop:config.headerHeight+32
   },
   stepIndicator: {
     paddingHorizontal: 0,
-    top: 20,
+    // top: 20,
+    marginTop:16
   },
   rowItem: {
     flex: 1,
@@ -627,5 +654,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlignVertical: 'top',
     borderRadius: 5,
+  },
+  timerBg:{
+    position: 'absolute',
+    top: config.headerHeight,
+    zIndex: 2,
+    height: 32,
+    width: '100%',
   },
 });

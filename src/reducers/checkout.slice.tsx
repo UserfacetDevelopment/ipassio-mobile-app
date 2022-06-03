@@ -68,6 +68,7 @@ export const cartDetails = createAsyncThunk('checkout/cartDetails',
         Authorization: "Token " + finalData.userToken,
       },
     })
+    console.log(response)
     return response;
   })
 

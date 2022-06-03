@@ -50,7 +50,7 @@ const Accordian = ({title, data}: AccordianInterface) : any => {
             uri={`${config.media_url}expand.svg`}
           />
         ) : (
-          <View style={{width:24, height:24, alignItems:'center', justifyContent:'center'}}>
+          <View style={styles.collapseWrapper}>
             <CustomImage
             height={20}
             width={20}
@@ -117,5 +117,6 @@ const styles = StyleSheet.create({
     paddingHorizontal:16,
     marginBottom:16
 
-  }
+  },
+  collapseWrapper:{width:24, height:24, alignItems:'center', justifyContent:'center'},
 });

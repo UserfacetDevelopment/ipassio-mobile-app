@@ -8,20 +8,27 @@ import {
   TouchableOpacity,
   Pressable,
   TextInput,
-  Modal
+  Modal,
 } from 'react-native';
 // import Modal from 'react-native-modal';
-import {background3, brandColor, dropdownBorder, font1, font2, lineColor} from '../styles/colors';
+import {
+  background3,
+  brandColor,
+  dropdownBorder,
+  font1,
+  font2,
+  lineColor,
+} from '../styles/colors';
 import Helper from '../utils/helperMethods';
 
 // import Close from '../assets/images/close.svg';
 
 // import Search from '../assets/images/search.svg';
-import { scheduledDataSuccess } from '../reducers/schedule.slice';
+import {scheduledDataSuccess} from '../reducers/schedule.slice';
 import SheetCss from '../styles/style';
 
 // import Dropdown from '../assets/images/custom-dropdown.svg';
-import { widthPercentageToDP } from 'react-native-responsive-screen';
+import {widthPercentageToDP} from 'react-native-responsive-screen';
 import CustomImage from './CustomImage';
 import Config from '../config/Config';
 
@@ -32,9 +39,10 @@ interface CustomDropdownProps {
   onChangeVal: any;
   label: string;
   backTitle: string;
-  index?:number;
+  index?: number;
   config?: any;
-  customIcon?:any;
+  customIcon?: any;
+  timezone?: boolean
 }
 
 export default function CustomDropdown({
@@ -46,7 +54,8 @@ export default function CustomDropdown({
   backTitle,
   config,
   index,
-  customIcon
+  customIcon,
+  timezone
 }: CustomDropdownProps) {
   const [query, setQuery] = useState('');
   const [fullData, setFullData] = useState(data);
@@ -68,7 +77,12 @@ export default function CustomDropdown({
   const handleSearch = (text: string) => {
     const formattedQuery = text.toLowerCase();
     let filteredData = fullDataOrg.filter((val: any) =>
-      val.value.toLowerCase().includes(formattedQuery),
+   timezone ?
+    val.label.toLowerCase().includes(formattedQuery)
+  :
+    val.value.toLowerCase().includes(formattedQuery)
+   
+      
     );
     setFullData(filteredData);
     setQuery(text);
@@ -95,24 +109,14 @@ export default function CustomDropdown({
 
   const loadItems = (dt: any, index: number) => {
     return (
-      <TouchableOpacity
-        style={{
-          alignItems: 'flex-start',
-          borderBottomWidth: 1,
-          borderColor: lineColor,
-          minHeight: 60,
-          justifyContent: 'center',
-          paddingLeft: 16,
-          paddingRight: 16,
-        }}
-        onPress={() => selectVal(dt)}>
+      <TouchableOpacity style={styles.listItem} onPress={() => selectVal(dt)}>
         <Text
           style={
             selectedData.indexOf(dt) == -1
               ? styles.option_item
               : styles.option_item_selected
           }>
-          {dt.value}
+          {timezone ? dt.label : dt.value}
         </Text>
       </TouchableOpacity>
     );
@@ -122,31 +126,13 @@ export default function CustomDropdown({
     <View>
       <TouchableOpacity onPress={() => toggleModal()}>
         <View style={styles.container}>
-          {topLabel ?<Text
-            style={[
-              {
-                position: 'absolute',
-                top: -8,
-                fontSize: 12,
-                paddingHorizontal: 4,
-                backgroundColor: config.color,
-                left: 7,
-                color: font2,
-              },
-            ]}>
-            {topLabel }
-          </Text> : null}
+          {topLabel ? (
+            <Text style={[styles.topLabel, {backgroundColor: config.color}]}>
+              {topLabel}
+            </Text>
+          ) : null}
           <Text
-            style={[
-              styles.label,
-              {
-                // color:
-                //   config && config.color
-                //     ? config.color
-                //     : "rgb(44, 54, 65)",
-                color: topLabel ? font1 : font2,
-              },
-            ]}>
+            style={[styles.label,{color: topLabel ? font1 : font2,}]}>
             {label}
           </Text>
           <View style={{width: '10%', alignItems: 'flex-end'}}>
@@ -160,61 +146,40 @@ export default function CustomDropdown({
                 marginTop: 5,
               }}
             /> */}
-            {customIcon ? customIcon : 
-                                       <CustomImage uri={`${Config.media_url}custom-dropdown.svg`}/> 
-            }
+            {customIcon ? (
+              customIcon
+            ) : (
+              <CustomImage uri={`${Config.media_url}custom-dropdown.svg`} />
+            )}
           </View>
         </View>
       </TouchableOpacity>
 
-      <Modal transparent={true} visible={isModalVisible}>
+      <Modal transparent={true} visible={isModalVisible} animationType='fade' statusBarTranslucent={true}>
         <TouchableOpacity
-        // activeOpacity={1}
-        onPressOut={()=>setIsModalVisible(false)}
-          style={{
-            backgroundColor:'rgba(0, 0, 0, 0.3)',
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            height:'100%',
-            paddingHorizontal:16,
-          }}>
-        {/* <View style={{backgroundColor:'rgba(0,0,0,0.3)', height:'100%', width:'100%'}}> */}
+          // activeOpacity={1}
+          onPressOut={() => setIsModalVisible(false)}
+          style={styles.modalBackground}>
           <TouchableOpacity
-          activeOpacity={1}
-          onPress={()=>{
-
-          }}
+            activeOpacity={1}
+            onPress={() => {}}
             style={{
-              // flexDirection:'row',
               backgroundColor: '#fff',
               borderRadius: 15,
-              // marginHorizontal:16,
               height: '70%',
             }}>
-              
             <View
-              style={{
-                padding: 16,
-                flexDirection: 'row',
-                borderTopRightRadius: 15,
-                borderTopLeftRadius: 15,
-                flex: 1,
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 60,
-                alignContent: 'center',
-                zIndex: 999,
-              }}>
-              <View style={{flex: 1, marginTop: 0}}>
+              style={styles.modalHeader}>
+              <View style={styles.backTitleWrapper}>
                 <Text style={styles.innerHeaderTitle}>{backTitle}</Text>
               </View>
               <Pressable onPress={() => toggleModal()}>
-                <CustomImage height={24} width={24} uri={`${Config.media_url}close.svg`}/> 
+                <CustomImage
+                  height={24}
+                  width={24}
+                  uri={`${Config.media_url}close.svg`}
+                />
 
-                
                 {/* <Image
                       source={require("@images/left_arrow.png")}
                       style={{
@@ -225,15 +190,16 @@ export default function CustomDropdown({
                     /> */}
               </Pressable>
             </View>
-            <View
-              style={
-                styles.inputWrapper
-              }>
-                          <CustomImage height={24} width={24} uri={`${Config.media_url}search.svg`}/>
+            <View style={styles.inputWrapper}>
+              <CustomImage
+                height={24}
+                width={24}
+                uri={`${Config.media_url}search.svg`}
+              />
 
               {/* <Search /> */}
               <TextInput
-                autoFocus={true}
+                // autoFocus={true}
                 placeholderTextColor={font2}
                 style={styles.input}
                 value={query}
@@ -251,7 +217,7 @@ export default function CustomDropdown({
                 />
               </TouchableOpacity> */}
             </View>
-            <View style={SheetCss.styles.lineStyleLight}/>
+            <View style={SheetCss.styles.lineStyleLight} />
             <FlatList
               style={{
                 flexGrow: 0,
@@ -283,7 +249,7 @@ export default function CustomDropdown({
                   <Text style={styles.option_action_item}>Cancel</Text>
                 </TouchableOpacity> */}
           </TouchableOpacity>
-          </TouchableOpacity>
+        </TouchableOpacity>
         {/* </View> */}
       </Modal>
     </View>
@@ -292,38 +258,38 @@ export default function CustomDropdown({
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 12,
-    paddingBottom:12,
+    // paddingVertical:12,  by ashwath
+    paddingVertical:14,
     paddingHorizontal: 16,
     flexDirection: 'row',
     flex: 1,
-    alignItems:'center',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: dropdownBorder,
     borderRadius: 8,
   },
   label: {
     fontSize: 14,
-    lineHeight:20,
+    lineHeight: 20,
 
     fontFamily: Helper.switchFont('regular'),
-    flex:1,
+    flex: 1,
   },
   option_item: {
     fontSize: 14,
     color: font1,
-    fontWeight:'500',
+    fontWeight: '500',
     fontFamily: Helper.switchFont('medium'),
     paddingVertical: 16,
-    lineHeight:20,
+    lineHeight: 20,
   },
   option_item_selected: {
     fontSize: 14,
     color: brandColor,
-    fontWeight:'500',
+    fontWeight: '500',
     fontFamily: Helper.switchFont('medium'),
     paddingVertical: 16,
-    lineHeight:20,
+    lineHeight: 20,
   },
   option_action_item: {
     fontSize: 14,
@@ -340,14 +306,14 @@ const styles = StyleSheet.create({
   },
 
   inputWrapper: {
-    marginBottom:16,
+    marginBottom: 16,
     marginHorizontal: 16,
     paddingTop: 0,
     flexDirection: 'row',
     alignItems: 'center',
-     paddingLeft: 16,
+    paddingLeft: 16,
     justifyContent: 'center',
-    marginTop:56,
+    marginTop: 56,
     backgroundColor: background3,
     borderRadius: 8,
   },
@@ -355,7 +321,7 @@ const styles = StyleSheet.create({
     color: font2,
     fontSize: 14,
     paddingHorizontal: 12,
-fontWeight:'400',
+    fontWeight: '400',
     fontFamily: Helper.switchFont('regular'),
     height: 48,
     width: '90%',
@@ -374,4 +340,44 @@ fontWeight:'400',
     // top: 11,
     // right: 30,
   },
+  listItem: {
+    alignItems: 'flex-start',
+    borderBottomWidth: 1,
+    borderColor: lineColor,
+    minHeight: 60,
+    justifyContent: 'center',
+    paddingLeft: 16,
+    paddingRight: 16,
+  },
+  topLabel: {
+    position: 'absolute',
+    top: -14,
+    fontSize: 12,
+    padding: 4,
+    left: 7,
+    color: font2,
+  },
+  modalBackground: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    paddingHorizontal: 16,
+  },
+  backTitleWrapper: {flex: 1, marginTop: 0},
+  modalHeader:{
+    padding: 16,
+    flexDirection: 'row',
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
+    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    alignContent: 'center',
+    zIndex: 999,
+  }
 });

@@ -24,11 +24,11 @@ import Textarea from 'react-native-textarea';
 // import StarRating from 'react-native-star-rating';
 import {Rating} from 'react-native-ratings';
 import Moment from 'moment';
+import 'moment-timezone';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import config from '../../config/Config';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {useAppDispatch} from '../../app/store';
-import PushNotification from 'react-native-push-notification';
 import {
   dashboardState,
   getAttendenceList,
@@ -85,7 +85,7 @@ const {pageLoading} = useSelector(loaderState);
   const [reviewIndex, setReviewIndex]= useState<number|null>(null);
   const [index, setIndex] = useState<number>(0);
   const [editAttendanceModal, setEditAttendanceModal] = useState<boolean>(false);
-const [modalTitle, setModalTitle] = useState<"Add Review"|"Edit Review">("Edit Review");
+const [modalTitle, setModalTitle] = useState<"Mark Attendance"|"Edit Attendance">('Edit Attendance');
 
   let scrollY = new Animated.Value(0.01);
   // let changingHeight = scrollY.interpolate({
@@ -173,7 +173,7 @@ console.log(reviewIndex)
 
   const addReview = () => {
     setIndex(reviewIndex);
-    setModalTitle('Add Review');
+    setModalTitle('Mark Attendance');
     setEditAttendanceModal(true);
   };
 
@@ -192,7 +192,7 @@ console.log(reviewIndex)
   };
 
   const editAttendance = (data: any, index:number): void => {
-      setModalTitle('Edit Review')
+      setModalTitle('Edit Attendance')
       setIndex(index);
 setEditAttendanceModal(true)
     toggleModal();
@@ -254,6 +254,7 @@ setEditAttendanceModal(true)
       .unwrap()
       .then(response => {
        setEditAttendanceModal(false);
+       setReviewIndex(null)
         dispatch(setPageLoading(false));
         if (response?.data.status === 'success') {
           toggleModal();
@@ -262,7 +263,7 @@ setEditAttendanceModal(true)
             messageStatus: 'success',
             messageTitle: 'Thank You!',
             messageDesc: response.data.error_message.message,
-            timeOut: 4000,
+            timeOut: 7000,
             backRoute: 'Attendance',
             params: {
               courseToken: courseToken,
@@ -275,7 +276,7 @@ setEditAttendanceModal(true)
             messageStatus: 'failure',
             messageTitle: 'Sorry!',
             messageDesc: response?.data.error_message.message,
-            timeOut: 4000,
+            timeOut: 7000,
             backRoute: 'Attendance',
             params: {
               courseToken: courseToken,
@@ -490,7 +491,7 @@ setEditAttendanceModal(true)
                   <TouchableOpacity
                     onPress={addReview}
                     style={styles.submitAttendanceButton}>
-                    <Text style={styles.submitAttendanceText}>Add Review</Text>
+                    <Text style={styles.submitAttendanceText}>Mark Attendance</Text>
                   </TouchableOpacity>
                 </View>
               ) : null}
@@ -609,7 +610,7 @@ setEditAttendanceModal(true)
           statusMessage={appStatusMessage}
         /> */}
        {editAttendanceModal ?
-        <Modal visible={editAttendanceModal} presentationStyle="overFullScreen" transparent={true}>
+        <Modal visible={editAttendanceModal} presentationStyle="overFullScreen" transparent={true} statusBarTranslucent={true}>
           <TouchableOpacity activeOpacity={1}  onPress={()=>setEditAttendanceModal(false)} style={StyleCSS.styles.modalBackground}>
             <TouchableOpacity activeOpacity={1} onPress={()=>{}} style={StyleCSS.styles.modalView}>
               <View style={StyleCSS.styles.modalLine}></View>
@@ -663,8 +664,9 @@ setEditAttendanceModal(true)
                  width={width-32}
                   showDateTimePicker={showDateTimePicker}
                   // style={{}}
-                  selectedValue={attendances[index].class_taken &&
-                    Moment(attendances[index].class_taken).format(
+                  config={{color:'#fff'}}
+                  selectedValue={attendances[index].teacher_class_taken &&
+                    Moment(attendances[index].teacher_class_taken).format(
                       'MMM DD, YYYY',
                     )}
                   label = {'Class Taken on *'}
@@ -736,7 +738,7 @@ export default TeacherAttendance;
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: background4,
     },
     halfWidth: {
       width: '50%',
@@ -772,7 +774,8 @@ const styles = StyleSheet.create({
       borderColor: '#E2E4E5',
     },
     infoWrapper: {
-      marginHorizontal: 16,
+      paddingHorizontal: 16,
+      backgroundColor:'#fff'
     },
     scrollView: {
       paddingBottom: 50,

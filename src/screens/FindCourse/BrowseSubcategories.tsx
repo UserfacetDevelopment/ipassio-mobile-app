@@ -31,14 +31,14 @@ import {useAppDispatch} from '../../app/store';
 const {width, height} = Dimensions.get('screen');
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
-import Back from '../../assets/images/arrow-dark.svg';
+// import Back from '../../assets/images/arrow-dark.svg';
 import {CategoryInterface} from './index';
 import HeaderInner from '../../components/HeaderInner';
 import {useRoute} from '@react-navigation/native';
-import Drop from '../../assets/images/Drop.svg';
+// import Drop from '../../assets/images/Drop.svg';
 import {brandColor, font1, selectedDrop} from '../../styles/colors';
-import Others from '../../assets/images/others.svg';
-import Dropdown from '../../assets/images/dropdown.svg';
+// import Others from '../../assets/images/others.svg';
+// import Dropdown from '../../assets/images/dropdown.svg';
 import config from '../../config/Config'
 import CustomImage from '../../components/CustomImage';
 type Props = NativeStackScreenProps<RootParamList, 'BrowseCategories'>;
@@ -58,7 +58,7 @@ const [active, setActive] = useState('');
       <HeaderInner
         backroute={route.params?.backroute}
         changingHeight={config.headerHeight}
-        title={'Browse'}
+        title={'Explore'}
         browseSelected={true}
         navigation={navigation}
         type={'findCourse'}
@@ -73,7 +73,7 @@ const [active, setActive] = useState('');
             onPress={() => {
               navigation.goBack();
             }}>
-             <CustomImage height={24} width={24} uri={`${config.media_url}arrow-dark.svg`}/>
+             <CustomImage height={12} width={12} uri={`${config.media_url}arrow-dark.svg`}/>
              
             {/* <Back/> */}
             <Text style={styles.backCategoryText}>Back</Text>

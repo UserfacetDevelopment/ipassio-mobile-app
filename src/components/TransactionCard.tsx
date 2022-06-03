@@ -11,11 +11,12 @@ import {useSelector} from 'react-redux';
 import {userState} from '../reducers/user.slice';
 import SheetCSS from '../styles/style';
 import Moment from 'moment';
+import 'moment-timezone';
 import Helper from '../utils/helperMethods';
 // import Dropdown from '../assets/images/dropdown.svg';
 import {brandColor, font1, font2, font3, lineColor} from '../styles/colors';
 import StyleCSS from '../styles/style';
-import DashedLine from 'react-native-dashed-line';
+import LineDashed from './LineDashed';
 import CustomImage from './CustomImage';
 import Config from '../config/Config';
 
@@ -67,33 +68,20 @@ export default function TransactionCard({
                   </View>
               </View>
               <View
-                style={{
-                  width: 28,
-                  height: 28,
-                  backgroundColor: '#E0E6ED',
-                  opacity: 0.8,
-                  borderRadius: 50,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
+                style={styles.dropBackground}>
                                   <CustomImage height={16} width={16} uri={`${Config.media_url}dropdown.svg`}/>
 
               </View>
             </View>
           </TouchableOpacity>
 
-          <DashedLine
-              dashLength={5}
-              dashThickness={1}
-              dashGap={5}
-              dashColor={lineColor}
-            />
+          <LineDashed/>
           {userData.user_type === 'T' ? (
             <View style={styles.collapsedCard}>
               <View style={styles.itemRow}>
                 <View>
                   <Text style={styles.contentLabel}>Course</Text>
-                  <Text style={[styles.contentText,{fontWeight:'600',  lineHeight:20}]}>
+                  <Text style={[styles.contentText, StyleCSS.styles.fw600,{lineHeight:20}]}>
                     {data.course.title}{' '}
                     {userData.user_type === 'T' &&
                       (data.class_type === '1'
@@ -103,12 +91,7 @@ export default function TransactionCard({
                 </View>
               </View>
 
-              <DashedLine
-              dashLength={5}
-              dashThickness={1}
-              dashGap={5}
-              dashColor={lineColor}
-            />
+             <LineDashed/>
             </View>
           ) : null}
           <View style={styles.itemRow}>
@@ -125,12 +108,7 @@ export default function TransactionCard({
             </View>
           </View>
 
-          <DashedLine
-              dashLength={5}
-              dashThickness={1}
-              dashGap={5}
-              dashColor={lineColor}
-            />
+          <LineDashed/>
           <View style={styles.itemRow}>
           <View style={styles.itemRowItem}>
               {userData.user_type === 'T' ? <><Text style={styles.contentLabel}>Balance</Text>
@@ -314,4 +292,13 @@ const styles = StyleSheet.create({
   collapsedCard: {
     backgroundColor: '#fff',
   },
+  dropBackground:{
+    width: 28,
+    height: 28,
+    backgroundColor: '#E0E6ED',
+    opacity: 0.8,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });

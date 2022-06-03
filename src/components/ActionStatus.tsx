@@ -119,10 +119,6 @@ useEffect(()=>{
               style={styles.closeButton}
             /> */}
             <View  style={styles.closeButton}>
-            <CustomImage
-            height={40}
-            uri={`${Config.media_url}close.svg`}
-          />
               <CustomImage
            height={24}
            width={24}
@@ -140,21 +136,20 @@ useEffect(()=>{
             {route.params?.messageStatus == 'success'
                   ? 
                   <CustomImage
-           
+           height={172} width={327}
             uri={`${Config.media_url}success.svg`}
           />
                   : 
                   <CustomImage
-           
-            uri={`${Config.media_url}error.svg`}/>
+                  height={172} width={327}
+                  uri={`${Config.media_url}error.svg`}/>
                   }
           
           </View>
-
-          <Text style={styles.title}>{route.params?.messageTitle}</Text>
+{route.params?.messageTitle ? <Text style={styles.title}>{route.params?.messageTitle}</Text>:null}
+          
           <Text style={styles.message}>{route.params?.messageDesc}</Text>
-          <LinearGradient colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)','rgba(255, 255, 255, 0)']} style={{
-              height:1, opacity:0.3, marginTop:40, marginHorizontal:16, marginBottom: 24}} />
+          <LinearGradient colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)','rgba(255, 255, 255, 0)']} style={styles.linearGradient} />
           <Text style={styles.message}>
             You will be redirected in{' '}
             
@@ -238,4 +233,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: helper.switchFont('bold'),
   },
+  linearGradient:{
+    height:1, opacity:0.3, marginTop:40, marginHorizontal:16, marginBottom: 24},
 });

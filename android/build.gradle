@@ -4,8 +4,8 @@ buildscript {
     ext {
         buildToolsVersion = "30.0.2"
         minSdkVersion = 21
-        compileSdkVersion =30
-        targetSdkVersion = 30
+        compileSdkVersion = 32
+        targetSdkVersion = 32
         ndkVersion = "21.4.7075529"
         firebaseVersion = "+" // default: "+"
         googlePlayServicesAuthVersion = "17.0.0" //Added
@@ -46,4 +46,4 @@ allprojects {
     }
 }
 
-apply plugin: 'com.google.gms.google-services'
+// apply plugin: 'com.google.gms.google-services'

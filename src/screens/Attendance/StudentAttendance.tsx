@@ -9,6 +9,7 @@ import {
   RefreshControl,
   Dimensions,
   Animated,
+  KeyboardAvoidingView,
   Modal,
 } from 'react-native';
 import {useSelector} from 'react-redux';
@@ -37,11 +38,10 @@ import Textarea from 'react-native-textarea';
 // import StarRating from 'react-native-star-rating';
 import {Rating} from 'react-native-ratings';
 import Moment from 'moment';
+import 'moment-timezone';
 // import Modal from 'react-native-modal';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {useAppDispatch} from '../../app/store';
-import PushNotification from 'react-native-push-notification';
 import {
   dashboardState,
   getAttendenceList,
@@ -61,6 +61,8 @@ import Calender from '../../assets/images/calender.svg';
 import CustomDateTimePicker from '../../components/CustomDateTimePicker';
 // type Props = NativeStackScreenProps<RootParamList, 'Attendance'>;
 import config from '../../config/Config';
+import { cartDetails } from '../../reducers/checkout.slice';
+import { CartDetailsData } from '../Checkout/CartPage';
 
 export interface AttendanceListInterface {
   userType: string;
@@ -70,12 +72,13 @@ export interface AttendanceListInterface {
   token: string;
 }
 
+
 // HandleBackPress method to be added
 //instead of teaArea, can also use textInput with multiline.
 // addToCart function left
 
 const width = Dimensions.get('screen').width;
-
+const height = Dimensions.get('screen').height;
 const StudentAttendance: FC<any> = ({
   courseToken,
   classType,
@@ -104,10 +107,8 @@ const StudentAttendance: FC<any> = ({
   const [editAttendanceModal, setEditAttendanceModal] = useState(false);
   const [reviewIndex, setReviewIndex] = useState<number|null>(null);
   const [index, setIndex] = useState<number>();
-  const [modalTitle, setModalTitle] = useState<'Add Review' | 'Edit Review'>(
-    'Edit Review',
-  );
-
+  const [modalTitle, setModalTitle] = useState<'Mark Attendance' | 'Edit Attendance'>('Edit Attendance');
+const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);;
   let scrollY = new Animated.Value(0.01);
   let changingHeight = scrollY.interpolate({
     inputRange: [0.01, 50],
@@ -161,6 +162,7 @@ const StudentAttendance: FC<any> = ({
     setRefreshing(false);
   }, [refreshing]);
 
+  console.log(studentAttendanceList);
   useEffect(() => {
     if (attendances.length > 0) {
       for (let i = 0; i < attendances.length; i++) {
@@ -171,20 +173,24 @@ const StudentAttendance: FC<any> = ({
           break;
         }
       }
-      //   setTimeout(() => {
-      //     setAppStatus('');
-      //     setAppStatusMessage('');
-      //   }, 7000);
+      
     }
-    if (studentAttendanceList.length > 0) {
+    if (Object.keys(studentAttendanceList).length > 0) {
+      console.log('settingTrue')
       setTimeout(() => {
         setIsRefillModalVisible(
           studentAttendanceList.remaining_classes <= 0 ? true : false,
         );
       }, 5000);
+
       clearInterval(refillPopupTimer);
     }
+    
   }, [attendances, studentAttendanceList]);
+
+  // useEffect(()=>{
+    
+  // },[studentAttendanceList, attendances]);
 
   const showDateTimePicker = () => {
     Keyboard.dismiss();
@@ -210,7 +216,7 @@ const StudentAttendance: FC<any> = ({
   };
 
   const editAttendance = (data: any, index: number): void => {
-    setModalTitle('Edit Review');
+    setModalTitle('Edit Attendance');
     setIndex(index);
     toggleModal();
     setEditAttendanceModal(true);
@@ -227,18 +233,50 @@ const StudentAttendance: FC<any> = ({
   };
 
   const addToCart = () => {
-    let data: any = {
-      course_token: studentAttendanceList.selected_course_data.course_token,
-      class_type: studentAttendanceList.selected_course_data.price_type,
+    
+
+    const finalData : CartDetailsData = {
+      courseToken: studentAttendanceList.selected_course_data.course_token,
+      classType: studentAttendanceList.selected_course_data.price_type.id,
+      userToken: userData.token,
     };
 
-    navigation.navigate('Checkout', {
-      screen: 'CartPage',
-      params: {
-        refillCourse: data,
-      },
-    });
+    dispatch(cartDetails(finalData))
+      .unwrap()
+      .then(response => {
+        console.log(response)
+        dispatch(setPageLoading(true));
+        if(response.data.status==="success"){
+          setCheckoutToken(response.data.data.checkout_token);
+          
+        }
+        else if(response.data.status==='failure'){
+          dispatch(setPageLoading(false));
+          console.log(response.data.error_message.message)
+      Alert.alert('', response.data.error_message.message, [
+        {text: 'Okay', style: 'cancel'},
+      ]);
+        }
+        
+      })
+      .catch(err => {
+        dispatch(setPageLoading(false));
+      });
+
   };
+
+  useEffect(()=>{
+    if(checkoutToken){
+      navigation.navigate('Checkout', {
+        screen: 'CartPage',
+        params: {
+          
+          checkoutToken: checkoutToken
+        },
+      });
+    }
+    
+  }, [checkoutToken]);
 
   const toggleModal = () => {
     //setIsModalVisible(!isModalVisible);
@@ -281,6 +319,7 @@ const StudentAttendance: FC<any> = ({
       dispatch(submitMarkedAttendance(d))
         .unwrap()
         .then(response => {
+          setReviewIndex(null)
           setEditAttendanceModal(false);
           dispatch(setPageLoading(false));
           if (response?.data.status === 'success') {
@@ -291,7 +330,7 @@ onRefresh();
               messageStatus: 'success',
               messageTitle: 'Thank You!',
               messageDesc: response.data.error_message.message,
-              timeOut: 4000,
+              timeOut: 7000,
               backRoute: 'Attendance',
               params: {
                 courseToken: courseToken,
@@ -304,7 +343,7 @@ onRefresh();
               messageStatus: 'failure',
               messageTitle: 'Sorry!',
               messageDesc: response?.data.error_message.message,
-              timeOut: 4000,
+              timeOut: 7000,
               backRoute: 'Attendance',
               params: {
                 courseToken: courseToken,
@@ -331,14 +370,14 @@ onRefresh();
 
   const addReview = () => {
     setIndex(reviewIndex);
-    setModalTitle('Add Review');
+    setModalTitle('Mark Attendance');
     setEditAttendanceModal(true);
   };
 
   console.log(attendances);
   return (
     <View style={styles.container}>
-      {/* <CustomStatusBar /> */}
+      <CustomStatusBar />
       {pageLoading && <PageLoader />}
       {!pageLoading ? (
         <>
@@ -357,15 +396,18 @@ onRefresh();
           />
           <KeyboardAwareScrollView
             style={styles.scrollView}
+            // behavior={'padding'}
             keyboardShouldPersistTaps={'handled'}
-            scrollEventThrottle={16}
+            
+            // scrollEventThrottle={16}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
             onScroll={Animated.event(
               [{nativeEvent: {contentOffset: {y: scrollY}}}],
               {useNativeDriver: false},
-            )}>
+            )}
+            >
             <View style={[styles.infoWrapper]}>
               <View style={styles.row}>
                 <View>
@@ -408,11 +450,11 @@ onRefresh();
               dashThickness={1}
               dashGap={5}
               dashColor={lineColor}
-            />
+             />
 
               <View style={styles.row}>
                 <View style={styles.halfWidth}>
-                  <Text style={[styles.row_title]}>Teacher Name</Text>
+                  <Text style={[styles.row_title]}>Teacher's Name</Text>
                   {attendancesStatus === 'loading' ? (
                     <Bubbles size={7} color={brandColor} />
                   ) : (
@@ -440,7 +482,7 @@ onRefresh();
               dashThickness={1}
               dashGap={5}
               dashColor={lineColor}
-            />
+             />
               <View style={styles.row}>
                 <View style={styles.halfWidth}>
                   <Text style={styles.row_title}>
@@ -503,7 +545,7 @@ onRefresh();
               </View>
               </> : null }
             </View>
-            <View style={styles.attendanceListWrapper}>
+            <View style={[styles.attendanceListWrapper]}>
               {attendancesStatus === 'loading' ? (
                 <View style={styles.cardView}>
                   <Bubbles size={7} color={brandColor} />
@@ -511,7 +553,7 @@ onRefresh();
               ) : null}
 
               {reviewIndex !== null ? (
-                <View style={styles.addReview}>
+                <View style={[styles.addReview]}>
                   <View>
                     <Text style={styles.row_title}> Class No. </Text>
                     <Text style={styles.row_content}>
@@ -522,7 +564,7 @@ onRefresh();
                   <TouchableOpacity
                     onPress={addReview}
                     style={styles.submitAttendanceButton}>
-                    <Text style={styles.submitAttendanceText}>Add Review</Text>
+                    <Text style={styles.submitAttendanceText}>Mark Attendance</Text>
                   </TouchableOpacity>
                 </View>
               ) : null}
@@ -638,7 +680,8 @@ onRefresh();
           statusMessage={appStatusMessage}
         /> */}
       {editAttendanceModal ? (
-        <Modal presentationStyle="overFullScreen" transparent={true}>
+      
+        <Modal presentationStyle="overFullScreen" transparent={true} statusBarTranslucent={true}>
           <TouchableOpacity  activeOpacity={1} onPress={()=> setEditAttendanceModal(false)} style={StyleCSS.styles.modalBackground}>
             <TouchableOpacity activeOpacity={1}  onPress={()=>{}} style={StyleCSS.styles.modalView}>
               <>
@@ -781,9 +824,10 @@ onRefresh();
             </TouchableOpacity>
           </TouchableOpacity>
         </Modal>
+       
       ) : null}
       {isRefillModalVisible ? (
-        <Modal transparent={true}>
+        <Modal transparent={true} animationType={'slide'} statusBarTranslucent={true} >
           <View style={{backgroundColor: 'rgba(0,0,0,0.3)', height: '100%'}}>
             <View
               style={{
@@ -845,7 +889,7 @@ export default StudentAttendance;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: background4,
   },
   halfWidth: {
     width: '50%',
@@ -853,7 +897,7 @@ const styles = StyleSheet.create({
   safecontainer: {
     width: width,
     flex: 1,
-    backgroundColor: appBackground,
+    backgroundColor: background4,
   },
   modalTitle: {
     fontWeight: '700',
@@ -881,7 +925,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E4E5',
   },
   infoWrapper: {
-    marginHorizontal: 16,
+    paddingHorizontal: 16,
+    backgroundColor:'#fff'
   },
   scrollView: {
     paddingBottom: 50,

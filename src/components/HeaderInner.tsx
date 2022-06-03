@@ -10,7 +10,7 @@ import {
   Alert,
   Animated,
   ImageBackground,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -28,18 +28,17 @@ import {brandColor} from '../styles/colors';
 // import Courses from '../assets/images/Courses.svg';
 // import Browse from '../assets/images/Browse.svg';
 import StyleCSS from '../styles/style';
-import { border } from 'native-base/lib/typescript/theme/styled-system';
+import {border} from 'native-base/lib/typescript/theme/styled-system';
 // import CoursesActive from '../assets/images/courses-active'
 // import BrowseActive from '../assets/images/browse-active'
 // import Logo from  '../assets/images/logo.svg'
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import CustomImage from './CustomImage';
 
 const width = Dimensions.get('screen').width;
 const HeaderInner = (props: any) => {
-
   const dispatch = useAppDispatch();
-  const  {userData} = useSelector(userState);
+  const {userData} = useSelector(userState);
   const [csrfToken, setCsrfToken] = useState('');
   const navigation = useNavigation();
   const doUnMasquerade = () => {
@@ -118,213 +117,230 @@ const HeaderInner = (props: any) => {
       ) : null} */}
 
       {props.type == 'dashboard' ? (
-        // <Animated.View
-        //   style={{
-        //      overflow: 'visible',
-        //     // height: props.dashboardHeight ? props.dashboardHeight : 191,
-        //      position: 'absolute',
-        //     top: 0,
-        //     left: 0,
-        //     right: 0,
-        //     width:width,
-        //     // borderWidth:5,
-        //     borderColor:'blue'
-        //   }}>
-        //    <View
-        //     style={{
-        //       flexDirection: 'row',
-        //       alignItems:'center',
-        //       justifyContent:'space-between',
-        //       flex: 1,
-        //       width: '100%',
-        //       // position: 'absolute',
-        //       zIndex: 999,
-        //       // borderColor:'white',
-        //       borderWidth:1,
-        //     }}>
-            
-        //   </View>
-
-        //   <Animated.Image
-        //     style={[styles.backgroundImage]}
-        //     source={require('@images/header_bg.png')}
-        //   />
-        //    <Animated.View
-        //     style={{
-        //       height: 100,
-        //       flexDirection: 'row',
-        //       flex: 1,
-        //       width: '100%',
-        //       position: 'absolute',
-        //       top: 0,
-        //       left: 0,
-        //       right: 0,
-        //       borderWidth:2,
-        //       borderColor:'red',
-        //       paddingTop: props.fixedHeight,
-        //       zIndex: 99,
-        //       overflow: 'hidden',
-        //     }}>
-        //     <Animated.Image
-        //       style={{
-        //         width:'100%',
-        //         position: 'absolute',
-        //         left: 0,
-        //         right: 0,
-        //         top: 0,
-        //         height: 120,
-        //         borderWidth:3,
-        //       borderColor:'yellow',
-        //       }}
-        //       source={require('@images/header_bg.png')}
-        //     />
-        //   </Animated.View>
-        //   <View
-        //     style={{
-        //       flex: 1,
-        //       margin: 24,
-        //       marginBottom:0,
-        //       position: 'absolute',
-        //       right: 0,
-        //       borderWidth:1,
-        //       left: 0,
-        //       zIndex: 100,
-        //     }}>
-        //     <Animated.View
-        //       style={{
-        //         position:'absolute',
-        //         width:width,
-        //         marginHorizontal:16,
-        //         flexDirection: 'row',
-        //         alignItems:'center',
-        //         justifyContent:'space-between',
-        //         flex: 1,
-        //         // borderWidth:1,
-        //         borderColor:'green',
-        //         marginTop: props.titleTop,
-        //       }}>
-        //         <Animated.View style={{flexDirection:'row', alignItems:'center'}}>
-        //           <Logo/>
-        //           <Animated.Text
-        //               style={[styles.mainHeaderTitle, {fontSize: props.titleSize}]}>
-        //               {props.title}
-        //           </Animated.Text>
-        //         </Animated.View>
-        //         <Animated.View>
-        //         <Animated.View style={{flexDirection: 'row', alignItems:'center', justifyContent:'space-between', width:'30%'}}>
-        //       <TouchableOpacity style={{height:48, width:48, zIndex: 9999, flexDirection: 'column', justifyContent:'center', alignItems:'center'}} onPress={()=>{props.navigation.navigate("Browse", {screen: 'Categories',params:{backroute:props.backroute}})}}>{props.browseSelected ? <BrowseActive/> : <Browse/>}<Text style={{fontSize:10, marginTop:2, color:'#fff', fontWeight:props.browseSelected ?'700' : '500', fontFamily:Helper.switchFont('regular')}}>Browse</Text></TouchableOpacity>
-        //       <TouchableOpacity style={{height:48, width:50, zIndex:9999, flexDirection: 'column', justifyContent:'center', alignItems:'center'}} onPress={()=>{props.navigation.navigate('Browse', {screen : 'FindCourses', params:{backroute:props.backroute}})}}>{props.coursesSelected ? <CoursesActive/> : <Courses/> }<Text style={{fontSize:10, marginTop:2, color:'#fff', fontWeight:props.coursesSelected ?'700' : '500', fontFamily:Helper.switchFont('regular')}}>Courses</Text></TouchableOpacity>
-        //       </Animated.View>
-        //       </Animated.View>
-        //     </Animated.View> 
-        //   </View>
-        // </Animated.View>
-        
-        // <Animated.View style={{position:'absolute', top:0, backgroundColor:'#fff',height:props.changingHeight}}>
-        //             <View style={{backgroundColor:'#000'}}/>
-        //       </Animated.View>
-        <Animated.View style={{
-          height:  config.headerHeight,
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-        }}>
-          {/* <CustomImage style={[styles.backgroundImage, {height:config.headerHeight}]} uri={`${config.media_url}/header_bg.png`}/> */}
-<Image
+        <Animated.View
+          style={{
+            height: config.headerHeight,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+          }}>
+          <CustomImage
+            style={[styles.backgroundImage, {height: config.headerHeight}]}
+            uri={`${config.media_url}header_bg.png`}
+          />
+          {/* <Image
   style={[styles.backgroundImage, {height:config.headerHeight}]}
-  source={require('@images/header_bg.png')}/>
-  <View style={styles.centerItems}>
-    <View style={{flexDirection:'row', alignItems:'center'}} >
-    {props.back ? 
-      <TouchableOpacity style={{flexDirection:'row', height:44, justifyContent:'flex-start', alignItems:'center', zIndex: 9999 , marginRight:20}} onPress={()=>{props.navigation.goBack()}} >
-        <CustomImage height={24} width={24} uri={`${config.media_url}back.svg`}/>
-        {/* <Back/> */}
-      </TouchableOpacity> : null }
-      <View style={{flexDirection:'row', alignItems:'center'}}>
-        {props.logo ? 
-        <View style={{marginRight:8}}>
-           <CustomImage height={24} width={24} uri={`${config.media_url}logo.svg`}/>
-          {/* <Logo/> */}
-          </View>
-         : null }
-      <Animated.Text
-        style={[styles.mainHeaderTitle]}>
-        {props.title}
-      </Animated.Text>
-      </View>
-    </View>
-    {props.rightHeader ? null :
-    <>
-    <Animated.View style={{flexDirection: 'row', alignItems:'center', justifyContent:'space-between', width:'30%'}}>
-      <TouchableOpacity style={{height:48, width:48, zIndex: 9999, flexDirection: 'column', justifyContent:'center', alignItems:'center'}} onPress={()=>{props.navigation.navigate("Browse", {screen: 'Categories',params:{backroute:props.backroute}})}}>{props.browseSelected ? 
-       <CustomImage height={24} width={24} uri={`${config.media_url}browse-active.svg`}/>
-      : 
-      <CustomImage height={24} width={24} uri={`${config.media_url}browse.svg`}/>
-      }<Text style={{fontSize:10, marginTop:2, color:'#fff', fontWeight:props.browseSelected ?'700' : '500', fontFamily:Helper.switchFont('regular')}}>Explore</Text></TouchableOpacity>
-      <TouchableOpacity style={{height:48, width:50, zIndex:9999, flexDirection: 'column', justifyContent:'center', alignItems:'center'}} onPress={()=>{props.navigation.navigate('Browse', {screen : 'FindCourses', params:{backroute:props.backroute}})}}>{props.coursesSelected ? 
-      <CustomImage height={24} width={24}  uri={`${config.media_url}courses-active.svg`}/>
-       : 
-       <CustomImage height={24} width={24}  uri={`${config.media_url}courses.svg`}/>
-       }<Text style={{fontSize:10, marginTop:2, color:'#fff', fontWeight:props.coursesSelected ?'700' : '500', fontFamily:Helper.switchFont('regular')}}>Courses</Text></TouchableOpacity>
-      </Animated.View>
-    </>}
-  </View>
-<View></View>
-</Animated.View>    
-              
-                   
-      ) :
-              props.type=== 'findCourse' ? 
-              (
-                <Animated.View style={{
-                  height:  props.changingHeight,
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                }}>
-        <Image
-          style={[styles.backgroundImage]}
-          source={require('@images/header_bg.png')}/>
+  source={require('@images/header_bg.png')}/> */}
           <View style={styles.centerItems}>
-            <View style={{flexDirection:'row', alignItems:'center'}} >
-            {props.back ? 
-            
-              <TouchableOpacity style={{flexDirection:'row', height:44, justifyContent:'flex-start', alignItems:'center', zIndex: 9999 , marginRight:20}} onPress={()=>{props.navigation.goBack()}} >
-                <CustomImage height={24} width={24}  uri={`${config.media_url}back.svg`}/>
-              </TouchableOpacity> : null }
-              <View style={{flexDirection:'row', alignItems:'center'}}>
-                {props.logo ? 
-                <View style={{marginRight:8}}>
-                  <CustomImage height={24} width={24}  uri={`${config.media_url}logo.svg`}/>
+            <View style={StyleCSS.styles.fdrCenter}>
+              {props.back ? (
+                <TouchableOpacity
+                  style={styles.backWrapper}
+                  onPress={() => {
+                    props.navigation.goBack();
+                  }}>
+                  <CustomImage
+                    height={24}
+                    width={24}
+                    uri={`${config.media_url}back.svg`}
+                  />
+                  {/* <Back/> */}
+                </TouchableOpacity>
+              ) : null}
+              <View style={StyleCSS.styles.fdrCenter}>
+                {props.logo ? (
+                  <View style={{marginRight: 8}}>
+                    <CustomImage
+                      height={40}
+                      width={40}
+                      uri={`${config.media_url}logo.svg`}
+                    />
+                    {/* <Logo/> */}
                   </View>
-                 : null }
-              <Animated.Text
-                style={[styles.mainHeaderTitle]}>
-                {props.title}
-              </Animated.Text>
+                ) : null}
+                <Animated.Text style={[styles.mainHeaderTitle]}>
+                  {props.title}
+                </Animated.Text>
               </View>
             </View>
-            {props.removeRightHeader ? null :
-            <>
-            <Animated.View style={{flexDirection: 'row', alignItems:'center', justifyContent:'space-between', width:'30%'}}>
-              <TouchableOpacity style={{height:48, width:48, zIndex: 9999, flexDirection: 'column', justifyContent:'center', alignItems:'center'}} onPress={()=>{props.navigation.navigate("Browse", {screen: 'Categories',params:{backroute:props.backroute}})}}>{props.browseSelected ? 
-              <CustomImage height={24} width={24}  uri={`${config.media_url}browse-active.svg`}/>
-               :
-               <CustomImage height={24} width={24}  uri={`${config.media_url}browse.svg`}/>
-                }<Text style={{fontSize:10, marginTop:2, color:'#fff', fontWeight:props.browseSelected ?'700' : '500', fontFamily:Helper.switchFont('regular')}}>Explore</Text></TouchableOpacity>
-              <TouchableOpacity style={{height:48, width:50, zIndex:9999, flexDirection: 'column', justifyContent:'center', alignItems:'center'}} onPress={()=>{props.navigation.navigate('Browse', {screen : 'FindCourses', params:{backroute:props.backroute}})}}>{props.coursesSelected ?
-              <CustomImage height={24} width={24}  uri={`${config.media_url}courses-active.svg`}/>
-                : 
-                <CustomImage height={24} width={24}  uri={`${config.media_url}courses.svg`}/>
-                }<Text style={{fontSize:10, marginTop:2, color:'#fff', fontWeight:props.coursesSelected ?'700' : '500', fontFamily:Helper.switchFont('regular')}}>Courses</Text></TouchableOpacity>
-              </Animated.View>
-            </>}
+            {props.rightHeader ? null : (
+              <>
+                <Animated.View style={styles.rightHeader}>
+                  <TouchableOpacity
+                    style={styles.buttonWrapper}
+                    onPress={() => {
+                      props.navigation.navigate('Browse', {
+                        screen: 'Categories',
+                        params: {backroute: props.backroute},
+                      });
+                    }}>
+                    {props.browseSelected ? (
+                      <CustomImage
+                        height={24}
+                        width={24}
+                        uri={`${config.media_url}browse-active.svg`}
+                      />
+                    ) : (
+                      <CustomImage
+                        height={24}
+                        width={24}
+                        uri={`${config.media_url}browse.svg`}
+                      />
+                    )}
+                    <Text
+                      style={[
+                        styles.buttonText,
+                        {fontWeight: props.coursesSelected ? '700' : '500'},
+                      ]}>
+                      Explore
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.buttonWrapper}
+                    onPress={() => {
+                      props.navigation.navigate('Browse', {
+                        screen: 'FindCourses',
+                        params: {backroute: props.backroute},
+                      });
+                    }}>
+                    {props.coursesSelected ? (
+                      <CustomImage
+                        height={24}
+                        width={24}
+                        uri={`${config.media_url}courses-active.svg`}
+                      />
+                    ) : (
+                      <CustomImage
+                        height={24}
+                        width={24}
+                        uri={`${config.media_url}courses.svg`}
+                      />
+                    )}
+                    <Text
+                      style={[
+                        styles.buttonText,
+                        {fontWeight: props.coursesSelected ? '700' : '500'},
+                      ]}>
+                      Courses
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              </>
+            )}
           </View>
-        <View></View>
-      </Animated.View>
-              
+          <View></View>
+        </Animated.View>
+      ) : props.type === 'findCourse' ? (
+        <Animated.View
+          style={{
+            height: props.changingHeight,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+          }}>
+          <Image
+            style={[styles.backgroundImage]}
+            source={require('@images/header_bg.png')}
+          />
+          <View style={styles.centerItems}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              {props.back ? (
+                <TouchableOpacity
+                  style={styles.backWrapper}
+                  onPress={() => {
+                    props.navigation.goBack();
+                  }}>
+                  <CustomImage
+                    height={24}
+                    width={24}
+                    uri={`${config.media_url}back.svg`}
+                  />
+                </TouchableOpacity>
+              ) : null}
+              <View style={StyleCSS.styles.fdrCenter}>
+                {props.logo ? (
+                  <View style={{marginRight: 8}}>
+                    <CustomImage
+                      height={40}
+                      width={40}
+                      uri={`${config.media_url}logo.svg`}
+                    />
+                  </View>
+                ) : null}
+                <Animated.Text style={[styles.mainHeaderTitle]}>
+                  {props.title}
+                </Animated.Text>
+              </View>
+            </View>
+            {props.removeRightHeader ? null : (
+              <>
+                <Animated.View style={styles.rightHeader}>
+                  <TouchableOpacity
+                    style={styles.buttonWrapper}
+                    onPress={() => {
+                      props.navigation.navigate('Browse', {
+                        screen: 'Categories',
+                        params: {backroute: props.backroute},
+                      });
+                    }}>
+                    {props.browseSelected ? (
+                      <CustomImage
+                        height={24}
+                        width={24}
+                        uri={`${config.media_url}browse-active.svg`}
+                      />
+                    ) : (
+                      <CustomImage
+                        height={24}
+                        width={24}
+                        uri={`${config.media_url}browse.svg`}
+                      />
+                    )}
+                    <Text
+                      style={[
+                        styles.buttonText,
+                        {fontWeight: props.browseSelected ? '700' : '500'},
+                      ]}>
+                      Explore
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.buttonWrapper}
+                    onPress={() => {
+                      props.navigation.navigate('Browse', {
+                        screen: 'FindCourses',
+                        params: {backroute: props.backroute},
+                      });
+                    }}>
+                    {props.coursesSelected ? (
+                      <CustomImage
+                        height={24}
+                        width={24}
+                        uri={`${config.media_url}courses-active.svg`}
+                      />
+                    ) : (
+                      <CustomImage
+                        height={24}
+                        width={24}
+                        uri={`${config.media_url}courses.svg`}
+                      />
+                    )}
+                    <Text
+                      style={[
+                        styles.buttonText,
+                        {fontWeight: props.coursesSelected ? '700' : '500'},
+                      ]}>
+                      Courses
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              </>
+            )}
+          </View>
+          <View></View>
+        </Animated.View>
       ) : null}
 
       {global.isMasquerade &&
@@ -373,7 +389,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: wp('100%'),
     flexDirection: 'row',
-    height:Platform.OS === 'android' ? 116 : 120,
+    height: Platform.OS === 'android' ? 116 : 120,
     // zIndex:30
   },
   backgroundImageInner: {
@@ -422,7 +438,7 @@ const styles = StyleSheet.create({
     color: 'rgb(255, 255, 255)',
     fontSize: 20,
     fontFamily: Helper.switchFont('bold'),
-    fontWeight:'700',
+    fontWeight: '700',
   },
   // innerHeaderTitle: {
   //   color: 'rgb(255, 255, 255)',
@@ -441,16 +457,44 @@ const styles = StyleSheet.create({
     fontFamily: Helper.switchFont('regular'),
   },
   centerItems: {
-    zIndex:1000000,
-    position:'absolute',
-    width:width,
+    zIndex: 1000000,
+    position: 'absolute',
+    width: width,
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: Platform.OS==='android' ? 34 : 38,
-    justifyContent:'space-between',
+    marginTop: Platform.OS === 'android' ? 34 : 38,
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     // height:40,
-    marginBottom:24
+    marginBottom: 24,
+  },
+  backWrapper: {
+    flexDirection: 'row',
+    height: 44,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    zIndex: 9999,
+    marginRight: 20,
+  },
+  buttonWrapper: {
+    height: 48,
+    width: 48,
+    zIndex: 9999,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 10,
+    marginTop: 2,
+    color: '#fff',
+    fontFamily: Helper.switchFont('regular'),
+  },
+  rightHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '30%',
   },
 });
 

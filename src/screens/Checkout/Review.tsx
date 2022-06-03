@@ -16,7 +16,7 @@ import {
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import {useSelector} from 'react-redux';
-import {checkoutState, proceedToPayment} from '../../reducers/checkout.slice';
+import {checkoutState, proceedToPayment, detailsCheckoutToken, setCheckoutDataDetails} from '../../reducers/checkout.slice';
 import StepIndicator from 'react-native-step-indicator';
 import PageLoader from '../../components/PageLoader';
 import {WebView} from 'react-native-webview';
@@ -34,6 +34,9 @@ import HeaderInner from '../../components/HeaderInner';
 import DashedLine from 'react-native-dashed-line';
 import PurchaseDot from '../../assets/images/purchase_dot.svg';
 import CustomImage from '../../components/CustomImage';
+import LineDashed from '../../components/LineDashed';
+import timezones from '../../assets/json/timezones.json';
+import CustomStatusBar from '../../components/CustomStatusBar';
 const height = Dimensions.get('screen').height;
 const width = Dimensions.get('screen').width;
 
@@ -42,8 +45,11 @@ type Props = NativeStackScreenProps<RootParamList, 'Review'>;
 type PayType = 'DISCOUNT';
 type PaymentStatus = 'Pending' | 'Complete' | 'Cancelled';
 
-const Review: FC<Props> = ({navigation}) => {
+const Review: FC<Props> = ({route, navigation}) => {
   const currentPage = 3;
+  const teacherAvailability = route.params?.teacher_availability;
+
+  const checkoutToken = route.params?.checkoutToken
   const dispatch = useAppDispatch();
   const {checkoutDataDetails} = useSelector(checkoutState);
   const {userData} = useSelector(userState);
@@ -52,10 +58,29 @@ const Review: FC<Props> = ({navigation}) => {
   const [reqData, setReqData] = useState('');
   const [paymentURL, setPaymentURL] = useState('');
   const [status, setStatus] = useState<PaymentStatus>('Pending');
+  const [timezone, setTimezone] = useState<any>(null);
 
   let scrollY;
-
-  useEffect(() => {}, []);
+console.log(teacherAvailability);
+  useEffect(() => {
+    let data: any = {
+      checkoutToken: checkoutToken,
+      userToken: userData.token,
+    };
+    setTimezone(timezones);
+    dispatch(setPageLoading(true));
+    dispatch(detailsCheckoutToken(data))
+      .unwrap()
+      .then(response => {
+        
+        dispatch(setPageLoading(false));
+      dispatch(setCheckoutDataDetails(response.data.data))
+        console.log(response);
+      })
+      .catch(err => {
+        dispatch(setPageLoading(false));
+      });
+  }, []);
 
   const getDiscountAmount = (amount: any) => {
     let TA = amount?.total_amount;
@@ -103,10 +128,10 @@ const Review: FC<Props> = ({navigation}) => {
 
   const proceedPayment = (payType: PayType) => {
     dispatch(setPageLoading(true));
-    setShowModal(true);
+    // setShowModal(true);
     let finalData = checkoutDataDetails;
     let finalPay = finalData.amount.pay_amount;
-    finalData.amount.pay_amount = finalPay.replace(/,/g, '');
+    let pay_amount = finalPay.replace(/,/g, '');
 
     if (payType === 'DISCOUNT') {
       var date = new Date();
@@ -115,7 +140,7 @@ const Review: FC<Props> = ({navigation}) => {
         course: checkoutDataDetails.course.id,
         checkout_id: checkoutDataDetails.id,
         number_of_class: checkoutDataDetails.amount.number_of_class,
-        paid_ammount: checkoutDataDetails.amount.pay_amount,
+        paid_ammount: pay_amount, //checkoutDataDetails.amount.pay_amount,
         error_code: 'SUCCESS',
         error_msg: '100% discount transaction',
         pay_status: 'S',
@@ -150,14 +175,15 @@ const Review: FC<Props> = ({navigation}) => {
       dispatch(proceedToPayment(finalData))
         .unwrap()
         .then(response => {
+          console.log(response);
           dispatch(setPageLoading(false));
           if (response.data.status === 'success') {
             navigation.navigate('ActionStatus', {
-              messageStatus: '',
+              messageStatus: 'success',
               messageTitle: 'Congratulations!',
               messageDesc: response.data.error_message.message,
-              timeOut: 4000,
-              backRoute: 'Dashboard',
+              timeOut: 7000,
+              backRoute: 'Dashboard'//response.data.data.purchase_type==='R'? 'Dashboard': 'CourseDetail',
             });
           } else if (response.data.status === 'failure') {
             Alert.alert('', response.data.error_message.message, [
@@ -234,7 +260,7 @@ const Review: FC<Props> = ({navigation}) => {
               messageStatus: 'success',
               messageTitle: 'Congratulations!',
               messageDesc: response.data.error_message.message,
-              timeOut: 4000,
+              timeOut: 7000,
               backRoute: 'Dashboard',
             });
           } else if (response.data.status === 'failure') {
@@ -246,10 +272,10 @@ const Review: FC<Props> = ({navigation}) => {
         .catch(error => {
           dispatch(setPageLoading(false));
           navigation.navigate('ActionStatus', {
-            messageStatus: '',
+            messageStatus: 'failure',
             messageTitle: 'Sorry!',
             messageDesc: config.messages.common_error,
-            timeOut: 4000,
+            timeOut: 7000,
             backRoute: 'Dashboard',
           });
         });
@@ -264,7 +290,15 @@ const Review: FC<Props> = ({navigation}) => {
   console.log(checkoutDataDetails);
   return (
     <>
-      <HeaderInner
+      
+<CustomStatusBar/>
+      <View style={styles.container}>
+        {pageLoading ? (
+          <PageLoader />
+        ) : (
+          <View>
+
+            <HeaderInner
         title={'Review Order'}
         type={'findCourse'}
         back={true}
@@ -290,12 +324,6 @@ const Review: FC<Props> = ({navigation}) => {
           </Text>
         </View>
       </View>
-
-      <View style={styles.container}>
-        {pageLoading ? (
-          <PageLoader />
-        ) : (
-          <View>
             {/* <HeaderInner
               iconTop={this.iconTop}
               changingHeight={this.changingHeight}
@@ -308,7 +336,7 @@ const Review: FC<Props> = ({navigation}) => {
               type={"innerpage"}
             /> */}
             <ScrollView
-              // style={{marginTop: 16}}
+               style={styles.scrollView}
               scrollEventThrottle={16}
               // onScroll={Animated.event(
               //   [{ nativeEvent: { contentOffset: { y: this.scrollY } } }],
@@ -323,7 +351,22 @@ const Review: FC<Props> = ({navigation}) => {
                   currentPosition={currentPage}
                 />
               </View>
-
+              {checkoutDataDetails.purchase_type==='N' ?
+              <View style={[{marginHorizontal:16, marginTop:16}]}>
+                <Text style={styles.title}>Your selected slots</Text>
+                        <Text style={[{marginTop:16}, StyleCSS.styles.labelText]}>Timings are based on your timezone - {timezone && timezone.filter((i: any) => i.value === userData.timezone)[0].label}</Text>
+                       <View style={StyleCSS.styles.marginV16}>
+                         <LineDashed/>
+                        {Object.entries(teacherAvailability).map((day: any)=>{
+                         return (day[1].length>0 ? (
+                           <View style={[StyleCSS.styles.fdrCenter,{marginTop:16}]}><Text style={[StyleCSS.styles.labelText,{textTransform:'capitalize'}]}>{day[0]} : </Text><Text >{day[1].map((time:string, index:number) =>{
+                             return( index === day[1].length-1 ? <Text style={StyleCSS.styles.contentText}>{time}</Text> : <Text style={StyleCSS.styles.contentText}>{time}, </Text>)
+                           })}</Text></View>
+                         ) : null)
+                        })}
+                       </View>
+                       <View style={[StyleCSS.styles.lineStyleLight, {marginTop:8}]}/>
+                        </View>:null}
               <View style={styles.headingWrapper}>
                 <Text style={styles.title}>Purchase Details</Text>
               </View>
@@ -750,12 +793,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+    // 
+  },
+  scrollView:{
     marginTop: config.headerHeight + 32,
   },
   stepIndicator: {
     paddingHorizontal: 0,
     marginTop: 16,
   },
+
   headingWrapper: {
     paddingLeft: 16,
     paddingRight: 16,
@@ -903,11 +950,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     color: 'rgb(225, 225, 225)',
     fontSize: 16,
-    fontFamily: helper.switchFont('regular'),
+    fontFamily: helper.switchFont('bold'),
   },
   innerHeaderTitle: {
     color: 'rgb(255, 255, 255)',
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: helper.switchFont('medium'),
   },
   priceSection: {

@@ -21,7 +21,7 @@ interface TextInputProps {
     multiline?: boolean;
     onSubmitEditing ?: any;
     defaultValue ?: any;
-    onKeyPress
+    onKeyPress?: any;
 }
 
 const TextField = ({onKeyPress, defaultValue, onSubmitEditing , keyboardType, multiline, label, onFocus, onBlur, mode, style, selectTextOnFocus, onChangeText, secureTextEntry,value,autoCorrect, editable, autoCapitalize, returnKeyType} : TextInputProps) => {

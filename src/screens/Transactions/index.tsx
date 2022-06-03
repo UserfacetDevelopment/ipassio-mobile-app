@@ -15,6 +15,7 @@ import {
 Platform
 } from 'react-native';
 import Moment from 'moment';
+import 'moment-timezone';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import {useAppDispatch} from '../../app/store';

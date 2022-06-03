@@ -9,15 +9,14 @@ import {
   // Image,
   Alert,
   Keyboard,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
-import DropDownPicker from 'react-native-dropdown-picker';
 import PhoneInput from 'react-native-phone-number-input';
 import helper from '../../utils/helperMethods';
-import SelectDropdown from 'react-native-select-dropdown';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+// import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import Moment from 'moment';
+import 'moment-timezone';
 import {
   background,
   background2,
@@ -30,7 +29,11 @@ import {
   secondaryColorBorder,
 } from '../../styles/colors';
 import {useSelector} from 'react-redux';
-import {courseState, requestFreeSession, getLookups} from '../../reducers/courses.slice';
+import {
+  courseState,
+  requestFreeSession,
+  getLookups,
+} from '../../reducers/courses.slice';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import {userState} from '../../reducers/user.slice';
@@ -50,6 +53,8 @@ import StyleCSS from '../../styles/style';
 import TextField from '../../components/CustomTextField';
 import Textarea from 'react-native-textarea';
 import CustomImage from '../../components/CustomImage';
+import country_listing from '../../assets/json/country_region.json';
+
 const width = Dimensions.get('screen').width;
 
 type Props = NativeStackScreenProps<RootParamList, 'RequestMeeting'>;
@@ -67,7 +72,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
   const {isLoggedIn, userData, userLocation} = useSelector(userState);
   const [selectedCountry, setSelectedCountry] = useState<any>(undefined);
   const [countryList, setCountryList] = useState<Array<any>>([]);
-  let clist = config.country_listing;
+  let clist = country_listing;
   const [reason, setReason] = useState<any>(undefined);
   const [yob, setYob] = useState<any>(undefined);
   const [optionsYearList, setOptionsYearList] = useState<Array<any>>([]);
@@ -79,6 +84,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
     isLoggedIn ? userData.country_code.substring(1) : '',
   );
   const [readMore, setReadMore] = useState(false);
+
   const gender = [
     {value: 'Male', label: 'M'},
     {value: 'Female', label: 'F'},
@@ -105,19 +111,33 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
   ]);
   const [selectedTimezone, setSelectedTimezone] = useState('');
   const [timezoneList, setTimezoneList] = useState([]);
+  const [meetingPlatformDetail, setMeeetingPlatformDetail] =
+    useState(undefined);
   const [selectedGender, setSelectedGender] = useState<any>(undefined);
   const [meetingPlatform, setMeetingPlatform] = useState<any>(undefined);
   const [platforms, setPlatforms] = useState<Array<any>>([]);
   const [p, setP] = useState<any>(null);
   const [showField, setShowField] = useState<boolean>(false);
   const [fieldLabel, setFieldLabel] = useState('');
-const phoneInput = useRef();
-  
+  // const [showErrorMeetingDetail, setShowErrorMeetingDetail] = useState(false);
+  const [meetingPlatformError, setMeetingPlatformError] = useState<
+    undefined | string
+  >(undefined);
 
-  // const showDateTimePicker = () => {
-  //   Keyboard.dismiss();
-  //   setIsDateTimePickerVisible(true);
-  // };
+  const phoneInput = useRef();
+
+  console.log(userData);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setSelectedGender(
+        gender.filter(item => item.label === userData.gender)[0],
+      );
+      setSelectedCountry(
+        clist.filter(item => item.value === userData.country)[0],
+      );
+    }
+  }, [isLoggedIn]);
 
   const hideDateTimePicker = () => {
     setIsDateTimePickerVisible(false);
@@ -149,132 +169,137 @@ const phoneInput = useRef();
     // {
     //when user is not logged in and yob should be there + user logged in and yob not required
     //  if (selectedCountry !== undefined && reason !== undefined)
-    if(phoneInput.current?.isValidNumber(data.number)){
-      console.log('correct')
+    if (phoneInput.current?.isValidNumber(data.number)) {
+      console.log('correct');
     }
+    console.log(meetingPlatform);
     if (
       selectedCountry !== undefined &&
       reason !== undefined &&
       meetingPlatform !== undefined
     ) {
-      if (data[meetingPlatform.code] !== undefined) {
-        if (
-          timeSlots[0].date !== '' &&
-          timeSlots[0].start_time !== '' &&
-          timeSlots[0].end_time &&
-          timeSlots[0].timezone
-        ) {
-          dispatch(setPageLoading(true));
-          let learn_on = new Array();
-          // if (course.taught_on) {
-          //   course.taught_on.map((val: any, i: number) => {
-          //     if (val.code !== 'I' && data[val.code] !== undefined) {
-          //       learn_on.push({code: val.code, contact_id: data[val.code]});
-          //     }
-          //   });
-          // }
-          if (meetingPlatform) {
-            if (meetingPlatform.code !== 'I') {
-              learn_on.push({
-                code: meetingPlatform.code,
-                contact_id: data[meetingPlatform.code],
-              });
-            } else {
-              learn_on.push({code: 'I', contact_id: ''});
-            }
-          }
+      // if (data[meetingPlatform.code] !== undefined || meetingPlatform.code ==='I') {
 
-          let formData;
-
-          formData = {
-            first_name: data.guest_firstname,
-            last_name: data.guest_lastname,
-            guest_email: data.guest_email,
-            gender: selectedGender?.label,
-            age: data.age,
-            reason: reason.label,
-            country_code: '+' + countryCode,
-            phone_number: phoneNumber,
-            city: data.city,
-            country: selectedCountry?.value,
-            add_info: data.add_info,
-            timezone: userLocation.data.timezone,
-            course: course.id,
-            taught_on: learn_on,
-            slots: timeSlots,
-          };
-          // if (!isLoggedIn) {
-          //   formData = {
-          //     course: course.id,
-          //     reason: reason.label,
-          //     phone_number: phoneNumber, //data.number,
-          //     city: data.city,
-          //     country: selectedCountry?.value,
-          //     time_info: data.time_info,
-          //     add_info: data.add_info,
-          //     timezone: userLocation.data.timezone,
-          //     taught_on: learn_on,
-          //     country_code: '+' + countryCode,
-          //     guest_name: data.guest_name,
-          //     guest_email: data.guest_email,
-          //     yob: yob.value,
-          //     gender: data.gender,
-          //   };
-          // } else {
-          //   formData = {
-          //     course: course.id,
-          //     reason: reason.label,
-          //     phone_number: phoneNumber,
-          //     city: data.city,
-          //     country: selectedCountry?.value,
-          //     time_info: data.time_info,
-          //     add_info: data.add_info,
-          //     timezone: userLocation.data.timezone,
-          //     taught_on: learn_on,
-          //     country_code: '+' + countryCode,
-          //   };
-          // }
-          dispatch(setPageLoading(false));
-          console.log(formData);
-          let finalData = {
-            formData: formData,
-            userToken: userData && userData.token,
-            loggedIn: isLoggedIn,
-          };
-          dispatch(requestFreeSession(finalData))
-            .unwrap()
-            .then(response => {
-              dispatch(setPageLoading(false));
-              console.log(response);
-              if (response.data.status === 'success') {
-                navigation.navigate('ActionStatus', {
-                  messageStatus: 'success',
-                  messageTitle: 'Success!',
-                  messageDesc: response.data.error_message.message,
-                  timeOut: 4000,
-                  backRoute: 'CourseDetail',
-                  params: {},
-                });
-              } else if (response.data.status === 'failure') {
-                navigation.navigate('ActionStatus', {
-                  messageStatus: 'failure',
-                  messageTitle: 'Sorry!',
-                  messageDesc: response.data.error_message.message,
-                  timeOut: 4000,
-                  backRoute: 'RequestMeeting',
-                  params: {},
-                });
-              }
-            })
-            .catch(() => {
-              dispatch(setPageLoading(false));
+      if (
+        timeSlots[0].date !== '' &&
+        timeSlots[0].start_time !== '' &&
+        timeSlots[0].end_time &&
+        timeSlots[0].timezone
+      ) {
+        dispatch(setPageLoading(true));
+        let learn_on = new Array();
+        // if (course.taught_on) {
+        //   course.taught_on.map((val: any, i: number) => {
+        //     if (val.code !== 'I' && data[val.code] !== undefined) {
+        //       learn_on.push({code: val.code, contact_id: data[val.code]});
+        //     }
+        //   });
+        // }
+        if (meetingPlatform) {
+          if (meetingPlatform.code !== 'I') {
+            learn_on.push({
+              code: meetingPlatform.code,
+              contact_id: data[meetingPlatform.code]
+                ? data[meetingPlatform.code]
+                : '',
             });
-        } else {
-          Alert.alert('', 'Enter date and time slots');
+          } else {
+            learn_on.push({code: 'I', contact_id: ''});
+          }
         }
+
+        let formData;
+
+        formData = {
+          first_name: data.guest_firstname,
+          last_name: data.guest_lastname,
+          guest_email: data.guest_email,
+          gender: selectedGender?.label,
+          age: data.age,
+          reason: reason.label,
+          country_code: '+' + countryCode,
+          phone_number: phoneNumber,
+          city: data.city,
+          country: selectedCountry?.value,
+          add_info: data.add_info,
+          timezone: userLocation.data.timezone,
+          course: course.id,
+          taught_on: learn_on,
+          slots: timeSlots,
+        };
+        // if (!isLoggedIn) {
+        //   formData = {
+        //     course: course.id,
+        //     reason: reason.label,
+        //     phone_number: phoneNumber, //data.number,
+        //     city: data.city,
+        //     country: selectedCountry?.value,
+        //     time_info: data.time_info,
+        //     add_info: data.add_info,
+        //     timezone: userLocation.data.timezone,
+        //     taught_on: learn_on,
+        //     country_code: '+' + countryCode,
+        //     guest_name: data.guest_name,
+        //     guest_email: data.guest_email,
+        //     yob: yob.value,
+        //     gender: data.gender,
+        //   };
+        // } else {
+        //   formData = {
+        //     course: course.id,
+        //     reason: reason.label,
+        //     phone_number: phoneNumber,
+        //     city: data.city,
+        //     country: selectedCountry?.value,
+        //     time_info: data.time_info,
+        //     add_info: data.add_info,
+        //     timezone: userLocation.data.timezone,
+        //     taught_on: learn_on,
+        //     country_code: '+' + countryCode,
+        //   };
+        // }
+        dispatch(setPageLoading(false));
+        console.log(formData);
+        let finalData = {
+          formData: formData,
+          userToken: userData && userData.token,
+          loggedIn: isLoggedIn,
+        };
+        dispatch(requestFreeSession(finalData))
+          .unwrap()
+          .then(response => {
+            dispatch(setPageLoading(false));
+            console.log(response);
+            if (response.data.status === 'success') {
+              navigation.navigate('ActionStatus', {
+                messageStatus: 'success',
+                messageTitle: 'Congratulations!',
+                messageDesc: response.data.error_message.message,
+                timeOut: 7000,
+                backRoute: 'CourseDetail',
+                params: {},
+              });
+            } else if (response.data.status === 'failure') {
+              navigation.navigate('ActionStatus', {
+                messageStatus: 'failure',
+                messageTitle: 'Sorry!',
+                messageDesc: response.data.error_message.message,
+                timeOut: 7000,
+                backRoute: 'RequestMeeting',
+                params: {},
+              });
+            }
+          })
+          .catch(() => {
+            dispatch(setPageLoading(false));
+          });
       } else {
-        Alert.alert('Fill details', 'Add your meeting platform details');
+        Alert.alert('', 'Add atleast one time slot');
       }
+      // } else {
+      // setShowErrorMeetingDetail(true);
+      // setMeetingPlatformError('Enter meeting platform details');
+      // }
     }
     // }
   };
@@ -509,40 +534,41 @@ const phoneInput = useRef();
               </Text>
             </View>
           </View> */}
-          <View style={{position:'absolute', zIndex:1}}>
-          <HeaderInner
-            title={'Request Meeting'}
-            type={'findCourse'}
-            backroute={route?.params?.backroute}
-            back={true}
-            removeRightHeader={true}
-            changingHeight={config.headerHeight}
-            navigation={navigation}
-            // backRoute={}
-          ></HeaderInner>
-          <View
-            style={{
-              position: 'absolute',
-               top: 90,//config.headerHeight,
-               left:0,
-              zIndex: 10000,
-              height: 32,
-              width: width,
-            }}>
-              
-              <CustomImage  style={styles.formFillTimeImage} uri={`${config.media_url}transactions_bg.png`}></CustomImage>
+          <View style={{position: 'absolute', zIndex: 1}}>
+            <HeaderInner
+              title={'Request Free Meeting'}
+              type={'findCourse'}
+              backroute={route?.params?.backroute}
+              back={true}
+              removeRightHeader={true}
+              changingHeight={config.headerHeight}
+              navigation={navigation}
+              // backRoute={}
+            ></HeaderInner>
+            <View
+              style={{
+                position: 'absolute',
+                top: config.headerHeight,
+                //  borderWidth:2,
+                left: 0,
+                zIndex: 10000,
+                height: 32,
+                width: width,
+              }}>
+              <CustomImage
+                style={styles.formFillTimeImage}
+                uri={`${config.media_url}transactions_bg.png`}></CustomImage>
 
-            
-            {/* <Image
+              {/* <Image
               style={styles.formFillTimeImage}
               source={require('@images/transactions_bg.png')}
             /> */}
-            <View style={styles.formFillTimeTextWrapper}>
-              <Text style={styles.formFillTimeText}>
-                Should take less than 48 seconds
-              </Text>
+              <View style={styles.formFillTimeTextWrapper}>
+                <Text style={styles.formFillTimeText}>
+                  Should take less than 48 seconds
+                </Text>
+              </View>
             </View>
-          </View>
           </View>
           <View>
             <ScrollView
@@ -552,7 +578,9 @@ const phoneInput = useRef();
                 <View style={[styles.safecontainer]}>
                   <View style={{flexDirection: 'row', marginBottom: 24}}>
                     <View>
-                    <CustomImage  style={styles.courseImage} uri={course.course_image}></CustomImage>
+                      <CustomImage
+                        style={styles.courseImage}
+                        uri={course.course_image}></CustomImage>
                       {/* <Image
                         source={{uri: course.course_image}}
                         style={styles.courseImage}></Image> */}
@@ -585,7 +613,7 @@ const phoneInput = useRef();
                     style={{
                       // borderWidth:1,
                       padding: 16,
-                      marginBottom:12,
+                      marginBottom: 12,
                       backgroundColor: background6,
                       borderRadius: 8,
                       paddingHorizontal: 16,
@@ -594,71 +622,69 @@ const phoneInput = useRef();
                       Why free meeting is important?
                     </Text>
                     <View>
-                    
-                    
-                    <Text style={styles.reasonForMeeting}>
-                      Our teachers are masters of their craft and their time is
-                      very precious,
-                    
-                    {readMore ? (
-                      <>
-                        <Text style={styles.reasonForMeeting}>
-                          but we also feel that you need to get to know your
-                          teacher before signing up and hence this free session:
-                        </Text>
-                        
-
-                        
-                      </>
-                    ) : (
-                      <TouchableOpacity onPress={() => setReadMore(true)}>
-                        <Text
-                          style={[styles.reasonForMeeting, styles.readMore]}>
-                          ...read more
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                    </Text>
-                    {readMore ? 
-                    <>
-                    <View style={{flexDirection: 'row', marginTop: 8}}>
-                          <Text>{'\u2022'}</Text>
-                          <Text style={{flex: 1, paddingLeft: 5}}>
-                            Discuss your learning goals and customize topics;
-                          </Text>
-                        </View>
-                        <View style={{flexDirection: 'row', marginTop: 8}}>
-                          <Text>{'\u2022'}</Text>
-                          <Text style={{flex: 1, paddingLeft: 5}}>
-                            Ask where to buy instruments;
-                          </Text>
-                        </View>
-                        <View style={{flexDirection: 'row', marginTop: 8}}>
-                          <Text>{'\u2022'}</Text>
-                          <Text style={{flex: 1, paddingLeft: 5}}>
-                            Teacher will assess and recommend the right course
-                            level for you;
-                          </Text>
-                        </View>
-                        <View style={{flexDirection: 'row', marginTop: 8}}>
-                          <Text>{'\u2022'}</Text>
-                          <Text style={{flex: 1, paddingLeft: 5}}>
-                            Discuss and finalize convenient session timings.
-                          </Text>
-
-                        </View>
-                        <TouchableOpacity onPress={() => setReadMore(false)}>
-                          <Text
-                            style={[styles.reasonForMeeting, styles.readMore, {alignSelf:'flex-end'}]}>
-                            read less
-                          </Text>
-                        </TouchableOpacity>
+                      <Text style={styles.reasonForMeeting}>
+                        Our teachers are masters of their craft and their time
+                        is very precious,
+                        {readMore ? (
+                          <>
+                            <Text style={styles.reasonForMeeting}>
+                              but we also feel that you need to get to know your
+                              teacher before signing up and hence this free
+                              session:
+                            </Text>
+                          </>
+                        ) : (
+                          <TouchableOpacity onPress={() => setReadMore(true)}>
+                            <Text
+                              style={[
+                                styles.reasonForMeeting,
+                                StyleCSS.styles.readMore,
+                              ]}>
+                              ...Read More
+                            </Text>
+                          </TouchableOpacity>
+                        )}
+                      </Text>
+                      {readMore ? (
+                        <>
+                          <View style={{flexDirection: 'row', marginTop: 8}}>
+                            <Text>{'\u2022'}</Text>
+                            <Text style={{flex: 1, paddingLeft: 5}}>
+                              Discuss your learning goals and customize topics;
+                            </Text>
+                          </View>
+                          <View style={{flexDirection: 'row', marginTop: 8}}>
+                            <Text>{'\u2022'}</Text>
+                            <Text style={{flex: 1, paddingLeft: 5}}>
+                              Ask where to buy instruments;
+                            </Text>
+                          </View>
+                          <View style={{flexDirection: 'row', marginTop: 8}}>
+                            <Text>{'\u2022'}</Text>
+                            <Text style={{flex: 1, paddingLeft: 5}}>
+                              Teacher will assess and recommend the right course
+                              level for you;
+                            </Text>
+                          </View>
+                          <View style={{flexDirection: 'row', marginTop: 8}}>
+                            <Text>{'\u2022'}</Text>
+                            <Text style={{flex: 1, paddingLeft: 5}}>
+                              Discuss and finalize convenient session timings.
+                            </Text>
+                          </View>
+                          <TouchableOpacity onPress={() => setReadMore(false)}>
+                            <Text
+                              style={[
+                                styles.reasonForMeeting,
+                                StyleCSS.styles.readMore,
+                                {alignSelf: 'flex-end'},
+                              ]}>
+                              Read Less
+                            </Text>
+                          </TouchableOpacity>
                         </>
-                    : 
-                    null}
-                    
+                      ) : null}
                     </View>
-
                   </View>
                   {/* <Text style={styles.contactHeader}>Contact Information</Text> */}
                   {/* {isLoggedIn ? (
@@ -672,7 +698,7 @@ const phoneInput = useRef();
                   <View style={styles.formGroup}>
                     <Controller
                       control={control}
-                      rules={{required: true}}
+                      rules={{required: true, minLength: 2}}
                       name="guest_firstname"
                       defaultValue={isLoggedIn ? userData.first_name : null}
                       render={({field: {onChange, value, onBlur}}) => (
@@ -683,39 +709,51 @@ const phoneInput = useRef();
                           label="First Name*"
                           value={value}
                           onBlur={onBlur}
-                          onChangeText={value => onChange(value)}
+                          onChangeText={(value: any) => onChange(value)}
                         />
                       )}
                     />
-                    {errors.guest_firstname && (
-                      <Text style={styles.errorText}>
-                        Enter first name
-                      </Text>
-                    )}
+                    {errors.guest_firstname ? (
+                      errors.guest_firstname.type === 'required' ? (
+                        <Text style={StyleCSS.styles.errorText}>
+                          Enter first name
+                        </Text>
+                      ) : (
+                        <Text style={StyleCSS.styles.errorText}>
+                          Enter a valid first name
+                        </Text>
+                      )
+                    ) : null}
                   </View>
                   <View style={styles.formGroup}>
                     <Controller
                       control={control}
-                      rules={{required: true}}
+                      rules={{required: true, minLength: 2}}
                       defaultValue={isLoggedIn ? userData.last_name : undefined}
                       name="guest_lastname"
                       render={({field: {onChange, value, onBlur}}) => (
                         <TextField
                           // style={styles.input}
-                          theme={{colors: {primary: font2}}}
+                          // theme={{colors: {primary: font2}}}
                           mode="outlined"
                           label="Last Name*"
                           value={value}
                           onBlur={onBlur}
-                          onChangeText={value => onChange(value)}
+                          onChangeText={(value: any) => onChange(value)}
                         />
                       )}
                     />
-                    {errors.guest_lastname && (
-                      <Text style={styles.errorText}>
-                        Enter last name
-                      </Text>
-                    )}
+                    {errors.guest_lastname ? (
+                      errors.guest_lastname.type === 'required' ? (
+                        <Text style={StyleCSS.styles.errorText}>
+                          Enter last name
+                        </Text>
+                      ) : (
+                        <Text style={StyleCSS.styles.errorText}>
+                          Enter a valid last name
+                        </Text>
+                      )
+                    ) : null}
                   </View>
                   <View style={styles.formGroup}>
                     <Controller
@@ -730,27 +768,42 @@ const phoneInput = useRef();
                         <TextField
                           // style={styles.input}
                           mode="outlined"
-                          theme={{colors: {primary: font2}}}
+                          // theme={{colors: {primary: font2}}}
                           label="Email Address*"
-                          placeholder="Enter your email"
                           value={value}
                           onBlur={onBlur}
-                          onChangeText={value => onChange(value)}
+                          onChangeText={(value: any) => onChange(value)}
                         />
                       )}
                     />
-                    {errors.guest_email && (
-                      <Text style={styles.errorText}>Enter an email address</Text>
-                    )}
-                    {errors.guest_email &&
-                      errors.guest_email.type === 'pattern' && (
-                        <Text style={styles.errorText}>
+                    {errors.guest_email ? (
+                      errors.guest_email.type === 'required' ? (
+                        <Text style={StyleCSS.styles.errorText}>
+                          Enter an email address
+                        </Text>
+                      ) : errors.guest_email.type === 'pattern'?(
+                        <Text style={StyleCSS.styles.errorText}>
                           Enter a valid email
                         </Text>
-                      )}
+                      ):null
+                    ) : null}
                   </View>
                   <View style={[styles.formGroup, styles.phone]}>
-                    <Text style={[styles.inputLabel, {position: 'absolute', zIndex:999, top:-5, fontSize:12, backgroundColor:'#fff', left:8, paddingHorizontal:4}]}>Mobile Number*</Text>
+                    <Text
+                      style={[
+                        styles.inputLabel,
+                        {
+                          position: 'absolute',
+                          zIndex: 999,
+                          top: -5,
+                          fontSize: 12,
+                          backgroundColor: '#fff',
+                          left: 8,
+                          paddingHorizontal: 4,
+                        },
+                      ]}>
+                      Mobile Number*
+                    </Text>
                     <Controller
                       control={control}
                       rules={{required: true}}
@@ -758,7 +811,7 @@ const phoneInput = useRef();
                       name="number"
                       render={({field: {onChange, value, onBlur}}) => (
                         <PhoneInput
-                        ref={phoneInput}
+                          ref={phoneInput}
                           containerStyle={styles.countryCode}
                           textContainerStyle={styles.mobileNumber}
                           defaultValue={value}
@@ -780,7 +833,9 @@ const phoneInput = useRef();
                       )}
                     />
                     {errors.number ? (
-                      <Text style={styles.errorText}>Enter mobile number</Text>
+                      <Text style={StyleCSS.styles.errorText}>
+                        Enter mobile number
+                      </Text>
                     ) : null}
                   </View>
                   {/* <View style={styles.formGroup}>
@@ -796,16 +851,17 @@ const phoneInput = useRef();
                           backTitle={'Select Birth Year'}
                         />
                         {yob === undefined && submitRequested ? (
-                          <Text style={styles.errorText}>Required *</Text>
+                          <Text style={StyleCSS.styles.errorText}>Required *</Text>
                         ) : null}
                       </View> */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'flex-end',
-                      justifyContent: 'space-between',
-                    }}>
-                    {/* <View style={[styles.formGroup,{maxWidth:'48%', marginTop:10}]}>
+                  <View style={styles.formGroup}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'flex-end',
+                        justifyContent: 'space-between',
+                      }}>
+                      {/* <View style={[styles.formGroup,{maxWidth:'48%', marginTop:10}]}>
                        
                       {/* <SelectDropdown
                       buttonStyle={{backgroundColor:'#fff', borderRadius:8, borderColor:font2, borderWidth:1, height:58, maxWidth:'100%'}}
@@ -824,97 +880,173 @@ const phoneInput = useRef();
                       }}
                     /> 
                     </View> */}
-                    <View
-                      style={[styles.formGroup, {width: '48%'}]}>
-                      <CustomDropdown
-                     
-                        topLabel={selectedGender ? 'Gender *' : undefined}
-                        config={{color: '#fff'}}
-                        onChangeVal={getGender}
-                        data={gender}
-                        selectedIds={[]}
-                        label={
-                          selectedGender ? selectedGender.value : 'Gender *'
-                        }
-                        backTitle={'Select Gender'}
-                      />
-                      {selectedGender === undefined && submitRequested ? (
-                        <Text style={styles.errorText}>Select gender</Text>
-                      ) : null}
-                    </View>
-                    <View style={[styles.formGroup, {width: '48%'}]}>
-                      <Controller
-                        control={control}
-                        rules={{required: true, pattern: /^[0-9]*$/}}
-                        name="age"
-                        render={({field: {onChange, value, onBlur}}) => (
-                          <TextField
-                            // theme={{colors: {primary: font2}}}
-                            // style={styles.input}
-                            mode="outlined"
-                            label="Age *"
-                            value={value}
-                            keyboardType={'numeric'}
-                            onBlur={onBlur}
-                            onChangeText={value => onChange(value)}
-                          />
-                        )}
-                      />
-                      {errors.age && (
-                        <Text style={styles.errorText}>Enter age</Text>
+                      <View style={[{width: '48%'}]}>
+                        <CustomDropdown
+                          topLabel={selectedGender ? 'Gender *' : undefined}
+                          config={{color: '#fff'}}
+                          onChangeVal={getGender}
+                          data={gender}
+                          selectedIds={[]}
+                          label={
+                            selectedGender ? selectedGender.value : 'Gender *'
+                          }
+                          backTitle={'Select Gender'}
+                        />
+                        {/* {selectedGender === undefined && submitRequested ? (
+                        <Text style={StyleCSS.styles.errorText}>Select gender</Text>
+                      ) : null} */}
+                      </View>
+                      <View style={[{width: '48%'}]}>
+                        <Controller
+                          defaultValue={isLoggedIn ? userData.age : null}
+                          control={control}
+                          rules={{required: true, pattern: /^[0-9]*$/}}
+                          name="age"
+                          render={({field: {onChange, value, onBlur}}) => (
+                            <TextField
+                              // theme={{colors: {primary: font2}}}
+                              // style={styles.input}
+                              mode="outlined"
+                              label="Age *"
+                              value={value}
+                              keyboardType={'numeric'}
+                              onBlur={onBlur}
+                              onChangeText={value => onChange(value)}
+                            />
+                          )}
+                        />
+                        {/* {errors.age && (
+                        <Text style={StyleCSS.styles.errorText}>Enter age</Text>
                       )}
                       {errors.age && errors.age.type === 'pattern' && (
-                        <Text style={styles.errorText}>
+                        <Text style={StyleCSS.styles.errorText}>
                           Age should be a number
                         </Text>
-                      )}
+                      )} */}
+                      </View>
                     </View>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'flex-end',
-                      justifyContent: 'space-between',
-                    }}>
-                    <View style={[styles.formGroup, {width: '48%'}]}>
-                      <Controller
-                        control={control}
-                        rules={{required: true}}
-                        name="city"
-                        defaultValue={isLoggedIn ? userData.ip_city : null}
-                        render={({field: {onChange, value, onBlur}}) => (
-                          <TextField
-                            // style={styles.input}
-                            // theme={{colors: {primary: font2}}}
-                            mode="outlined"
-                            label="City/Town *"
-                            value={value}
-                            onBlur={onBlur}
-                            onChangeText={value => onChange(value)}
-                          />
+
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'flex-end',
+                        justifyContent: 'space-between',
+                        // borderWidth:1
+                      }}>
+                      {/* <View style={[styles.formGroup,{maxWidth:'48%', marginTop:10}]}>
+                       
+                      {/* <SelectDropdown
+                      buttonStyle={{backgroundColor:'#fff', borderRadius:8, borderColor:font2, borderWidth:1, height:58, maxWidth:'100%'}}
+                      data={gender}
+                      onSelect={(selectedItem, index) => {
+                      }}
+                      buttonTextAfterSelection={(selectedItem, index) => {
+                        // text represented after item is selected
+                        // if data array is an array of objects then return selectedItem.property to render after item is selected
+                        return selectedItem
+                      }}
+                      rowTextForSelection={(item, index) => {
+                        // text represented for each item in dropdown
+                        // if data array is an array of objects then return item.property to represent item in dropdown
+                        return item
+                      }}
+                    /> 
+                    </View> */}
+                      <View style={[{width: '48%'}]}>
+                        {selectedGender === undefined && submitRequested ? (
+                          <Text style={StyleCSS.styles.errorText}>
+                            Select gender
+                          </Text>
+                        ) : null}
+                      </View>
+                      <View style={[{width: '48%'}]}>
+                        {errors.age && (
+                          <Text style={StyleCSS.styles.errorText}>
+                            Enter age
+                          </Text>
                         )}
-                      />
-                      {errors.city && (
-                        <Text style={styles.errorText}>Enter city / town</Text>
-                      )}
-                    </View>
-                    <View style={[styles.formGroup, {width: '48%'}]}>
-                      <CustomDropdown
-                        topLabel={selectedCountry ? 'Country *' : undefined}
-                        config={{color: '#fff'}}
-                        onChangeVal={getCountry}
-                        data={countryList}
-                        selectedIds={[]}
-                        label={
-                          selectedCountry ? selectedCountry.value : 'Country *'
-                        }
-                        backTitle={'Select Country'}
-                      />
-                      {selectedCountry === undefined && submitRequested ? (
-                        <Text style={styles.errorText}>Enter Country</Text>
-                      ) : null}
+                        {errors.age && errors.age.type === 'pattern' && (
+                          <Text style={StyleCSS.styles.errorText}>
+                            Age should be a number
+                          </Text>
+                        )}
+                      </View>
                     </View>
                   </View>
+
+                  <View style={styles.formGroup}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'flex-end',
+                        justifyContent: 'space-between',
+                      }}>
+                      <View style={[{width: '48%'}]}>
+                        <CustomDropdown
+                          topLabel={selectedCountry ? 'Country *' : undefined}
+                          config={{color: '#fff'}}
+                          onChangeVal={getCountry}
+                          data={countryList}
+                          selectedIds={[]}
+                          label={
+                            selectedCountry
+                              ? selectedCountry.value
+                              : 'Country *'
+                          }
+                          backTitle={'Select Country'}
+                        />
+
+                        {/* {errors.city && (
+                        <Text style={StyleCSS.styles.errorText}>Enter city / town</Text>
+                      )} */}
+                      </View>
+                      <View style={[{width: '48%'}]}>
+                        <Controller
+                          control={control}
+                          rules={{required: true}}
+                          name="city"
+                          defaultValue={isLoggedIn ? userData.ip_city : null}
+                          render={({field: {onChange, value, onBlur}}) => (
+                            <TextField
+                              // style={styles.input}
+                              // theme={{colors: {primary: font2}}}
+                              mode="outlined"
+                              label="City/Town *"
+                              value={value}
+                              onBlur={onBlur}
+                              onChangeText={value => onChange(value)}
+                            />
+                          )}
+                        />
+                        {/* {selectedCountry === undefined && submitRequested ? (
+                        <Text style={StyleCSS.styles.errorText}>Enter Country</Text>
+                      ) : null} */}
+                      </View>
+                    </View>
+
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'flex-end',
+                        justifyContent: 'space-between',
+                      }}>
+                      <View style={[{width: '48%'}]}>
+                        {selectedCountry === undefined && submitRequested ? (
+                          <Text style={StyleCSS.styles.errorText}>
+                            Enter Country
+                          </Text>
+                        ) : null}
+                      </View>
+                      <View style={[{width: '48%'}]}>
+                        {errors.city && (
+                          <Text style={StyleCSS.styles.errorText}>
+                            Enter city / town
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+
                   {/* <Text style={styles.inputLabel}>Student's Gender</Text>
                         <Controller
                           control={control}
@@ -965,7 +1097,7 @@ const phoneInput = useRef();
                           )}
                         />
                         {errors.gender && (
-                          <Text style={styles.errorText}>
+                          <Text style={StyleCSS.styles.errorText}>
                             Please specify your gender *
                           </Text>
                         )} */}
@@ -993,7 +1125,9 @@ const phoneInput = useRef();
                     />
 
                     {reason === undefined && submitRequested ? (
-                      <Text style={styles.errorText}>Select the reason</Text>
+                      <Text style={StyleCSS.styles.errorText}>
+                        Select the reason
+                      </Text>
                     ) : null}
                     {/* <Controller
               control={control}
@@ -1078,7 +1212,9 @@ zIndex={10000}
                     />
 
                     {meetingPlatform === undefined && submitRequested ? (
-                      <Text style={styles.errorText}>Select the meeting platform</Text>
+                      <Text style={StyleCSS.styles.errorText}>
+                        Select the meeting platform
+                      </Text>
                     ) : null}
                   </View>
                   {showField ? (
@@ -1093,13 +1229,14 @@ zIndex={10000}
                             mode="outlined"
                             label={meetingPlatform.label}
                             value={value}
-                            onBlur={onBlur}
-                            onChangeText={(value : any) => onChange(value)}
+                            // onBlur={onBlur}
+                            onChangeText={(value: any) => onChange(value)}
                           />
                         )}
                       />
+                      {/* {submitRequested && meetingPlatform && meetingPlatform.code!=='I' ? <Text style={StyleCSS.styles.errorText}>{meetingPlatformError}</Text> : null} */}
                       {/* Add error condition to this */}
-                      {/* {submitRequested ? } */}
+                      {/* {submitRequested ? }*/}
                     </View>
                   ) : null}
                   {/* {course.taught_on && course.taught_on.length > 0 ? (
@@ -1246,18 +1383,17 @@ zIndex={10000}
                       rules={{maxLength: 5000}}
                       render={({field: {onChange, value, onBlur}}) => (
                         <Textarea
-                        
-                    containerStyle={StyleCSS.styles.modalTextarea}
-                    style={styles.reviewTextArea}
-                    onChangeText={(value: any) => {
-                          onChange(value);
-                          setAddditionalInfo(value);
-                        }}
-                    defaultValue={value}
-                    placeholder={'Additional Information'}
-                    placeholderTextColor={font2}
-                    underlineColorAndroid={'transparent'}
-                  />
+                          containerStyle={StyleCSS.styles.modalTextarea}
+                          style={styles.reviewTextArea}
+                          onChangeText={(value: any) => {
+                            onChange(value);
+                            setAddditionalInfo(value);
+                          }}
+                          defaultValue={value}
+                          placeholder={'Additional Information'}
+                          placeholderTextColor={font2}
+                          underlineColorAndroid={'transparent'}
+                        />
                         // <TextField
                         //   // theme={{colors: {primary: font2}}}
                         //   multiline
@@ -1276,7 +1412,7 @@ zIndex={10000}
                       )}
                     />
                     {errors.add_info && (
-                      <Text style={styles.errorText}>
+                      <Text style={StyleCSS.styles.errorText}>
                         Should be less than specified characters
                       </Text>
                     )}
@@ -1319,12 +1455,12 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     // marginTop:40,
-    zIndex:1
+    zIndex: 1,
   },
   scrollView: {
     marginTop: config.headerHeight + 32,
-    backgroundColor:'white',
-    zIndex:-10
+    backgroundColor: 'white',
+    zIndex: -10,
   },
   safecontainer: {
     padding: 16,
@@ -1351,12 +1487,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     color: font1,
     borderLeftColor: dropdownBorder,
-  
+
     borderLeftWidth: 1,
-   
-     borderTopRightRadius:8,
-     borderBottomRightRadius:8,
-    
+
+    borderTopRightRadius: 8,
+    borderBottomRightRadius: 8,
+
     fontSize: 14,
 
     backgroundColor: 'rgb(255, 255, 255)',
@@ -1401,7 +1537,7 @@ const styles = StyleSheet.create({
     color: font1,
     marginTop: 5,
     fontSize: 14,
-    borderWidth:1,
+    borderWidth: 1,
 
     borderRadius: 8,
 
@@ -1477,15 +1613,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontWeight: '700',
   },
-  errorText: {
-    color: 'rgb(255,0,0)',
-    fontFamily: Helper.switchFont('regular'),
-    fontSize: 12,
-    marginBottom: 5,
-  },
-  readMore: {
-    color: secondaryColor,
-  },
+
   reasonForMeeting: {
     fontSize: 14,
     marginTop: 8,
@@ -1510,7 +1638,7 @@ const styles = StyleSheet.create({
     color: font1,
     fontWeight: '700',
     marginTop: 12,
-    marginBottom:12
+    marginBottom: 12,
   },
   inputText: {
     color: '#81878D',
@@ -1543,5 +1671,5 @@ const styles = StyleSheet.create({
     // lineHeight: 22,
     fontWeight: '600',
   },
-  formFillTimeText: {zIndex: 100, fontSize:12, color: '#fff', opacity: 0.7},
+  formFillTimeText: {zIndex: 100, fontSize: 12, color: '#fff', opacity: 0.7},
 });

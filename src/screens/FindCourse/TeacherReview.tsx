@@ -12,6 +12,7 @@ import {
 import {Rating} from 'react-native-ratings';
 import RenderHtml from 'react-native-render-html';
 import moment from 'moment';
+import 'moment-timezone';
 import {brandColor} from '../../styles/colors';
 import helper from '../../utils/helperMethods';
 import {SvgUri} from 'react-native-svg';

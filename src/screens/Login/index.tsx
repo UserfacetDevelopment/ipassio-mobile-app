@@ -83,10 +83,11 @@ const nextRoute = route.params?.nextRoute;
   const [viewPassword, setViewPassword] = useState<boolean>(false);
   const [userInfo, setUserInfo] = useState<any>(null);
 const [active , setActive] = useState<boolean>(false);
+
   useEffect(() => {
-    gsiConfigure();
+    // gsiConfigure();
     checkPermission();
-    logout();
+    // logout();
   }, []);
 
   const checkPermission = async() => {
@@ -136,86 +137,88 @@ const [active , setActive] = useState<boolean>(false);
     }
   }
   //Logout User
-  async function logout() {
-    try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
+  // async function logout() {
+  //   try {
+  //     messaging().deleteToken();
+
+  //     await GoogleSignin.revokeAccess();
+  //     await GoogleSignin.signOut();
       
-     } catch (error) {
-      // Alert.alert("Something else went wrong... ", error.toString());
-    }
+  //    } catch (error) {
+  //     // Alert.alert("Something else went wrong... ", error.toString());
+  //   }
   
-  }
+  // }
   
 
   // GOOGLE SIGN IN
-  const gsiConfigure = () : void => {
-    GoogleSignin.configure({
-      webClientId: config.GOOGLE_ID, // client ID of type WEB for your server (needed to verify user ID and offline access)
-      offlineAccess: false, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-      // hostedDomain: '', // specifies a hosted domain restriction
-      // forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
-      // accountName: '', // [Android] specifies an account name on the device that should be used
-      // iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
-      // googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. GoogleService-Info-Staging
-      // openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
-      // profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
-    });
-  };
+  // const gsiConfigure = () : void => {
+  //   GoogleSignin.configure({
+  //     webClientId: config.GOOGLE_ID, // client ID of type WEB for your server (needed to verify user ID and offline access)
+  //     offlineAccess: false, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+  //     // hostedDomain: '', // specifies a hosted domain restriction
+  //     // forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
+  //     // accountName: '', // [Android] specifies an account name on the device that should be used
+  //     // iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+  //     // googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. GoogleService-Info-Staging
+  //     // openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
+  //     // profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+  //   });
+  // };
 
-  const handleGoogleSignIn = async () : Promise<void> => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      setUserInfo(userInfo);
-      let data : GoogleLogin = {
-        google_id: userInfo.user.id,
-        email: userInfo.user.email,
-        first_name: userInfo.user.givenName,
-        last_name: userInfo.user.familyName,
-        // emailVerified: userInfo.user.emailVerified,
-        photoURL: userInfo.user.photo,
-      };
-      if (data.email) {
-        dispatch(socialLogin(data))
-          .unwrap()
-          .then(originalPromiseResult => {
-            dispatch(setLoading(false));
-            redirectCheck(originalPromiseResult.data);
-            dispatch(loginSuccess(originalPromiseResult.data));
-            dispatch(setLoading(false));
-            Alert.alert('', originalPromiseResult.error_message.message, [
-              {text: 'Okay', style: 'cancel'},
-            ]);
-          })
-          .catch(rejectedValueOrSerializedError => {
-            dispatch(setLoading(false));
-          });
-      } else {
-        Alert.alert(
-          'Problem Signing In',
-          'Please enter username and password.',
-          [{text: 'Okay', style: 'cancel'}],
-        );
-      }
-    } catch (error : any) {
-      console.warn(error);
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  // const handleGoogleSignIn = async () : Promise<void> => {
+  //   try {
+  //     await GoogleSignin.hasPlayServices();
+  //     const userInfo = await GoogleSignin.signIn();
+  //     setUserInfo(userInfo);
+  //     let data : GoogleLogin = {
+  //       google_id: userInfo.user.id,
+  //       email: userInfo.user.email,
+  //       first_name: userInfo.user.givenName,
+  //       last_name: userInfo.user.familyName,
+  //       // emailVerified: userInfo.user.emailVerified,
+  //       photoURL: userInfo.user.photo,
+  //     };
+  //     if (data.email) {
+  //       dispatch(socialLogin(data))
+  //         .unwrap()
+  //         .then(originalPromiseResult => {
+  //           dispatch(setLoading(false));
+  //           redirectCheck(originalPromiseResult.data);
+  //           dispatch(loginSuccess(originalPromiseResult.data));
+  //           dispatch(setLoading(false));
+  //           Alert.alert('', originalPromiseResult.error_message.message, [
+  //             {text: 'Okay', style: 'cancel'},
+  //           ]);
+  //         })
+  //         .catch(rejectedValueOrSerializedError => {
+  //           dispatch(setLoading(false));
+  //         });
+  //     } else {
+  //       Alert.alert(
+  //         'Problem Signing In',
+  //         'Please enter username and password.',
+  //         [{text: 'Okay', style: 'cancel'}],
+  //       );
+  //     }
+  //   } catch (error : any) {
+  //     console.warn(error);
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         
-      } else if (error.code === statusCodes.IN_PROGRESS) {
+  //     } else if (error.code === statusCodes.IN_PROGRESS) {
         
-        // operation (e.g. sign in) is in progress already
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+  //       // operation (e.g. sign in) is in progress already
+  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
        
-        // play services not available or outdated
-      } else {
+  //       // play services not available or outdated
+  //     } else {
        
-        Alert.alert('Oops', JSON.parse(error), [
-          {text: 'Okay', style: 'cancel'},
-        ]);
-      }
-    }
-  };
+  //       Alert.alert('Oops', JSON.parse(error), [
+  //         {text: 'Okay', style: 'cancel'},
+  //       ]);
+  //     }
+  //   }
+  // };
 
   // LOGIN VIA EMAIL-PASSWORD
 
@@ -238,6 +241,7 @@ const [active , setActive] = useState<boolean>(false);
             dispatch(loginSuccess(response.data));
           } else if (response.status === "failure") {
             dispatch(setLoading(false));
+            console.log(response.error_message.message)
             Alert.alert("", response.error_message.message, [
               { text: "Okay", style: "cancel" },
             ])
@@ -249,7 +253,7 @@ const [active , setActive] = useState<boolean>(false);
           dispatch(setLoading(false));
         });
     } else {
-      Alert.alert('', 'Please enter username and password.', [
+      Alert.alert('', 'Enter email and password.', [
         {text: 'Okay', style: 'cancel'},
       ]);
     }
@@ -291,7 +295,7 @@ const [active , setActive] = useState<boolean>(false);
     <CustomStatusBar type={'inside'}/>
     <HeaderInner
     type={'findCourse'}
-    title={'Login'}
+    title={'Log In'}
     navigation={navigation}
     logo={true}
     backroute={'LoginScreen'}
@@ -307,16 +311,16 @@ const [active , setActive] = useState<boolean>(false);
           />
         </View> */}
         <View style={styles.innerContainer}>
-          <Text style={styles.title}>Login</Text>
+          <Text style={styles.title}>Log In</Text>
           <Text style={styles.subTitle}>
-            Enter your credentials to continue...
+          Enter your credentials
           </Text>
 
           {/* <View> */}
           {/* <Text style={styles.inputLabel}>Username/Email</Text> */}
           <View style={styles.formInput}>
           <TextField
-          label='Email'
+          label='Email*'
           mode='outlined'
           
           onFocus={() => setActive(true)}
@@ -328,7 +332,7 @@ const [active , setActive] = useState<boolean>(false);
           {/* <Text style={styles.inputLabel}>Password</Text> */}
           <View style={styles.formInput}>
           <TextField
-          label='Password'
+          label='Password*'
           mode='outlined'
 
             secureTextEntry={!viewPassword}
@@ -356,36 +360,28 @@ const [active , setActive] = useState<boolean>(false);
             onPress={() => {
               handleForgotPassword();
             }}>
-            <Text style={styles.forgotPwdText}>forgot password? </Text>
+            <Text style={styles.forgotPwdText}>Forgot password? </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={style.styles.submit}
             onPress={() => handleLogin()}>
-            <Text style={style.styles.submitText}>Login</Text>
+            <Text style={style.styles.submitText}>Log In</Text>
           </TouchableOpacity>
-          {/* <Text> <GoogleSigninButton
-  style={{ width: wp('80%'), height: 48 }}
-  size={GoogleSigninButton.Size.Wide}
-  color={GoogleSigninButton.Color.Dark}
-  onPress={handleGoogleSignIn}
-/></Text> */}
-{Platform.OS === 'android' ? 
+          
+{/* {Platform.OS === 'android' ? 
 <>
           <TouchableOpacity
             onPress={handleGoogleSignIn}
             style={styles.googleButton}>
              <View style={styles.googleIconView}> 
-              {/* <Image
-                style={styles.googleIcon}
-                source={require('@images/google.png')}
-              /> */}
-              <CustomImage height={24} width={24} uri={`${config.media_url}google.svg`}/>
+             
+              <CustomImage height={24} width={24} uri={`${config.media_url}google-logo.svg`}/>
             
             <Text style={styles.googleButtonText}>Continue with Google</Text>
             </View>
           </TouchableOpacity>
           </>
-           : null}
+           : null} */}
           <TouchableOpacity
             style={styles.newUser}
             onPress={() => {
@@ -394,7 +390,7 @@ const [active , setActive] = useState<boolean>(false);
             }}>
             <Text style={styles.newUserText}>
               New to ipassio?{' '}
-              <Text style={styles.signUp}>Sign Up From Website</Text>
+              <Text style={styles.signUp}>Sign up from the Website</Text>
             </Text>
           </TouchableOpacity>
          

@@ -1,5 +1,7 @@
 import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
+import { create } from 'react-test-renderer';
 import {RootState} from '../app/store';
+import { ReviewsInterface } from '../components/TeacherReviews';
 import ApiGateway from '../config/apiGateway';
 import {
   CategoryInterface,
@@ -47,9 +49,7 @@ export const getCategories = createAsyncThunk(
   'course/getCategories',
   async (data: CategoryInterface) => {
     const response = await ApiGateway.get(
-      'courses/categories?page=' +
-        data.page +
-        '&nationality=' +
+      'courses/categories?nationality=' +
         data.nationality +
         '&format=json',
       false,
@@ -138,46 +138,7 @@ export const getTeacherReviews = createAsyncThunk(
   },
 );
 
-export const getCourseDetail = createAsyncThunk(
-  'courses/getCourseDetail',
-  async (data: GetCourseDataInterface) => {
-    let response;
-    if (data.isLoggedIn) {
-      response = await ApiGateway.get(
-        'courses/course-detail-slug?category_slug=' +
-          data.category_slug +
-          '&teacher_slug=' +
-          data.teacher_slug +
-          '&course_slug=' +
-          data.course_slug,
-        false,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Token ' + data.userToken,
-          },
-        },
-      );
-      return response.data.data;
-    } else {
-      response = await ApiGateway.get(
-        'courses/course-detail-slug?category_slug=' +
-          data.category_slug +
-          '&teacher_slug=' +
-          data.teacher_slug +
-          '&course_slug=' +
-          data.course_slug,
-        false,
-      );
-      return response.data.data;
-    }
-    // response = await ApiGateway.get("courses/" + courseSlug + "/?format=json&call_by=URL",false);
-    // if(response.data.status === 'success'){
-    //   return response.data.data
-    // }
-    return {};
-  },
-);
+
 
 export const getCategoryDetails = createAsyncThunk(
   'courses/getCategoryDetails',
@@ -493,10 +454,10 @@ export const courseSlice = createSlice({
       builder.addCase(getCategoryTeacher.rejected, state => {
         state.categoryTeacherLoading = false;
       }),
-      builder.addCase(getCourseDetail.fulfilled, (state, action) => {
-        state.course = action.payload;
-        state.courseDetailStatus = 'success';
-      }),
+      // builder.addCase(getCourseDetail.fulfilled, (state, action) => {
+      //   state.course = action.payload;
+      //   state.courseDetailStatus = 'success';
+      // }),
       builder.addCase(getCategoryCourseList.fulfilled, (state, action) => {
         state.categoryCourseList = action.payload;
         state.categoryCourseListStatus = 'success';
@@ -624,6 +585,73 @@ export const iamInterestedinCourse = createAsyncThunk(
         ));
     return response;
   },
+  );
+
+  export const getCourseDetail = createAsyncThunk(
+    'courses/getCourseDetail',
+    async (data: GetCourseDataInterface) => {
+      let response;
+      if (data.isLoggedIn) {
+        response = await ApiGateway.get(
+          'courses/course-detail-slug?category_slug=' +
+            data.category_slug +
+            '&teacher_slug=' +
+            data.teacher_slug +
+            '&course_slug=' +
+            data.course_slug,
+          false,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Token ' + data.userToken,
+            },
+          },
+        );
+        // return response;
+      } else {
+        response = await ApiGateway.get(
+          'courses/course-detail-slug?category_slug=' +
+            data.category_slug +
+            '&teacher_slug=' +
+            data.teacher_slug +
+            '&course_slug=' +
+            data.course_slug,
+          false,
+        );
+        // return response;
+      }
+      // response = await ApiGateway.get("courses/" + courseSlug + "/?format=json&call_by=URL",false);
+      // if(response.data.status === 'success'){
+      //   return response.data.data
+      // }
+     return response;
+    },
+  );
+
+  export const getReviews = createAsyncThunk('courses/getReviews',
+  async(data : ReviewsInterface) => {
+    let response;
+    if(data.isLoggedIn){
+      response= ApiGateway.get("courses/course-reviews?cr_tk=" +
+      data.courseToken +
+      "&offset=" +
+      data.offset, false,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Token ' + data.userToken,
+      },
+    })
+    }
+    else{
+      response= ApiGateway.get("courses/course-reviews?cr_tk=" +
+      data.courseToken +
+      "&offset=" +
+      data.offset)
+    }
+    return response;
+  })
+
 
   // return axios.get(
   //   API_URL +
@@ -635,7 +663,7 @@ export const iamInterestedinCourse = createAsyncThunk(
   //     courseSlug,
   //   { headers: { Authorization: "Token " + session.token } }
   // );
-);
+
 
 
 // https://neoapis.ipassio.com/api/courses/course-detail-slug?category_slug=bollywood-singing-classes&teacher_slug=shriram-iyer-music-academy&course_slug=advanced-bollywood-playback-singing-lessons

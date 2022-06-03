@@ -24,6 +24,7 @@ interface CustomDateTimePickerProps {
   onCancel: any;
   label: string;
   width:any;
+  config?:any;
 }
 
 const width = Dimensions.get('screen').width;
@@ -37,7 +38,8 @@ export default function CustomDateTimePicker({
   onCancel,
   isVisible,
   label,
-  width
+  width,
+  config
 }: CustomDateTimePickerProps) {
   return (
     <View>
@@ -57,15 +59,7 @@ export default function CustomDateTimePicker({
 
         {selectedValue ? (
           <Text
-            style={{
-              position: 'absolute',
-              top: -8,
-              left: 7,
-              paddingHorizontal: 4,
-              backgroundColor: '#fff',
-              fontSize: 12,
-              color: font2,
-            }}>
+            style={[styles.labelText, {backgroundColor: config? config.color : 'transparent'}]}>
             {label}
           </Text>
         ) : null}
@@ -98,4 +92,13 @@ const styles = StyleSheet.create({
     borderColor: dropdownBorder,
     borderRadius: 8,
   },
+  labelText:{
+    position: 'absolute',
+    top: -8,
+    left: 7,
+    paddingHorizontal: 4,
+    backgroundColor: '#fff',
+    fontSize: 12,
+    color: font2,
+  }
 });

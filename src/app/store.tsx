@@ -7,7 +7,7 @@ import dashboardReducer from '../reducers/dashboard.slice'
 import checkoutReducer from '../reducers/checkout.slice';
 import withdrawalReducer from '../reducers/withdrawal.slice';
 import scheduleSessionReducer from '../reducers/schedule.slice';
-
+import recordingReducer from '../reducers/recording.slice';
 const store = configureStore({
     reducer:{
         user: userReducer,
@@ -16,7 +16,9 @@ const store = configureStore({
         dashboard : dashboardReducer,
         checkout: checkoutReducer,
         withdrawal: withdrawalReducer,
-        scheduleSession: scheduleSessionReducer
+        scheduleSession: scheduleSessionReducer,
+        recording: recordingReducer
+
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         immutableCheck: false,

@@ -13,14 +13,13 @@ import {
   Dimensions,
   Modal,
   Alert,
+  TouchableWithoutFeedback
 } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 // import {SvgUri} from 'react-native-svg';
 import ReactPlayer from 'react-player';
-import moment from 'moment-timezone';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Rating} from 'react-native-ratings';
-// import Back from '../../assets/images/back.svg';
 import Video from 'react-native-video';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import Carousel from 'react-native-snap-carousel';
@@ -80,6 +79,7 @@ import {
 import {useAppDispatch} from '../../app/store';
 import {setPage} from '../../reducers/checkout.slice';
 import HeaderInner from '../../components/HeaderInner';
+// @ts-ignore
 import Textarea from 'react-native-textarea';
 import {CartDetailsData} from '../Dashboard';
 const {width, height} = Dimensions.get('screen');
@@ -111,6 +111,7 @@ import StyleCSS from '../../styles/style';
 import LineDashed from '../../components/LineDashed';
 import Helper from '../../utils/helperMethods';
 import TextField from '../../components/CustomTextField';
+import TeacherReviews from '../../components/TeacherReviews';
 
 type Props = NativeStackScreenProps<RootParamList, 'CourseDetail'>;
 
@@ -151,6 +152,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
   const [checkoutToken, setCheckoutToken] = useState<string | undefined>(
     undefined,
   );
+  const [reviewPopupOpen, setReviewPopupOpen] = useState<boolean>(false);
 
   const errors = {
     fullName: 'Enter full name',
@@ -170,42 +172,22 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
   ];
 
   useEffect(() => {
-    let category_slug;
-    if (
-      propCourse &&
-      propCourse.second_sub_category_detail &&
-      propCourse.second_sub_category_detail.seo_slug_url
-    ) {
-      category_slug = propCourse.second_sub_category_detail.seo_slug_url;
-    } else if (
-      propCourse &&
-      propCourse.sub_category_detail &&
-      propCourse.sub_category_detail.seo_slug_url
-    ) {
-      category_slug = propCourse.sub_category_detail.seo_slug_url;
-    } else if (
-      propCourse &&
-      propCourse.sub_category_detail &&
-      propCourse.category_detail.seo_slug_url
-    ) {
-      category_slug = propCourse.category_detail.seo_slug_url;
-    }
-
     let data: GetCourseDataInterface = {
-      course_slug: propCourse.seo.seo_slug_url,
-      category_slug: category_slug,
-      teacher_slug: propCourse.user.seo_slug_url,
+      course_slug: route.params?.course_slug,
+      category_slug: route.params?.category_slug,
+      teacher_slug: route.params?.teacher_slug,
       userToken: isLoggedIn ? userData.token : undefined,
       isLoggedIn: isLoggedIn,
     };
-
+    dispatch(setPageLoading(true));
     dispatch(getCourseDetail(data))
       .unwrap()
       .then(response => {
+        console.log(response)
         if (response.data.status === 'success') {
           dispatch(setCurrentCourse(response.data.data));
           dispatch(setPageLoading(false));
-        } else if (response.status === 'failure') {
+        } else if (response.data.status === 'failure') {
           dispatch(setPageLoading(false));
         }
       })
@@ -215,47 +197,47 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
   }, []);
 
   useEffect(() => {
-    course && course.pricing && setSelectedPrice(course.pricing[0]);
+    Object.keys(course).length>0 && course.pricing && setSelectedPrice(course.pricing[0]);
   }, [course]);
 
-  useEffect(() => {
-    if (Object.keys(course).length !== 0) {
-      //Getting the teachers availability schedule
-      let details: TeacherCalenderInterface = {
-        teacherToken: course.user.user_token,
-        classType: 'G',
-        courseID: course.id,
-      };
-      dispatch(getTeacherCalender(details))
-        .unwrap()
-        .then(response => {
-          if (response?.data?.status === 'success') {
-            dispatch(teacherAvailability(response?.data.data));
-          } else if (response?.status === 'failure') {
-            //console.log(response?.data);
-          }
-        })
-        .catch(err => {});
+  // useEffect(() => {
+  //   if (Object.keys(course).length !== 0) {
+  //     //Getting the teachers availability schedule
+  //     let details: TeacherCalenderInterface = {
+  //       teacherToken: course.user.user_token,
+  //       classType: 'G',
+  //       courseID: course.id,
+  //     };
+  //     dispatch(getTeacherCalender(details))
+  //       .unwrap()
+  //       .then(response => {
+  //         if (response?.data?.status === 'success') {
+  //           dispatch(teacherAvailability(response?.data.data));
+  //         } else if (response?.data.status === 'failure') {
+  //           //console.log(response?.data);
+  //         }
+  //       })
+  //       .catch(err => {});
 
-      //Getting Students' reviews for teacher
-      let data: TeacherReviewInterface = {
-        category: course.category_detail.seo_slug_url,
-        teacher: course.user.seo_slug_url,
-      };
-      dispatch(getTeacherReviews(data))
-        .unwrap()
-        .then(response => {
-          if (response.data.status === 'success') {
-            dispatch(setTeacherReviews(response.data.data));
-          } else if (response.status === 'failure') {
-            //console.log(response.data);
-          }
-        })
-        .catch(err => {
-          //console.log(err);
-        });
-    }
-  }, [course]);
+  //     //Getting Students' reviews for teacher
+  //     let data: TeacherReviewInterface = {
+  //       category: course.category_detail.seo_slug_url,
+  //       teacher: course.user.seo_slug_url,
+  //     };
+  //     dispatch(getTeacherReviews(data))
+  //       .unwrap()
+  //       .then(response => {
+  //         if (response.data.status === 'success') {
+  //           dispatch(setTeacherReviews(response.data.data));
+  //         } else if (response.data.status === 'failure') {
+  //           //console.log(response.data);
+  //         }
+  //       })
+  //       .catch(err => {
+  //         //console.log(err);
+  //       });
+  //   }
+  // }, [course]);
 
   useEffect(() => {
     if (Object.keys(course).length !== 0) {
@@ -353,6 +335,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
         discounts: course.discounts ? course.discounts : '',
         timezone: userData.timezone,
         device_type: Platform.OS,
+        price_per_class_inr: selectedPrice.final_INR,
+      price_per_class_usd: selectedPrice.final_USD
       };
 
       const finaldata: CourseEnrollInterface = {
@@ -426,80 +410,84 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
   //the arrows on the side of the caraousal hold no functionality as of now [17 feb 2022]
   //The student review card which is rendered in the flatlist
 
-  const LoadReviews = (review: any, index: number) => {
-    return (
-      <>
-        {reviewModalVisible && (
-          <TeacherReview
-            reviewModalVisible={reviewModalVisible}
-            setReviewModalVisible={setReviewModalVisible}
-            index={reviewIndex}
-            teacherReviews={teacherReviews}
-          />
-        )}
-        <View style={[styles.reviewWrapper]}>
-          <View style={styles.reviewRating}>
-            <Rating
-              // ratingColor="#277FD9"
-              // type="custom"
-              startingValue={review.item.rating}
-              readonly
-              ratingCount={5}
-              imageSize={20}
-              fractions={10}
-            />
-          </View>
+  // const LoadReviews = (review: any, index: number) => {
+  //   return (
+  //     <>
+  //       {reviewModalVisible && (
+  //         <TeacherReview
+  //           reviewModalVisible={reviewModalVisible}
+  //           setReviewModalVisible={setReviewModalVisible}
+  //           index={reviewIndex}
+  //           teacherReviews={teacherReviews}
+  //         />
+  //       )}
+  //       <View style={[styles.reviewWrapper]}>
+  //         <View style={styles.reviewRating}>
+  //           <Rating
+  //             // ratingColor="#277FD9"
+  //             // type="custom"
+  //             startingValue={review.item.rating}
+  //             readonly
+  //             ratingCount={5}
+  //             imageSize={20}
+  //             fractions={10}
+  //           />
+  //         </View>
 
-          <Text style={styles.subHeading2}>{review.item.title}</Text>
-          {teacherReviews[0].review ? (
-            <View style={styles.reviewBody}>
-              {/* <RenderHtml
-                baseStyle={styles.body2}
-                contentWidth={width}
-                source={{
-                  html:
-                    review.item.review.length > 250
-                      ? removeEmptyTags(review.item.review.substring(0, 250))
-                      : removeEmptyTags(review.item.review),
-                }}
-              /> */}
-            </View>
-          ) : null}
+  //         <Text style={styles.subHeading2}>{review.item.title}</Text>
+  //         {teacherReviews[0].review ? (
+  //           <View style={styles.reviewBody}>
+  //             {/* <RenderHtml
+  //               baseStyle={styles.body2}
+  //               contentWidth={width}
+  //               source={{
+  //                 html:
+  //                   review.item.review.length > 250
+  //                     ? removeEmptyTags(review.item.review.substring(0, 250))
+  //                     : removeEmptyTags(review.item.review),
+  //               }}
+  //             /> */}
+  //           </View>
+  //         ) : null}
 
-          <TouchableOpacity
-            style={styles.readMore}
-            onPress={() => handleReviewModal(review.index)}>
-            <Text style={[styles.subHeading3, styles.brandColorText]}>
-              Read More
-            </Text>
-          </TouchableOpacity>
-          <View style={styles.student}>
-            {review.item.student && review.item.student.profile_pic ? (
-               <CustomImage  style={styles.studentDp} height={48} width={48} uri={review.item.student.profile_pic}/>
-
-              // <Image
-              //   style={styles.studentDp}
-              //   source={{
-              //     uri: review.item.student.profile_pic,
-              //   }}
-              // />
-            ) : null}
-            <View>
-              {review.item.student && review.item.student.name ? (
-                <Text style={styles.subHeading2}>
-                  {review.item.student.name}
-                </Text>
-              ) : null}
-              <Text style={styles.body3}>
-                Updated{' '}
-                {moment(review.item.review_datetime).format('MMM DD, YYYY')}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </>
-    );
-  };
+  //         <TouchableOpacity
+  //           style={styles.readMore}
+  //           onPress={() => handleReviewModal(review.index)}>
+  //           <Text style={[styles.subHeading3, styles.brandColorText]}>
+  //             Read More
+  //           </Text>
+  //         </TouchableOpacity>
+  //         <View style={styles.student}>
+  //           {review.item.student && review.item.student.profile_pic ? (
+  //             <CustomImage
+  //               style={styles.studentDp}
+  //               height={48}
+  //               width={48}
+  //               uri={review.item.student.profile_pic}
+  //             />
+  //           ) : // <Image
+  //           //   style={styles.studentDp}
+  //           //   source={{
+  //           //     uri: review.item.student.profile_pic,
+  //           //   }}
+  //           // />
+  //           null}
+  //           <View>
+  //             {review.item.student && review.item.student.name ? (
+  //               <Text style={styles.subHeading2}>
+  //                 {review.item.student.name}
+  //               </Text>
+  //             ) : null}
+  //             <Text style={styles.body3}>
+  //               Updated{' '}
+  //               {moment(review.item.review_datetime).format('MMM DD, YYYY')}
+  //             </Text>
+  //           </View>
+  //         </View>
+  //       </View>
+  //     </>
+  //   );
+  // };
   const addToCart = (data: any): void => {
     // dispatch(setCheckoutDataDetails({}));
 
@@ -580,7 +568,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               messageStatus: 'success',
               messageTitle: 'Thank You!',
               messageDesc: response.data.error_message.message,
-              timeOut: 4000,
+              timeOut: 7000,
               backRoute: 'CourseDetail',
             });
           } else if (response?.data.status === 'failure') {
@@ -588,7 +576,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               messageStatus: 'failure',
               messageTitle: 'Sorry!',
               messageDesc: response?.data.error_message.message,
-              timeOut: 4000,
+              timeOut: 7000,
               backRoute: 'CourseDetail',
             });
           }
@@ -607,20 +595,26 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
   const handleFreeMeeting = () => {
     navigation.navigate('RequestMeeting');
   };
+  console.log(course)
   return (
     <>
       {/* {loading && <DialogLoader />} */}
 
       {pageLoading ? (
         <PageLoader />
-      ) : courseDetailStatus !== null ? (
+      ) : Object.keys(course).length>0 ? (
         <>
-          <StatusBar hidden={true} />
+          <StatusBar translucent hidden={true} />
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}>
             {/* <Back /> */}
-            <CustomImage height={24} width={24} uri={`${config.media_url}back.svg`}/>
+            
+             <CustomImage
+              height={32}
+              width={32}
+              uri={`${config.media_url}back-arrow.svg`}
+            />
           </TouchableOpacity>
           {/* <HeaderInner 
         type={'findCourse'}
@@ -630,9 +624,10 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
           <ScrollView
           // style={{marginTop:config.headerHeight}}
           >
+           
             {!loading && videoId ? (
               <View
-              // style={{top:0, }}
+              style={{backgroundColor:'#000', paddingTop:Platform.OS==='ios'? 36:0}}
               >
                 {/* have to be changed to a non youtube specific carousal */}
                 <YoutubePlayer
@@ -702,37 +697,45 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                         );
                       })}
                   </View>
-                 
 
-                  {course.rating.total_count > 0 ? (
+                  {course.rating && course.rating.total_count && course.rating.total_count > 0 ? (
                     <View style={{alignItems: 'center', flexDirection: 'row'}}>
-                       <View style={{marginHorizontal: 12}}>
-                 
-                 <CustomImage  height={5} width={5} uri={`${config.media_url}dot.svg`}/>
-                 </View>
-                      <View style={styles.courseRating}>
-                        <Rating
-                          ratingColor={secondaryColor}
-                          type="custom"
-                          tintColor="#fff"
-                          ratingBackgroundColor="#c8c7c8"
-                          startingValue={course.rating.avg_review}
-                          readonly
-                          ratingCount={5}
-                          imageSize={16}
-                          fractions={10}
-                        />
-                        <View
-                          style={{flexDirection: 'row', alignItems: 'center'}}>
-                          <Text style={styles.courseRatingCount}>
-                            {course.rating.total_count} reviews{' '}
-                          </Text>
-                          <View>
-                          <CustomImage height={12} width={12} uri={`${config.media_url}drop.svg`}/>
-
-                          </View>
-                        </View>
+                      <View style={{marginHorizontal: 12}}>
+                        <CustomImage
+                          height={5}
+                          width={5}
+                          uri={`${config.media_url}dot.svg`}
+                        /> 
                       </View>
+                      <TouchableOpacity onPress={()=>setReviewPopupOpen(true)}>
+                        <View style={styles.courseRating}>
+                          <Rating
+                            ratingColor={secondaryColor}
+                            type="custom"
+                            tintColor="#fff"
+                            ratingBackgroundColor="#c8c7c8"
+                            startingValue={course.rating.avg_review}
+                            readonly
+                            ratingCount={5}
+                            imageSize={16}
+                            fractions={10}
+                          />
+                          <View
+                            style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <Text style={styles.courseRatingCount}>
+                            {course.rating.avg_review}/5{"  "} |{"  "} {course.rating.total_count} reviews{' '} 
+                            </Text>
+                            <CustomImage uri={`${config.media_url}drop.svg`} height={12} width={12}/>
+                            {/* <View>
+                              <CustomImage
+                                height={12}
+                                width={12}
+                                uri={`${config.media_url}drop.svg`}
+                              />
+                            </View> */}
+                          </View>
+                      </View>
+                      </TouchableOpacity>
                     </View>
                   ) : null}
                 </View>
@@ -743,10 +746,10 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                   {course.user?.first_name} {course?.user?.last_name}
                 </Text>
               </TouchableOpacity>
-              <Text style={(StyleCSS.styles.contentText, styles.experience)}>
+              {course.experience ? <Text style={(StyleCSS.styles.contentText, styles.experience)}>
                 {course.experience} years experience
-              </Text>
-              {course.user.spotlight ? (
+              </Text> : null}
+              {course.user && course.user.spotlight ? (
                 <Text
                   style={[
                     StyleCSS.styles.contentText,
@@ -757,12 +760,13 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                 </Text>
               ) : null}
               <View style={styles.courseInfo}>
+                {course && course.user && 
                 <Text style={styles.price}>
                   {!isLoggedIn ? (
                     userLocation?.data?.country === 'IN' ? (
                       course?.user.ip_country === 'India' ? (
                         <Text style={styles.price}>
-                          {`Rs ${
+                          {`Rs. ${
                             course && course.pricing && course?.pricing[0].INR
                           }`}{' '}
                           <Text style={StyleCSS.styles.contentText}>
@@ -782,7 +786,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                   ) : userData?.ip_country === 'India' ? (
                     course?.user.ip_country === 'India' ? (
                       <Text style={styles.price}>
-                        {`Rs ${
+                        {`Rs. ${
                           course && course.pricing && course?.pricing[0].INR
                         }`}{' '}
                         <Text style={StyleCSS.styles.contentText}>
@@ -797,7 +801,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                   ) : (
                     `US $${course && course.pricing && course?.pricing[0].USD}`
                   )}{' '}
-                </Text>
+                </Text>}
                 <Text style={[StyleCSS.styles.contentText, {marginTop: 5}]}>
                   for 1-on-1, {course.class_duration} mins class{' '}
                 </Text>
@@ -806,27 +810,31 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                 </Text>
                 <Text style={[StyleCSS.styles.contentText, {marginTop: 6}]}>
                   {course.classes_per_week}{' '}
-                  {course.classes_per_week === 1 ? 'session' : 'sessions'} per
+                  {course.classes_per_week === 1 ? 'class' : 'classes'} per
                   week{' '}
-                  <Text style={[StyleCSS.styles.labelText, {marginTop: 16}]}>
+                   <Text style={[StyleCSS.styles.labelText, {marginTop: 16}]}>
                     {' '}
                     |{' '}
-                  </Text>{' '}
-                  12-16 weeks to level up
+                  </Text>
+                  {course.level_up_week ? course.level_up_week :null}
                 </Text>
                 <View style={[{marginTop: 16}, StyleCSS.styles.fdrCenter]}>
-       <CustomImage height={16} width={16} uri={`${config.media_url}course_details/card.svg`}/>
-                  <Text
+                  <CustomImage
+                    height={16}
+                    width={16}
+                    uri={`${config.media_url}course_details/card.svg`}
+                  />
+                  {course.pay_as_you_go ? <Text
                     style={[
                       StyleCSS.styles.contentText,
                       StyleCSS.styles.fw600,
                       {marginLeft: 8},
                     ]}>
-                    Pay as you go, 2 classes at a time
-                  </Text>
+                    {course.pay_as_you_go}
+                  </Text> :null}
                 </View>
                 {!isLoggedIn && course.allow_directly && (
-                    <TouchableOpacity
+                  <TouchableOpacity
                     style={styles.enrollButton}
                     onPress={() => handleEnrollment('N')}>
                     <Text
@@ -837,76 +845,74 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                       Enroll Now
                     </Text>
                   </TouchableOpacity>
-                  )}
-                  {!isLoggedIn && !course.allow_directly && (
+                )}
+                {!isLoggedIn && !course.allow_directly && (
+                  <TouchableOpacity
+                    style={styles.enrollButton}
+                    onPress={() => handleInterested()}>
+                    <Text
+                      style={[
+                        StyleCSS.styles.contentText,
+                        styles.enrollNowText,
+                      ]}>
+                      I am interested
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                {isLoggedIn && course && userData.user_type === 'S' ? (
+                  !course.pricing[0].is_checkout ? (
                     <TouchableOpacity
+                      style={styles.enrollButton}
+                      onPress={() => addToCart(course)}>
+                      <Text
+                        style={[
+                          StyleCSS.styles.contentText,
+                          styles.enrollNowText,
+                        ]}>
+                        Refill
+                      </Text>
+                    </TouchableOpacity>
+                  ) : course.allow_directly ? (
+                    <TouchableOpacity
+                      style={styles.enrollButton}
+                      onPress={() => handleEnrollment('N')}>
+                      <Text
+                        style={[
+                          StyleCSS.styles.contentText,
+                          styles.enrollNowText,
+                        ]}>
+                        Enroll Now
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.enrollButton}
+                      onPress={() => handleInterested()}>
+                      <Text
+                        style={[
+                          StyleCSS.styles.contentText,
+                          styles.enrollNowText,
+                        ]}>
+                        I am interested
+                      </Text>
+                    </TouchableOpacity>
+                  )
+                ) : null}
+                {isLoggedIn && userData.user_type !== 'S' ? (
+                  <TouchableOpacity
                     style={styles.enrollButton}
-                    onPress={() => handleInterested()}>
+                    // onPress={() => handleInterested()}
+                  >
                     <Text
                       style={[
                         StyleCSS.styles.contentText,
                         styles.enrollNowText,
                       ]}>
-                      I am interested
+                      Login as Student
                     </Text>
                   </TouchableOpacity>
-                  )}
-                  {isLoggedIn &&
-                  course &&
-                  userData.user_type === 'S' ? (
-                    !course.pricing[0].is_checkout ? (
-                      <TouchableOpacity
-                    style={styles.enrollButton}
-                    onPress={() => addToCart(course)}>
-                    <Text
-                      style={[
-                        StyleCSS.styles.contentText,
-                        styles.enrollNowText,
-                      ]}>
-                      Refill
-                    </Text>
-                  </TouchableOpacity>
-                    ) : course.allow_directly ? (
-                      <TouchableOpacity
-                    style={styles.enrollButton}
-                    onPress={() => handleEnrollment('N')}>
-                    <Text
-                      style={[
-                        StyleCSS.styles.contentText,
-                        styles.enrollNowText,
-                      ]}>
-                      Enroll Now
-                    </Text>
-                  </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity
-                    style={styles.enrollButton}
-                    onPress={() => handleInterested()}>
-                    <Text
-                      style={[
-                        StyleCSS.styles.contentText,
-                        styles.enrollNowText,
-                      ]}>
-                      I am interested
-                    </Text>
-                  </TouchableOpacity>
-                    )
-                  ) : null}
-                  {isLoggedIn && userData.user_type !== 'S' ? (
-                   <TouchableOpacity
-                   style={styles.enrollButton}
-                   // onPress={() => handleInterested()}
-                   >
-                   <Text
-                     style={[
-                       StyleCSS.styles.contentText,
-                       styles.enrollNowText,
-                     ]}>
-                    Login as Student
-                   </Text>
-                 </TouchableOpacity>
-                  ): null}
-{/* {isLoggedIn && userData.user_type === 'S' ?
+                ) : null}
+                {/* {isLoggedIn && userData.user_type === 'S' ?
                 course.pricing && !course.pricing[0].is_checkout ? (
                   <TouchableOpacity
                     style={styles.enrollButton}
@@ -970,17 +976,15 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                 <View style={StyleCSS.styles.marginV16}>
                   <LineDashed />
                 </View>
-                <Text
+                {course.discuss_timing ? <Text
                   style={[
                     StyleCSS.styles.contentText,
                     styles.courseInfoDetail,
                   ]}>
-                  You can discuss the class timings during your meeting with the
-                  teacher. ipassio has 1000s of students from the US, Canada,
-                  Australia, UK, Europe, UAE, and Indian timezones.
-                </Text>
+                  {course.discuss_timing}
+                </Text> : null}
                 <View style={[StyleCSS.styles.lineStyleLight]}></View>
-                <View style={[StyleCSS.styles.fdrCenter, {marginTop: 16}]}>
+                {/* <View style={[StyleCSS.styles.fdrCenter, {marginTop: 16}]}>
                   <View style={styles.courseGeneralDetails}>
                     <Text style={StyleCSS.styles.labelText}>
                       Course Duration
@@ -992,7 +996,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                       {course.class_duration} weeks
                     </Text>
                   </View>
-                </View>
+                </View> */}
                 <View style={[StyleCSS.styles.fdrCenter, {marginTop: 16}]}>
                   <View style={styles.courseGeneralDetails}>
                     <Text style={StyleCSS.styles.labelText}>
@@ -1069,6 +1073,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                 {course.course_summary ? (
                   readMoreSummary ? (
                     <>
+                    {/* new */}
                       <RenderHtml
                         baseStyle={styles.summary}
                         contentWidth={cardW}
@@ -1078,13 +1083,14 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                         onPress={() => {
                           setReadMoreSummary(false);
                         }}>
-                        <Text style={[styles.summary, {color: secondaryColor}]}>
+                        <Text style={[styles.summary, {color: secondaryColor, alignSelf:'flex-end', marginBottom:12}]}>
                           Read Less
                         </Text>
                       </TouchableOpacity>
                     </>
                   ) : (
                     <>
+                    {/* new */}
                       <RenderHtml
                         baseStyle={styles.summary}
                         contentWidth={cardW}
@@ -1094,8 +1100,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                         onPress={() => {
                           setReadMoreSummary(true);
                         }}>
-                        <Text style={[styles.summary, {color: secondaryColor}]}>
-                          Read More
+                        <Text style={[styles.summary, {color: secondaryColor, alignSelf:'flex-end', marginBottom:12}]}>
+                          ...Read More
                         </Text>
                       </TouchableOpacity>
                     </>
@@ -1109,11 +1115,16 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                 ]}></View>
               <View style={styles.courseSummary}>
                 {/* <View style={styles.main}> */}
-                <Text style={[styles.subHeading]}>Teacher Profile</Text>
+                <Text style={[styles.subHeading]}>Teacher's Profile</Text>
                 <View style={[StyleCSS.styles.fdrCenter, {marginTop: 16}]}>
                   {course.user.profile_pic != '' && (
                     <View style={styles.educatorPicWrapper}>
-                      <CustomImage  style={styles.educatorProfilePic} height={80} width={80} uri={course.user.profile_pic}/>
+                      <CustomImage
+                        style={styles.educatorProfilePic}
+                        height={80}
+                        width={80}
+                        uri={course.user.profile_pic}
+                      />
                     </View>
                   )}
                   <View style={{marginLeft: 16}}>
@@ -1125,12 +1136,12 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                       ]}>
                       {course.user.first_name} {course.user.last_name}
                     </Text>
-                    <Text style={[StyleCSS.styles.contentText]}>
+                    {course.experience ? <Text style={[StyleCSS.styles.contentText]}>
                       <Text style={[StyleCSS.styles.labelText]}>
                         Experience:{' '}
                       </Text>
                       {course.experience} years
-                    </Text>
+                    </Text>:null}
                     {course.user.ip_country !== '' && (
                       <Text style={[StyleCSS.styles.contentText]}>
                         <Text style={[StyleCSS.styles.labelText]}>From: </Text>
@@ -1146,11 +1157,14 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                         StyleCSS.styles.fdrCenter,
                         styles.teacherProfileList,
                       ]}>
-                      <View>
-                        
-                      <CustomImage height={32} width={32} uri={`${config.media_url}course_details/teacherProfile1.svg`}/>
+                      <View style={{width:'10%'}}>
+                        <CustomImage
+                          height={32}
+                          width={32}
+                          uri={`${config.media_url}course_details/teacherProfile1.svg`}
+                        />
                       </View>
-                      <View style={styles.teacherProfileListText}>
+                      <View style={[styles.teacherProfileListText,{width:'85%'}]}>
                         <Text
                           style={[
                             StyleCSS.styles.contentText,
@@ -1189,11 +1203,14 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                         StyleCSS.styles.fdrCenter,
                         styles.teacherProfileList,
                       ]}>
-                      <View>
-                      <CustomImage height={32} width={32} uri={`${config.media_url}course_details/teacherProfile2.svg`}/>
-
+                      <View style={{width:'10%'}}>
+                        <CustomImage
+                          height={32}
+                          width={32}
+                          uri={`${config.media_url}course_details/teacherProfile2.svg`}
+                        />
                       </View>
-                      <View style={styles.teacherProfileListText}>
+                      <View style={[styles.teacherProfileListText,{width:'85%'}]}>
                         <Text
                           style={[
                             StyleCSS.styles.contentText,
@@ -1233,10 +1250,14 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                         StyleCSS.styles.fdrCenter,
                         styles.teacherProfileList,
                       ]}>
-                      <View>
-                      <CustomImage height={32} width={32} uri={`${config.media_url}course_details/teacherProfile3.svg`}/>
+                      <View style={{width:'10%'}}>
+                        <CustomImage
+                          height={32}
+                          width={32}
+                          uri={`${config.media_url}course_details/teacherProfile3.svg`}
+                        />
                       </View>
-                      <View style={styles.teacherProfileListText}>
+                      <View style={[styles.teacherProfileListText,{width:'85%'}]}>
                         <Text
                           style={[
                             StyleCSS.styles.contentText,
@@ -1272,10 +1293,14 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                       paddingHorizontal: 16,
                     },
                   ]}>
-                  <View>
-                  <CustomImage  height={32} width={32} uri={`${config.media_url}course_details/teacherProfile4.svg`}/>
+                  <View style={{width:'10%'}}>
+                    <CustomImage
+                      height={32}
+                      width={32}
+                      uri={`${config.media_url}course_details/teacherProfile4.svg`}
+                    />
                   </View>
-                  <View style={styles.teacherProfileListText}>
+                  <View style={[styles.teacherProfileListText,{width:'85%'}]}>
                     <Text
                       style={[
                         StyleCSS.styles.contentText,
@@ -1512,6 +1537,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               <Text style={styles.subHeading}> About the Course</Text>
               {readMoreDetail ? (
                 <>
+                {/* new */}
                   <RenderHtml
                     baseStyle={styles.summary}
                     contentWidth={width}
@@ -1521,13 +1547,14 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     onPress={() => {
                       setReadMoreDetail(false);
                     }}>
-                    <Text style={[styles.summary, {color: secondaryColor}]}>
+                    <Text style={[styles.summary, {color: secondaryColor , alignSelf:'flex-end', marginBottom:12}]}>
                       Read Less
                     </Text>
                   </TouchableOpacity>
                 </>
               ) : (
                 <>
+                {/* new */}
                   <RenderHtml
                     baseStyle={styles.summary}
                     contentWidth={width}
@@ -1541,8 +1568,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     onPress={() => {
                       setReadMoreDetail(true);
                     }}>
-                    <Text style={[styles.summary, {color: secondaryColor}]}>
-                      Read More
+                    <Text style={[styles.summary, {color: secondaryColor, alignSelf:'flex-end', marginBottom:12}]}>
+                      ...Read More
                     </Text>
                   </TouchableOpacity>
                 </>
@@ -1568,7 +1595,11 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     styles.teacherProfileList,
                   ]}>
                   <View>
-                  <CustomImage height={32} width={32} uri={`${config.media_url}course_details/age-groups.svg`}/>
+                    <CustomImage
+                      height={32}
+                      width={32}
+                      uri={`${config.media_url}course_details/age-groups.svg`}
+                    />
                   </View>
                   <View style={styles.teacherProfileListText}>
                     <Text
@@ -1581,14 +1612,18 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                   </View>
                 </View>
               ) : null}
-              {course.satisfied_student ? (
+              {/* {course.satisfied_student ? (
                 <View
                   style={[
                     StyleCSS.styles.fdrCenter,
                     styles.teacherProfileList,
                   ]}>
                   <View>
-                  <CustomImage height={32} width={32} uri={`${config.media_url}course_details/success-rate.svg`}/>
+                    <CustomImage
+                      height={32}
+                      width={32}
+                      uri={`${config.media_url}course_details/success-rate.svg`}
+                    />
                   </View>
                   <View style={styles.teacherProfileListText}>
                     <Text
@@ -1600,7 +1635,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     </Text>
                   </View>
                 </View>
-              ) : null}
+              ) : null} */}
               {course.course_includes && course.course_includes.length > 0 ? (
                 <>
                   <View
@@ -1609,7 +1644,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                       {marginVertical: 8},
                     ]}></View>
                   <View>
-                    <Text style={styles.whatYouGet}>What you get?</Text>
+                    {course.what_you_get  ? <Text style={styles.whatYouGet}>{course.what_you_get}</Text> : null}
                   </View>
                   {course.course_includes.map((details: any) => {
                     return (
@@ -1619,7 +1654,11 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                           StyleCSS.styles.fdrCenter,
                           {paddingVertical: 12},
                         ]}>
-                        <CustomImage height={24} width={24} uri={details.icon}/>
+                        <CustomImage
+                          height={24}
+                          width={24}
+                          uri={details.icon}
+                        />
 
                         {/* <SvgUri uri={details.icon} /> */}
 
@@ -1632,6 +1671,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                   })}
                 </>
               ) : null}
+              {course.factoid && course.factoid.text? 
               <View style={styles.factoidWrapper}>
                 <Text style={styles.factoidText}>Factoid</Text>
                 <Text
@@ -1640,10 +1680,18 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     StyleCSS.styles.fw400,
                     {lineHeight: 26},
                   ]}>
-                  Adults who took up music lessons when younger demonstrated
-                  higher verbal recollection skills.
+                  {course.factoid.text}
                 </Text>
-              </View>
+                {course.factoid.citation!=='' ? <Text
+                  style={[
+                    StyleCSS.styles.labelText,
+                    StyleCSS.styles.fw400,
+                    {lineHeight: 26, marginTop:5, fontSize:12},
+                  ]}>
+                   {course.factoid.citation}
+                </Text> : null}
+              </View> : null}
+              
             </View>
             <View style={styles.main}>
               <View style={styles.queries}>
@@ -1653,7 +1701,11 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                       `whatsapp://send?phone=${+919740050326}&text=Hello`,
                     );
                   }}>
-                  <CustomImage  height={32} width={32} uri={`${config.media_url}whatsapp.svg`}/>
+                  <CustomImage
+                    height={32}
+                    width={32}
+                    uri={`${config.media_url}whatsapp.svg`}
+                  />
                   {/* <SvgUri
                       uri={`${config.media_url}images/course-detail/whatsapps.svg`}
                     /> */}
@@ -1672,22 +1724,23 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                   </Text>
                 </View>
                 <TouchableOpacity onPress={dialCall}>
-                  <CustomImage height={32} width={32} uri={`${config.media_url}contact.svg`}/>
+                  <CustomImage
+                    height={32}
+                    width={32}
+                    uri={`${config.media_url}contact.svg`}
+                  />
                   {/* <SvgUri
                       uri={`${config.media_url}images/course-detail/contacts.svg`}
                     /> */}
                 </TouchableOpacity>
               </View>
             </View>
-            <View>
-              <View
-              // style={{position: 'absolute', top: 0, left: 0, width: '100%'}}
-              >
-                {/* <CustomImage uri={}/> */}
-                {/* <LearningFromArtist /> */}
-                <CustomImage  style={{width: '100%', height: 452}}
-                uri={`${config.media_url}course_details/learning_from_artist_mobile.png`} />
-                
+            {/* <View>
+              <View>
+                <CustomImage
+                  style={{width: '100%', height: 452}}
+                  uri={`${config.media_url}course_details/learning_from_artist_mobile.png`}
+                />
               </View>
               <View style={{position: 'absolute', top: 40, marginBottom: 16}}>
                 <Text style={styles.textOverImage}>
@@ -1703,25 +1756,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                   Know about your teacher before you Enroll in a course.
                 </Text>
               </View>
-            </View>
-            {/* {course.course_includes ? (
-              <View style={styles.main}>
-                <Text style={styles.subHeading}>This course includes</Text>
-                {course.course_includes.map((details: any) => {
-                  return (
-                    <View key={details.id}>
-                      <SvgUri uri={details.icon} />
-                      <Text style={styles.courseIncludesHead}>
-                        {details.name}
-                      </Text>
-                      <Text style={styles.courseIncludesDetails}>
-                        {details.details}
-                      </Text>
-                    </View>
-                  );
-                })}
-              </View>
-            ) : null} */}
+            </View> */}
+            
             {/* {teacherAttendance && teacherAttendance.length > 0 && (
               <View style={styles.greyBg}>
                 <Text style={styles.subHeading}>Teacher's Availability</Text>
@@ -1786,30 +1822,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     </Text>
                   </TouchableOpacity>
                 </View>
-
-                <View style={styles.queries}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      Linking.openURL(
-                        `whatsapp://send?phone=${+919740050326}&text=Hello`,
-                      );
-                    }}>
-                    <SvgUri
-                      uri={`${config.media_url}images/course-detail/whatsapps.svg`}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={dialCall}>
-                    <SvgUri
-                      uri={`${config.media_url}images/course-detail/contacts.svg`}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <Text style={[styles.center, styles.body]}>
-                  +91-97400-50326
-                </Text>
-                <Text style={[styles.center, styles.body2]}>
-                  For any Questions
-                </Text>
+                
               </View>
             )} */}
 
@@ -1880,19 +1893,21 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               </View>
             ) : null}
             <View style={StyleCSS.styles.lineStyleLight} />
-            <View style={styles.main}>
-              <Text style={[styles.subHeading, {marginVertical: 24}]}>
-                What Makes ipassio Your best Fit?
-              </Text>
-              <View style={styles.courseIncludedWrapper}>
+            {course.ipassio_best_fit ? <View style={styles.main}>
+              {course.what_makes_ipassio ? <Text style={[styles.subHeading, {marginVertical: 24}]}>
+               {course.what_makes_ipassio}
+              </Text>:null}
+               {course.ipassio_best_fit.map((ibf:any)=>{
+                return(
+<View style={styles.courseIncludedWrapper}>
                 <View style={styles.svgWrapper}>
-                <CustomImage height={140} width={219} uri={`${config.media_url}course_details/online-classes.svg`}/>
-
+                  <CustomImage
+                    height={140}
+                    width={219}
+                    uri={ibf.best_fit_image}
+                  />
                 </View>
-                {/* <SvgUri
-                height="80"
-                uri={`${config.media_url}images/course-detail/online-classes.svg`}
-              /> */}
+               
                 <Text
                   style={[
                     StyleCSS.styles.contentText,
@@ -1900,7 +1915,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     StyleCSS.styles.font16,
                     {marginTop: 8},
                   ]}>
-                  Online real-time classes
+                  {ibf.title}
                 </Text>
                 <Text
                   style={[
@@ -1908,71 +1923,18 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     StyleCSS.styles.fw400,
                     {lineHeight: 25},
                   ]}>
-                  From the comfort of your home, 1 on 1 online interactive
-                  classes are scheduled at your convenient time.
+                  {ibf.description}
                 </Text>
               </View>
-              <View style={styles.courseIncludedWrapper}>
-                <View style={styles.svgWrapper}>
-                <CustomImage height={140} width={219} uri={`${config.media_url}course_details/pay-as-you-go.svg`}/>
-
-                </View>
-                {/* <SvgUri
-                height="80"
-                uri={`${config.media_url}images/course-detail/pay-as-you-go.svg`}
-              /> */}
-                <Text
-                  style={[
-                    StyleCSS.styles.contentText,
-                    StyleCSS.styles.fw600,
-                    StyleCSS.styles.font16,
-                    {marginTop: 8},
-                  ]}>
-                  Pay as you go
-                </Text>
-                <Text
-                  style={[
-                    StyleCSS.styles.labelText,
-                    StyleCSS.styles.fw400,
-                    {lineHeight: 25},
-                  ]}>
-                  No long-term commitment. Pay for as few as 2 classes at a
-                  time. When you can't make it for the class, you can mutually
-                  reschedule with ease.
-                </Text>
-              </View>
-              <View style={styles.courseIncludedWrapper}>
-                <View style={styles.svgWrapper}>
-                <CustomImage height={140} width={219} uri={`${config.media_url}course_details/world-class-performers.svg`}/>
-                </View>
-                {/* <SvgUri
-                height="80"
-                uri={`${config.media_url}images/course-detail/world-class-performers.svg`}
-              /> */}
-                <Text
-                  style={[
-                    StyleCSS.styles.contentText,
-                    StyleCSS.styles.fw600,
-                    StyleCSS.styles.font16,
-                    {marginTop: 8},
-                  ]}>
-                  World class performers as educators
-                </Text>
-                <Text
-                  style={[
-                    StyleCSS.styles.labelText,
-                    StyleCSS.styles.fw400,
-                    {lineHeight: 25},
-                  ]}>
-                  Award-winning teachers customize the course just for you.
-                  Their structured learning methodology lets you always track
-                  your progress.
-                </Text>
-              </View>
-            </View>
+                )
+              })} 
+              
+              
+            </View>: null}
+            
           </ScrollView>
         </>
-      ) : null}
+      ) : <Text style={{textAlign:'center', marginTop:height*0.4}}> An error occurred. Please try again later.</Text>}
 
       <Modal
         visible={interested}
@@ -2093,6 +2055,13 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
           </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
+      <Modal visible={reviewPopupOpen} animationType='slide' transparent={true} statusBarTranslucent  presentationStyle="overFullScreen" 
+     >
+       <View style={{height:'100%'}}>
+        <TeacherReviews setReviewPopupOpen={setReviewPopupOpen} course={course}/>
+        </View>
+       
+      </Modal>
     </>
   );
 };
@@ -2114,7 +2083,9 @@ const styles = StyleSheet.create({
   teacher: {
     color: font1,
     fontSize: 16,
+    fontWeight:'600',
     textTransform: 'capitalize',
+    fontFamily:Helper.switchFont('medium'),
   },
   summary: {
     color: font1,
@@ -2527,6 +2498,7 @@ const styles = StyleSheet.create({
   },
   teacherProfileListText: {
     marginLeft: 24,
+    
   },
   bgGrey: {
     backgroundColor: background6,
