@@ -336,31 +336,34 @@ const AddSession = ({
 
 
     useEffect(() => {
-      setDayToday(Moment(selectedDate).format('dddd'));
-      setOnlyDate(Moment(selectedDate).format('Do'));
-console.log(dayToday)
-console.log(onlyDate)
-
-      setRepeatTypes([
-        {
-          value: 'Do not Repeat',
-          label: 'Do not Repeat',
-        },
-        {
-          value: 'Every week on ' + dayToday,
-          label: 'W',
-        },
-        {
-          value: 'Every 2 weeks on ' + dayToday,
-          label: 'W2',
-        },
-        {
-          value: 'Monthly on ' + onlyDate,
-          label: 'M',
-        },
-      ]);
-
-      setRepeatType(repeatTypes[0]);
+      if(selectedDate){
+        setDayToday(Moment(selectedDate).format('dddd'));
+        setOnlyDate(Moment(selectedDate).format('Do'));
+  console.log(dayToday)
+  console.log(onlyDate)
+  
+        setRepeatTypes([
+          {
+            value: 'Do not Repeat',
+            label: 'Do not Repeat',
+          },
+          {
+            value: 'Every week on ' + dayToday,
+            label: 'W',
+          },
+          {
+            value: 'Every 2 weeks on ' + dayToday,
+            label: 'W2',
+          },
+          {
+            value: 'Monthly on ' + onlyDate,
+            label: 'M',
+          },
+        ]);
+  
+        setRepeatType(repeatTypes[0]);
+      }
+      
     }, [selectedDate]);
 
     useEffect(() => {
