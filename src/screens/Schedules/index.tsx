@@ -14,6 +14,7 @@ import {
   Dimensions,
   RefreshControl,
   ToastAndroid,
+  KeyboardAvoidingView,
   Modal,
   Alert,
   TouchableWithoutFeedback,
@@ -29,6 +30,7 @@ import {RootParamList} from '../../navigation/Navigators';
 import {useAppDispatch} from '../../app/store';
 import CustomStatusBar from '../../components/CustomStatusBar';
 import {setPageLoading} from '../../reducers/loader.slice';
+import Toast from 'react-native-toast-message';
 import {
   deleteSession,
   getSchedule,
@@ -383,7 +385,7 @@ const LoadItem = ({
                 </View>
               </View>
             </View>
-            {/* {data.class_url !== null ? (
+            {data.class_url !== "" ? (
               <>
                 <DashedLine
                   dashLength={5}
@@ -397,13 +399,18 @@ const LoadItem = ({
                     <Text
                       selectable={true}
                       style={[styles.contentText, {flex: 1, marginTop: 0}]}>
-                      {data.class_url.length > 30
-                        ? `${data.class_url.substring(0, 30)}...`
-                        : data.class_url}
+                      {(config.FrontendURL+config.videoURL+data.class_url).length > 30
+                        ? `${(config.FrontendURL+config.videoURL+data.class_url).substring(0, 30)}...`
+                        : config.FrontendURL+config.videoURL+data.class_url}
                     </Text>
                     <TouchableOpacity
                       onPress={() => {
-                        Clipboard.setString(data.class_url);
+                        Toast.show({
+                          type: 'info',
+                          text1: 'Copied',
+                          // text2: 'This is some something 👋'
+                        });
+                        Clipboard.setString(config.FrontendURL+config.videoURL+data.class_url);
                       }}
                       style={styles.copy}>
                       <CustomImage
@@ -415,7 +422,7 @@ const LoadItem = ({
                   </View>
                 </View>
               </>
-            ) : null} */}
+            ) : null}
           </View>
         ) : null
         // (
@@ -493,8 +500,9 @@ export default function Schedules({navigation , route}: Props) {
 const [url, setURL]= useState(null);
 const [taughtOnCode, setTaughtOnCode] = useState(null)
 const [deleteClassData, setDeleteClassData] = useState(null);
-const [checked, setChecked] = useState<'once'|'all'>('once');
+
 const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
+
 
   const routes = useRoute();
   const doNothing = () => {
@@ -754,13 +762,17 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
 
       {showAddSessionModal ? (
         <Modal presentationStyle="overFullScreen" transparent={true} statusBarTranslucent={true}>
+          
           <TouchableOpacity
             activeOpacity={1}
             onPressOut={() => {
               setShowAddSessionModal(false);
             }}
             style={SheetCSS.styles.modalBackground}>
-            <View style={SheetCSS.styles.modalView}>
+            <View
+             style={StyleCSS.styles.modalView}
+            //  style={{backgroundColor:'#fff',alignSelf:'flex-end'}}
+            >
               <TouchableOpacity activeOpacity={1} onPress={doNothing}>
                 <>
                   <View style={SheetCSS.styles.modalLine}></View>
@@ -769,6 +781,7 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
                       ? `${title} Class - ${editClassData.course.title}`
                       : `${title} Class`}
                   </Text>
+                  <ScrollView contentInsetAdjustmentBehavior="always">
                   <AddSessionCmp
                   setTaughtOnCode={setTaughtOnCode}
                   setShareLinkPopup={setShareLinkPopup}
@@ -780,10 +793,12 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
                     setShowAddSessionModal={setShowAddSessionModal}
                     navigation={navigation}
                   />
+                 </ScrollView>
                 </>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
+          
         </Modal>
       ) : null}
       <Modal visible={shareLinkPopup} transparent={true} statusBarTranslucent>
@@ -796,7 +811,7 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
         <Modal visible={showDeletePopup} transparent={true} statusBarTranslucent>
         <TouchableOpacity activeOpacity={1} onPress={()=> setShowDeletePopup(false)} style={{flexDirection:'row',height:'100%', backgroundColor:'rgba(0,0,0,0.3)', justifyContent:'center', alignItems:'center'}}>
           <TouchableOpacity activeOpacity={1}>
-          <DeleteClassPopup onRefresh={onRefresh} navigation={navigation} setChecked={setChecked} data={deleteClassData} checked={checked} setShowDeletePopup={setShowDeletePopup}/>
+          <DeleteClassPopup onRefresh={onRefresh} navigation={navigation} data={deleteClassData}  setShowDeletePopup={setShowDeletePopup}/>
           </TouchableOpacity>
           </TouchableOpacity>
         </Modal>

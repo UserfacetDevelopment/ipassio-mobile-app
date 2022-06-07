@@ -522,7 +522,7 @@ export default function Dashboard({navigation}: Props) {
 
   useEffect(() => {
     getDefaultDashboard();
-  }, [userData]);
+  }, [userData, ]);
 
   const getDefaultDashboard = () => {
     if (userData.user_type === 'T') {
@@ -541,16 +541,18 @@ export default function Dashboard({navigation}: Props) {
   };
 
   const markAttendance = (data: any): void => {
+    // console.log(data)
+    // console.log(data.user_token)
     navigation.navigate('Attendance', {
       courseToken: data.course_token,
-      classType: data.class_type,
+      classType: data.class_type.id,
       //checkoutToken: data.checkout_token,
       userToken: data.user_token,
     });
   };
   const onRefresh = () => {
     setRefreshing(false);
-    setCurrentRoute('Dashboard');
+    // setCurrentRoute('Dashboard');
     getDefaultDashboard();
   };
 

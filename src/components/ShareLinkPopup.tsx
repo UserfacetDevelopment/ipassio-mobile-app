@@ -8,8 +8,14 @@ import StyleCSS from '../styles/style';
 import CustomImage from './CustomImage';
 import Config from '../config/Config';
 
+interface ShareLinkPopupInterface {
+  class_url: string,
+  taught_on_code: string,
+  setShareLinkPopup: any;
+}
 
-export default function ShareLinkPopup({class_url, taught_on_code, setShareLinkPopup}) {
+
+export default function ShareLinkPopup({class_url, taught_on_code, setShareLinkPopup}: ShareLinkPopupInterface) {
 
 const {userData} = useSelector(userState)
 

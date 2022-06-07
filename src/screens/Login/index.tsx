@@ -19,7 +19,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {TextInput, RadioButton} from 'react-native-paper';
 import { useAppDispatch } from '../../app/store';
-import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -151,7 +151,7 @@ const [active , setActive] = useState<boolean>(false);
   // }
   
 
-  // GOOGLE SIGN IN
+  //GOOGLE SIGN IN
   // const gsiConfigure = () : void => {
   //   GoogleSignin.configure({
   //     webClientId: config.GOOGLE_ID, // client ID of type WEB for your server (needed to verify user ID and offline access)

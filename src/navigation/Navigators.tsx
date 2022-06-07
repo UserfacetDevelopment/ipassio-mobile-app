@@ -114,7 +114,11 @@ export type RootParamList = {
   Login: any;
   Main: any;
   Logout: any;
-  Attendance: any;
+  Attendance: {
+    courseToken: string;
+    classType: string;
+    userToken: string;
+  };
   UserNavigator: any;
   Review: {
     checkoutToken: string;
@@ -648,7 +652,7 @@ export const RootNavigator = () => {
       nationality: '',
     };
     const date = new Date();
-    
+
     dispatch(getCategories(data));
 
     setIsLoading(true);
@@ -735,69 +739,91 @@ const RootStackNavigator = () => {
     }
   }, [isLoggedIn]);
 
-  const openActivityOnNotification = (key: string) => {
+  const openActivityOnNotification = (key: string, data: any) => {
     let nav;
-    switch (key) {
-      case 'weekly_attendance_reminder_to_student':
-        nav = 'Dashboard';
-        break;
-      case 'class_remainder':
-        nav = 'Schedules';
-        break;
-      case 'refill_remainder':
-        nav = 'Dashboard';
-        break;
-      case 'mobile_verified': //not handled
-        nav = 'Dashboard';
-        break;
-      case 'course_invoice_refilled': //not handled
-        nav = 'Dashboard';
-        break;
-      case 'course_teacher_refilled': //not handled
-        nav = 'Dashboard';
-        break;
-      case 'course_activated': //not handled
-        nav = 'Dashboard';
-        break;
-      case 'course_dispute':
-        nav = 'Dashboard';
-        break;
-      case 'course_invoice_enrolled':
-        nav = 'Dashboard';
-        break;
-      case 'course_created': //not handled
-        nav = 'Dashboard';
-        break;
-      case 'welcome_mail':
-        nav = 'Dashboard';
-        break;
-      // case 'reset_password_init':
-      //   nav = '';
-      //   break;
-      case 'attendance_reminder_by_teacher':
-        nav = 'Dashboard';
-        break;
-      case 'marked_attendance_teacher':
-        nav = 'Dashboard';
-        break;
-      case 'course_teacher_enrolled':
-        nav = 'Dashboard';
-        break;
-      case 'withdrawal_method_created':
-        nav = 'Withdraw';
-        break;
-      case 'withdrawal_request':
-        nav = 'Withdraw';
-        break;
-      case 'withdrawal_approved':
-        nav = 'Withdraw';
-        break;
-      case 'withdrawal_cancelled':
-        nav = 'Withdraw';
-        break;
-        default : nav='Dashboard'
+    // switch (key) {
+    //   case 'weekly_attendance_reminder_to_student':
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'class_remainder':
+    //     nav = 'Schedules';
+    //     break;
+    //   case 'refill_remainder':
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'mobile_verified': //not handled
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'course_invoice_refilled': //not handled
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'course_teacher_refilled': //not handled
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'course_activated': //not handled
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'course_dispute':
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'course_invoice_enrolled':
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'course_created': //not handled
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'welcome_mail':
+    //     nav = 'Dashboard';
+    //     break;
+    //   // case 'reset_password_init':
+    //   //   nav = '';
+    //   //   break;
+    //   case 'attendance_reminder_by_teacher':
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'marked_attendance_teacher':
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'course_teacher_enrolled':
+    //     nav = 'Dashboard';
+    //     break;
+    //   case 'withdrawal_method_created':
+    //     nav = 'Withdraw';
+    //     break;
+    //   case 'withdrawal_request':
+    //     nav = 'Withdraw';
+    //     break;
+    //   case 'withdrawal_approved':
+    //     nav = 'Withdraw';
+    //     break;
+    //   case 'withdrawal_cancelled':
+    //     nav = 'Withdraw';
+    //     break;
+    //     default : nav='Dashboard'
+    // }
+
+    if (
+      key === 'weekly_attendance_reminder_to_student' ||
+      key === 'marked_attendance_student' ||
+      key === 'marked_attendance_teacher' ||
+      key === 'attendance_reminder_by_teacher'
+    ) {
+      navigation.navigate('Attendance', {
+        courseToken: data && data.course_token,
+        classType: data && data.class_type,
+        userToken: data.user_token,
+      });
     }
-    return nav;
+    // else if(key==='refill_remainder' || key==='' || key==='' || key==='' || key==='' || key==='' || key==='' || key===''){
+    //   navigation.navigate('Dashboard');
+    // }
+    else if(key==='withdrawal_method_created'|| key==='withdrawal_request'|| key==='withdrawal_cancelled'|| key==='withdrawal_approved'){
+      navigation.navigate('Withdraw');
+    }
+    else{
+      navigation.navigate('Dashboard');
+    }
+    // return nav;
   };
 
   // useEffect(()=>{
@@ -819,11 +845,14 @@ const RootStackNavigator = () => {
       //   'Notification caused app to open from background state:',
       //   remoteMessage,
       // );
-      let nav = openActivityOnNotification(remoteMessage.data.type);
+      openActivityOnNotification(
+        remoteMessage.data.type,
+        remoteMessage.data,
+      );
 
-      navigation.navigate(nav);
+      // navigation.navigate(nav);
 
-      setInitialRoute(nav); //remoteMessage.data.type);
+      // setInitialRoute(nav); //remoteMessage.data.type);
     });
 
     messaging()
@@ -841,7 +870,6 @@ const RootStackNavigator = () => {
         }
       });
   }, []);
-
 
   return (
     <Stack.Navigator
@@ -889,7 +917,7 @@ const RootStackNavigator = () => {
           component={TeacherTabNavigator}
           options={{headerShown: false}}
         /> */}
-       
+
           <Stack.Screen
             name="Dashboard"
             component={Dashboard}
@@ -974,7 +1002,6 @@ const RootStackNavigator = () => {
 };
 
 const styles = StyleSheet.create({
-
   headerButtonRight: {
     alignItems: 'center',
     paddingRight: 5,

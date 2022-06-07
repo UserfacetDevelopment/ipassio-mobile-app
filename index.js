@@ -11,7 +11,7 @@ import messaging from '@react-native-firebase/messaging';
 // useEffect(()=>{
 // Register background handler for push notifications
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-    console.log('Message handled in the background!', remoteMessage.data.type);
+    console.log('Message handled in the background!', remoteMessage);
     // if(remoteMessage.data.type === 'attendance'){
     // dispatch(setNavigation("Attendance"));
     // }

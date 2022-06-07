@@ -1,4 +1,4 @@
-package com.ipassio_;
+package com.ipassio.apps;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;

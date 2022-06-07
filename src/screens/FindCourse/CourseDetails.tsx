@@ -13,6 +13,7 @@ import {
   Dimensions,
   Modal,
   Alert,
+  KeyboardAvoidingView,
   TouchableWithoutFeedback
 } from 'react-native';
 import RenderHtml from 'react-native-render-html';
@@ -1004,8 +1005,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     </Text>
                     <Text>:</Text>
                   </View>
-                  <View style={{marginLeft: 8}}>
-                    <Text style={StyleCSS.styles.contentText}>
+                  <View style={{marginLeft: 8, width:'50%'}}>
+                    <Text style={[StyleCSS.styles.contentText]}>
                       {course.language.map((lang: any, i: number) => (
                         <Text style={StyleCSS.styles.contentText} key={i}>
                           {i > 0 ? ', ' + lang.name : lang.name}
@@ -1940,6 +1941,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
         visible={interested}
         presentationStyle="overFullScreen"
         transparent={true}>
+           <KeyboardAvoidingView behavior='padding'>
         <TouchableOpacity
           activeOpacity={1}
           onPress={() => setInterested(false)}
@@ -2054,6 +2056,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
             </ScrollView>
           </TouchableOpacity>
         </TouchableOpacity>
+        </KeyboardAvoidingView>
       </Modal>
       <Modal visible={reviewPopupOpen} animationType='slide' transparent={true} statusBarTranslucent  presentationStyle="overFullScreen" 
      >

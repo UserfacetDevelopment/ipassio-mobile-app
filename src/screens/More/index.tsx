@@ -24,6 +24,9 @@ import BottomNavigation from '../../components/BottomNavigation';
 import Helper from '../../utils/helperMethods';
 import Config from '../../config/Config';
 import CustomImage from '../../components/CustomImage';
+import {
+  GoogleSignin,
+} from '@react-native-google-signin/google-signin';
 
 export default function More({navigation}: any) {
   const {userData, isLoggedIn} = useSelector(userState);
@@ -32,6 +35,7 @@ export default function More({navigation}: any) {
 
   const doLogout = async () => {
     await messaging().deleteToken();
+    // await GoogleSignin.revokeAccess();
     await AsyncStorage.removeItem('USERDATA');
     await AsyncStorage.removeItem('USERDEVICETOKEN');
     await AsyncStorage.removeItem('USER_NOT_FIRST');
@@ -237,6 +241,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     lineHeight: 25,
+    textTransform: 'capitalize',
     fontFamily:Helper.switchFont('bold')
   },
   userDesignation: {

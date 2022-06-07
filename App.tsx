@@ -50,7 +50,7 @@ const theme = {
     accent: secondaryColor,
     // underlineColor:'transparent',
      placeholder: '#9AA6B2', 
-          // text:font2,
+           text:font1,
           //  primary: 'white',
            underlineColor: 'transparent',    
           // background : '#0f1a2b'

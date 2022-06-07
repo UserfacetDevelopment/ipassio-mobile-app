@@ -6,15 +6,17 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
+  KeyboardAvoidingView,
   Animated,
   Platform,
+  ScrollView,
   Dimensions,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 // import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import Moment, {calendarFormat} from 'moment';
 import 'moment-timezone';
-import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useAppDispatch} from '../../app/store';
 import CustomDropdown from '../../components/CustomDropdown';
 import CustomStatusBar from '../../components/CustomStatusBar';
@@ -130,7 +132,10 @@ const AddSession = ({
     const [selectedCourse, setSelectedCourse] = useState<any>({});
     const [selectedCourseId, setSelectedCourseId] = useState(0);
     const [studentList, setStudentList] = useState<Array<any>>([]);
-    const [selectedTimezone, setSelectedTimezone] = useState<any>({label:userData.timezone, value:userData.timezone});
+    const [selectedTimezone, setSelectedTimezone] = useState<any>({
+      label: userData.timezone,
+      value: userData.timezone,
+    });
     const [isDateTimePickerVisible, setIsDateTimePickerVisible] =
       useState(false);
     const [isEndDateTimePickerVisible, setIsEndDateTimePickerVisible] =
@@ -182,7 +187,15 @@ const AddSession = ({
     const [refillError, setRefillError] = useState<any>(null);
     const [showError, setShowError] = useState(false);
     const [dateError, setDateError] = useState(false);
+    const [repeatTypes, setRepeatTypes] = useState<Array<any>>([]);
+    const [repeatType, setRepeatType] = useState(undefined);
+    const [repeatDuration, setRepeatDuration] = useState<any>(undefined);
+    const [repeatDurationArr, setRepeatDurationArr] = useState<Array<any>>([]);
+    const [selectedStudent, setSelectedStudent] = useState<any>(undefined);
+    const [dayToday, setDayToday] = useState<any>(undefined)
+    const [onlyDate, setOnlyDate] = useState<any>(undefined)
 
+   
     useEffect(() => {
       dispatch(getLookups())
         .unwrap()
@@ -202,18 +215,18 @@ const AddSession = ({
         });
     }, []);
 
-    useEffect(()=>{
-      
-if(startDSelected){
-  
-      if(!endDSelected || new Date(endDSelected).getTime()<new Date(startDSelected).getTime()){
-        setDateError(true);
+    useEffect(() => {
+      if (startDSelected) {
+        if (
+          !endDSelected ||
+          new Date(endDSelected).getTime() < new Date(startDSelected).getTime()
+        ) {
+          setDateError(true);
+        } else {
+          setDateError(false);
+        }
       }
-      else{
-        setDateError(false)
-      }
-    }
-    },[startDSelected, endDSelected])
+    }, [startDSelected, endDSelected]);
 
     //   useEffect(()=>{
     //     dispatch(getLookups())
@@ -280,9 +293,11 @@ if(startDSelected){
       } else if (userData.user_type === 'S') {
         getEnrolledCoursesList();
       }
-setTimezone(timezones);
+      setTimezone(timezones);
 
-setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0])
+      setSelectedTimezone(
+        timezones.filter(item => item.value === userData.timezone)[0],
+      );
     }, []);
 
     useEffect(() => {
@@ -316,6 +331,38 @@ setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0]
       'Nov',
       'Dec',
     ];
+
+    // let repeatTypes: any = [];
+
+
+    useEffect(() => {
+      setDayToday(Moment(selectedDate).format('dddd'));
+      setOnlyDate(Moment(selectedDate).format('Do'));
+console.log(dayToday)
+console.log(onlyDate)
+
+      setRepeatTypes([
+        {
+          value: 'Do not Repeat',
+          label: 'Do not Repeat',
+        },
+        {
+          value: 'Every week on ' + dayToday,
+          label: 'W',
+        },
+        {
+          value: 'Every 2 weeks on ' + dayToday,
+          label: 'W2',
+        },
+        {
+          value: 'Monthly on ' + onlyDate,
+          label: 'M',
+        },
+      ]);
+
+      setRepeatType(repeatTypes[0]);
+    }, [selectedDate]);
+
     useEffect(() => {
       const coeff = 1000 * 60 * 15;
       const date = new Date();
@@ -413,7 +460,7 @@ setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0]
 
     useEffect(() => {
       if (editClassData && startTime) {
-          let temp = startTime.split(' ');
+        let temp = startTime.split(' ');
         let temp1 = temp[0].split(':');
         let time = 0;
         if (temp[1] === 'PM' && temp1[0] != 12) {
@@ -479,9 +526,8 @@ setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0]
           dispatch(setPageLoading(false));
         });
     };
-   
-    const editClass = () => {
 
+    const editClass = () => {
       const editData: EditClassInterface = {
         class_type: editClassData.course.class_type.id,
         course: editClassData.course.id,
@@ -500,65 +546,26 @@ setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0]
         params: editData,
         userToken: userData.token,
       };
-      if(!dateError){
+      if (!dateError) {
         dispatch(setPageLoading(true));
         dispatch(editSession(editDataFinal))
-        .then((response :any) => {
-          onRefresh();
-          if (response.payload.data.status === 'success') {
-            setChildData(response.payload.data.data);
-            setShareLinkPopup(true);
-            setShowAddSessionModal(false);
+          .then((response: any) => {
+            onRefresh();
+            if (response.payload.data.status === 'success') {
+              setChildData(response.payload.data.data);
+              setShareLinkPopup(true);
+              setShowAddSessionModal(false);
+              dispatch(setPageLoading(false));
+            }
+          })
+          .catch(() => {
             dispatch(setPageLoading(false));
-          }
-        })
-        .catch(() => {
-          dispatch(setPageLoading(false));
-          setShowAddSessionModal(false);
+            setShowAddSessionModal(false);
 
-          // onHide();
-        });
+            // onHide();
+          });
       }
-      
     };
-
-    // const submitEditClass = () => {
-    //   setLoader(true);
-    //   const editClassFinalData = {
-    //     class_type: editClassData.course.class_type.id,
-    //     course: editClassData.course.id,
-    //     student: [editClassData.class_student[0].id],
-    //     end_time: endTime,
-    //     end_date: formatDate(endDate),
-    //     id: editClassData.id,
-    //     start_date: formatDate(startDate),
-    //     start_time: startTime,
-    //     timezone: timezoneValue,
-    //     class_url: editClassData.class_url,
-    //     type: "C",
-    //     class_taught_on: taughtOnValue,
-    //   };
-
-    //   dispatch(
-    //     teacherGA({ param1: editClassFinalData, param2: ENV_APP_ACTION_EDIT })
-    //   )
-    //     .then((response) => {
-    //       // onHide();
-    //       if (response.payload.taught_on.code) {
-    //         setLinkPopupOpen(true);
-    //       }
-    //       setSessionURL(response.payload.class_url);
-    //       setLoader(false);
-    //       getUpcomingClasses();
-    //       // setTimeout(() => {
-    //       //   window.location.reload();
-    //       // }, 1000);
-    //     })
-    //     .catch(() => {
-    //       setLoader(false);
-    //       // onHide();
-    //     });
-    // };
 
     //call teacher created courses
     const getEnrolledCourseStudentList = () => {
@@ -633,6 +640,7 @@ setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0]
     };
 
     const getCourseId = (data: any) => {
+      setRepeatDurationArr([]);
       if (
         userData.user_type === 'S' &&
         data[0].content.unschedule_classe === 0
@@ -641,12 +649,16 @@ setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0]
         setSelectedCourseName(data[0].value);
         setRefillError('Please refill this course.');
       } else {
+        
         setShowError(false);
         setRefillError(null);
         setSelectedCourseId(data[0].id);
         setSelectedCourseName(data[0].value);
         setSelectedCourse(data[0].content);
         if (userData.user_type === 'T') {
+          setSelectedStudentName('')
+setSelectedStudentId('')
+setSelectedStudent(undefined)
           let sList: Array<any> = [];
 
           let students = data[0].content.enrolled_student;
@@ -666,15 +678,63 @@ setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0]
       }
     };
 
+    useEffect(()=>{
+      
+      if(repeatType && repeatType.value === 'Do not Repeat'){
+setRepeatDuration({label:0, value:0});
+      }
+      else{
+if(userData.user_type==='S'){
+  setRepeatDuration({
+    value: `${
+      selectedCourse.unschedule_classe === 1
+        ? selectedCourse.unschedule_classe + ' time'
+        : selectedCourse.unschedule_classe + ' times'
+    }`,
+    label: selectedCourse.unschedule_classe,
+  });
+  for (let i = 1; i <= selectedCourse.unschedule_classe; i++) {
+    // repeatDurationArr.push({value:`${i===1 ? i+ ' time' : i+ ' times'}`, label:i});
+    repeatDurationArr.push({
+      value: `${i === 1 ? i + ' time' : i + ' times'}`,
+      label: i,
+    });
+  }
+
+}
+else if(userData.user_type==='T' && selectedStudent){
+  setRepeatDuration({label: selectedStudent.unschedule_classe, value: `${selectedStudent.unschedule_classe===1 ? selectedStudent.unschedule_classe+' time' : selectedStudent.unschedule_classe+' times'}`} );
+      for (let i = 1; i <= selectedStudent.unschedule_classe; i++) {
+        repeatDurationArr.push({
+          value: `${i === 1 ? i + ' time' : i + ' times'}`,
+          label: i,
+        });
+  }
+}
+
+        
+    }
+    },[selectedCourse, repeatType, selectedStudent])
+console.log(repeatDuration)
+
     const getStudentId = (data: any) => {
       setSelectedStudentName(data[0].value);
       setSelectedStudentId(data[0].id);
+      setSelectedStudent(data[0].content)
+      
     };
 
     const getMeetingPlatform = (data: any) => {
       setTaughtOn(data[0]);
     };
 
+    const getRepeatType = (data: any) => {
+      setRepeatType(data[0]);
+    };
+
+    const getRepeatDuration = (data: any) => {
+      setRepeatDuration(data[0]);
+    };
     const getTimezone = (data: any) => {
       setSelectedTimezone(data[0]);
     };
@@ -723,11 +783,15 @@ setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0]
         start_time: startTime,
         end_time: endTime,
         class_taught_on: taughtOn.label,
-        repeat: 'Do not Repeat',
-        repeat_count: '',
+        // repeat: 'Do not Repeat',
+        // repeat_count: '',
+        repeat: repeatType.label,
+        repeat_day: Moment(selectedDate).format('dddd'),
+        repeat_count: repeatDuration.label,
         // type: 'C',
       };
 
+      console.log(params);
       if (userData.user_type === 'T') {
         let studentIds = new Array();
         studentIds.push(selectedStudentId);
@@ -743,7 +807,9 @@ setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0]
         .then(response => {
           setShowAddSessionModal(false);
           dispatch(setPageLoading(false));
+          console.log(response);
           if (response.data.status === 'success') {
+          // if (response.status === 200) {
             if (
               taughtOn.label === 'I' &&
               response.data.data &&
@@ -768,6 +834,7 @@ setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0]
               });
             }
           } else if (response.data.status === 'failure') {
+            // } else {
             navigation.navigate('ActionStatus', {
               messageStatus: 'failure',
               messageTitle: 'Sorry!',
@@ -789,255 +856,327 @@ setSelectedTimezone(timezones.filter(item=> item.value === userData.timezone)[0]
           });
         });
     };
-    return (
-      <View style={styles.container}>
-        <CustomStatusBar />
 
-        {pageLoading ? (
-          // <></>
-          <View
-            style={{
-              width: width,
-              height: height - 350,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <PageLoader />
-          </View>
-        ) : (
-          <View>
-            <KeyboardAwareScrollView
-              scrollEventThrottle={16}
-              keyboardShouldPersistTaps={'handled'}>
-              {/* <View
+    return (
+      <ScrollView
+        // scrollEventThrottle={16}
+        keyboardShouldPersistTaps={'handled'}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}>
+          <View style={styles.container}>
+            <CustomStatusBar />
+
+            {pageLoading ? (
+              // <></>
+              <View
+                style={{
+                  width: width,
+                  height: height,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <PageLoader />
+              </View>
+            ) : (
+              <View>
+                {/* <View
                 style={{
                   marginBottom: 5,
                 }}></View> */}
-              <View>
-                <View
-                // style={styles.formWrapper}
-                >
-                  {!editClassData ? (
-                    <>
-                      <View style={styles.formElement}>
-                        <CustomDropdown
-                          topLabel={
-                            selectedCourseName !== '-'
-                              ? 'Select Course*'
-                              : undefined
-                          }
-                          config={{color: '#fff'}}
-                          onChangeVal={getCourseId}
-                          data={courses}
-                          selectedIds={[]}
-                          label={
-                            selectedCourseName == '-'
-                              ? 'Select Course*'
-                              : selectedCourseName
-                          }
-                          backTitle={'Select Course'}
-                        />
-                        {userData.user_type === 'S' ? (
-                          <Text style={StyleCSS.styles.errorText}>
-                            {refillError}
-                          </Text>
-                        ) : null}
-                      </View>
-                      {userData.user_type === 'T' && (
+                <View>
+                  <View
+                  // style={styles.formWrapper}
+                  >
+                    {!editClassData ? (
+                      <>
                         <View style={styles.formElement}>
                           <CustomDropdown
                             topLabel={
-                              selectedStudentName
-                                ? 'Select Student*'
+                              selectedCourseName !== '-'
+                                ? 'Select Course*'
                                 : undefined
                             }
                             config={{color: '#fff'}}
-                            onChangeVal={getStudentId}
-                            data={studentList}
+                            onChangeVal={getCourseId}
+                            data={courses}
                             selectedIds={[]}
                             label={
-                              selectedStudentName
-                                ? selectedStudentName
-                                : 'Select Student*'
+                              selectedCourseName == '-'
+                                ? 'Select Course*'
+                                : selectedCourseName
                             }
-                            backTitle={'Select Student'}
+                            backTitle={'Select Course'}
                           />
+                          {userData.user_type === 'S' ? (
+                            <Text style={StyleCSS.styles.errorText}>
+                              {refillError}
+                            </Text>
+                          ) : null}
                         </View>
-                      )}
-                    </>
-                  ) : null}
-                  {timezone ? <View style={styles.formElement}>
-                    <CustomDropdown
-                      timezone={true}
-                      topLabel={selectedTimezone ? 'Select Timezone*' : undefined}
-                      config={{color: '#fff'}}
-                      onChangeVal={getTimezone}
-                      data={timezone}
-                      selectedIds={[]}
-                      label={selectedTimezone ? selectedTimezone.label : 'Select Timezone*'}
-                      backTitle={'Select Timezone'}
-                    />
-                  </View> : null}
-                  {/* <View style={{paddingHorizontal: 16}}>
+                        {userData.user_type === 'T' && (
+                          <View style={styles.formElement}>
+                            <CustomDropdown
+                              topLabel={
+                                selectedStudentName
+                                  ? 'Select Student*'
+                                  : undefined
+                              }
+                              config={{color: '#fff'}}
+                              onChangeVal={getStudentId}
+                              data={studentList}
+                              selectedIds={[]}
+                              label={
+                                selectedStudentName
+                                  ? selectedStudentName
+                                  : 'Select Student*'
+                              }
+                              backTitle={'Select Student'}
+                            />
+                          </View>
+                        )}
+                      </>
+                    ) : null}
+                    {timezone ? (
+                      <View style={styles.formElement}>
+                        <CustomDropdown
+                          timezone={true}
+                          topLabel={
+                            selectedTimezone ? 'Select Timezone*' : undefined
+                          }
+                          config={{color: '#fff'}}
+                          onChangeVal={getTimezone}
+                          data={timezone}
+                          selectedIds={[]}
+                          label={
+                            selectedTimezone
+                              ? selectedTimezone.label
+                              : 'Select Timezone*'
+                          }
+                          backTitle={'Select Timezone'}
+                        />
+                      </View>
+                    ) : null}
+                    {/* <View style={{paddingHorizontal: 16}}>
                     <Text style={[styles.labelContent]}>
                       Timezone: {userData.timezone}
                     </Text>
                   </View> */}
-                  {meetingPlatforms ? (
-                    <View style={styles.formElement}>
-                      <CustomDropdown
-                        topLabel={taughtOn ? 'Taught On*' : undefined}
-                        config={{color: '#fff'}}
-                        onChangeVal={getMeetingPlatform}
-                        data={meetingPlatforms}
-                        selectedIds={[]}
-                        label={taughtOn ? taughtOn.value : 'Taught On*'}
-                        backTitle={'Select Meeting Platform'}
-                      />
-                    </View>
-                  ) : null}
+                    {meetingPlatforms ? (
+                      <View style={styles.formElement}>
+                        <CustomDropdown
+                          topLabel={taughtOn ? 'Taught On*' : undefined}
+                          config={{color: '#fff'}}
+                          onChangeVal={getMeetingPlatform}
+                          data={meetingPlatforms}
+                          selectedIds={[]}
+                          label={taughtOn ? taughtOn.value : 'Taught On*'}
+                          backTitle={'Select Meeting Platform'}
+                        />
+                      </View>
+                    ) : null}
 
-                  {editClassData ? (
-                    <>
+                    {editClassData ? (
+                      <>
+                        <View style={styles.formElement}>
+                          <CustomDateTimePicker
+                            config={{color: '#fff'}}
+                            width={width - 32}
+                            showDateTimePicker={showStartDateTimePicker}
+                            selectedValue={startDate}
+                            label={'Start Date*'}
+                            minimumDate={new Date()}
+                            isVisible={isStartDateTimePickerVisible}
+                            mode="date"
+                            onConfirm={(selectedDate: any) => {
+                              handleStartDatePicked(selectedDate);
+                            }}
+                            onCancel={hideStartDateTimePicker}
+                          />
+                        </View>
+                        <View style={styles.formElement}>
+                          <CustomDateTimePicker
+                            width={width - 32}
+                            config={{color: '#fff'}}
+                            showDateTimePicker={showEndDateTimePicker}
+                            selectedValue={endDate}
+                            label={'End Date *'}
+                            minimumDate={minEndDate}
+                            isVisible={isEndDateTimePickerVisible}
+                            mode="date"
+                            onConfirm={(selectedDate: any) => {
+                              handleEndDatePicked(selectedDate);
+                            }}
+                            onCancel={hideEndDateTimePicker}
+                          />
+                          {dateError ? (
+                            <Text style={StyleCSS.styles.errorText}>
+                              End date should be after or same as start date
+                            </Text>
+                          ) : null}
+                        </View>
+                      </>
+                    ) : (
                       <View style={styles.formElement}>
                         <CustomDateTimePicker
-                        config={{color:'#fff'}}
                           width={width - 32}
-                          showDateTimePicker={showStartDateTimePicker}
-                          selectedValue={startDate}
-                          label={'Start Date*'}
+                          config={{color: '#fff'}}
+                          showDateTimePicker={showDateTimePicker}
+                          selectedValue={selectedDate}
+                          label={'Select Date *'}
                           minimumDate={new Date()}
-                          isVisible={isStartDateTimePickerVisible}
+                          isVisible={isDateTimePickerVisible}
                           mode="date"
                           onConfirm={(selectedDate: any) => {
-                            handleStartDatePicked(selectedDate);
+                            handleDatePicked(selectedDate);
                           }}
-                          onCancel={hideStartDateTimePicker}
+                          onCancel={hideDateTimePicker}
                         />
                       </View>
+                    )}
+                    {userData.user_type === 'T' &&
+                    !editClassData &&
+                    repeatTypes.length > 0 &&
+                    selectedCourseName !== '-' &&
+                    selectedStudentName !== '' &&
+                    selectedDate ? (
                       <View style={styles.formElement}>
-                        <CustomDateTimePicker
-                          width={width - 32}
-                          config={{color:'#fff'}}
-                          showDateTimePicker={showEndDateTimePicker}
-                          selectedValue={endDate}
-                          label={'End Date *'}
-                          minimumDate={minEndDate}
-                          isVisible={isEndDateTimePickerVisible}
-                          mode="date"
-                          onConfirm={(selectedDate: any) => {
-                            handleEndDatePicked(selectedDate);
-                          }}
-                          onCancel={hideEndDateTimePicker}
+                        <CustomDropdown
+                          topLabel={repeatType ? 'Repeat*' : undefined}
+                          config={{color: '#fff'}}
+                          onChangeVal={getRepeatType}
+                          data={repeatTypes}
+                          selectedIds={[]}
+                          label={repeatType ? repeatType.value : 'Repeat*'}
+                          backTitle={'Repeat'}
                         />
-                        {dateError ? <Text style={StyleCSS.styles.errorText}>End date should be after or same as start date</Text> : null}
                       </View>
-                    </>
-                  ) : (
+                    ) : null}
+                    {userData.user_type === 'S' &&
+                    !editClassData &&
+                    repeatTypes.length > 0 &&
+                    selectedCourseName !== '-' &&
+                    selectedDate ? (
+                      <View style={styles.formElement}>
+                        <CustomDropdown
+                          topLabel={repeatType ? 'Repeat*' : undefined}
+                          config={{color: '#fff'}}
+                          onChangeVal={getRepeatType}
+                          data={repeatTypes}
+                          selectedIds={[]}
+                          label={repeatType ? repeatType.value : 'Repeat*'}
+                          backTitle={'Repeat'}
+                        />
+                      </View>
+                    ) : null}
+                    {repeatType && repeatType.value !== 'Do not Repeat' ? (
+                      <View style={styles.formElement}>
+                        <CustomDropdown
+                          topLabel={repeatDuration ? 'Repeat for*' : undefined}
+                          config={{color: '#fff'}}
+                          onChangeVal={getRepeatDuration}
+                          data={repeatDurationArr}
+                          label={
+                            repeatDuration
+                              ? repeatDuration.value
+                              : 'Repeat for*'
+                          }
+                          backTitle={'Repeat'}
+                        />
+                      </View>
+                    ) : null}
+
                     <View style={styles.formElement}>
-                      <CustomDateTimePicker
-                        width={width - 32}
-                        showDateTimePicker={showDateTimePicker}
-                        selectedValue={selectedDate}
-                        label={'Select Date *'}
-                        minimumDate={new Date()}
-                        isVisible={isDateTimePickerVisible}
-                        mode="date"
-                        onConfirm={(selectedDate: any) => {
-                          handleDatePicked(selectedDate);
-                        }}
-                        onCancel={hideDateTimePicker}
+                      {/* <Text style={styles.labelContent}>Start Time *</Text> */}
+                      <CustomDropdown
+                        customIcon={
+                          <CustomImage
+                            height={24}
+                            width={24}
+                            uri={`${config.media_url}time.svg`}
+                          />
+                        }
+                        topLabel={startTime ? 'Start Time*' : undefined}
+                        config={{color: '#fff'}}
+                        onChangeVal={changeStartTime}
+                        data={startTimeRangeList}
+                        selectedIds={[]}
+                        label={startTime ? startTime : 'Start Time*'}
+                        backTitle={'Select Class Start Time'}
                       />
                     </View>
-                  )}
 
-                  <View style={styles.formElement}>
-                    {/* <Text style={styles.labelContent}>Start Time *</Text> */}
-                    <CustomDropdown
-                      customIcon={
-                        <CustomImage
-                          height={24}
-                          width={24}
-                          uri={`${config.media_url}time.svg`}
-                        />
-                      }
-                      topLabel={startTime ? 'Start Time*' : undefined}
-                      config={{color: '#fff'}}
-                      onChangeVal={changeStartTime}
-                      data={startTimeRangeList}
-                      selectedIds={[]}
-                      label={startTime ? startTime : 'Start Time*'}
-                      backTitle={'Select Class Start Time'}
-                    />
+                    <View style={styles.formElement}>
+                      {/* <Text style={styles.labelContent}>End Time *</Text> */}
+                      <CustomDropdown
+                        customIcon={
+                          <CustomImage
+                            height={24}
+                            width={24}
+                            uri={`${config.media_url}time.svg`}
+                          />
+                        }
+                        topLabel={endTime ? 'End Time*' : undefined}
+                        config={{color: '#fff'}}
+                        onChangeVal={changeEndTime}
+                        data={endTimeRangeList}
+                        selectedIds={[]}
+                        label={endTime ? endTime : 'End Time*'}
+                        backTitle={'Select Class End Time'}
+                      />
+                    </View>
                   </View>
-
-                  <View style={styles.formElement}>
-                    {/* <Text style={styles.labelContent}>End Time *</Text> */}
-                    <CustomDropdown
-                      customIcon={
-                        <CustomImage
-                          height={24}
-                          width={24}
-                          uri={`${config.media_url}time.svg`}
-                        />
-                      }
-                      topLabel={endTime ? 'End Time*' : undefined}
-                      config={{color: '#fff'}}
-                      onChangeVal={changeEndTime}
-                      data={endTimeRangeList}
-                      selectedIds={[]}
-                      label={endTime ? endTime : 'End Time*'}
-                      backTitle={'Select Class End Time'}
-                    />
-                  </View>
-                </View>
-                <View
-                  style={[StyleCSS.styles.lineStyleLight, {marginTop: 12}]}
-                />
-                <View style={[StyleCSS.styles.modalButton]}>
-                  <TouchableOpacity
-                    style={StyleCSS.styles.cancelButton}
-                    onPress={() => {
-                      // navigation.goBack()
-                      setShowAddSessionModal(false);
-                    }}>
-                    <Text style={StyleCSS.styles.cancelButtonText}>Cancel</Text>
-                  </TouchableOpacity>
-
-                  {editClassData ? (
+                  <View
+                    style={[StyleCSS.styles.lineStyleLight, {marginTop: 12}]}
+                  />
+                  <View style={[StyleCSS.styles.modalButton]}>
                     <TouchableOpacity
-                      style={StyleCSS.styles.submitButton}
-                      onPress={editClass}>
-                      <Text style={StyleCSS.styles.submitButtonText}>
-                        Submit
+                      style={StyleCSS.styles.cancelButton}
+                      onPress={() => {
+                        // navigation.goBack()
+                        setShowAddSessionModal(false);
+                      }}>
+                      <Text style={StyleCSS.styles.cancelButtonText}>
+                        Cancel
                       </Text>
                     </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      disabled={userData.user_type === 'S' && showError}
-                      style={[
-                        StyleCSS.styles.submitButton,
-                        {
-                          backgroundColor:
-                            userData.user_type === 'S' && showError
-                              ? '#ccc'
-                              : brandColor,
-                        },
-                      ]}
-                      onPress={doCreateSession}>
-                      <Text style={StyleCSS.styles.submitButtonText}>Add</Text>
-                    </TouchableOpacity>
-                  )}
+
+                    {editClassData ? (
+                      <TouchableOpacity
+                        style={StyleCSS.styles.submitButton}
+                        onPress={editClass}>
+                        <Text style={StyleCSS.styles.submitButtonText}>
+                          Submit
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        disabled={userData.user_type === 'S' && showError}
+                        style={[
+                          StyleCSS.styles.submitButton,
+                          {
+                            backgroundColor:
+                              userData.user_type === 'S' && showError
+                                ? '#ccc'
+                                : brandColor,
+                          },
+                        ]}
+                        onPress={doCreateSession}>
+                        <Text style={StyleCSS.styles.submitButtonText}>
+                          Add
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 </View>
               </View>
-            </KeyboardAwareScrollView>
-          </View>
-        )}
-        {/* <AppMessage
+            )}
+            {/* <AppMessage
           status={appStatus}
           statusMessage={appStatusMessage}
         /> */}
-      </View>
+          </View>
+        </KeyboardAvoidingView>
+      </ScrollView>
     );
   };
 

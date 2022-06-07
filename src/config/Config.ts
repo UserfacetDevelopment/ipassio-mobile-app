@@ -8,7 +8,8 @@ export default class Config {
   static headerHeight= Platform.OS === 'android' ? 86 : 90;
 
   static FrontendBaseURL = 'https://ipassio.com/student-signup';
-
+static FrontendURL = "https://ipassio.com"
+static videoURL="/video/";
   static GOOGLE_ID = '938249328963-o6gf6eao638mh7h1kl1p4sj1qd4jfrjd.apps.googleusercontent.com'
     //'142571675590-ujj8t4901kejoiddm2a1qop3ivekfisn.apps.googleusercontent.com';
   static BaseURL =

@@ -145,11 +145,25 @@ export default function FindCourse({navigation, route}: Props) {
   // const [offset, setOffset] = useState<number>(0);
   const [coursesArray, setCoursesArray] = useState<Array<any>>([]);
   const [loadingMoreCourses, setLoadingMoreCourses] = useState<boolean>(false);
+  const [scrollPosition,setScrollPosition]=React.useState(0)
   // const [handleCourseState, sethandleCourseState] = useState<boolean>(false);
   // const [page, setPage] = useState<"find_course"|"home"|"">("home");
 
+  // const handleScroll=(event)=>{
+  //   let yOffset=event.nativeEvent.contentOffset.y / 475;
+  //   setScrollPosition(yOffset)
+  // }
 
-
+  // useEffect(()=>{
+  //   navigation.addListener('willBlur', () => {
+  //     const offset = scrollPosition
+  //     // To prevent FlatList scrolls to top automatically,
+  //     // we have to delay scroll to the original position 
+  //     setTimeout(() => {
+  //       flatList.scrollToOffset({ offset, animated: false })
+  //     }, 500)
+  //   })
+  // },[])
   let scrollY = new Animated.Value(0.01);
   // let changingHeight = scrollY.interpolate({
   //   inputRange: [0.01, 50],
@@ -229,50 +243,54 @@ export default function FindCourse({navigation, route}: Props) {
 
   useEffect(() => {
     // if(!isLoggedIn){
-    dispatch(setLoading(true));
-    setLoadingMoreCourses(true);
-    // dispatch(setPageLoading(true));
 
-    const data: FindCoursesInterface = {
-      query: searchText,
-      nationality: nationality,
-      categories:
-        selectedCategories.length > 0 ? selectedCategories : initialCategories,
-      sub_categories: selectedSubcategories,
-      second_sub_categories: selectedSecsubcategories,
-      levels: selectedLevels,
-    };
-    const finalData: FindCoursesInterfaceFinal = {
-      data: data,
-      offset: offset,
-    };
-
-    dispatch(getCourses(finalData))
-      .unwrap()
-      .then((response: any) => {
-        dispatch(setLoading(false));
-        setLoadingMoreCourses(false);
-        if (response.status === 'success') {
-          //  dispatch(fetchCourseSuccess(response))
-          // if(offset!==0) {
-          //   // console.log("3 handling courses");
-          //   handleCourses();
-          // }
-          // else{
-          if (offset === 0) {
-            setCoursesArray([...response.data]);
-          } else {
-            setCoursesArray([...coursesArray, ...response.data]);
+    if(initialCategories.length>0) {
+      dispatch(setLoading(true));
+      setLoadingMoreCourses(true);
+      // dispatch(setPageLoading(true));
+  
+      const data: FindCoursesInterface = {
+        query: searchText,
+        nationality: nationality,
+        categories:
+          selectedCategories.length > 0 ? selectedCategories : initialCategories,
+        sub_categories: selectedSubcategories,
+        second_sub_categories: selectedSecsubcategories,
+        levels: selectedLevels,
+      };
+      const finalData: FindCoursesInterfaceFinal = {
+        data: data,
+        offset: offset,
+      };
+  
+      dispatch(getCourses(finalData))
+        .unwrap()
+        .then((response: any) => {
+          dispatch(setLoading(false));
+          setLoadingMoreCourses(false);
+          if (response.status === 'success') {
+            //  dispatch(fetchCourseSuccess(response))
+            // if(offset!==0) {
+            //   // console.log("3 handling courses");
+            //   handleCourses();
+            // }
+            // else{
+            if (offset === 0) {
+              setCoursesArray([...response.data]);
+            } else {
+              setCoursesArray([...coursesArray, ...response.data]);
+            }
+            // }
           }
-          // }
-        }
-        dispatch(setPageLoading(false));
-      })
-      .catch(() => {
-        setLoadingMoreCourses(false);
-        dispatch(setLoading(false));
-        // dispatch(setPageLoading(false));
-      });
+          dispatch(setPageLoading(false));
+        })
+        .catch(() => {
+          setLoadingMoreCourses(false);
+          dispatch(setLoading(false));
+          // dispatch(setPageLoading(false));
+        });
+    }
+    
     // }
   }, [
     searchText,
@@ -281,6 +299,7 @@ export default function FindCourse({navigation, route}: Props) {
     selectedSubcategories,
     selectedLevels,
     offset,
+    initialCategories
   ]);
 
   console.log(courseData);
@@ -388,6 +407,7 @@ export default function FindCourse({navigation, route}: Props) {
           temp.push(categoryData.data[i].seo.seo_slug_url);
         }
       }
+
       setInitialCategories(temp);
       //dispatch(setSelectedCategories(temp));
     }
@@ -903,10 +923,14 @@ const getCategorySlug=(propCourse: any)=>{
                     paddingTop: Platform.OS === 'android' ? 26 : 32,
                   }}>
                   <FlatList
+                  // scrollsToTop={false}
+                  
                     data={coursesArray}
                     renderItem={({item, index}) => loadCourse(item, index)}
                     keyExtractor={item => item.id}
                     onEndReachedThreshold={0.5}
+                  //   onScroll={(event)=>handleScroll(event)}
+                  // initialScrollIndex={scrollPosition}
                     onEndReached={handleOffset}
                   />
                   {/* <View style={{marginBottom:200}}/> */}

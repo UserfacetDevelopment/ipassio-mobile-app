@@ -25,7 +25,7 @@ import {Rating} from 'react-native-ratings';
 import Moment from 'moment';
 import Modal from 'react-native-modal';
 import config from '../../config/Config';
-import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useAppDispatch} from '../../app/store';
 import {
   dashboardState,
@@ -77,7 +77,7 @@ const {pageLoading} = useSelector(loaderState);
   useEffect(() => {
     let data: AttendanceListInterface = {
       userType: userData.user_type,
-      priceType: classType.id,
+      priceType: classType,
       userToken: userToken,
       courseToken: courseToken,
       token: userData.token,

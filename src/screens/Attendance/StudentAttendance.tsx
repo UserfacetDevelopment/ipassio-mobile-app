@@ -2,6 +2,7 @@ import React, {useState, useEffect, FC} from 'react';
 import {
   Text,
   View,
+  TextInput,
   StyleSheet,
   TouchableOpacity,
   Keyboard,
@@ -13,7 +14,7 @@ import {
   Modal,
 } from 'react-native';
 import {useSelector} from 'react-redux';
-import {Container} from 'native-base';
+import {Container, TextField} from 'native-base';
 //@ts-ignore
 import {Bubbles} from 'react-native-loader';
 import {userState} from '../../reducers/user.slice';
@@ -40,7 +41,7 @@ import {Rating} from 'react-native-ratings';
 import Moment from 'moment';
 import 'moment-timezone';
 // import Modal from 'react-native-modal';
-import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useAppDispatch} from '../../app/store';
 import {
   dashboardState,
@@ -181,7 +182,7 @@ const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);
         setIsRefillModalVisible(
           studentAttendanceList.remaining_classes <= 0 ? true : false,
         );
-      }, 5000);
+      }, 7000);
 
       clearInterval(refillPopupTimer);
     }
@@ -682,9 +683,17 @@ onRefresh();
       {editAttendanceModal ? (
       
         <Modal presentationStyle="overFullScreen" transparent={true} statusBarTranslucent={true}>
-          <TouchableOpacity  activeOpacity={1} onPress={()=> setEditAttendanceModal(false)} style={StyleCSS.styles.modalBackground}>
-            <TouchableOpacity activeOpacity={1}  onPress={()=>{}} style={StyleCSS.styles.modalView}>
+         <KeyboardAvoidingView behavior='padding'>
+          <TouchableOpacity  activeOpacity={1} onPress={()=> setEditAttendanceModal(false)} 
+          style={StyleCSS.styles.modalBackground}
+          >
+          
+            <TouchableOpacity activeOpacity={1}  onPress={()=>{Keyboard.dismiss()}} 
+            style={[StyleCSS.styles.modalView]}
+            >
+            
               <>
+              
               <View style={StyleCSS.styles.modalLine}></View>
               <Text style={StyleCSS.styles.modalTitle}>{modalTitle}</Text>
               <View style={[styles.modal_row, {flexDirection:'row'}]}>
@@ -698,6 +707,7 @@ onRefresh();
               width={width-32}
                   showDateTimePicker={showDateTimePicker}
                   // style={{}}
+                  config={{color:'#fff'}}
                   selectedValue={attendances[index].class_taken &&
                     Moment(attendances[index].class_taken).format(
                       'MMM DD, YYYY',
@@ -820,14 +830,18 @@ onRefresh();
                   <Text style={styles.submitAttendanceText}>Submit</Text>
                 </TouchableOpacity>
               </View>
+             
               </>
+             
             </TouchableOpacity>
           </TouchableOpacity>
+          </KeyboardAvoidingView>
         </Modal>
        
       ) : null}
       {isRefillModalVisible ? (
         <Modal transparent={true} animationType={'slide'} statusBarTranslucent={true} >
+          
           <View style={{backgroundColor: 'rgba(0,0,0,0.3)', height: '100%'}}>
             <View
               style={{

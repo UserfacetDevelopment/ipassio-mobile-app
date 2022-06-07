@@ -8,6 +8,7 @@ import {
   Alert,
   RefreshControl,
   Dimensions, Animated,
+  KeyboardAvoidingView,
   Modal
 } from 'react-native';
 import {useSelector} from 'react-redux';
@@ -27,7 +28,7 @@ import Moment from 'moment';
 import 'moment-timezone';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import config from '../../config/Config';
-import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useAppDispatch} from '../../app/store';
 import {
   dashboardState,
@@ -610,9 +611,11 @@ setEditAttendanceModal(true)
           statusMessage={appStatusMessage}
         /> */}
        {editAttendanceModal ?
+      
         <Modal visible={editAttendanceModal} presentationStyle="overFullScreen" transparent={true} statusBarTranslucent={true}>
+           <KeyboardAvoidingView behavior='padding'>
           <TouchableOpacity activeOpacity={1}  onPress={()=>setEditAttendanceModal(false)} style={StyleCSS.styles.modalBackground}>
-            <TouchableOpacity activeOpacity={1} onPress={()=>{}} style={StyleCSS.styles.modalView}>
+            <TouchableOpacity activeOpacity={1} onPress={()=>{Keyboard.dismiss()}} style={StyleCSS.styles.modalView}>
               <View style={StyleCSS.styles.modalLine}></View>
               <Text style={StyleCSS.styles.modalTitle}>{modalTitle}</Text>
               <View style={styles.modal_row}>
@@ -726,6 +729,7 @@ setEditAttendanceModal(true)
               </View>
             </TouchableOpacity>
           </TouchableOpacity>
+          </KeyboardAvoidingView>
         </Modal> :null}
      
       

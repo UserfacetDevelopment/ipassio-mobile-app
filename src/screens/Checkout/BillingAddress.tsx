@@ -17,7 +17,7 @@ import {TextInput} from 'react-native-paper';
 import StepIndicator from 'react-native-step-indicator';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
-import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {stepIndicatorStyles} from './CartPage';
 import HeaderInner from '../../components/HeaderInner'
 import {useSelector} from 'react-redux';

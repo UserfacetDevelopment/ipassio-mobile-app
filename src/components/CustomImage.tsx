@@ -30,7 +30,7 @@ export default function CustomImage({
 // console.log(uri)
   return (
     <>
-    {extension==='webp' ||extension=== 'jpg' || extension=== 'png' || extension=== 'gif' ? (
+    {extension==='webp' ||extension=== 'jpg' || extension=== 'png' || extension=== 'gif' ||  extension=== 'jpeg' || extension === 'tif'? (
         <Image style={style} source={{uri: uri}} />
       ) :
        (

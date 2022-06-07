@@ -13,8 +13,8 @@ import {deleteSession} from '../reducers/schedule.slice';
 
 interface DeletePopupInterface {
   data: any;
-  checked: 'all' | 'once';
-  setChecked: any;
+  // checked: 'all' | 'once';
+  // setChecked: any;
   setShowDeletePopup: any;
   navigation: any;
   onRefresh: any;
@@ -22,13 +22,14 @@ interface DeletePopupInterface {
 
 export default function DeleteClassPopup({
   data,
-  checked,
-  setChecked,
+  // checked,
+  // setChecked,
   setShowDeletePopup,
   navigation,
   onRefresh,
 }: DeletePopupInterface) {
   const {userData} = useSelector(userState);
+  const [checked, setChecked] = useState<'once'|'all'>('once');
   const dispatch = useAppDispatch();
 
   const deleteClass = () => {
@@ -110,8 +111,8 @@ export default function DeleteClassPopup({
           </TouchableOpacity>
         </View>
         <Text style={StyleCSS.styles.labelText}>
-          {moment(data.start_time).format('ddd, MMM D, YYYY hh:mm A')} -{' '}
-          {moment(data.end_time).format('hh:mm A')} | {data.timezone}
+          {moment.tz(data.start_time, userData.timezone).format('ddd, MMM D, YYYY hh:mm A', )} -{' '}
+          {moment.tz(data.end_time, userData.timezone).format('hh:mm A')} | {userData.timezone}
         </Text>
         {data.recurring_count > 1 ? (
           <View style={StyleCSS.styles.fdrCenter}>
