@@ -188,14 +188,19 @@ const AddSession = ({
     const [showError, setShowError] = useState(false);
     const [dateError, setDateError] = useState(false);
     const [repeatTypes, setRepeatTypes] = useState<Array<any>>([]);
-    const [repeatType, setRepeatType] = useState(undefined);
-    const [repeatDuration, setRepeatDuration] = useState<any>(undefined);
+    const [repeatType, setRepeatType] = useState({
+      value: 'Do not Repeat',
+      label: 'Do not Repeat',
+    });
+    const [repeatDuration, setRepeatDuration] = useState<any>({
+      value: 0,
+      label: 0,
+    });
     const [repeatDurationArr, setRepeatDurationArr] = useState<Array<any>>([]);
     const [selectedStudent, setSelectedStudent] = useState<any>(undefined);
-    const [dayToday, setDayToday] = useState<any>(undefined)
-    const [onlyDate, setOnlyDate] = useState<any>(undefined)
+    const [dayToday, setDayToday] = useState<any>(undefined);
+    const [onlyDate, setOnlyDate] = useState<any>(undefined);
 
-   
     useEffect(() => {
       dispatch(getLookups())
         .unwrap()
@@ -215,36 +220,19 @@ const AddSession = ({
         });
     }, []);
 
-    useEffect(() => {
-      if (startDSelected) {
-        if (
-          !endDSelected ||
-          new Date(endDSelected).getTime() < new Date(startDSelected).getTime()
-        ) {
-          setDateError(true);
-        } else {
-          setDateError(false);
-        }
-      }
-    }, [startDSelected, endDSelected]);
-
-    //   useEffect(()=>{
-    //     dispatch(getLookups())
-    //     .unwrap()
-    //     .then((res)=>{
-    // // setP(res.data.data.course_platforms);
-    //   res.data.data.course_platforms.map((pt:any)=>{
-    //     meetingPlatform.push({
-    //       label:pt.name,
-    //       value: pt.code,
-    //     })
-    // }
-    //   })
-    //   .catch(()=>{
-
-    //   })
-
-    // }, []);
+    //When end date was there, check for end date> startdate
+    // useEffect(() => {
+    //   if (startDSelected) {
+    //     if (
+    //       !endDSelected ||
+    //       new Date(endDSelected).getTime() < new Date(startDSelected).getTime()
+    //     ) {
+    //       setDateError(true);
+    //     } else {
+    //       setDateError(false);
+    //     }
+    //   }
+    // }, [startDSelected, endDSelected]);
 
     // const meetingPlatforms = [
     //   {label:'GH', value:'Google Meet'},
@@ -285,8 +273,6 @@ const AddSession = ({
     //   extrapolate: "clamp",
     // });
 
-    // const backroute=route.params?.backroute
-
     useEffect(() => {
       if (userData.user_type === 'T') {
         getEnrolledCourseStudentList();
@@ -317,54 +303,15 @@ const AddSession = ({
       }
     }, []);
 
-    const monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-
     // let repeatTypes: any = [];
 
+    // useEffect(() => {
+    //   // setDayToday(Moment(selectedDate).format('dddd'));
+    //   // setOnlyDate(Moment(selectedDate).format('Do'));
+    //   console.log(dayToday);
+    //   console.log(onlyDate);
 
-    useEffect(() => {
-      if(selectedDate){
-        setDayToday(Moment(selectedDate).format('dddd'));
-        setOnlyDate(Moment(selectedDate).format('Do'));
-  console.log(dayToday)
-  console.log(onlyDate)
-  
-        setRepeatTypes([
-          {
-            value: 'Do not Repeat',
-            label: 'Do not Repeat',
-          },
-          {
-            value: 'Every week on ' + dayToday,
-            label: 'W',
-          },
-          {
-            value: 'Every 2 weeks on ' + dayToday,
-            label: 'W2',
-          },
-          {
-            value: 'Monthly on ' + onlyDate,
-            label: 'M',
-          },
-        ]);
-  
-        setRepeatType(repeatTypes[0]);
-      }
-      
-    }, [selectedDate]);
+    // }, [selectedDate]);
 
     useEffect(() => {
       const coeff = 1000 * 60 * 15;
@@ -377,15 +324,16 @@ const AddSession = ({
       let dTime = hour * 60 + minutes;
       let interval = 1425;
       let start = 0;
-      if (
-        dSelected &&
-        dSelected.getMonth() === month &&
-        dSelected.getDate() === d &&
-        dSelected.getFullYear() === rounded.getFullYear()
-      ) {
-        //interval = 1425-dTime;
-        start = dTime;
-      }
+      //below code when we had to start strat time after the past time for today's date
+      // if (
+      //   dSelected &&
+      //   dSelected.getMonth() === month &&
+      //   dSelected.getDate() === d &&
+      //   dSelected.getFullYear() === rounded.getFullYear()
+      // ) {
+      //   //interval = 1425-dTime;
+      //   start = dTime;
+      // }
       if (title === 'Edit') {
         if (
           startDSelected &&
@@ -409,7 +357,7 @@ const AddSession = ({
 
       // populateTimeIntervalRange(hour*15*4, interval, "start");
       populateTimeIntervalRange(start, interval, 'start');
-    }, [selectedDate, startDSelected, endDSelected]);
+    }, [selectedDate]);
 
     const populateTimeIntervalRange = (
       min_time: number,
@@ -450,14 +398,14 @@ const AddSession = ({
       let temp = data[0].value.split(' ');
       let temp1 = temp[0].split(':');
       let time = 0;
-      if (temp[1] === 'PM' && temp1[0] != 12) {
-        time = (parseInt(temp1[0]) + 12) * 60 + parseInt(temp1[1]) + 15;
-      } else {
-        if (temp1[0] == 12 && temp[1] === 'AM') {
-          temp1[0] = 0;
-        }
-        time = parseInt(temp1[0]) * 60 + parseInt(temp1[1]) + 15;
-      }
+      // if (temp[1] === 'PM' && temp1[0] != 12) {
+      //   time = (parseInt(temp1[0]) + 12) * 60 + parseInt(temp1[1]) + 15;
+      // } else {
+      //   if (temp1[0] == 12 && temp[1] === 'AM') {
+      //     temp1[0] = 0;
+      //   }
+      //   time = parseInt(temp1[0]) * 60 + parseInt(temp1[1]) + 15;
+      // }
       populateTimeIntervalRange(time, 1425, 'end');
     };
 
@@ -478,9 +426,89 @@ const AddSession = ({
       }
     }, []);
 
+    useEffect(() => {
+      
+      if (startTime && endTime) {
+       
+        let tempStart = startTime.split(' ');
+        let tempStart1 = tempStart[0].split(':');
+        let tempEnd = endTime.split(' ');
+        let tempEnd1 = tempEnd[0].split(':');
+console.log(tempStart, tempEnd)
+
+        if (tempStart[1] === 'PM' && tempEnd[1] === 'AM') {
+          if(editClassData){
+            var tomorrow1 = new Date(startDate);
+
+            tomorrow1.setDate(tomorrow1.getDate() + 1);
+            setEndDate(new Date(startDate).getDate() + 1);
+            setSelectedEndDateToPass(Moment(tomorrow1).format('YYYY-MM-DD'));
+          }
+          else{
+            var tomorrow1 = new Date(selectedDate);
+
+            tomorrow1.setDate(tomorrow1.getDate() + 1);
+            setEndDate(new Date(selectedDate).getDate() + 1);
+            setSelectedEndDateToPass(Moment(tomorrow1).format('YYYY-MM-DD'));
+          }
+         
+        }
+        else{
+          if(editClassData){
+            setEndDate(startDate);
+      setSelectedEndDateToPass(Moment(startDate).format('YYYY-MM-DD'));
+          }
+         else{
+          setEndDate(selectedDate);
+          setSelectedEndDateToPass(Moment(selectedDate).format('YYYY-MM-DD'));
+         }
+        }
+        //   time = (parseInt(temp1[0]) + 12) * 60 + parseInt(temp1[1]) + 15;
+        // } else {
+        //   if (temp1[0] == 12 && temp[1] === 'AM') {
+        //     temp1[0] = 0;
+        //   }
+        //   time = parseInt(temp1[0]) * 60 + parseInt(temp1[1]) + 15;
+        // }
+      }
+      
+    }, [startTime, endTime, selectedDate]);
+
+    // useEffect(() => {
+    //   if (startTime && endTime) {
+    //     // let tempStart = startTime.split(' ');
+    //     // let tempStart1 = tempStart[0].split(':');
+    //     let tempStart = startTime.split(' ');
+    //     let tempStart1 = tempStart[0].split(':');
+    //     let tempEnd = endTime.split(':');
+    //     let tempEnd1 = tempEnd[0].split(':');
+
+    //     if (tempStart[1] === 'PM' && tempEnd[1] === 'AM') {
+    //       var tomorrow1 = new Date(startDate);
+    //       tomorrow.setDate(tomorrow.getDate() + 1);
+    //       setEndDate(tomorrow);
+    //       setSelectedEndDateToPass(Moment(tomorrow).format('YYYY-MM-DD'));
+    //     }
+    //     //   time = (parseInt(temp1[0]) + 12) * 60 + parseInt(temp1[1]) + 15;
+    //     // } else {
+    //     //   if (temp1[0] == 12 && temp[1] === 'AM') {
+    //     //     temp1[0] = 0;
+    //     //   }
+    //     //   time = parseInt(temp1[0]) * 60 + parseInt(temp1[1]) + 15;
+    //     // }
+    //   }
+    // }, [startTime, endTime, startDate]);
+
+console.log(startTime, endTime);
+console.log(selectedDate, endDate);
+console.log(selectedDateToPass, selectedEndDateToPass);
+console.log(startDate, endDate);
+console.log(selectedStartDateToPass, selectedEndDateToPass);
+
     const changeEndTime = (data: any) => {
       setEndTime(data[0].value);
     };
+
     const showEndDateTimePicker = () => {
       // Keyboard.dismiss();
       setIsEndDateTimePickerVisible(true);
@@ -607,9 +635,36 @@ const AddSession = ({
       setDSelected(selectedDate);
       setSelectedDate(Moment(selectedDate).format('MMM DD YYYY'));
       setSelectedDateToPass(Moment(selectedDate).format('YYYY-MM-DD'));
+      // setDayToday(Moment(selectedDate).format('dddd'));
+      // setOnlyDate(Moment(selectedDate).format('Do'));
+      setRepeatTypes([
+        {
+          value: 'Do not Repeat',
+          label: 'Do not Repeat',
+        },
+        {
+          value: 'Every week on ' + Moment(selectedDate).format('dddd'),
+          label: 'W',
+        },
+        {
+          value: 'Every 2 weeks on ' + Moment(selectedDate).format('dddd'),
+          label: 'W2',
+        },
+        {
+          value: 'Monthly on ' + Moment(selectedDate).format('Do'),
+          label: 'M',
+        },
+      ]);
+
       hideDateTimePicker();
     };
 
+    useEffect(() => {
+      setRepeatType({
+        value: 'Do not Repeat',
+        label: 'Do not Repeat',
+      });
+    }, []);
     useEffect(() => {
       if (editClassData) {
         setStartDate(Moment(startDate).format('MMM DD YYYY'));
@@ -643,7 +698,6 @@ const AddSession = ({
     };
 
     const getCourseId = (data: any) => {
-      setRepeatDurationArr([]);
       if (
         userData.user_type === 'S' &&
         data[0].content.unschedule_classe === 0
@@ -652,16 +706,16 @@ const AddSession = ({
         setSelectedCourseName(data[0].value);
         setRefillError('Please refill this course.');
       } else {
-        
         setShowError(false);
         setRefillError(null);
         setSelectedCourseId(data[0].id);
         setSelectedCourseName(data[0].value);
         setSelectedCourse(data[0].content);
+        setRepeatDurationArr([]);
         if (userData.user_type === 'T') {
-          setSelectedStudentName('')
-setSelectedStudentId('')
-setSelectedStudent(undefined)
+          setSelectedStudentName('');
+          setSelectedStudentId('');
+          setSelectedStudent(undefined);
           let sList: Array<any> = [];
 
           let students = data[0].content.enrolled_student;
@@ -681,50 +735,132 @@ setSelectedStudent(undefined)
       }
     };
 
-    useEffect(()=>{
-      
-      if(repeatType && repeatType.value === 'Do not Repeat'){
-setRepeatDuration({label:0, value:0});
+    console.log(repeatDuration);
+    useEffect(() => {
+      // if(repeatType && repeatType.value === 'Do not Repeat'){
+      //   set
+      // }
+      if (Object.entries(selectedCourse).length !== 0) {
+        rough2(selectedCourse);
       }
-      else{
-if(userData.user_type==='S'){
-  setRepeatDuration({
-    value: `${
-      selectedCourse.unschedule_classe === 1
-        ? selectedCourse.unschedule_classe + ' time'
-        : selectedCourse.unschedule_classe + ' times'
-    }`,
-    label: selectedCourse.unschedule_classe,
-  });
-  for (let i = 1; i <= selectedCourse.unschedule_classe; i++) {
-    // repeatDurationArr.push({value:`${i===1 ? i+ ' time' : i+ ' times'}`, label:i});
-    repeatDurationArr.push({
-      value: `${i === 1 ? i + ' time' : i + ' times'}`,
-      label: i,
-    });
-  }
+    }, [selectedCourse]);
 
-}
-else if(userData.user_type==='T' && selectedStudent){
-  setRepeatDuration({label: selectedStudent.unschedule_classe, value: `${selectedStudent.unschedule_classe===1 ? selectedStudent.unschedule_classe+' time' : selectedStudent.unschedule_classe+' times'}`} );
-      for (let i = 1; i <= selectedStudent.unschedule_classe; i++) {
+    const rough2 = (data: any) => {
+      if (userData.user_type === 'S') {
+        setRepeatDuration({
+          value: `${
+            data.unschedule_classe === 1
+              ? data.unschedule_classe + ' time'
+              : data.unschedule_classe + ' times'
+          }`,
+          label: data.unschedule_classe,
+        });
+        for (let i = 1; i <= data.unschedule_classe; i++) {
+          repeatDurationArr.push({
+            value: `${i === 1 ? i + ' time' : i + ' times'}`,
+            label: i,
+          });
+        }
+      }
+    };
+    console.log(selectedCourse);
+    console.log(selectedStudent);
+
+    useEffect(() => {
+      if (repeatType && repeatType.value === 'Do not Repeat') {
+        setRepeatDuration({label: 0, value: 0});
+      } else {
+        if (userData.user_type === 'S') {
+          setRepeatDuration({
+            value:
+              selectedCourse.unschedule_classe === 1
+                ? selectedCourse.unschedule_classe + ' time'
+                : selectedCourse.unschedule_classe + ' times',
+            label: selectedCourse.unschedule_classe,
+          });
+        } else if (userData.user_type === 'T') {
+          setRepeatDuration({
+            value:
+              selectedStudent.unschedule_classe === 1
+                ? selectedStudent.unschedule_classe + ' time'
+                : selectedStudent.unschedule_classe + ' times',
+            label: selectedStudent.unschedule_classe,
+          });
+        }
+      }
+    }, [selectedStudent, selectedCourse, repeatType]);
+
+    // useEffect(() => {
+    //   // setRepeatDurationArr([]);
+    //   setTimeout(()=>{
+    //     if (repeatType && repeatType.value === 'Do not Repeat') {
+    //       setRepeatDuration({label: 0, value: 0});
+    //     } else {
+    //       if (userData.user_type === 'S') {
+    //         // setRepeatDuration({
+    //         //   value: `${
+    //         //     selectedCourse.unschedule_classe === 1
+    //         //       ? selectedCourse.unschedule_classe + ' time'
+    //         //       : selectedCourse.unschedule_classe + ' times'
+    //         //   }`,
+    //         //   label: selectedCourse.unschedule_classe,
+    //         // });
+    //         // for (let i = 1; i <= selectedCourse.unschedule_classe; i++) {
+    //         //   repeatDurationArr.push({
+    //         //     value: `${i === 1 ? i + ' time' : i + ' times'}`,
+    //         //     label: i,
+    //         //   });
+    //         // }
+    //       } else if (userData.user_type === 'T' && selectedStudent) {
+    //         // setRepeatDuration({
+    //         //   label: selectedStudent.unschedule_classe,
+    //         //   value: `${
+    //         //     selectedStudent.unschedule_classe === 1
+    //         //       ? selectedStudent.unschedule_classe + ' time'
+    //         //       : selectedStudent.unschedule_classe + ' times'
+    //         //   }`,
+    //         // });
+    //         // for (let i = 1; i <= selectedStudent.unschedule_classe; i++) {
+    //         //   repeatDurationArr.push({
+    //         //     value: `${i === 1 ? i + ' time' : i + ' times'}`,
+    //         //     label: i,
+    //         //   });
+    //         // }
+    //       }
+    //     }
+    //   }, 2000)
+    // }, [repeatType]);
+
+    const getStudentId = (data: any) => {
+      setRepeatDurationArr([]);
+      setSelectedStudentName(data[0].value);
+      setSelectedStudentId(data[0].id);
+      setSelectedStudent(data[0].content);
+    };
+
+    useEffect(() => {
+      if (selectedStudent) {
+        rough(selectedStudent);
+      }
+    }, [selectedStudent]);
+
+    const rough = (data: any) => {
+      // setRepeatDuration({
+      //   // [0].content
+      //   label: data.unschedule_classe,
+      //   value: `${
+      //     data.unschedule_classe === 1
+      //       ? data.unschedule_classe + ' time'
+      //       : data.unschedule_classe + ' times'
+      //   }`,
+      // });
+
+      for (let i = 1; i <= data.unschedule_classe; i++) {
         repeatDurationArr.push({
           value: `${i === 1 ? i + ' time' : i + ' times'}`,
           label: i,
         });
-  }
-}
-
-        
-    }
-    },[selectedCourse, repeatType, selectedStudent])
-console.log(repeatDuration)
-
-    const getStudentId = (data: any) => {
-      setSelectedStudentName(data[0].value);
-      setSelectedStudentId(data[0].id);
-      setSelectedStudent(data[0].content)
-      
+      }
     };
 
     const getMeetingPlatform = (data: any) => {
@@ -781,7 +917,7 @@ console.log(repeatDuration)
             ? selectedCourse.price_type.id
             : selectedCourse.class_type.id,
         start_date: selectedDateToPass,
-        end_date: selectedDateToPass,
+        end_date: selectedEndDateToPass,
         timezone: selectedTimezone.value,
         start_time: startTime,
         end_time: endTime,
@@ -812,7 +948,7 @@ console.log(repeatDuration)
           dispatch(setPageLoading(false));
           console.log(response);
           if (response.data.status === 'success') {
-          // if (response.status === 200) {
+            // if (response.status === 200) {
             if (
               taughtOn.label === 'I' &&
               response.data.data &&
@@ -864,8 +1000,8 @@ console.log(repeatDuration)
       <ScrollView
         // scrollEventThrottle={16}
         keyboardShouldPersistTaps={'handled'}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}>
+        {/* <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}> */}
           <View style={styles.container}>
             <CustomStatusBar />
 
@@ -996,7 +1132,7 @@ console.log(repeatDuration)
                             onCancel={hideStartDateTimePicker}
                           />
                         </View>
-                        <View style={styles.formElement}>
+                        {/* <View style={styles.formElement}>
                           <CustomDateTimePicker
                             width={width - 32}
                             config={{color: '#fff'}}
@@ -1016,7 +1152,7 @@ console.log(repeatDuration)
                               End date should be after or same as start date
                             </Text>
                           ) : null}
-                        </View>
+                        </View> */}
                       </>
                     ) : (
                       <View style={styles.formElement}>
@@ -1178,7 +1314,7 @@ console.log(repeatDuration)
           statusMessage={appStatusMessage}
         /> */}
           </View>
-        </KeyboardAvoidingView>
+        {/* </KeyboardAvoidingView> */}
       </ScrollView>
     );
   };

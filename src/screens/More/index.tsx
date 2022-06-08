@@ -206,9 +206,9 @@ export default function More({navigation}: any) {
             }}>
             <Text style={styles.extras}>Terms of Service</Text>
           </TouchableOpacity>
-          <View style={{top:200,zIndex:20}}>
+          <View style={{top:150,zIndex:20}}>
             <Text style={styles.version}>ipassio.com</Text>
-            <Text style={styles.version}>Version: </Text>
+            <Text style={styles.version}>Version:3.0 </Text>
           </View>
         </View>
       </View>

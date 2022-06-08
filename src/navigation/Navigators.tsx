@@ -804,7 +804,6 @@ const RootStackNavigator = () => {
 
     if (
       key === 'weekly_attendance_reminder_to_student' ||
-      key === 'marked_attendance_student' ||
       key === 'marked_attendance_teacher' ||
       key === 'attendance_reminder_by_teacher'
     ) {
@@ -817,7 +816,7 @@ const RootStackNavigator = () => {
     // else if(key==='refill_remainder' || key==='' || key==='' || key==='' || key==='' || key==='' || key==='' || key===''){
     //   navigation.navigate('Dashboard');
     // }
-    else if(key==='withdrawal_method_created'|| key==='withdrawal_request'|| key==='withdrawal_cancelled'|| key==='withdrawal_approved'){
+    else if(key==='withdrawal_method_created'|| key==='withdrawal_request'|| key==='withdrawal_cancelled'|| key==='withdrawal_approved' || key === 'marked_attendance_student'){
       navigation.navigate('Withdraw');
     }
     else{

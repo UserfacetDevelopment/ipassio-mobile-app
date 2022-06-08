@@ -615,7 +615,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ipassio.app;
 				PRODUCT_NAME = ipassio;
-				PROVISIONING_PROFILE_SPECIFIER = ipassioProvision2;
+				PROVISIONING_PROFILE_SPECIFIER = ipassioProvision4;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
