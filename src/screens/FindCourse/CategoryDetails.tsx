@@ -71,8 +71,6 @@ import {HowItWorks, StudentsLoveCourses, Queries} from './ReusableComponents';
 import {useAppDispatch} from '../../app/store';
 const {width, height} = Dimensions.get('screen');
 import Drop from '../../assets/images/Drop.svg';
-import Flag from '../../assets/images/flag.svg';
-import Share from '../../assets/images/share.svg';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import {useNavigation} from '@react-navigation/native';

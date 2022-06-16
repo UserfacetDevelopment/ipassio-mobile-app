@@ -621,6 +621,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                       {data.status.name}
                     </Text>
                   )}
+                  {console.log(data.status.code,data.status.name)}
                   {data.status.code === 'R' && (
                     <Text style={[styles.mainLink, styles.status_text_r]}>
                       {data.status.name}
@@ -886,10 +887,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   status_text_rw: {
-    color: '#f2972b',
+    color: brandColor,
   },
   status_text_p: {
-    color: '#28BE91',
+    color: '#f2972b',
   },
   status_text_a: {
     color: secondaryColor,
@@ -898,7 +899,7 @@ const styles = StyleSheet.create({
     color: 'rgba(40, 190, 145, 1)'
   },
   status_text_r: {
-    color: '#D25C54'
+    color: '#B2534D'
   },
 
   mainLink: {

@@ -75,7 +75,7 @@ export interface Login {
 
 const Login: React.FC<any> = ({navigation, route} :Props) => {
   const dispatch = useAppDispatch();
-  const {loading, pageLoading} = useSelector(loaderState);
+  const {loading , pageLoading } = useSelector(loaderState);
 const nextRoute = route.params?.nextRoute;
   const {isLoggedIn, fcmToken} = useSelector(userState);
   const [username, setUsername] = useState<string>('');
@@ -87,28 +87,28 @@ const [active , setActive] = useState<boolean>(false);
   useEffect(() => {
     // gsiConfigure();
     checkPermission();
-    // logout();
+    // signOut();
   }, []);
 
   const checkPermission = async() => {
     const enabled = await messaging().hasPermission();
     if (enabled) {
-      console.log("Push Notifications are enabled.");
+      // console.log("Push Notifications are enabled.");
       let fcmTokens = await AsyncStorage.getItem("USERDEVICETOKEN");
-      console.log(fcmTokens);
+      // console.log(fcmTokens);
       getToken();
     } else {
-      console.log("Push Notifications not enabled.");
+      // console.log("Push Notifications not enabled.");
       requestPermission();
     }
   }
 
  const getToken =async() => {
     let fcmToken = await AsyncStorage.getItem("USERDEVICETOKEN");
-    console.log(fcmToken);
+    // console.log(fcmToken);
     dispatch(setFCMToken(fcmToken));
     if (!fcmToken) {
-      console.log(fcmToken);
+      // console.log(fcmToken);
       // console.log("fcmToken is not set: finding FCM Token");
       fcmToken = await messaging().getToken();
       if (fcmToken) {
@@ -128,14 +128,39 @@ const [active , setActive] = useState<boolean>(false);
     //provisional: false,
     //sound: true, // Sets whether a sound will be played when a notification is displayed on the device.
     try {
-      await messaging().requestPermission();
-      // If user allow Push Notification
+      if(Platform.OS==='ios'){
+        const authorizationStatus = await messaging().requestPermission({
+        provisional: true, providesAppNotificationSettings: true
+      });
+
+
+      if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+         // If user allow Push Notification
+        getToken();
+      } else if (authorizationStatus === messaging.AuthorizationStatus.PROVISIONAL) {
+        console.log('User has provisional notification permissions.');
+        getToken();
+      } else {
+        console.log('User has notification permissions disabled');
+      }
+    }
+    else {
       getToken();
+    }
+      
+            // if (authorizationStatus) {  // If user allow Push Notification
+            //   console.log('Permission status:', authorizationStatus);
+            //   getToken();
+            // }
+              // await messaging().requestPermission();
+              // If user allow Push Notification
+     
     } catch (error) {
       // If user do not allow Push Notification
       // console.log("User did not allow Push Notification");
     }
   }
+
   //Logout User
   // async function logout() {
   //   try {
@@ -166,6 +191,49 @@ const [active , setActive] = useState<boolean>(false);
   //   });
   // };
 
+  // const doSocialLogin = (data:any) => {
+  //   if (data.email) {
+  //     dispatch(setLoading (true))
+  //     dispatch(socialLogin(data))
+  //       .unwrap()
+  //       .then(async(response) => {
+  //         dispatch(setLoading (false))
+  //         setUserInfo(null)
+          
+  //         if(response.data.status==='success'){
+  //           redirectCheck(response.data.data);
+  //           dispatch(loginSuccess(response.data.data));
+  //         }
+  //         else if(response.data.status==='failure'){
+  //           await GoogleSignin.revokeAccess();
+            
+  //           Alert.alert('', response.data.error_message.message, [
+  //             {text: 'Okay', style: 'cancel'},
+  //           ]);
+  //         }
+
+  //       })
+  //       .catch(rejectedValueOrSerializedError => {
+  //         dispatch(setLoading (false));
+  //       });
+  //   } else {
+  //     Alert.alert(
+  //       'Problem Signing In',
+  //       'Please enter username and password.',
+  //       [{text: 'Okay', style: 'cancel'}],
+  //     );
+  //   }
+  // }
+
+  // async function signOut() {
+  //   try {
+  //     await GoogleSignin.revokeAccess();
+  //     await GoogleSignin.signOut();
+  //   } catch (error) {
+  //     // Alert.alert("Something else went wrong... ", error.toString());
+  //   }
+  // }
+
   // const handleGoogleSignIn = async () : Promise<void> => {
   //   try {
   //     await GoogleSignin.hasPlayServices();
@@ -179,30 +247,8 @@ const [active , setActive] = useState<boolean>(false);
   //       // emailVerified: userInfo.user.emailVerified,
   //       photoURL: userInfo.user.photo,
   //     };
-  //     if (data.email) {
-  //       dispatch(socialLogin(data))
-  //         .unwrap()
-  //         .then(originalPromiseResult => {
-  //           dispatch(setLoading(false));
-  //           redirectCheck(originalPromiseResult.data);
-  //           dispatch(loginSuccess(originalPromiseResult.data));
-  //           dispatch(setLoading(false));
-  //           Alert.alert('', originalPromiseResult.error_message.message, [
-  //             {text: 'Okay', style: 'cancel'},
-  //           ]);
-  //         })
-  //         .catch(rejectedValueOrSerializedError => {
-  //           dispatch(setLoading(false));
-  //         });
-  //     } else {
-  //       Alert.alert(
-  //         'Problem Signing In',
-  //         'Please enter username and password.',
-  //         [{text: 'Okay', style: 'cancel'}],
-  //       );
-  //     }
+  //     doSocialLogin(data);
   //   } catch (error : any) {
-  //     console.warn(error);
   //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         
   //     } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -231,17 +277,16 @@ const [active , setActive] = useState<boolean>(false);
     device_token : fcmToken
     }
     if (data.username && data.password) {
-      dispatch(setLoading(true));
+      dispatch(setLoading (true));
       dispatch(doLogin(data))
         .unwrap()
         .then(response => {
           if (response.status === "success") {
-            dispatch(setLoading(false));
+            dispatch(setLoading (false));
             redirectCheck(response.data);
             dispatch(loginSuccess(response.data));
           } else if (response.status === "failure") {
-            dispatch(setLoading(false));
-            console.log(response.error_message.message)
+            dispatch(setLoading (false));
             Alert.alert("", response.error_message.message, [
               { text: "Okay", style: "cancel" },
             ])
@@ -250,7 +295,7 @@ const [active , setActive] = useState<boolean>(false);
           
         })
         .catch(err => {
-          dispatch(setLoading(false));
+          dispatch(setLoading (false));
         });
     } else {
       Alert.alert('', 'Enter email and password.', [
@@ -302,7 +347,7 @@ const [active , setActive] = useState<boolean>(false);
 
     />
     <View style={styles.container}>
-
+{loading ? <DialogLoader/> : null}
       <KeyboardAwareScrollView keyboardShouldPersistTaps={'handled'}>
         {/* <View style={styles.loginImage}>
           <Image
@@ -382,6 +427,7 @@ const [active , setActive] = useState<boolean>(false);
           </TouchableOpacity>
           </>
            : null} */}
+
           <TouchableOpacity
             style={styles.newUser}
             onPress={() => {

@@ -1,7 +1,7 @@
 import {Platform, Alert, PermissionsAndroid, Linking} from 'react-native';
 
 export default class Config {
-  static env = 'prod';
+  static env = 'dev';
   static version = Platform.OS === 'ios' ? '2.0.4' : '2.0.2';
   static build_number = Platform.OS === 'ios' ? 14 : 28;
  
@@ -10,7 +10,11 @@ export default class Config {
   static FrontendBaseURL = 'https://ipassio.com/student-signup';
 static FrontendURL = "https://ipassio.com"
 static videoURL="/video/";
-  static GOOGLE_ID = '938249328963-o6gf6eao638mh7h1kl1p4sj1qd4jfrjd.apps.googleusercontent.com'
+
+  static GOOGLE_ID = "484842528758-73tvvgoq71j0jfq05q2p3rgej77ummt6.apps.googleusercontent.com"; //releaese
+  //484842528758-59aa3rc1ft6jmkkf3vvceoa292tg2d7t.apps.googleusercontent.com" // debug
+  //"484842528758-hic9kjju8une4iaestoahv22056f7001.apps.googleusercontent.com"
+  //'938249328963-o6gf6eao638mh7h1kl1p4sj1qd4jfrjd.apps.googleusercontent.com'
     //'142571675590-ujj8t4901kejoiddm2a1qop3ivekfisn.apps.googleusercontent.com';
   static BaseURL =
     Config.env == 'prod'

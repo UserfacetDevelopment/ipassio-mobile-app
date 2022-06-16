@@ -19,8 +19,6 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// import Geolocation from '@react-native-community/geolocation';
-// import Geocoder from 'react-native-geocoding';
 import Splash from '../screens/Splash';
 import Login from '../screens/Login';
 import ForgotPasssword from '../screens/Login/ForgotPassword';
@@ -50,7 +48,6 @@ import BrowseSubcategories from '../screens/FindCourse/BrowseSubcategories';
 import CategoryDetails from '../screens/FindCourse/CategoryDetails';
 import TeacherDetails from '../screens/FindCourse/TeacherDetails';
 import {useAppDispatch} from '../app/store';
-import CustomDrawerContent from './CustomDrawer';
 import Attendance from '../screens/Attendance';
 import BillingAddress from '../screens/Checkout/BillingAddress';
 import Payment from '../screens/Checkout/Payment';
@@ -63,8 +60,6 @@ import AddSession from '../screens/Schedules/AddSession';
 import RequestFreeMeetingForm from '../screens/FindCourse/RequestFreeMeetingForm';
 import Community from '../screens/Community';
 import Goals from '../screens/Goals';
-import DashboardSvg from '../assets/images/dashboard.svg';
-import DashboardActiveSvg from '../assets/images/dashboard-active.svg';
 import More from '../screens/More';
 import Filters from '../screens/FindCourse/Filters';
 import StaticPage from '../screens/Pages/StaticPage';
@@ -72,6 +67,7 @@ import Signup from '../screens/SignUp';
 import Recording from '../screens/Recording/Recording';
 
 import {font1, font2} from '../styles/colors';
+import RecordingPreview from '../screens/Recording/RecordingPreview';
 export type RootParamList = {
   Categories: any;
   CategoryDetails: any;
@@ -152,6 +148,7 @@ export type RootParamList = {
   MoreNav: any;
   Signup: any;
   CreatedCourses: any;
+  RecordingPreview: any;
 };
 
 export interface CategoryInterface {
@@ -480,50 +477,6 @@ const TeacherTabNavigator = () => {
   );
 };
 
-// const RightHeader = () => {
-//   const navigation = useNavigation<NativeStackNavigationProp<RootParamList>>();
-
-//   return (
-//     <View style={styles.header}>
-//       <TouchableOpacity
-//         style={styles.headerButtonLeft}
-//         // onPress={navigation}
-//       >
-//         <SvgUri
-//           height="40"
-//           uri={`${config.media_url}images/header/hamburg_menu_mobile.svg`}
-//         />
-//       </TouchableOpacity>
-//       <TouchableOpacity>
-//         <SvgUri
-//           height="40"
-//           width="60"
-//           uri={`${config.media_url}images/ipassio_logo.svg`}
-//         />
-//       </TouchableOpacity>
-
-//       <View style={styles.headerWrapper}>
-//         <TouchableOpacity
-//           onPress={() => navigation.navigate('Categories')}
-//           style={styles.headerButtonRight}>
-//           <SvgUri
-//             uri={`${config.media_url}images/header/mobile_navigation_browse.svg`}
-//           />
-//           <Text style={styles.headerText}>BROWSE</Text>
-//         </TouchableOpacity>
-//         <TouchableOpacity
-//           onPress={() => navigation.navigate('FindCourses')}
-//           style={styles.headerButtonRight}>
-//           <SvgUri
-//             uri={`${config.media_url}images/header/mobile_navigation_courses.svg`}
-//           />
-//           <Text style={styles.headerText}>COURSES</Text>
-//         </TouchableOpacity>
-//       </View>
-//     </View>
-//   );
-// };
-
 const CourseFlowNavigator = () => {
   const {loading, pageLoading} = useSelector(loaderState);
   return (
@@ -535,8 +488,7 @@ const CourseFlowNavigator = () => {
         component={FindCourse}
         options={{
           headerShown: false,
-          //headerLeft: () => <LeftHeader />,
-          // headerRight: () => <RightHeader />,
+          
         }}
       />
       <Stack.Screen
@@ -573,17 +525,6 @@ const CourseFlowNavigator = () => {
         component={BrowseCategories}
         options={{
           headerShown: false,
-          headerTitle: () => (
-            <TouchableOpacity>
-              <SvgUri
-                height="40"
-                width="60"
-                uri="https://media.ipassio.com/images/ipassio_logo.svg"
-              />
-            </TouchableOpacity>
-          ),
-          //headerLeft: () => <LeftHeader />,
-          // headerRight: () => <RightHeader />,
         }}
       />
       <Stack.Screen
@@ -660,21 +601,22 @@ export const RootNavigator = () => {
       AsyncStorage.getItem('USERDATA', (err, response) => {
         if (response) {
           dispatch(loginSuccess(JSON.parse(response)));
-          dispatch(setLoading(true));
-          dispatch(setPageLoading(true));
+          // dispatch(setLoading(true));
+          // dispatch(setPageLoading(true));
 
-          // dispatch(getCategories());
-          dispatch(getCourses())
-            .then(() => {
-              dispatch(setLoading(false));
-              dispatch(setPageLoading(false));
-            })
-            .catch(() => {
-              dispatch(setLoading(false));
-              dispatch(setPageLoading(false));
-            });
+          // // dispatch(getCategories());
+          // dispatch(getCourses())
+          //   .then(() => {
+          //     dispatch(setLoading(false));
+          //     dispatch(setPageLoading(false));
+          //   })
+          //   .catch(() => {
+          //     dispatch(setLoading(false));
+          //     dispatch(setPageLoading(false));
+          //   });
         } else {
           //nothing
+          
         }
       });
     }
@@ -816,57 +758,71 @@ const RootStackNavigator = () => {
     // else if(key==='refill_remainder' || key==='' || key==='' || key==='' || key==='' || key==='' || key==='' || key===''){
     //   navigation.navigate('Dashboard');
     // }
-    else if(key==='withdrawal_method_created'|| key==='withdrawal_request'|| key==='withdrawal_cancelled'|| key==='withdrawal_approved' || key === 'marked_attendance_student'){
+    else if (
+      key === 'withdrawal_method_created' ||
+      key === 'withdrawal_request' ||
+      key === 'withdrawal_cancelled' ||
+      key === 'withdrawal_approved' ||
+      key === 'marked_attendance_student'
+    ) {
       navigation.navigate('Withdraw');
-    }
-    else{
+    } else {
       navigation.navigate('Dashboard');
     }
-    // return nav;
   };
 
-  // useEffect(()=>{
-  //   messaging().onNotificationOpenedApp(remoteMessage => {
-  //     console.log(
-  //       'Notification caused app to open from background state:',
-  //       remoteMessage.notification,
-  //     );
-  //     if(remoteMessage && remoteMessage.data.type==='attendance'){
-  //       setInitialRoute("Attendance");
-  //     }
 
-  //   });
-  // },[])
+  //handling notifs in quit state for ios
+  useEffect(() => {
+    messaging()
+        .getDidOpenSettingsForNotification()
+        .then(async didOpenSettingsForNotification => {
+            if (didOpenSettingsForNotification) {
+                navigation.navigate('Dashboard')
+            }
+        })
+}, [])
+
+
+//handling notifications for ios
+const openSettingsForNotifications = AsyncStorage.getItem('openSettingsForNotifications');
+  useEffect(() => {
+    AsyncStorage.getItem('openSettingsForNotifications', (err, response) => {
+      if (response) {
+          navigation.navigate('Dashboard')        
+      } else {
+        //nothing
+      }
+    });    
+  }, [openSettingsForNotifications])
+
 
   useEffect(() => {
-    messaging().onNotificationOpenedApp(remoteMessage => {
+    messaging().onNotificationOpenedApp((remoteMessage: any) => {
       // console.log(
       //   'Notification caused app to open from background state:',
       //   remoteMessage,
       // );
-      openActivityOnNotification(
-        remoteMessage.data.type,
-        remoteMessage.data,
-      );
-
-      // navigation.navigate(nav);
-
-      // setInitialRoute(nav); //remoteMessage.data.type);
+      openActivityOnNotification(remoteMessage?.data?.type, remoteMessage.data);
     });
 
     messaging()
       .getInitialNotification()
-      .then(remoteMessage => {
+      .then((remoteMessage: any) => {
         if (remoteMessage) {
           // console.log(remoteMessage);
           // console.log(
           //   'Notification caused app to open from quit state:',
           //   remoteMessage,
           // );
-          let nav = openActivityOnNotification(remoteMessage.data.type);
-          navigation.navigate(nav);
-          setInitialRoute(nav); //remoteMessage.data.type);
+          openActivityOnNotification(
+            remoteMessage.data.type,
+            remoteMessage.data,
+          );
         }
+      })
+      .catch(()=>{
+        //nothing
       });
   }, []);
 
@@ -994,32 +950,13 @@ const RootStackNavigator = () => {
             component={Withdrawal}
             options={{headerShown: false}}
           />
+          <Stack.Screen
+            name="RecordingPreview"
+            component={RecordingPreview}
+            options={{headerShown: false}}
+          />
         </>
       )}
     </Stack.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  headerButtonRight: {
-    alignItems: 'center',
-    paddingRight: 5,
-
-    // borderLeftWidth:0.2,
-  },
-
-  headerButtonLeft: {
-    paddingBottom: 20,
-    paddingLeft: 5,
-  },
-  headerWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: width - 20,
-    alignItems: 'center',
-  },
-});

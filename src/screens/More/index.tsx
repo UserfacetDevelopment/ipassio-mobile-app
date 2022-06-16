@@ -1,7 +1,12 @@
 import React from 'react';
-import {Text, View, 
-  // Image, 
-  StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  Text,
+  View,
+  // Image,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import {useSelector} from 'react-redux';
 import {userState, logoutUser} from '../../reducers/user.slice';
 import {
@@ -24,9 +29,7 @@ import BottomNavigation from '../../components/BottomNavigation';
 import Helper from '../../utils/helperMethods';
 import Config from '../../config/Config';
 import CustomImage from '../../components/CustomImage';
-import {
-  GoogleSignin,
-} from '@react-native-google-signin/google-signin';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 export default function More({navigation}: any) {
   const {userData, isLoggedIn} = useSelector(userState);
@@ -35,7 +38,6 @@ export default function More({navigation}: any) {
 
   const doLogout = async () => {
     await messaging().deleteToken();
-    // await GoogleSignin.revokeAccess();
     await AsyncStorage.removeItem('USERDATA');
     await AsyncStorage.removeItem('USERDEVICETOKEN');
     await AsyncStorage.removeItem('USER_NOT_FIRST');
@@ -59,7 +61,10 @@ export default function More({navigation}: any) {
               alignSelf: 'center',
               zIndex: 9,
             }}>
-            {isLoggedIn ? (
+            {isLoggedIn &&
+            userData &&
+            userData.user_media &&
+            userData.user_media.profile_pic ? (
               <CustomImage
                 style={{height: 130, width: 130, borderRadius: 230}}
                 uri={userData.user_media.profile_pic}
@@ -86,22 +91,20 @@ export default function More({navigation}: any) {
           {isLoggedIn ? (
             userData.user_type === 'T' ? (
               <View style={styles.userDesignationWrapper}>
-                 <CustomImage
-                    height={17}
-                    width={15}
-                    uri={`${Config.media_url}teacher.svg`
-                    }
-                  />
+                <CustomImage
+                  height={17}
+                  width={15}
+                  uri={`${Config.media_url}teacher.svg`}
+                />
                 <Text style={styles.userDesignation}>Teacher</Text>
               </View>
             ) : (
               <View style={styles.userDesignationWrapper}>
                 <CustomImage
-                    height={17}
-                    width={15}
-                    uri={`${Config.media_url}student.svg`
-                    }
-                  />
+                  height={17}
+                  width={15}
+                  uri={`${Config.media_url}student.svg`}
+                />
                 <Text style={styles.userDesignation}>Student</Text>
               </View>
             )
@@ -115,8 +118,8 @@ export default function More({navigation}: any) {
             height: '100%',
           }}>
           {isLoggedIn && userData.user_type === 'T' ? (
-          <>
-            {/* <TouchableOpacity  style={styles.listItemWrapper}>
+            <>
+              {/* <TouchableOpacity  style={styles.listItemWrapper}>
               <View style={styles.listItem}>
                 <View style={{marginRight: 16}}>
                   <CreatedCourses />
@@ -131,7 +134,7 @@ export default function More({navigation}: any) {
               </View>
             </TouchableOpacity> */}
 
-            {/* <TouchableOpacity onPress={()=> navigation.navigate('Recording')} style={styles.listItemWrapper}>
+              <TouchableOpacity onPress={()=> navigation.navigate('Recording')} style={styles.listItemWrapper}>
               <View style={styles.listItem}>
                 <View style={{marginRight: 16}}>
                 <CustomImage
@@ -156,20 +159,19 @@ export default function More({navigation}: any) {
                     }
                   />
               </View>
-            </TouchableOpacity> */}
-          </>
-        ) : null}
+            </TouchableOpacity>
+            </>
+          ) : null}
           {isLoggedIn ? (
             <TouchableOpacity
               onPress={() => doLogout()}
               style={styles.listItemWrapper}>
               <View style={styles.listItem}>
                 <View style={{marginRight: 16}}>
-                <CustomImage
+                  <CustomImage
                     height={24}
                     width={24}
-                    uri={`${Config.media_url}logout.svg`
-                    }
+                    uri={`${Config.media_url}logout.svg`}
                   />
                 </View>
                 <View>
@@ -178,12 +180,11 @@ export default function More({navigation}: any) {
                 </View>
               </View>
               <View>
-              <CustomImage
-                    height={16}
-                    width={16}
-                    uri={`${Config.media_url}drop.svg`
-                    }
-                  />
+                <CustomImage
+                  height={16}
+                  width={16}
+                  uri={`${Config.media_url}drop.svg`}
+                />
               </View>
             </TouchableOpacity>
           ) : null}
@@ -206,7 +207,7 @@ export default function More({navigation}: any) {
             }}>
             <Text style={styles.extras}>Terms of Service</Text>
           </TouchableOpacity>
-          <View style={{top:150,zIndex:20}}>
+          <View style={{top: 150, zIndex: 20}}>
             <Text style={styles.version}>ipassio.com</Text>
             <Text style={styles.version}>Version:3.0 </Text>
           </View>
@@ -227,13 +228,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 4,
   },
-  header: {fontSize: 16, color: font1, 
-    fontWeight:'500',
-    fontFamily:Helper.switchFont('medium')
+  header: {
+    fontSize: 16,
+    color: font1,
+    fontWeight: '500',
+    fontFamily: Helper.switchFont('medium'),
     // lineHeight: 21
   },
-  subheader: {fontSize: 14, color: font2, lineHeight: 18,
-    fontFamily:Helper.switchFont('medium')},
+  subheader: {
+    fontSize: 14,
+    color: font2,
+    lineHeight: 18,
+    fontFamily: Helper.switchFont('medium'),
+  },
   listItem: {flexDirection: 'row', alignItems: 'center'},
   userInfo: {
     textAlign: 'center',
@@ -242,7 +249,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 25,
     textTransform: 'capitalize',
-    fontFamily:Helper.switchFont('bold')
+    fontFamily: Helper.switchFont('bold'),
   },
   userDesignation: {
     textAlign: 'center',
@@ -251,7 +258,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     // lineHeight: 19,
     marginLeft: 6,
-    fontFamily:Helper.switchFont('semibold')
+    fontFamily: Helper.switchFont('semibold'),
   },
   userEmail: {
     textAlign: 'center',
@@ -261,13 +268,13 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     marginTop: 8,
     marginBottom: 8,
-    fontFamily:Helper.switchFont('medium')
+    fontFamily: Helper.switchFont('medium'),
   },
   extras: {
     color: secondaryColor,
     fontSize: 14,
     fontWeight: '500',
-    fontFamily:Helper.switchFont('medium'),
+    fontFamily: Helper.switchFont('medium'),
     textDecorationColor: secondaryColor,
     textDecorationLine: 'underline',
     // lineHeight: 40,
@@ -277,11 +284,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
   },
-  version:{
-    fontSize:12,
-    color:font2,
-    fontWeight:'400',
-    lineHeight:20,
-    fontFamily:Helper.switchFont('regular')
-  }
+  version: {
+    fontSize: 12,
+    color: font2,
+    fontWeight: '400',
+    lineHeight: 20,
+    fontFamily: Helper.switchFont('regular'),
+  },
 });

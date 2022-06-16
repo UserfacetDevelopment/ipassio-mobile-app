@@ -1,6 +1,6 @@
 {
-  "name": "ipassio_",
-  "version": "0.0.1",
+  "name": "ipassio",
+  "version": "3.0.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

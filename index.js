@@ -17,20 +17,28 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
     // }
   });
 
+  messaging().setOpenSettingsForNotificationsHandler(async () => {
+    // Set persistent value, using the MMKV package just as an example of how you might do it
+    AsyncStorage.setItem('openSettingsForNotifications', true);
+    // MMKV.setBool(openSettingsForNotifications, true)
+})
+
+
+
+
 //   messaging()
 //   .getIsHeadless()
 //   .then(isHeadless => {
 //     // do sth with isHeadless
 //   });
 
+function HeadlessCheck({ isHeadless }) {
+  if (isHeadless) {
+    // App has been launched in the background by iOS, ignore
+    return null;
+  }
 
+  return <App />;
+}
 
-//   function HeadlessCheck({ isHeadless }) {
-//     if (isHeadless) {
-//       // App has been launched in the background by iOS, ignore
-//       return null;
-//     }
-  
-//     return <App />;
-//   }
-AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent(appName, () => HeadlessCheck);

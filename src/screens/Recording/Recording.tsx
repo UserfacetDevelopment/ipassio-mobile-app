@@ -8,7 +8,7 @@ import {
   Modal
 } from 'react-native';
 import BottomNavigation from '../../components/BottomNavigation';
-import {font1} from '../../styles/colors';
+import {brandColor, font1} from '../../styles/colors';
 import HeaderInner from '../../components/HeaderInner';
 import {stylingProps} from 'native-base/lib/typescript/theme/tools';
 import Config from '../../config/Config';
@@ -41,7 +41,6 @@ export default function Recording({route, navigation}: any) {
   const dispatch = useAppDispatch();
   const {pageLoading} = useSelector(loaderState);
   const [recordings, setRecordings] = useState<any>(null);
-  // const [courses, setCourses] = useState<any>(null);
   const [learners, setLearners] = useState<any>(null);
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const [showVideoModal, setShowVideoModal] = useState<boolean>(false);
@@ -49,8 +48,8 @@ export default function Recording({route, navigation}: any) {
   const [courseFilter, setCourseFilter] = useState<any>([]);
   const [learnersFilter, setLearnersFilter] = useState<any>([]);
   const [selectedLearner, setSelectedLearner] = useState<any>(null);
-const [c, setC] = useState('');
-const [l, setL]= useState('');
+const [c, setC] = useState(null);
+const [l, setL]= useState(null);
 
 //student api call
 
@@ -60,8 +59,7 @@ useEffect(()=>{
 
   if (userData.user_type === 'S') {
     data = {
-      course_slug: selectedCourse ? selectedCourse.label : '',
-
+      course_slug: selectedCourse ? selectedCourse.label : null,
       userToken: userData.token,
     };
 
@@ -111,7 +109,7 @@ useEffect(()=>{
           dispatch(setPageLoading(false));
         });
     }
-  },[l,c])
+  },[c])
 
   // useEffect(() => {
   //   let data: RecordingDataInterface;
@@ -169,15 +167,29 @@ useEffect(()=>{
   //   }
   // }, [selectedCourse, l, c]);
 
+  console.log(selectedCourse)
+  console.log(selectedLearner)
   useEffect(() => {
     if (courses && courses.length > 0) {
       // if(courseFilter.length!==0){ setCourseFilter([])}
+      if(selectedCourse===null){
+        setSelectedCourse({label:`${courses[0].seo_slug_url}`, value:`${courses[0].title}`})
+        if(userData.user_type==='T'){
+          if(selectedLearner === null){
+            setSelectedLearner({label: courses[0].students[0].seo_slug_url,
+              value: courses[0].students[0].name})
+          }
+        }
+      }
+  
+      let temp=[];
       for (let i = 0; i < courses.length; i++) {
-        courseFilter.push({
+        temp.push({
           label: `${courses[i].seo_slug_url}`,
           value: `${courses[i].title}`,
         });
       }
+      setCourseFilter(temp);
     }
   }, [courses]);
 
@@ -189,13 +201,19 @@ useEffect(()=>{
   
   const handleVideoSelect = (item: any) => {
     setSelectedVideo(item);
-    setShowVideoModal(true);
+    navigation.navigate('RecordingPreview', {
+      item:item,
+      data: recordings
+
+    })
+    // setShowVideoModal(true);
   };
 
   const getSelectedCourse = (data: any) => {
     setSelectedCourse(data[0]);
     if(userData.user_type === 'T'){
-      
+      setSelectedLearner(null);
+      setL(null);
     }
   };
 
@@ -224,14 +242,15 @@ console.log(c,l)
       )[0];
       
       console.log(selCourse);
-      
+      let temp=[];
       for (let i = 0; i < selCourse.students.length; i++) {
         console.log(selCourse.students[i].seo_slug_url)
-        learnersFilter.push({
+        temp.push({
           label: selCourse.students[i].seo_slug_url,
           value: selCourse.students[i].name,
         });
       }
+      setLearnersFilter(temp);
     }
   }, [selectedCourse]);
 
@@ -242,7 +261,7 @@ console.log(c,l)
         type={'findCourse'}
         logo={userData.user_type === 'S' ? true : false}
         back={userData.user_type === 'T' ? true : false}
-        title={'Recording'}
+        title={'Recordings'}
         navigation={navigation}
       />
       <ScrollView style={styles.scrollView}>
@@ -258,7 +277,7 @@ console.log(c,l)
           />
           {//learnersFilter.length>0 && 
           userData.user_type === 'T' ? (
-            <View style={{marginTop: 24, marginBottom: 12}}>
+            <View style={{marginTop: 24}}>
               <CustomDropdown
                 topLabel={selectedLearner ? 'Learner' : undefined}
                 config={{color: '#fff'}}
@@ -268,19 +287,19 @@ console.log(c,l)
                 label={selectedLearner ? selectedLearner.value : 'Learner'}
                 backTitle={'Learners '}
               />
-              <TouchableOpacity style={[StyleCSS.styles.submitButton, {marginTop:8, alignSelf:'flex-end'}]} onPress={applyTeacherFilter}>
+              <TouchableOpacity disabled={selectedCourse===null || selectedLearner===null} style={[StyleCSS.styles.submitButton, {marginTop:16, marginBottom:0, width:'25%', backgroundColor: `${selectedCourse===null || selectedLearner===null ? '#ccc' :brandColor}`}]} onPress={applyTeacherFilter}>
                 <Text style={StyleCSS.styles.submitButtonText}>Filter</Text>
               </TouchableOpacity>
             </View>
           ) : null}
           {recordings ? (
             <View>
-              <Text style={[StyleCSS.styles.labelText,{marginBottom:8}]}>Recorded Classes ({recordings.length})</Text>
+              <Text style={[StyleCSS.styles.labelText,{ marginTop:16}, StyleCSS.styles.font12]}>Recorded Classes ({recordings.length})</Text>
               {recordings.map((item: any) => {
                 return (
                   <TouchableOpacity
                     onPress={() => handleVideoSelect(item)}
-                    style={[StyleCSS.styles.flexDirRow, {marginVertical: 8}]}>
+                    style={[StyleCSS.styles.flexDirRow, {marginTop: 16}]}>
                     <View style={{width:'30%'}}>
                       <Video // Can be a URL or a local file.
                         //  controls
@@ -295,21 +314,23 @@ console.log(c,l)
                     </View>
                     <View style={{marginLeft: 16, width:'70%'}}>
                       <Text
-                        style={[StyleCSS.styles.contentText, {fontSize: 16}]}>
+                        style={[StyleCSS.styles.contentText, StyleCSS.styles.fw700]}>
                         {item.class_name}
                       </Text>
                       <Text
                         style={[
                           StyleCSS.styles.contentText,
-                          StyleCSS.styles.mt12,
+                          StyleCSS.styles.fw400,
+                          {marginTop:6}
                         ]}>
                         {item.start_date}
                       </Text>
                       <Text
                         style={[
                           StyleCSS.styles.labelText,
-                          StyleCSS.styles.mt5,
-                          {flexWrap:'wrap'}
+                          StyleCSS.styles.font12,
+                          
+                          {flexWrap:'wrap', marginTop:8}
                         ]}>
                         {item.start_time} - {item.end_time} | {item.timezone}
                       </Text>
@@ -317,6 +338,7 @@ console.log(c,l)
                   </TouchableOpacity>
                 );
               })}
+              <View style={{marginBottom:80}}></View>
             </View>
           ) : null}
         </View>
@@ -325,7 +347,7 @@ console.log(c,l)
       {userData.user_type === 'S' ? (
         <BottomNavigation navigation={navigation} selected={'R'} />
       ) : null}
-    <Modal onRequestClose={()=>{setShowVideoModal(false)}} visible={showVideoModal} style={{justifyContent:'center'}}> 
+    {/* <Modal onRequestClose={()=>{setShowVideoModal(false)}} visible={showVideoModal} style={{justifyContent:'center'}}> 
     <View style={{height:'90%',justifyContent:'center'}}>
       <TouchableOpacity style={{alignSelf:'flex-end', marginBottom:50, padding:16}} onPress={()=>{setShowVideoModal(false)}}><Text style={StyleCSS.styles.contentText}>Close</Text></TouchableOpacity>
      <Video // Can be a URL or a local file.
@@ -339,7 +361,7 @@ console.log(c,l)
                         style={{height:400, alignSelf:'center', width: '100%'}}
                       />
                       </View>
-                      </Modal> 
+                      </Modal>  */}
       
      
     </>

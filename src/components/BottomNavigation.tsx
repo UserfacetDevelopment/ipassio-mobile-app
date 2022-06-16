@@ -9,13 +9,13 @@ import Config from '../config/Config';
 
 export default function BottomNavigation({navigation, selected}: any) {
   const {userData} = useSelector(userState);
-
+const flexBasis =  20;
   return (
     <View style={styles.tabStyle}>
       <TouchableOpacity
         style={[
           styles.tabButton,
-          {flexBasis: userData.user_type === 'T' ? '20%' : '25%'},
+          {flexBasis: `${flexBasis}%`},
         ]}
         onPress={() => {
           navigation.navigate('Dashboard');
@@ -45,7 +45,7 @@ export default function BottomNavigation({navigation, selected}: any) {
         }}
         style={[
           styles.tabButton,
-          {flexBasis: userData.user_type === 'T' ? '20%' : '25%'},
+          {flexBasis: `${flexBasis}%`},
         ]}>
         <CustomImage
           style={styles.tabImage}
@@ -75,7 +75,7 @@ export default function BottomNavigation({navigation, selected}: any) {
             }}
             style={[
               styles.tabButton,
-              {flexBasis: userData.user_type === 'T' ? '20%' : '25%'},
+              {flexBasis: `${flexBasis}%`},
             ]}>
             <CustomImage
               style={styles.tabImage}
@@ -97,21 +97,21 @@ export default function BottomNavigation({navigation, selected}: any) {
               Withdraw
             </Text>
           </TouchableOpacity>
-        ) : null
-        //      <TouchableOpacity onPress={()=>{navigation.navigate('Recording')}}  style={[styles.tabButton]}>
-        //      <CustomImage
-        //       style={styles.tabImage}
-        //       uri={
-        //         selected === 'R'
-        //           ? `${Config.media_url}recording-active.png`
-        //           : `${Config.media_url}recording.png`
-        //       }
-        //     />
-        //          <Text style={[styles.text,{
-        //       color: selected === 'R' ? font1 : font2,
-        //       fontWeight: selected === 'R' ? '600' : '500',
-        //     }]}>Recording</Text>
-        //  </TouchableOpacity>
+        ) :
+             <TouchableOpacity onPress={()=>{navigation.navigate('Recording')}}  style={[styles.tabButton,{flexBasis: `${flexBasis}%`},]} >
+             <CustomImage
+              style={styles.tabImage}
+              uri={
+                selected === 'R'
+                  ? `${Config.media_url}recording-active.png`
+                  : `${Config.media_url}recording.png`
+              }
+            />
+                 <Text style={[styles.text,{
+              color: selected === 'R' ? font1 : font2,
+              fontWeight: selected === 'R' ? '600' : '500',
+            }]}>Recording</Text>
+         </TouchableOpacity>
       }
       <TouchableOpacity
         onPress={() => {
@@ -119,7 +119,7 @@ export default function BottomNavigation({navigation, selected}: any) {
         }}
         style={[
           styles.tabButton,
-          {flexBasis: userData.user_type === 'T' ? '20%' : '25%'},
+          {flexBasis: `${flexBasis}%`},
         ]}>
         <CustomImage
           style={styles.tabImage}
@@ -147,7 +147,7 @@ export default function BottomNavigation({navigation, selected}: any) {
         }}
         style={[
           styles.tabButton,
-          {flexBasis: userData.user_type === 'T' ? '20%' : '25%'},
+          {flexBasis: `${flexBasis}%`},
         ]}>
         <CustomImage
           style={styles.tabImage}

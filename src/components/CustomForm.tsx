@@ -58,6 +58,8 @@ export default function CustomForm({
   const {isLoggedIn, userData, userLocation} = useSelector(userState);
 const [timezones,setTimezones] = useState<any>(null)
 
+console.log(index);
+
   const showDateTimePicker = () => {
     Keyboard.dismiss();
     setIsDateTimePickerVisible(true);
@@ -75,37 +77,13 @@ const [timezones,setTimezones] = useState<any>(null)
     timeSlots[index].date = Moment(selectedDate).format('YYYY-MM-DD');
   };
 
-  // const addMoreSlots : any = (index:any) => {
-  //   // if((timeSlots[index-1].date==='' || timeSlots[index-1].start_time==='' || timeSlots[index-1].end_time==='' || timeSlots[index-1].timezone==='')){
-  //   //     Alert.alert('', "fill the empty slot first")
-  //   //     return;
-  //   //   }
-  //   //   else
-  //     if(index===0){
-  //       timeSlots[0].date = selectedDate;
-  //       timeSlots[0].start_time = startTime;
-  //       timeSlots[0].end_time = endTime;
-  //       timeSlots[0].timezone = selectedTimezone;
-  //     }
-
-  //   else {
-  //           timeSlots[index-1].date = selectedDate;
-  //           timeSlots[index-1].start_time = startTime;
-  //           timeSlots[index-1].end_time = endTime;
-  //           timeSlots[index-1].timezone = selectedTimezone;
-
-  //   }
-  //   setTimeSlots([...timeSlots, {
-  //       date: "",
-  //       start_time: "",
-  //       end_time: "",
-  //       timezone: "" } ])
-  //   }
-
+ 
   const getTimezone = (data: any) => {
     setSelectedTimezone(data[0]);
     timeSlots[index].timezone = data[0].value;
   };
+
+  console.log(timeSlots);
 
   useEffect(() => {
     const coeff = 1000 * 60 * 15;
@@ -129,6 +107,7 @@ const [timezones,setTimezones] = useState<any>(null)
     populateTimeIntervalRange(start, interval, 'start');
   }, [selectedDate]);
 
+  //
   useEffect(() => {
     if (data.date !== '') {
       setSelectedDate(data.date);
@@ -177,26 +156,16 @@ const [timezones,setTimezones] = useState<any>(null)
     }
   };
 
-  // const removeTimeSlot = () => {
-
-  //   if (timeSlots.length > 1) {
-  //     const values = [...timeSlots];
-
-  //     values.splice(index, 1);
-  //     console.log(values);
-  //     setTimeSlots([...values]);
-  //   }
-  // };
-
   useEffect(() => {
     let tz = isLoggedIn
       ? {label: userData.timezone, value: userData.timezone}
       : {label: userLocation.data.timezone, value: userLocation.data.timezone};
       setTimezones(timezoneList);
       setSelectedTimezone(timezoneList.filter((timezone: any) => timezone.value===tz.value)[0]) 
-    timeSlots[index].timezone = isLoggedIn
+    timeSlots[index].timezone = timeSlots[index].timezone==='' ? isLoggedIn
       ? userData.timezone
-      : userLocation.data.timezone;
+      : userLocation.data.timezone
+      :timeSlots[index].timezone;
   }, []);
 
   const changeStartTime = (data: any) => {
@@ -244,28 +213,6 @@ const [timezones,setTimezones] = useState<any>(null)
             <View></View>
           </View>
         </View>
-        {/* <TouchableOpacity
-            onPress={() => {
-              showDateTimePicker();
-            }}>
-            <Text
-              style={styles.inputText}
-              onPress={() => {
-                showDateTimePicker();
-              }}
-            >
-              {selectedDate ? selectedDate : 'Date'}
-            </Text>
-            <DateTimePickerModal
-              minimumDate={new Date()}
-              isVisible={isDateTimePickerVisible}
-              mode="date"
-              onConfirm={selectedDate => {
-                handleDatePicked(selectedDate);
-              }}
-              onCancel={hideDateTimePicker}
-            />
-          </TouchableOpacity> */}
         <View style={styles.formRow}>
           <View style={{width: '48%'}}>
             <CustomDropdown
@@ -317,27 +264,6 @@ const [timezones,setTimezones] = useState<any>(null)
         ) : null}
       </View>
 
-      {/* <Controller
-                      control={control}
-                      name="time_info"
-                      rules={{required: true}}
-                      render={({field: {onChange, value, onBlur}}) => (
-                        <TextInput
-                          multiline
-                          mode="outlined"
-                          numberOfLines={12}
-                          style={styles.input}
-                          placeholder="Time slots and dates of your availability for the free class (provide at least 3 different timings) *"
-                          value={value}
-                          onBlur={onBlur}
-                          onChangeText={value => onChange(value)}
-                        />
-                      )}
-                    />
-                    {errors.time_info && (
-                      <Text style={styles.errorText}>This is required. *</Text>
-                    )} */}
-      {/* </View> */}
       {index === timeSlots.length - 1 && timeSlots.length < 4 ? (
         <TouchableOpacity
           style={styles.addMoreSlots}

@@ -58,7 +58,6 @@ import PageLoader from '../../components/PageLoader';
 import CustomStatusBar from '../../components/CustomStatusBar';
 import HeaderInner from '../../components/HeaderInner';
 import StyleCSS from '../../styles/style';
-import Calender from '../../assets/images/calender.svg';
 import CustomDateTimePicker from '../../components/CustomDateTimePicker';
 // type Props = NativeStackScreenProps<RootParamList, 'Attendance'>;
 import config from '../../config/Config';
@@ -90,7 +89,6 @@ const StudentAttendance: FC<any> = ({
   const {attendances, attendancesStatus, studentAttendanceList} =
     useSelector(dashboardState);
   const dispatch = useAppDispatch();
-  console.log(studentAttendanceList);
   const {pageLoading} = useSelector(loaderState);
   const [attendanceId, setAttendanceId] = useState<string>('');
   const [attendanceToken, setAttendanceToken] = useState<string>('');
@@ -106,10 +104,12 @@ const StudentAttendance: FC<any> = ({
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [isDateTimePickerVisible, setIsDateTimePickerVisible] = useState(false);
   const [editAttendanceModal, setEditAttendanceModal] = useState(false);
+
+  //index of the first card whose class attendance is not marked
   const [reviewIndex, setReviewIndex] = useState<number|null>(null);
-  const [index, setIndex] = useState<number>();
+  const [index, setIndex] = useState<number>(0);
   const [modalTitle, setModalTitle] = useState<'Mark Attendance' | 'Edit Attendance'>('Edit Attendance');
-const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);;
+  const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);;
   let scrollY = new Animated.Value(0.01);
   let changingHeight = scrollY.interpolate({
     inputRange: [0.01, 50],
@@ -142,16 +142,18 @@ const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);
   useEffect(() => {
     let data: AttendanceListInterface = {
       userType: userData.user_type,
-      priceType: classType.id,
+      priceType: classType,
       userToken: userToken,
       courseToken: courseToken,
       token: userData.token,
     };
 
-    dispatch(getAttendenceList(data));
+    dispatch(getAttendenceList(data))
     // .unwrap()
     // .then(response => {
+    //   console.log(response)
     //   if(response?.data.status === "success"){
+       
     //   dispatch(setAttendanceSuccess(response.data.data));
     //   dispatch(setStudentAttendanceSuccess(response.data.extra_data));
 
@@ -163,8 +165,8 @@ const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);
     setRefreshing(false);
   }, [refreshing]);
 
-  console.log(studentAttendanceList);
   useEffect(() => {
+    setReviewIndex(null);
     if (attendances.length > 0) {
       for (let i = 0; i < attendances.length; i++) {
         if (attendances[i].status === 'P') {
@@ -176,8 +178,18 @@ const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);
       }
       
     }
+    
+    
+  }, [attendances, studentAttendanceList, editAttendanceModal]);
+console.log(reviewIndex)
+
+// useEffect(()=>{
+  
+//   // setSelectedDate('')
+// },[attendances])
+
+  useEffect(()=>{
     if (Object.keys(studentAttendanceList).length > 0) {
-      console.log('settingTrue')
       setTimeout(() => {
         setIsRefillModalVisible(
           studentAttendanceList.remaining_classes <= 0 ? true : false,
@@ -186,9 +198,11 @@ const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);
 
       clearInterval(refillPopupTimer);
     }
-    
-  }, [attendances, studentAttendanceList]);
+  }, [attendances, studentAttendanceList])
 
+  
+  console.log(attendances)
+  console.log(studentAttendanceList)
   // useEffect(()=>{
     
   // },[studentAttendanceList, attendances]);
@@ -245,7 +259,6 @@ const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);
     dispatch(cartDetails(finalData))
       .unwrap()
       .then(response => {
-        console.log(response)
         dispatch(setPageLoading(true));
         if(response.data.status==="success"){
           setCheckoutToken(response.data.data.checkout_token);
@@ -253,7 +266,6 @@ const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);
         }
         else if(response.data.status==='failure'){
           dispatch(setPageLoading(false));
-          console.log(response.data.error_message.message)
       Alert.alert('', response.data.error_message.message, [
         {text: 'Okay', style: 'cancel'},
       ]);
@@ -289,9 +301,6 @@ const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);
     setAttendanceToken(studentAttendanceList.attendance_token);
   };
 
-  // console.log(studentAttendanceList);
-  // console.log(attendances);
-
   //submit attendance
   const submitAttendance = (data: any): any => {
     if (!selectedDate || !selectedRating || !selectedReview) {
@@ -320,13 +329,13 @@ const [checkoutToken, setCheckoutToken] = useState<string|undefined>(undefined);
       dispatch(submitMarkedAttendance(d))
         .unwrap()
         .then(response => {
-          setReviewIndex(null)
+          console.log(response)
+          // setReviewIndex(null)
           setEditAttendanceModal(false);
           dispatch(setPageLoading(false));
           if (response?.data.status === 'success') {
-           
             toggleModal();
-onRefresh();
+           onRefresh();
             navigation.navigate('ActionStatus', {
               messageStatus: 'success',
               messageTitle: 'Thank You!',
@@ -360,7 +369,6 @@ onRefresh();
         });
     }
   };
-  console.log(index);
   const ratingCompleted = (rating: number) => {
     setSelectedRating(rating);
   };
@@ -373,9 +381,9 @@ onRefresh();
     setIndex(reviewIndex);
     setModalTitle('Mark Attendance');
     setEditAttendanceModal(true);
+    setReviewIndex(null);
   };
 
-  console.log(attendances);
   return (
     <View style={styles.container}>
       <CustomStatusBar />
@@ -553,7 +561,7 @@ onRefresh();
                 </View>
               ) : null}
 
-              {reviewIndex !== null ? (
+              {reviewIndex !== null && reviewIndex<attendances.length ? (
                 <View style={[styles.addReview]}>
                   <View>
                     <Text style={styles.row_title}> Class No. </Text>
@@ -569,7 +577,7 @@ onRefresh();
                   </TouchableOpacity>
                 </View>
               ) : null}
-              {attendancesStatus === 'success' &&
+              {attendances && attendances.length>0 &&
                 attendances.map((at: any, i: number) => {
                   return (
                     <View key={at.id}>

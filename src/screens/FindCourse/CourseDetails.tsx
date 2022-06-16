@@ -605,7 +605,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
         <PageLoader />
       ) : Object.keys(course).length>0 ? (
         <>
-          <StatusBar translucent hidden={true} />
+          <StatusBar translucent  />
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}>

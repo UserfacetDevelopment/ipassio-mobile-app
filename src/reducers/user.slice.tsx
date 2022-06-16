@@ -80,7 +80,7 @@ export const socialLogin = createAsyncThunk(
   async (data: GoogleLogin) => {
     const response = await ApiGateway.post('account/google-login?format=json', data);
 
-    return response.data; // (this is the actual data which will be returned as a payload).
+    return response; // (this is the actual data which will be returned as a payload).
   },
 );
 

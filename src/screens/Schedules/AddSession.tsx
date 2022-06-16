@@ -62,7 +62,9 @@ interface CreateSessionInterface {
   timezone: any;
   start_time: any;
   end_time: any;
+  class_taught_on:any;
   repeat: string;
+  repeat_day:string;
   repeat_count: number | string;
   type: string;
 }
@@ -123,10 +125,10 @@ const AddSession = ({
     const [selectedStudentName, setSelectedStudentName] = useState('');
     const [selectedStudentId, setSelectedStudentId] = useState('');
     const [courses, setCourses] = useState<Array<any>>([]);
-    const [selectedDate, setSelectedDate] = useState<undefined | string>(
+    const [d, setd] = useState<undefined | string>(
       undefined,
     );
-    const [selectedDateToPass, setSelectedDateToPass] = useState<
+    const [dToPass, setdToPass] = useState<
       undefined | string
     >(undefined);
     const [selectedCourse, setSelectedCourse] = useState<any>({});
@@ -200,6 +202,8 @@ const AddSession = ({
     const [selectedStudent, setSelectedStudent] = useState<any>(undefined);
     const [dayToday, setDayToday] = useState<any>(undefined);
     const [onlyDate, setOnlyDate] = useState<any>(undefined);
+const [selectedDate, setSelectedDate] = useState<any>(undefined)
+const [selectedDateToPass, setSelectedDateToPass] = useState<any>(undefined)
 
     useEffect(() => {
       dispatch(getLookups())
@@ -220,19 +224,23 @@ const AddSession = ({
         });
     }, []);
 
+    
     //When end date was there, check for end date> startdate
-    // useEffect(() => {
-    //   if (startDSelected) {
-    //     if (
-    //       !endDSelected ||
-    //       new Date(endDSelected).getTime() < new Date(startDSelected).getTime()
-    //     ) {
-    //       setDateError(true);
-    //     } else {
-    //       setDateError(false);
-    //     }
-    //   }
-    // }, [startDSelected, endDSelected]);
+
+    useEffect(() => {
+      if (startDSelected && endDSelected || dSelected && endDSelected) {
+        if (
+          !endDSelected ||
+          new Date(endDSelected).getTime() < new Date(startDSelected).getTime()
+          ||
+          new Date(endDSelected).getTime() < new Date(dSelected).getTime()
+        ) {
+          setDateError(true);
+        } else {
+          setDateError(false);
+        }
+      }
+    }, [startDSelected, endDSelected]);
 
     // const meetingPlatforms = [
     //   {label:'GH', value:'Google Meet'},
@@ -306,8 +314,8 @@ const AddSession = ({
     // let repeatTypes: any = [];
 
     // useEffect(() => {
-    //   // setDayToday(Moment(selectedDate).format('dddd'));
-    //   // setOnlyDate(Moment(selectedDate).format('Do'));
+    //   // setDayToday(Moment(d).format('dddd'));
+    //   // setOnlyDate(Moment(d).format('Do'));
     //   console.log(dayToday);
     //   console.log(onlyDate);
 
@@ -334,16 +342,20 @@ const AddSession = ({
       //   //interval = 1425-dTime;
       //   start = dTime;
       // }
-      if (title === 'Edit') {
-        if (
-          startDSelected &&
-          startDSelected.getMonth() === month &&
-          startDSelected.getDate() === d &&
-          startDSelected.getFullYear() === rounded.getFullYear()
-        ) {
-          start = dTime;
-        }
-      }
+
+
+      // if (title === 'Edit') {
+      //   if (
+      //     startDSelected &&
+      //     startDSelected.getMonth() === month &&
+      //     startDSelected.getDate() === d &&
+      //     startDSelected.getFullYear() === rounded.getFullYear()
+      //   ) {
+      //     start = dTime;
+      //   }
+      // }
+
+
       // let daytime = "am";
 
       // if(hour > 12){
@@ -414,55 +426,7 @@ const AddSession = ({
         let temp = startTime.split(' ');
         let temp1 = temp[0].split(':');
         let time = 0;
-        if (temp[1] === 'PM' && temp1[0] != 12) {
-          time = (parseInt(temp1[0]) + 12) * 60 + parseInt(temp1[1]) + 15;
-        } else {
-          if (temp1[0] == 12 && temp[1] === 'AM') {
-            temp1[0] = 0;
-          }
-          time = parseInt(temp1[0]) * 60 + parseInt(temp1[1]) + 15;
-        }
-        populateTimeIntervalRange(time, 1425, 'end');
-      }
-    }, []);
-
-    useEffect(() => {
-      
-      if (startTime && endTime) {
-       
-        let tempStart = startTime.split(' ');
-        let tempStart1 = tempStart[0].split(':');
-        let tempEnd = endTime.split(' ');
-        let tempEnd1 = tempEnd[0].split(':');
-console.log(tempStart, tempEnd)
-
-        if (tempStart[1] === 'PM' && tempEnd[1] === 'AM') {
-          if(editClassData){
-            var tomorrow1 = new Date(startDate);
-
-            tomorrow1.setDate(tomorrow1.getDate() + 1);
-            setEndDate(new Date(startDate).getDate() + 1);
-            setSelectedEndDateToPass(Moment(tomorrow1).format('YYYY-MM-DD'));
-          }
-          else{
-            var tomorrow1 = new Date(selectedDate);
-
-            tomorrow1.setDate(tomorrow1.getDate() + 1);
-            setEndDate(new Date(selectedDate).getDate() + 1);
-            setSelectedEndDateToPass(Moment(tomorrow1).format('YYYY-MM-DD'));
-          }
-         
-        }
-        else{
-          if(editClassData){
-            setEndDate(startDate);
-      setSelectedEndDateToPass(Moment(startDate).format('YYYY-MM-DD'));
-          }
-         else{
-          setEndDate(selectedDate);
-          setSelectedEndDateToPass(Moment(selectedDate).format('YYYY-MM-DD'));
-         }
-        }
+        // if (temp[1] === 'PM' && temp1[0] != 12) {
         //   time = (parseInt(temp1[0]) + 12) * 60 + parseInt(temp1[1]) + 15;
         // } else {
         //   if (temp1[0] == 12 && temp[1] === 'AM') {
@@ -470,10 +434,58 @@ console.log(tempStart, tempEnd)
         //   }
         //   time = parseInt(temp1[0]) * 60 + parseInt(temp1[1]) + 15;
         // }
+        populateTimeIntervalRange(time, 1425, 'end');
       }
-      
-    }, [startTime, endTime, selectedDate]);
+    }, []);
 
+//     useEffect(() => {
+      
+//       if (startTime && endTime) {
+       
+//         let tempStart = startTime.split(' ');
+//         let tempStart1 = tempStart[0].split(':');
+//         let tempEnd = endTime.split(' ');
+//         let tempEnd1 = tempEnd[0].split(':');
+// console.log(tempStart, tempEnd)
+
+//         if (tempStart[1] === 'PM' && tempEnd[1] === 'AM') {
+//           if(editClassData){
+//             var tomorrow1 = new Date(startDate);
+
+//             tomorrow1.setDate(selectedStartDateToPass.getDate() + 1);
+//             setEndDate(new Date(selectedStartDateToPass).getDate() + 1);
+//             setSelectedEndDateToPass(Moment(tomorrow1).format('YYYY-MM-DD'));
+//           }
+//           else{
+//             var tomorrow1 = new Date();
+//             tomorrow1.setDate(selectedDateToPass.getDate() + 1);
+//             setEndDate(new Date(selectedDateToPass).getDate() + 1);
+//             setSelectedEndDateToPass(tomorrow1);
+//           }
+//         }
+//         else{
+          
+//           if(editClassData){
+//             setEndDate(startDate);
+//       setSelectedEndDateToPass(Moment(startDate).format('YYYY-MM-DD'));
+//           }
+//          else{
+//           setEndDate(selectedDate);
+//           setSelectedEndDateToPass(Moment(selectedDate).format('YYYY-MM-DD'));
+//          }
+//         }
+//         //   time = (parseInt(temp1[0]) + 12) * 60 + parseInt(temp1[1]) + 15;
+//         // } else {
+//         //   if (temp1[0] == 12 && temp[1] === 'AM') {
+//         //     temp1[0] = 0;
+//         //   }
+//         //   time = parseInt(temp1[0]) * 60 + parseInt(temp1[1]) + 15;
+//         // }
+//       }
+      
+//     }, [startTime, endTime, selectedDate]);
+
+    console.log(new Date(selectedDateToPass));
     // useEffect(() => {
     //   if (startTime && endTime) {
     //     // let tempStart = startTime.split(' ');
@@ -582,6 +594,7 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
         dispatch(editSession(editDataFinal))
           .then((response: any) => {
             onRefresh();
+            // Alert.alert('', JSON.stringify(editData))
             if (response.payload.data.status === 'success') {
               setChildData(response.payload.data.data);
               setShareLinkPopup(true);
@@ -665,11 +678,13 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
         label: 'Do not Repeat',
       });
     }, []);
+
     useEffect(() => {
       if (editClassData) {
         setStartDate(Moment(startDate).format('MMM DD YYYY'));
         setEndDate(Moment(endDate).format('MMM DD YYYY'));
       }
+      
     }, []);
 
     const handleStartDatePicked = (selectedDate: Date) => {
@@ -866,7 +881,7 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
     const getMeetingPlatform = (data: any) => {
       setTaughtOn(data[0]);
     };
-
+    console.log(selectedEndDateToPass);
     const getRepeatType = (data: any) => {
       setRepeatType(data[0]);
     };
@@ -880,128 +895,133 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
 
     //Create session
     const doCreateSession = () => {
-      if (!selectedCourseId || !selectedDateToPass || !startTime || !endTime) {
-        Alert.alert('', config.messages.common_error_missing_fields, [
-          {text: 'Okay', style: 'cancel'},
-        ]);
-
-        // setState({
-        //   appStatus: "failure",
-        //   appStatusMessage: config.messages.common_error_missing_fields,
-        // });
-
-        // setTimeout(() => {
-        //   setState({ appStatus: "", appStatusMessage: "" });
-        // }, 3000);
-        return false;
-      }
-
-      if (userData.user_type === 'T') {
-        if (!selectedStudentId) {
+      if(!dateError){
+        if (!selectedCourseId || !selectedDateToPass || !startTime || !endTime || !selectedEndDateToPass) {
           Alert.alert('', config.messages.common_error_missing_fields, [
             {text: 'Okay', style: 'cancel'},
           ]);
+  
+          // setState({
+          //   appStatus: "failure",
+          //   appStatusMessage: config.messages.common_error_missing_fields,
+          // });
+  
+          // setTimeout(() => {
+          //   setState({ appStatus: "", appStatusMessage: "" });
+          // }, 3000);
+          return false;
         }
-      }
-
-      // setState({ appStatus: "", appStatusMessage: "" });
-      dispatch(setPageLoading(true));
-      let studentIds = new Array();
-      studentIds.push(userData.id);
-
-      let params: CreateSessionInterface = {
-        course: selectedCourseId,
-        student: studentIds,
-        class_type:
-          userData.user_type === 'T'
-            ? selectedCourse.price_type.id
-            : selectedCourse.class_type.id,
-        start_date: selectedDateToPass,
-        end_date: selectedEndDateToPass,
-        timezone: selectedTimezone.value,
-        start_time: startTime,
-        end_time: endTime,
-        class_taught_on: taughtOn.label,
-        // repeat: 'Do not Repeat',
-        // repeat_count: '',
-        repeat: repeatType.label,
-        repeat_day: Moment(selectedDate).format('dddd'),
-        repeat_count: repeatDuration.label,
-        // type: 'C',
-      };
-
-      console.log(params);
-      if (userData.user_type === 'T') {
+  
+        if (userData.user_type === 'T') {
+          if (!selectedStudentId) {
+            Alert.alert('', config.messages.common_error_missing_fields, [
+              {text: 'Okay', style: 'cancel'},
+            ]);
+          }
+        }
+  
+  
+        // setState({ appStatus: "", appStatusMessage: "" });
+        dispatch(setPageLoading(true));
         let studentIds = new Array();
-        studentIds.push(selectedStudentId);
-        params.student = studentIds;
-      }
-
-      let finalData: CreateSessionInterfaceFinal = {
-        params: params,
-        userToken: userData.token,
-      };
-      dispatch(addSession(finalData))
-        .unwrap()
-        .then(response => {
-          setShowAddSessionModal(false);
-          dispatch(setPageLoading(false));
-          console.log(response);
-          if (response.data.status === 'success') {
-            // if (response.status === 200) {
-            if (
-              taughtOn.label === 'I' &&
-              response.data.data &&
-              response.data.data.class_url
-            ) {
-              setShareLinkPopup(true);
-              setURL(response.data.data.class_url);
-              setTaughtOnCode(taughtOn.label);
-              // setAPIresponse(response);
-            } else {
+        studentIds.push(userData.id);
+  
+        let params: CreateSessionInterface = {
+          course: selectedCourseId,
+          student: studentIds,
+          class_type:
+            userData.user_type === 'T'
+              ? selectedCourse.price_type.id
+              : selectedCourse.class_type.id,
+          start_date: selectedDateToPass,
+          end_date: selectedEndDateToPass,
+          timezone: selectedTimezone.value,
+          start_time: startTime,
+          end_time: endTime,
+          class_taught_on: taughtOn.label,
+          // repeat: 'Do not Repeat',
+          // repeat_count: '',
+          repeat: repeatType.label,
+          repeat_day:  repeatType.label==='Do not Repeat' ? "" :  Moment(selectedDateToPass).format('dddd'),
+          repeat_count: repeatDuration.label,
+          // type: 'C',
+        };
+  
+        console.log(selectedDate);
+        console.log(params);
+        if (userData.user_type === 'T') {
+          let studentIds = new Array();
+          studentIds.push(selectedStudentId);
+          params.student = studentIds;
+        }
+  
+        let finalData: CreateSessionInterfaceFinal = {
+          params: params,
+          userToken: userData.token,
+        };
+        dispatch(addSession(finalData))
+          .unwrap()
+          .then(response => {
+  
+            //  Alert.alert('', JSON.stringify(params))
+            setShowAddSessionModal(false);
+            dispatch(setPageLoading(false));
+            console.log(response);
+            if (response.data.status === 'success') {
+              // if (response.status === 200) {
+              if (
+                taughtOn.label === 'I' &&
+                response.data.data &&
+                response.data.data.class_url
+              ) {
+                setShareLinkPopup(true);
+                setURL(response.data.data.class_url);
+                setTaughtOnCode(taughtOn.label);
+                // setAPIresponse(response);
+              } else {
+                navigation.navigate('ActionStatus', {
+                  messageStatus: 'success',
+                  messageTitle: 'Success!',
+                  messageDesc: response.data.error_message.message,
+                  timeOut: 7000,
+                  backRoute: 'Schedules',
+                  // params: {
+                  //   appStatus: "success",
+                  //   appStatusMessage: response.data.error_message.message,
+                  //   appStatusId: appStatusId,
+                  // },
+                });
+              }
+            } else if (response.data.status === 'failure') {
+              // } else {
               navigation.navigate('ActionStatus', {
-                messageStatus: 'success',
-                messageTitle: 'Success!',
+                messageStatus: 'failure',
+                messageTitle: 'Sorry!',
                 messageDesc: response.data.error_message.message,
                 timeOut: 7000,
                 backRoute: 'Schedules',
-                // params: {
-                //   appStatus: "success",
-                //   appStatusMessage: response.data.error_message.message,
-                //   appStatusId: appStatusId,
-                // },
               });
             }
-          } else if (response.data.status === 'failure') {
-            // } else {
+            onRefresh();
+          })
+          .catch(error => {
+            dispatch(setPageLoading(false));
+            // Alert.alert('',JSON.stringify(error))
             navigation.navigate('ActionStatus', {
               messageStatus: 'failure',
               messageTitle: 'Sorry!',
-              messageDesc: response.data.error_message.message,
+              messageDesc: config.messages.common_error,
               timeOut: 7000,
               backRoute: 'Schedules',
             });
-          }
-          onRefresh();
-        })
-        .catch(error => {
-          dispatch(setPageLoading(false));
-          navigation.navigate('ActionStatus', {
-            messageStatus: 'failure',
-            messageTitle: 'Sorry!',
-            messageDesc: config.messages.common_error,
-            timeOut: 7000,
-            backRoute: 'Schedules',
           });
-        });
+      }
+      
     };
 
     return (
-      <ScrollView
-        // scrollEventThrottle={16}
-        keyboardShouldPersistTaps={'handled'}>
-        {/* <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}> */}
+     
+
           <View style={styles.container}>
             <CustomStatusBar />
 
@@ -1023,9 +1043,15 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
                   marginBottom: 5,
                 }}></View> */}
                 <View>
+                <ScrollView
+      contentInsetAdjustmentBehavior='always'
+      style={{height:title==='Add' ? 550 : 470}}
+        // scrollEventThrottle={16}
+        // keyboardShouldPersistTaps={'handled'}
+        >
                   <View
-                  // style={styles.formWrapper}
-                  >
+                    // style={styles.formWrapper}
+                    >
                     {!editClassData ? (
                       <>
                         <View style={styles.formElement}>
@@ -1099,7 +1125,7 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
                     <Text style={[styles.labelContent]}>
                       Timezone: {userData.timezone}
                     </Text>
-                  </View> */}
+                    </View> */}
                     {meetingPlatforms ? (
                       <View style={styles.formElement}>
                         <CustomDropdown
@@ -1126,13 +1152,13 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
                             minimumDate={new Date()}
                             isVisible={isStartDateTimePickerVisible}
                             mode="date"
-                            onConfirm={(selectedDate: any) => {
-                              handleStartDatePicked(selectedDate);
+                            onConfirm={(d: any) => {
+                              handleStartDatePicked(d);
                             }}
                             onCancel={hideStartDateTimePicker}
                           />
                         </View>
-                        {/* <View style={styles.formElement}>
+                        <View style={styles.formElement}>
                           <CustomDateTimePicker
                             width={width - 32}
                             config={{color: '#fff'}}
@@ -1142,8 +1168,8 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
                             minimumDate={minEndDate}
                             isVisible={isEndDateTimePickerVisible}
                             mode="date"
-                            onConfirm={(selectedDate: any) => {
-                              handleEndDatePicked(selectedDate);
+                            onConfirm={(d: any) => {
+                              handleEndDatePicked(d);
                             }}
                             onCancel={hideEndDateTimePicker}
                           />
@@ -1152,9 +1178,10 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
                               End date should be after or same as start date
                             </Text>
                           ) : null}
-                        </View> */}
+                        </View>
                       </>
                     ) : (
+                      <>
                       <View style={styles.formElement}>
                         <CustomDateTimePicker
                           width={width - 32}
@@ -1165,13 +1192,76 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
                           minimumDate={new Date()}
                           isVisible={isDateTimePickerVisible}
                           mode="date"
-                          onConfirm={(selectedDate: any) => {
-                            handleDatePicked(selectedDate);
+                          onConfirm={(d: any) => {
+                            handleDatePicked(d);
                           }}
                           onCancel={hideDateTimePicker}
                         />
                       </View>
+                      <View style={styles.formElement}>
+                      <CustomDateTimePicker
+                        width={width - 32}
+                        config={{color: '#fff'}}
+                        showDateTimePicker={showEndDateTimePicker}
+                        selectedValue={endDate}
+                        label={'End Date *'}
+                        minimumDate={new Date()}
+                        isVisible={isEndDateTimePickerVisible}
+                        mode="date"
+                        onConfirm={(d: any) => {
+                          handleEndDatePicked(d);
+                        }}
+                        onCancel={hideEndDateTimePicker}
+                      />
+                      {dateError ? (
+                        <Text style={StyleCSS.styles.errorText}>
+                          End date should be after or same as start date
+                        </Text>
+                      ) : null}
+                    </View>
+                    </>
                     )}
+                    
+
+                    <View style={styles.formElement}>
+                      {/* <Text style={styles.labelContent}>Start Time *</Text> */}
+                      <CustomDropdown
+                        customIcon={
+                          <CustomImage
+                            height={24}
+                            width={24}
+                            uri={`${config.media_url}time.svg`}
+                          />
+                        }
+                        topLabel={startTime ? 'Start Time*' : undefined}
+                        config={{color: '#fff'}}
+                        onChangeVal={changeStartTime}
+                        data={startTimeRangeList}
+                        selectedIds={[]}
+                        label={startTime ? startTime : 'Start Time*'}
+                        backTitle={'Select Class Start Time'}
+                      />
+                    </View>
+
+                    <View style={styles.formElement}>
+                      {/* <Text style={styles.labelContent}>End Time *</Text> */}
+                      <CustomDropdown
+                        customIcon={
+                          <CustomImage
+                            height={24}
+                            width={24}
+                            uri={`${config.media_url}time.svg`}
+                          />
+                        }
+                        topLabel={endTime ? 'End Time*' : undefined}
+                        config={{color: '#fff'}}
+                        onChangeVal={changeEndTime}
+                        data={endTimeRangeList}
+                        selectedIds={[]}
+                        label={endTime ? endTime : 'End Time*'}
+                        backTitle={'Select Class End Time'}
+                      />
+                    </View>
                     {userData.user_type === 'T' &&
                     !editClassData &&
                     repeatTypes.length > 0 &&
@@ -1223,47 +1313,10 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
                         />
                       </View>
                     ) : null}
-
-                    <View style={styles.formElement}>
-                      {/* <Text style={styles.labelContent}>Start Time *</Text> */}
-                      <CustomDropdown
-                        customIcon={
-                          <CustomImage
-                            height={24}
-                            width={24}
-                            uri={`${config.media_url}time.svg`}
-                          />
-                        }
-                        topLabel={startTime ? 'Start Time*' : undefined}
-                        config={{color: '#fff'}}
-                        onChangeVal={changeStartTime}
-                        data={startTimeRangeList}
-                        selectedIds={[]}
-                        label={startTime ? startTime : 'Start Time*'}
-                        backTitle={'Select Class Start Time'}
-                      />
-                    </View>
-
-                    <View style={styles.formElement}>
-                      {/* <Text style={styles.labelContent}>End Time *</Text> */}
-                      <CustomDropdown
-                        customIcon={
-                          <CustomImage
-                            height={24}
-                            width={24}
-                            uri={`${config.media_url}time.svg`}
-                          />
-                        }
-                        topLabel={endTime ? 'End Time*' : undefined}
-                        config={{color: '#fff'}}
-                        onChangeVal={changeEndTime}
-                        data={endTimeRangeList}
-                        selectedIds={[]}
-                        label={endTime ? endTime : 'End Time*'}
-                        backTitle={'Select Class End Time'}
-                      />
-                    </View>
+                    
                   </View>
+                  </ScrollView>
+
                   <View
                     style={[StyleCSS.styles.lineStyleLight, {marginTop: 12}]}
                   />
@@ -1314,8 +1367,8 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
           statusMessage={appStatusMessage}
         /> */}
           </View>
-        {/* </KeyboardAvoidingView> */}
-      </ScrollView>
+     
+     
     );
   };
 

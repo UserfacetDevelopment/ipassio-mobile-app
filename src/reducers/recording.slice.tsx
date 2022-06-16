@@ -39,12 +39,22 @@ export default recordingSlice.reducer;
 export const getStudentRecording = createAsyncThunk('recording/getStudentRecording',
 async(data: RecordingDataInterface) =>{
    let response;
-       response = ApiGateway.get('twiliovideo/class-recordings-student/?course='+data.course_slug,false,{
+   if(data.course_slug === null){
+    response = ApiGateway.get('twiliovideo/class-recordings-student',false,{
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + data.userToken,
+      },
+    })
+   }
+    else{
+      response = ApiGateway.get('twiliovideo/class-recordings-student/?course='+data.course_slug,false,{
         headers: {
           "Content-Type": "application/json",
           Authorization: "Token " + data.userToken,
         },
       })
+    }   
       return response
    }
 );
@@ -52,12 +62,21 @@ async(data: RecordingDataInterface) =>{
 export const getTeacherRecording = createAsyncThunk('recording/getTeacherRecording',
 async(data: RecordingDataInterface) =>{
    let response;
-       response = ApiGateway.get('twiliovideo/class-recordings-teacher/?course='+data.course_slug+'&user='+data.user,false,{
+   if(data.course_slug === null && data.user===null){
+       response = ApiGateway.get('twiliovideo/class-recordings-teacher',false,{
         headers: {
           "Content-Type": "application/json",
           Authorization: "Token " + data.userToken,
         },
       })
+    }else{
+      response = ApiGateway.get('twiliovideo/class-recordings-teacher/?course='+data.course_slug+'&user='+data.user,false,{
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Token " + data.userToken,
+        },
+      })
+    }
       return response
    }
 );

@@ -118,9 +118,11 @@ const [modalTitle, setModalTitle] = useState<"Mark Attendance"|"Edit Attendance"
   let refillPopupTimer: number = 0;
 
   useEffect(() => {
+    setReviewIndex(null);
+
     let data: AttendanceListInterface = {
       userType: userData.user_type,
-      priceType: classType.id,
+      priceType: classType,
       userToken: userToken,
       courseToken: courseToken,
       token: userData.token,
@@ -140,8 +142,11 @@ const [modalTitle, setModalTitle] = useState<"Mark Attendance"|"Edit Attendance"
     // });
     setRefreshing(false);
   }, [refreshing]);
+
 console.log(reviewIndex)
   console.log(attendances)
+  console.log(studentAttendanceList)
+
   useEffect(() => {
     if (attendances.length > 0) {
         
@@ -161,7 +166,7 @@ console.log(reviewIndex)
     //   }, 7000);
     }
      
-  }, [attendances, studentAttendanceList]);
+  }, [attendances, studentAttendanceList, editAttendanceModal]);
 
   const showDateTimePicker = () => {
     Keyboard.dismiss();
@@ -176,6 +181,8 @@ console.log(reviewIndex)
     setIndex(reviewIndex);
     setModalTitle('Mark Attendance');
     setEditAttendanceModal(true);
+    setReviewIndex(null);
+
   };
 
   const handleDatePicked = (selectedDate: Date, at: any, i: number): void => {
@@ -255,7 +262,7 @@ setEditAttendanceModal(true)
       .unwrap()
       .then(response => {
        setEditAttendanceModal(false);
-       setReviewIndex(null)
+      //  setReviewIndex(null)
         dispatch(setPageLoading(false));
         if (response?.data.status === 'success') {
           toggleModal();
@@ -480,7 +487,7 @@ setEditAttendanceModal(true)
               <Bubbles size={7} color={brandColor} />
             </View>
           ) : null}
-{reviewIndex !== null ? (
+{reviewIndex !== null && reviewIndex<attendances.length ? (
                 <View style={styles.addReview}>
                   <View>
                     <Text style={styles.row_title}> Class No. </Text>
@@ -496,7 +503,7 @@ setEditAttendanceModal(true)
                   </TouchableOpacity>
                 </View>
               ) : null}
-          {attendancesStatus === 'success' &&
+          {attendances && attendances.length>0 &&
             attendances.map((at: any, i: number) => {
               return (
                 <View key={at.id}>
@@ -704,7 +711,7 @@ setEditAttendanceModal(true)
                       setSelectedReview(text.trim());
                     }}
                     defaultValue={attendances[index].teacher_review}
-                    placeholder={'How was your experience? *'}
+                    placeholder={'How was your experience?'}
                     placeholderTextColor={font2}
                     underlineColorAndroid={'transparent'}
                   />
@@ -730,9 +737,7 @@ setEditAttendanceModal(true)
             </TouchableOpacity>
           </TouchableOpacity>
           </KeyboardAvoidingView>
-        </Modal> :null}
-     
-      
+        </Modal> :null} 
     </View>
   );
 }

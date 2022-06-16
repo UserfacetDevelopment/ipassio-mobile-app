@@ -37,7 +37,6 @@ import VersionCheck from 'react-native-version-check';
 import {BackHandler} from 'react-native';
 import {Linking} from 'react-native';
 import { brandColor, dropdownBorder, font1, font2, font3, lineColor, lineColor2, secondaryColor } from './src/styles/colors';
-// import PushController from './src/utils/PushController'
 import { setFCMToken } from './src/reducers/user.slice';
 import SplashScreen from 'react-native-splash-screen'
 
@@ -45,15 +44,12 @@ const theme = {
   ...DefaultTheme,
   roundness: 8,
   colors: {
-    // ...DefaultTheme.colors,
      primary: dropdownBorder,
     accent: secondaryColor,
     // underlineColor:'transparent',
      placeholder: '#9AA6B2', 
            text:font1,
-          //  primary: 'white',
            underlineColor: 'transparent',    
-          // background : '#0f1a2b'
   },
 };
 
@@ -77,10 +73,9 @@ const App = () => {
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-     
+      //Do nothing
       // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
     });
-
     return unsubscribe;
   }, []);
   
@@ -88,7 +83,6 @@ const App = () => {
   // const currentVersion = VersionCheck.getCurrentVersion()
 
   useEffect(() => {
-    
     checkUpdateNeeded();
     SplashScreen.hide();
   },[]);
@@ -97,7 +91,9 @@ const App = () => {
   
 
   const checkUpdateNeeded = async () => {
-    let updateNeeded = await VersionCheck.needUpdate();
+    let updateNeeded = await VersionCheck.needUpdate({
+      packageName: 'com.ipassio.apps'
+      });
     console.log(updateNeeded)
     if (updateNeeded.isNeeded) {
       //Alert the user and direct to the app url

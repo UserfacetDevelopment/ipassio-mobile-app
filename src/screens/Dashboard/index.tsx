@@ -522,7 +522,15 @@ export default function Dashboard({navigation}: Props) {
 
   useEffect(() => {
     getDefaultDashboard();
-  }, [userData, ]);
+    
+  }, [userData]);
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getDefaultDashboard();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const getDefaultDashboard = () => {
     if (userData.user_type === 'T') {
@@ -539,6 +547,8 @@ export default function Dashboard({navigation}: Props) {
       ;
     }
   };
+
+
 
   const markAttendance = (data: any): void => {
     // console.log(data)
@@ -673,7 +683,6 @@ useEffect(()=>{
   
 
   const loadEnrolledStudents = (data: any, index: number): any => {
-    console.log(data);
     return (
       <>
         {data.user_token + '_' + data.seo_slug_url + '_' + index ===

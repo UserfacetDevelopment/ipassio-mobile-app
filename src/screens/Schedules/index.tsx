@@ -385,7 +385,7 @@ const LoadItem = ({
                 </View>
               </View>
             </View>
-            {data.class_url !== "" ? (
+            {data.class_url && data.class_url !== "" ? (
               <>
                 <DashedLine
                   dashLength={5}
@@ -768,9 +768,9 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
             onPressOut={() => {
               setShowAddSessionModal(false);
             }}
-            style={SheetCSS.styles.modalBackground}>
+            style={[SheetCSS.styles.modalBackground]}>
             <View
-             style={StyleCSS.styles.modalView}
+             style={[StyleCSS.styles.modalView]}
             //  style={{backgroundColor:'#fff',alignSelf:'flex-end'}}
             >
               <TouchableOpacity activeOpacity={1} onPress={doNothing}>

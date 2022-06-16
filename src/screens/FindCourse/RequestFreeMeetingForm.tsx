@@ -160,6 +160,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
     {label: 'DT', value: 'Discuss Session Timings'},
   ];
 
+  console.log(timeSlots);
   const onSubmit = (data: any) => {
     setSubmitRequested(true);
     // if (
@@ -265,6 +266,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
           userToken: userData && userData.token,
           loggedIn: isLoggedIn,
         };
+        console.log(formData)
         dispatch(requestFreeSession(finalData))
           .unwrap()
           .then(response => {
@@ -1103,9 +1105,6 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
                         )} */}
 
                   <View style={styles.formGroup}>
-                    {/* <Text style={styles.inputLabel}>
-                      Reason for requesting a free class *
-                    </Text> */}
                     <CustomDropdown
                       topLabel={
                         reason
@@ -1192,9 +1191,6 @@ zIndex={10000}
                 }}
             /> */}
                   <View style={styles.formGroup}>
-                    {/* <Text style={styles.inputLabel}>
-                      Meeting Platform
-                    </Text> */}
                     <CustomDropdown
                       topLabel={
                         meetingPlatform ? 'Meeting Platform *' : undefined
@@ -1239,37 +1235,6 @@ zIndex={10000}
                       {/* {submitRequested ? }*/}
                     </View>
                   ) : null}
-                  {/* {course.taught_on && course.taught_on.length > 0 ? (
-                    <>
-                      {course.taught_on.map((taught_on: any, index: number) => {
-                        return (
-                          <>
-                            {taught_on.code !== 'I' ? (
-                              <View key={taught_on.id} style={styles.formGroup}>
-                                <Controller
-                                  control={control}
-                                  name={taught_on.code}
-                                  render={({
-                                    field: {onChange, value, onBlur},
-                                  }) => (
-                                    <TextInput
-                                      style={styles.input}
-                                      theme={{colors: {primary: font2}}}
-                                      mode="outlined"
-                                      label={taught_on.custom_name}
-                                      value={value}
-                                      onBlur={onBlur}
-                                      onChangeText={value => onChange(value)}
-                                    />
-                                  )}
-                                />
-                              </View>
-                            ) : null}
-                          </>
-                        );
-                      })}
-                    </>
-                    ) : null}*/}
 
                   <Text style={styles.time_slots}>
                     Share your 3-4 preferred time slots
@@ -1287,93 +1252,6 @@ zIndex={10000}
                           removeTimeSlot={removeTimeSlot}
                         />
                       ),
-
-                      //                   <>
-                      // <View style={{backgroundColor:background2, borderRadius: 15, padding:16, marginBottom: 8}}>
-
-                      //               <View style={styles.formGroup}>
-
-                      //               <TouchableOpacity onPress={()=>{showDateTimePicker();}}>
-
-                      //                           <Text
-                      //                             style={styles.inputText}
-
-                      //                             onPress={()=>{showDateTimePicker()}}
-
-                      //                             //label='Date'
-                      //                             //value={selectedDate}
-                      //                             >
-                      //                            {selectedDate ? selectedDate : "Date"}
-
-                      //                           </Text>
-                      //                           <DateTimePickerModal
-                      //                             minimumDate={new Date()}
-                      //                             isVisible={isDateTimePickerVisible}
-                      //                             mode="date"
-                      //                             onConfirm={selectedDate => {
-                      //                               handleDatePicked(selectedDate, index);
-                      //                             }}
-                      //                             onCancel={hideDateTimePicker}
-                      //                           />
-                      //                         </TouchableOpacity>
-                      //                         <View style={{flexDirection:'row', justifyContent:'space-between', marginTop:12}}>
-                      //                           <View style={{width:'48%'}} >
-
-                      //                             {/* <Text style={styles.labelContent}>From </Text> */}
-                      //                             <CustomDropdown
-                      //                             topLabel = {startTime ? 'From' : undefined}
-                      //                               config={{ color: "#81878D" }}
-                      //                               onChangeVal={changeStartTime}
-                      //                               index={index}
-                      //                               data={startTimeRangeList}
-                      //                               selectedIds={[]}
-                      //                               label={startTime ? startTime : "From"}
-                      //                               backTitle={"Select Class Start Time"}
-                      //                             />
-                      //                           </View>
-
-                      //                           <View style={{width:'48%'}} >
-                      //                             {/* <Text style={styles.labelContent}>To</Text> */}
-                      //                             <CustomDropdown
-                      //                             topLabel = {endTime ? 'To' : undefined}
-                      //                             index={index}
-                      //                               config={{ color: "#81878D" }}
-                      //                               onChangeVal={changeEndTime}
-                      //                               data={endTimeRangeList}
-                      //                               selectedIds={[]}
-                      //                               label={endTime ? endTime : "To"}
-                      //                               backTitle={"Select Class End Time"}
-                      //                             />
-                      //                           </View>
-                      //                         </View>
-                      //                       </View>
-                      //                       <View style={styles.formGroup}>
-                      //                 <CustomDropdown
-                      //                  topLabel = {selectedTimezone ? 'Timezone' : undefined}
-                      //                   config={{color: 'rgb(44, 54, 65)'}}
-                      //                   onChangeVal={getTimezone}
-                      //                   index={index}
-                      //                   data={timezones}
-                      //                   selectedIds={[]}
-                      //                   label={
-                      //                     selectedTimezone ? selectedTimezone.value : 'Timezone'
-                      //                   }
-                      //                   backTitle={'Select Timezone'}
-                      //                 />
-                      //                 {selectedTimezone === undefined && submitRequested ? (
-                      //                   <Text style={styles.errorText}>Required *</Text>
-                      //                 ) : null}
-                      //               </View>
-                      //               {timeSlots.length>1 ? <TouchableOpacity onPress={()=>removeTimeSlot(index)} style={{flexDirection:'row', justifyContent:'flex-end'}}>
-                      //               <Text style={{color:brandColor, fontSize:14}}>Remove</Text>
-                      //               </TouchableOpacity> : null}
-
-                      //               </View>
-                      //               {index===timeSlots.length-1 && timeSlots.length<4 ? <TouchableOpacity style={{flexDirection:'row', alignItems:'center', justifyContent:'flex-start', borderWidth:1, borderColor:secondaryColorBorder, borderRadius:58, padding:7, width:'48%', marginTop:8}}
-                      //               onPress={()=>addMoreSlots(index)}>
-                      //                 <Add/><Text style={{color:secondaryColor, fontSize:14, fontWeight:'600', marginLeft:12}}>Add More Slots</Text>
-                      //               </TouchableOpacity> : null}
-                      //               </>
                     )}
 
                   <View style={[styles.formGroup, {marginTop: 24}]}>
@@ -1394,21 +1272,6 @@ zIndex={10000}
                           placeholderTextColor={font2}
                           underlineColorAndroid={'transparent'}
                         />
-                        // <TextField
-                        //   // theme={{colors: {primary: font2}}}
-                        //   multiline
-                        //   mode="outlined"
-                        //   label="Additional Information"
-                        //   numberOfLines={12}
-                        //   style={styles.input}
-                        //   placeholder="Let your teacher know about your current knowledge & experience in the art form and goals of learning)"
-                        //   value={value}
-                        //   onBlur={onBlur}
-                        //   onChangeText={value => {
-                        //     onChange(value);
-                        //     setAddditionalInfo(value);
-                        //   }}
-                        // />
                       )}
                     />
                     {errors.add_info && (
@@ -1465,18 +1328,7 @@ const styles = StyleSheet.create({
   safecontainer: {
     padding: 16,
   },
-  // input: {
-  //   color: 'rgb(44, 54, 65)',
-  //   margin: 0,
-  //   fontSize: 14,
-  //   // padding: 16,
-  //   height: 51.5,
-  //   backgroundColor: 'rgb(255, 255, 255)',
-  //   // borderRadius: 5,
-  //   fontFamily: helper.switchFont('medium'),
-  //   // borderWidth: 0.5,
-  //   // borderColor: 'rgb(200, 200, 200)',
-  // },
+  
   inputLabel: {
     fontFamily: helper.switchFont('medium'),
     fontSize: 14,

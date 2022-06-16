@@ -989,7 +989,7 @@ console.log(checkoutData);
                     <View>
                       <View style={{flexDirection: 'row'}}>
                         <View style={{width: '50%'}}>
-                          <Text style={styles.bodyText}>Cost Per Class</Text>
+                          <Text style={styles.bodyText}>Cost per Class</Text>
                           <Text style={styles.info}>
                             {checkoutData?.amount?.currency_type === 'INR'
                               ? 'Rs.'
@@ -1005,7 +1005,7 @@ console.log(checkoutData);
                       <View style={styles.row}>
                         <View>
                           <CustomDropdown
-                            topLabel="Classes Per Week"
+                            topLabel="Classes eer Week"
                             config={{color: '#fff'}}
                             onChangeVal={handleClassPerWeekChange}
                             data={itemsClassPerWeek}
