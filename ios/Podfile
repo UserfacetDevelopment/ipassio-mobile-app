@@ -11,8 +11,9 @@ target 'ipassio_' do
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => false
   )
+  permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'GoogleSignIn', '~> 6.0.2'
-
+  # pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
 
   target 'ipassio_Tests' do
     inherit! :complete

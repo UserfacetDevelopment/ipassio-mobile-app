@@ -35,8 +35,9 @@ import {
   courseState,
   getCourses,
   getCategories,
+  enrollNow,
 } from '../reducers/courses.slice';
-import {userState, loginSuccess, getUserLocation} from '../reducers/user.slice';
+import {userState, loginSuccess, getUserLocation, setLoginRedirectedFrom} from '../reducers/user.slice';
 import CourseDetails from '../screens/FindCourse/CourseDetails';
 import CartPage from '../screens/Checkout/CartPage';
 import {SvgUri} from 'react-native-svg';
@@ -68,6 +69,7 @@ import Recording from '../screens/Recording/Recording';
 
 import {font1, font2} from '../styles/colors';
 import RecordingPreview from '../screens/Recording/RecordingPreview';
+import { checkoutState, setCheckoutDataDetails, setNotLoggedInCheckoutData } from '../reducers/checkout.slice';
 export type RootParamList = {
   Categories: any;
   CategoryDetails: any;
@@ -667,14 +669,90 @@ const CheckoutNavigator = () => {
 
 const RootStackNavigator = () => {
   const navigation = useNavigation();
+  const dispatch= useAppDispatch();
   // const {navigation} = useSelector(userState);
   const [initialRoute, setInitialRoute] = useState('Dashboard');
-  const {isLoggedIn, userData} = useSelector(userState);
-
+  const {isLoggedIn, userData, userLocation, loginRedirectedFrom} = useSelector(userState);
+  const {notLoggedInCheckoutData} = useSelector(checkoutState);
+  const {course} = useSelector(courseState);
+  
   useEffect(() => {
+    
     if (isLoggedIn) {
-      setInitialRoute('Dashboard');
-      navigation.navigate('Dashboard');
+      if(loginRedirectedFrom!==null){
+        if(loginRedirectedFrom ==='CD'){
+          let currency_type =
+        course.user.ip_country === 'India' &&
+        ((!isLoggedIn && userLocation.data.country === 'India') ||
+          (isLoggedIn && userData.ip_country === 'India'))
+          ? 'INR'
+          : 'USD';
+
+      let total_cpw = notLoggedInCheckoutData.total_cpw;
+      let total_weeks = notLoggedInCheckoutData.total_weeks;
+      let total_class = notLoggedInCheckoutData.total_class;
+      let selectedPrice = notLoggedInCheckoutData.selectedPrice;
+
+      let enrollData = {
+        course: course.id,
+        price_per_class:
+          currency_type === 'INR'
+            ? selectedPrice.final_INR
+            : selectedPrice.final_USD,
+        currency_type: currency_type,
+        classes_per_week: total_cpw,
+        number_of_weeks: total_weeks,
+        number_of_class: total_class,
+        billing_first_name: userData.first_name,
+        billing_last_name: userData.last_name,
+        billing_street_address: '',
+        billing_city: userData.ip_city,
+        billing_pin_code: '',
+        billing_state: userData.ip_state,
+        billing_country: userData.ip_country,
+        class_type: selectedPrice.id,
+        purchase_type: 'N',
+        discounts: course.discounts ? course.discounts : '',
+        timezone: userData.timezone,
+        device_type: Platform.OS,
+        price_per_class_inr: selectedPrice.final_INR,
+      price_per_class_usd: selectedPrice.final_USD
+      };
+
+      const finaldata: CourseEnrollInterface = {
+        data: enrollData,
+        userToken: userData.token,
+      };
+
+      dispatch(setPageLoading(true));
+      dispatch(enrollNow(finaldata))
+        .unwrap()
+        .then(response => {
+          dispatch(setNotLoggedInCheckoutData(null));
+          dispatch(setLoginRedirectedFrom(null));
+          dispatch(setPageLoading(false));
+          if (response.data.status === 'success') {
+            dispatch(setCheckoutDataDetails(response.data.data));
+            navigation.navigate('Checkout', {
+              screen: 'CartPage',
+              params: {
+                checkoutToken: response.data.data.checkout_token,
+              },
+            });
+          }
+        })
+        .catch(err => {
+          dispatch(setPageLoading(false));
+          console.log(err);
+        });
+          // setInitialRoute('CartPage');
+          // navigation.navigate('CartPage');
+        }
+      }
+      else{
+        setInitialRoute('Dashboard');
+        navigation.navigate('Dashboard');
+      }
     } else {
       setInitialRoute('Browse');
       navigation.navigate('Browse');
@@ -940,11 +1018,11 @@ const openSettingsForNotifications = AsyncStorage.getItem('openSettingsForNotifi
               headerShown: false,
             }}
           />
-          <Stack.Screen
+          {/* <Stack.Screen
             name="Login"
             component={LoginFlowNavigator}
             options={{headerShown: false}}
-          />
+          /> */}
           <Stack.Screen
             name="Withdraw"
             component={Withdrawal}

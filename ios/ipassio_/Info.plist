@@ -38,7 +38,9 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This application nees to access your location</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>ipassio uses photos to share photos with the users in chat.</string>
+	<string>ipassio needs to access Photos</string>
+	<key>Privacy - User Notifications Usage Description</key>
+	<string>ipassio wants to send notifications.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Fontisto.ttf</string>
@@ -65,7 +67,6 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>

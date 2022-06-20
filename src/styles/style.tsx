@@ -19,8 +19,15 @@ import {
 const {height, width} = Dimensions.get('screen');
 import Helper from '../utils/helperMethods';
 import {HelperText} from 'react-native-paper';
+import { useSelector } from 'react-redux';
+import { userState } from '../reducers/user.slice';
 
 export default class StyleCSS {
+  constructor(){
+    const {userData} = useSelector(userState);
+  }
+  
+
   static styles = StyleSheet.create({
     mainTitle: {
       fontSize: 24,
@@ -245,6 +252,21 @@ export default class StyleCSS {
       paddingBottom: Platform.OS === 'android' ? 16 : 24,
       paddingHorizontal: 16,
       paddingTop: 16,
+    },
+    modalTextareaWrapper:{
+      height: 158,
+      width: width - 32,
+      backgroundColor: 'rgb(255, 255, 255)',
+      borderRadius: 8,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: dropdownBorder,
+    },
+    textAreaStudent:{
+      height: 116,
+      width: '100%',
+      backgroundColor: 'rgb(255, 255, 255)',
+     
     },
     modalTextarea: {
       height: 158,

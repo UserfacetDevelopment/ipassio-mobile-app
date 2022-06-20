@@ -17,7 +17,9 @@ const initialState : any = {
   enrolledCoursesStatus : null,
   attendances : [],
   attendancesStatus: null,
-  studentAttendanceList : []
+  studentAttendanceList : [],
+  reviewSuggestions:[]
+
 }
 
 export const getTeacherCreatedCourses= createAsyncThunk('dashboard/getTeacherCreatedCourses', 
@@ -69,6 +71,9 @@ export const dashboardSlice = createSlice({
     },
     setAttendanceLoading:(state) =>{
       state.attendancesStatus = 'loading'
+    },
+    setReviewSuggestions:(state, action :PayloadAction<any>)=>{
+      state.reviewSuggestions = action.payload;
     }
     
   },
@@ -117,7 +122,7 @@ export const dashboardSlice = createSlice({
   }
 });
 
-export const {setAttendanceFailure, setAttendanceLoading, setStudentAttendanceSuccess, setAttendanceSuccess} = dashboardSlice.actions;
+export const {setAttendanceFailure, setAttendanceLoading, setStudentAttendanceSuccess, setAttendanceSuccess, setReviewSuggestions} = dashboardSlice.actions;
 
 export const dashboardState = (state : RootState) => state.dashboard;
 
@@ -145,6 +150,7 @@ async(data: AttendanceListInterface, {dispatch})=> {
       if(response.data.status === "success"){
         dispatch(setAttendanceSuccess(response.data.data));
         dispatch(setStudentAttendanceSuccess(response.data.extra_data));
+        dispatch(setReviewSuggestions(response.data.extra_data.review_suggestions))
       }
       else if(response.data.status === "failure"){
         dispatch(setAttendanceFailure());

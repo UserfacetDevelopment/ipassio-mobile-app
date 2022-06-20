@@ -62,6 +62,7 @@ import {
   removeCoupon,
   setCheckoutDataDetails,
   detailsCheckoutToken,
+  setNotLoggedInCheckoutData,
 } from '../../reducers/checkout.slice';
 import PageLoader from '../../components/PageLoader';
 import CustomDropdown from '../../components/CustomDropdown';
@@ -265,6 +266,7 @@ export default function CartPage({navigation, route}: Props) {
   // );
 
   useEffect(() => {
+    
     setTimezone(timezones);
 
     let data: any = {

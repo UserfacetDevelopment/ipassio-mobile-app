@@ -14,7 +14,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1C3353CD6B231B7472438274 /* libPods-ipassio_-ipassio_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F91AC13462F015D50F45A35E /* libPods-ipassio_-ipassio_Tests.a */; };
 		27DD271F923F0C1EB4832C78 /* libPods-ipassio_.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFE1D445F90BB18BDB5BFB8D /* libPods-ipassio_.a */; };
-		2D4691912851BC070096CDC4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2D4691902851BC070096CDC4 /* GoogleService-Info.plist */; };
+		2D25A19B285C8E1000456CF2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2D25A19A285C8E1000456CF2 /* GoogleService-Info.plist */; };
+		2D25A19C285C8E1000456CF2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2D25A19A285C8E1000456CF2 /* GoogleService-Info.plist */; };
 		2D65F42A28059A0B008D509C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		5E6EDBEF05EB4833B20F0FD1 /* PlusJakartaSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ABFCBBA7020F43A5A8E66CBB /* PlusJakartaSans-Regular.ttf */; };
 		8172DFE1FE83406897A65184 /* PlusJakartaSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DD3FFA5E15DE4716BF4C87BA /* PlusJakartaSans-Light.ttf */; };
@@ -47,7 +48,8 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ipassio_/main.m; sourceTree = "<group>"; };
 		243B08F43EE04F78A68CDFB7 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		2A3C14994AA45FC35E510126 /* Pods-ipassio_.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ipassio_.debug.xcconfig"; path = "Target Support Files/Pods-ipassio_/Pods-ipassio_.debug.xcconfig"; sourceTree = "<group>"; };
-		2D4691902851BC070096CDC4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2D25A199285C750600456CF2 /* ipassio_Release.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ipassio_Release.entitlements; path = ipassio_/ipassio_Release.entitlements; sourceTree = "<group>"; };
+		2D25A19A285C8E1000456CF2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2DEB586A27FF1016006ED475 /* ipassio_.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ipassio_.entitlements; path = ipassio_/ipassio_.entitlements; sourceTree = "<group>"; };
 		45DB03BE8DBA401AA596FADE /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		49685264B6774F82830729FC /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
@@ -116,7 +118,8 @@
 		13B07FAE1A68108700A75B9A /* ipassio_ */ = {
 			isa = PBXGroup;
 			children = (
-				2D4691902851BC070096CDC4 /* GoogleService-Info.plist */,
+				2D25A19A285C8E1000456CF2 /* GoogleService-Info.plist */,
+				2D25A199285C750600456CF2 /* ipassio_Release.entitlements */,
 				2DEB586A27FF1016006ED475 /* ipassio_.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -252,8 +255,6 @@
 			dependencies = (
 			);
 			name = ipassio_;
-			packageProductDependencies = (
-			);
 			productName = ipassio_;
 			productReference = 13B07F961A680F5B00A75B9A /* ipassio.app */;
 			productType = "com.apple.product-type.application";
@@ -284,8 +285,6 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
-			packageReferences = (
-			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -301,6 +300,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D25A19C285C8E1000456CF2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,7 +309,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
-				2D4691912851BC070096CDC4 /* GoogleService-Info.plist in Resources */,
+				2D25A19B285C8E1000456CF2 /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				BC4769E92B474D6DAA152B70 /* PlusJakartaSans-Bold.ttf in Resources */,
 				C7099B26CA2A4E71B46374AB /* PlusJakartaSans-Medium.ttf in Resources */,
@@ -519,7 +519,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4DC8J723HV;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -550,11 +550,11 @@
 			baseConfigurationReference = 08579517297E4CF9BC63B187 /* Pods-ipassio_-ipassio_Tests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 4DC8J723HV;
 				INFOPLIST_FILE = ipassio_Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -581,10 +581,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = ipassio_/ipassio_.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 4DC8J723HV;
 				ENABLE_BITCODE = NO;
@@ -601,7 +601,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ipassio.app;
 				PRODUCT_NAME = ipassio;
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = ipassioDevProvision;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -614,7 +614,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = ipassio_/ipassio_Release.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 2;

@@ -12,7 +12,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "ipassio";
+    return "ipassio_";
   }
 // Add this method. for splash screen
 @Override

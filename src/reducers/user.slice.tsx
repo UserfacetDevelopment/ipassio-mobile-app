@@ -21,6 +21,7 @@ const initialState: any = {
   locationStatus: null,
   fcmToken: null,
   navigation:null,
+  loginRedirectedFrom : null
 };
 export const userSlice = createSlice({
   name: 'user',
@@ -39,7 +40,10 @@ export const userSlice = createSlice({
     },
     setNavigation : (state, action:PayloadAction<any>) =>{
       state.navigation = action.payload;
-    }
+    },
+    setLoginRedirectedFrom : (state, action:PayloadAction<any>) =>{
+      state.loginRedirectedFrom = action.payload;
+    },
   },
   extraReducers: builder => {
     builder.addCase(getUserLocation.pending, state => {
@@ -62,7 +66,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const {loginSuccess, logoutUser, setFCMToken, setNavigation} = userSlice.actions;
+export const {loginSuccess, logoutUser, setFCMToken, setNavigation, setLoginRedirectedFrom} = userSlice.actions;
 
 export const userState = (state: RootState) => state.user;
 

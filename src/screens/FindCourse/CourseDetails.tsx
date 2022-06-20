@@ -44,7 +44,7 @@ import {
 } from '../../styles/colors';
 // import Drop from '../../assets/images/Drop.svg';
 // import Dot from '../../assets/images/dot.svg';
-import {userState} from '../../reducers/user.slice';
+import {setLoginRedirectedFrom, userState} from '../../reducers/user.slice';
 // import TP1 from '../../assets/images/course_details/teacherProfile1';
 // import TP2 from '../../assets/images/course_details/teacherProfile2';
 
@@ -76,6 +76,7 @@ import {setCurrentCourse} from '../../reducers/courses.slice';
 import {
   setCheckoutDataDetails,
   cartDetails,
+  setNotLoggedInCheckoutData,
 } from '../../reducers/checkout.slice';
 import {useAppDispatch} from '../../app/store';
 import {setPage} from '../../reducers/checkout.slice';
@@ -366,6 +367,26 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
           console.log(err);
         });
     } else {
+      dispatch(setLoginRedirectedFrom('CD'));
+
+      
+      let total_cpw = selectedPrice.previous_purchase.classes_per_week
+        ? selectedPrice.previous_purchase.classes_per_week
+        : course.classes_per_week;
+      let total_weeks = selectedPrice.previous_purchase.number_of_weeks
+        ? selectedPrice.previous_purchase.number_of_weeks
+        : 2;
+      let total_class = total_weeks * total_cpw;
+
+      let data = {
+        total_cpw: total_cpw,
+        total_weeks: total_weeks,
+        total_class: total_class,
+        selectedPrice: selectedPrice
+      }
+
+      dispatch(setNotLoggedInCheckoutData(data));
+      
       navigation.navigate('Login', {
         nextRoute: 'CourseDetail',
       });

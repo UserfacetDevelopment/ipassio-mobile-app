@@ -28,6 +28,8 @@ import VideoPlayer from 'react-native-video-player';
 import Video from 'react-native-video';
 import StyleCSS from '../../styles/style';
 import CustomDropdown from '../../components/CustomDropdown';
+import { getTimeMeasureUtils } from '@reduxjs/toolkit/dist/utils';
+import CustomStatusBar from '../../components/CustomStatusBar';
 
 export interface RecordingDataInterface {
   course_slug: string;
@@ -55,9 +57,10 @@ const [l, setL]= useState(null);
 
 useEffect(()=>{
   let data: RecordingDataInterface;
-  dispatch(setPageLoading(true));
+  
 
   if (userData.user_type === 'S') {
+    dispatch(setPageLoading(true));
     data = {
       course_slug: selectedCourse ? selectedCourse.label : null,
       userToken: userData.token,
@@ -66,7 +69,6 @@ useEffect(()=>{
     dispatch(getStudentRecording(data))
       .unwrap()
       .then(response => {
-        console.log(response);
         if (response.data.status === 'success') {
           dispatch(setPageLoading(false));
           setRecordings(response.data.data);
@@ -83,8 +85,9 @@ useEffect(()=>{
 
 useEffect(()=>{
   let data: RecordingDataInterface;
-    dispatch(setPageLoading(true));
+    
     if (userData.user_type === 'T') {
+      dispatch(setPageLoading(true));
       data = {
         course_slug: c ,//selectedCourse ? selectedCourse.label : 
         userToken: userData.token,
@@ -96,7 +99,6 @@ useEffect(()=>{
         .then(response => {
           dispatch(setPageLoading(false));
 
-          console.log(response);
           if (response.data.status === 'success') {
             setRecordings(response.data.data);
             dispatch(setCourses(response.data.extra_data.courses));
@@ -109,66 +111,9 @@ useEffect(()=>{
           dispatch(setPageLoading(false));
         });
     }
-  },[c])
+  },[c,l])
 
-  // useEffect(() => {
-  //   let data: RecordingDataInterface;
-  //   dispatch(setPageLoading(true));
 
-  //   if (userData.user_type === 'S') {
-  //     data = {
-  //       course_slug: //selectedCourse ? selectedCourse.label : 
-  //       'hello-you-can-learn-all-ipassio',
-
-  //       userToken: 'e1965cac2d4742d8e4a770a3f5c25a1bfe7169f1',
-  //     };
-
-  //     dispatch(getStudentRecording(data))
-  //       .unwrap()
-  //       .then(response => {
-  //         console.log(response);
-  //         if (response.data.status === 'success') {
-  //           dispatch(setPageLoading(false));
-
-  //           setRecordings(response.data.data);
-  //           dispatch(setCourses(response.data.extra_data.courses));
-  //         } else if (response.data.status === 'failure') {
-  //           dispatch(setPageLoading(false));
-  //         }
-  //       })
-  //       .catch(() => {
-  //         dispatch(setPageLoading(false));
-  //       });
-  //   } else if (userData.user_type === 'T') {
-  //     data = {
-  //       course_slug: //c//selectedCourse ? selectedCourse.label : 
-  //       'hello-you-can-learn-all-ipassio',
-  //       userToken: '1a5d769885b79a0779102afdf8e239e5dd693fec',
-  //       user: l//selectedLearner ? selectedLearner.label : '',
-  //     };
-
-  //     dispatch(getTeacherRecording(data))
-  //       .unwrap()
-  //       .then(response => {
-  //         dispatch(setPageLoading(false));
-
-  //         console.log(response);
-  //         if (response.data.status === 'success') {
-  //           setRecordings(response.data.data);
-  //           dispatch(setCourses(response.data.extra_data.courses));
-  //         } else if (response.data.status === 'failure') {
-  //           dispatch(setPageLoading(false));
-  //         }
-  //       })
-
-  //       .catch(() => {
-  //         dispatch(setPageLoading(false));
-  //       });
-  //   }
-  // }, [selectedCourse, l, c]);
-
-  console.log(selectedCourse)
-  console.log(selectedLearner)
   useEffect(() => {
     if (courses && courses.length > 0) {
       // if(courseFilter.length!==0){ setCourseFilter([])}
@@ -180,8 +125,8 @@ useEffect(()=>{
               value: courses[0].students[0].name})
           }
         }
+        setPageLoading(false)
       }
-  
       let temp=[];
       for (let i = 0; i < courses.length; i++) {
         temp.push({
@@ -221,11 +166,12 @@ useEffect(()=>{
     setSelectedLearner(data[0]);
   };
 
-console.log(courses)
-console.log(selectedCourse)
-console.log(selectedLearner)
-console.log(courseFilter);
-console.log(learnersFilter)
+console.log('courses',courses)
+console.log('selectedCourse',selectedCourse)
+console.log('selectedLearner',selectedLearner)
+console.log('courseFilter',courseFilter);
+console.log('learnersFilter',learnersFilter)
+console.log(c,l)
 
 
 const applyTeacherFilter = () => {
@@ -233,18 +179,14 @@ setC(selectedCourse.label);
 setL(selectedLearner.label);
 }
 
-console.log(c,l)
-
   useEffect(() => {
     if (selectedCourse !== null && userData.user_type === 'T') {
       let selCourse = courses.filter(
         (item: any) => item.seo_slug_url === selectedCourse.label,
       )[0];
       
-      console.log(selCourse);
       let temp=[];
       for (let i = 0; i < selCourse.students.length; i++) {
-        console.log(selCourse.students[i].seo_slug_url)
         temp.push({
           label: selCourse.students[i].seo_slug_url,
           value: selCourse.students[i].name,
@@ -254,9 +196,38 @@ console.log(c,l)
     }
   }, [selectedCourse]);
 
-  
+ const getVideoDuration=(duration: number) : string =>{
+
+    let videoDuration = '';
+    
+    let min = parseInt(duration/60);
+    let hour=null;
+    if(min>60){
+  hour = parseInt(min/60);
+  min = min%60;
+    }
+    let sec = duration%60;
+    if(hour){
+      videoDuration = `${hour}:${min<10 ? '0'+min : min}:${sec<10 ? '0'+sec : sec}`;
+    }
+    else if (min!==0){
+      videoDuration = `${min<10 ? '0'+min : min}:${sec<10 ? '0'+sec : sec}`;
+
+    }
+    else if(sec!==0){
+      videoDuration = `${sec<10 ? '0'+sec : sec} seconds`;
+    }
+     
+     return videoDuration;
+  }
+
+  console.log(recordings);
+
   return (
     <>
+    {pageLoading?<PageLoader/> :
+    <>
+    <CustomStatusBar/>
       <HeaderInner
         type={'findCourse'}
         logo={userData.user_type === 'S' ? true : false}
@@ -295,27 +266,32 @@ console.log(c,l)
           {recordings ? (
             <View>
               <Text style={[StyleCSS.styles.labelText,{ marginTop:16}, StyleCSS.styles.font12]}>Recorded Classes ({recordings.length})</Text>
+              {recordings.length === 0 ?<Text style={[StyleCSS.styles.labelText, styles.noRecording]}>No recording found</Text>:null  }
               {recordings.map((item: any) => {
                 return (
                   <TouchableOpacity
                     onPress={() => handleVideoSelect(item)}
                     style={[StyleCSS.styles.flexDirRow, {marginTop: 16}]}>
                     <View style={{width:'30%'}}>
+                      
+                     
                       <Video // Can be a URL or a local file.
                         //  controls
                         resizeMode="cover"
                         paused={true}
                         source={{uri: item.video_url}} // Store reference
                         onError={() => {
-                          console.log('not loading');
                         }} // Callback when video cannot be loaded
                         style={{height: 80, width: 100, borderRadius: 8}}
                       />
+                      <View style={{position:'absolute', bottom:8, left:8,paddingTop:5, paddingBottom:4, backgroundColor:'rgba(0, 6, 12,0.8)', borderRadius:8, paddingHorizontal:8 }}>
+                                            <Text style={[StyleCSS.styles.contentText, StyleCSS.styles.font12, {color:'#fff', }]}>{getVideoDuration(item.recording_duration)}</Text>
+                                            </View>
                     </View>
                     <View style={{marginLeft: 16, width:'70%'}}>
                       <Text
                         style={[StyleCSS.styles.contentText, StyleCSS.styles.fw700]}>
-                        {item.class_name}
+                        {item.class_name} {item.recording_name ?item.recording_name : '' }
                       </Text>
                       <Text
                         style={[
@@ -347,24 +323,10 @@ console.log(c,l)
       {userData.user_type === 'S' ? (
         <BottomNavigation navigation={navigation} selected={'R'} />
       ) : null}
-    {/* <Modal onRequestClose={()=>{setShowVideoModal(false)}} visible={showVideoModal} style={{justifyContent:'center'}}> 
-    <View style={{height:'90%',justifyContent:'center'}}>
-      <TouchableOpacity style={{alignSelf:'flex-end', marginBottom:50, padding:16}} onPress={()=>{setShowVideoModal(false)}}><Text style={StyleCSS.styles.contentText}>Close</Text></TouchableOpacity>
-     <Video // Can be a URL or a local file.
-                         controls
-                        // resizeMode="cover"
-                        // paused={true}
-                        source={{uri: selectedVideo && selectedVideo.video_url}} // Store reference
-                        onError={() => {
-                          console.log('not loading');
-                        }} // Callback when video cannot be loaded
-                        style={{height:400, alignSelf:'center', width: '100%'}}
-                      />
-                      </View>
-                      </Modal>  */}
-      
-     
+      </>
+                    }
     </>
+                    
   );
 }
 
@@ -378,4 +340,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 16,
   },
+  noRecording:{
+    textAlign:'center',
+    marginTop:100
+  }
 });

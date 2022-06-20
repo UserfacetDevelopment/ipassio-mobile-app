@@ -5,13 +5,13 @@
  * @format
  * @flow strict-local
  */
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
 import {StyleSheet, useColorScheme, Alert} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
-
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {
   Colors,
   DebugInstructions,
@@ -64,12 +64,30 @@ const customTextProps = {
 setCustomText(customTextProps);
 
 const App = () => {
+
   const isDarkMode = useColorScheme() === 'dark';
   const Stack = createNativeStackNavigator();
   // const [userDataLoaded, setUserDataLoaded] = useState(false);
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  const [permissions, setPermissions] = useState({});
+
+  useEffect(() => {
+    PushNotificationIOS.addEventListener('notification', onRemoteNotification);
+  },[]);
+
+  const onRemoteNotification = (notification:any) => {
+    const isClicked = notification.getData().userInteraction === 1;
+
+    if (isClicked) {
+      // Navigate user to another screen
+    } else {
+      // Do something else with push notification
+    }
+  };
+
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {

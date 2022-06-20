@@ -92,7 +92,10 @@ const [active , setActive] = useState<boolean>(false);
 
   const checkPermission = async() => {
     const enabled = await messaging().hasPermission();
-    if (enabled) {
+    const status =
+      enabled === messaging.AuthorizationStatus.AUTHORIZED ||
+      enabled === messaging.AuthorizationStatus.PROVISIONAL
+    if (status) {
       // console.log("Push Notifications are enabled.");
       let fcmTokens = await AsyncStorage.getItem("USERDEVICETOKEN");
       // console.log(fcmTokens);
@@ -104,49 +107,69 @@ const [active , setActive] = useState<boolean>(false);
   }
 
  const getToken =async() => {
+  // const platformString = Platform.OS ==='android' ? 'ANDROID' : 'IOS';
+  // try { // VOYAPIC
+  //   const fcmToken = await messaging().getToken();
+  //   if (fcmToken) {
+  //     const currentDeviceId = DeviceInfo.getUniqueId();
+  //     await registerForPushNotification(
+  //       fcmToken,
+  //       currentDeviceId,
+  //       platformString,
+  //     );
+  //   }
+  // } catch (error) {
+  //   console.log('Error:', error);
+  // }
     let fcmToken = await AsyncStorage.getItem("USERDEVICETOKEN");
-    // console.log(fcmToken);
     dispatch(setFCMToken(fcmToken));
     if (!fcmToken) {
       // console.log(fcmToken);
       // console.log("fcmToken is not set: finding FCM Token");
-      fcmToken = await messaging().getToken();
-      if (fcmToken) {
-        await AsyncStorage.setItem("USERDEVICETOKEN", fcmToken);
-        // alert(fcmToken);
-        dispatch(setFCMToken(fcmToken));
-      } else {
-        // console.log("No fcmToken:");
-      }
+      try{
+          fcmToken = await messaging().getToken();
+          if (fcmToken) {
+            await AsyncStorage.setItem("USERDEVICETOKEN", fcmToken);
+            dispatch(setFCMToken(fcmToken));
+          } else {
+            // console.log("No fcmToken:");
+          }
+    }
+    catch(error){
+      console.log('Error:', error);
+    }
     }
   }
   async function requestPermission() {
-    //alert: true, // Sets whether notifications can be displayed to the user on the device.
-    //announcement: true, // If enabled, Siri will read the notification content out when devices are connected to AirPods.
-    //badge: true, // Sets whether a notification dot will appear next to the app icon on the device when there are unread notifications.
-    //carPlay: true, // Sets whether notifications will appear when the device is connected to CarPlay.
-    //provisional: false,
-    //sound: true, // Sets whether a sound will be played when a notification is displayed on the device.
-    try {
-      if(Platform.OS==='ios'){
-        const authorizationStatus = await messaging().requestPermission({
-        provisional: true, providesAppNotificationSettings: true
-      });
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-
-      if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
-         // If user allow Push Notification
-        getToken();
-      } else if (authorizationStatus === messaging.AuthorizationStatus.PROVISIONAL) {
-        console.log('User has provisional notification permissions.');
-        getToken();
-      } else {
-        console.log('User has notification permissions disabled');
-      }
-    }
-    else {
+    if (enabled) {
       getToken();
     }
+    
+    // try {
+    //   if(Platform.OS==='ios'){
+    //     const authorizationStatus = await messaging().requestPermission({
+    //     provisional: true, providesAppNotificationSettings: true
+    //   });
+
+
+    //   if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+    //      // If user allow Push Notification
+    //     getToken();
+    //   } else if (authorizationStatus === messaging.AuthorizationStatus.PROVISIONAL) {
+    //     console.log('User has provisional notification permissions.');
+    //     getToken();
+    //   } else {
+    //     console.log('User has notification permissions disabled');
+    //   }
+    // }
+    // else {
+    //   getToken();
+    // }
       
             // if (authorizationStatus) {  // If user allow Push Notification
             //   console.log('Permission status:', authorizationStatus);
@@ -155,10 +178,10 @@ const [active , setActive] = useState<boolean>(false);
               // await messaging().requestPermission();
               // If user allow Push Notification
      
-    } catch (error) {
+    // } catch (error) {
       // If user do not allow Push Notification
       // console.log("User did not allow Push Notification");
-    }
+    // }
   }
 
   //Logout User
@@ -291,8 +314,6 @@ const [active , setActive] = useState<boolean>(false);
               { text: "Okay", style: "cancel" },
             ])
           }
-          
-          
         })
         .catch(err => {
           dispatch(setLoading (false));
@@ -307,6 +328,7 @@ const [active , setActive] = useState<boolean>(false);
   //Not to be called during a render, need a fix.
   // if (isLoggedIn ? navigation.navigate('Dashboard') : null);
 
+  
   const redirectCheck = (loginData : any) => {
     AsyncStorage.setItem('USERDATA', JSON.stringify(loginData));
     AsyncStorage.setItem('USERDEVICETOKEN', JSON.stringify(fcmToken));

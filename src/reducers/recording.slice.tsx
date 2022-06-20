@@ -12,7 +12,7 @@ interface RecordingInterface {
 const initialState: RecordingInterface = {
   recordings: [],
   currentRecording: {},
-  courses:null
+  courses:[]
 };
 export const recordingSlice = createSlice({
   name: 'recording',

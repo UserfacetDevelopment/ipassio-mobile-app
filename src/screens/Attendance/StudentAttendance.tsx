@@ -14,7 +14,7 @@ import {
   Modal,
 } from 'react-native';
 import {useSelector} from 'react-redux';
-import {Container, TextField} from 'native-base';
+import {Container, FlatList, TextField} from 'native-base';
 //@ts-ignore
 import {Bubbles} from 'react-native-loader';
 import {userState} from '../../reducers/user.slice';
@@ -26,6 +26,7 @@ import DashedLine from 'react-native-dashed-line';
 import {
   appBackground,
   background4,
+  background6,
   brandColor,
   dropdownBorder,
   font1,
@@ -79,6 +80,12 @@ export interface AttendanceListInterface {
 
 const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
+
+
+
+
+
+
 const StudentAttendance: FC<any> = ({
   courseToken,
   classType,
@@ -86,7 +93,7 @@ const StudentAttendance: FC<any> = ({
   navigation,
 }) => {
   const {userData} = useSelector(userState);
-  const {attendances, attendancesStatus, studentAttendanceList} =
+  const {attendances, attendancesStatus, studentAttendanceList, reviewSuggestions} =
     useSelector(dashboardState);
   const dispatch = useAppDispatch();
   const {pageLoading} = useSelector(loaderState);
@@ -104,7 +111,7 @@ const StudentAttendance: FC<any> = ({
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [isDateTimePickerVisible, setIsDateTimePickerVisible] = useState(false);
   const [editAttendanceModal, setEditAttendanceModal] = useState(false);
-
+  const [suggestions, setSuggestions] = useState<null|Array<any>>(null);
   //index of the first card whose class attendance is not marked
   const [reviewIndex, setReviewIndex] = useState<number|null>(null);
   const [index, setIndex] = useState<number>(0);
@@ -139,6 +146,9 @@ const StudentAttendance: FC<any> = ({
 
   let refillPopupTimer: number = 0;
 
+  // console.log(reviewSuggestions);
+  // console.log('suggestions', suggestions)
+
   useEffect(() => {
     let data: AttendanceListInterface = {
       userType: userData.user_type,
@@ -165,6 +175,7 @@ const StudentAttendance: FC<any> = ({
     setRefreshing(false);
   }, [refreshing]);
 
+
   useEffect(() => {
     setReviewIndex(null);
     if (attendances.length > 0) {
@@ -177,16 +188,17 @@ const StudentAttendance: FC<any> = ({
         }
       }
       
+      
     }
     
     
   }, [attendances, studentAttendanceList, editAttendanceModal]);
-console.log(reviewIndex)
 
-// useEffect(()=>{
-  
-//   // setSelectedDate('')
-// },[attendances])
+  useEffect(()=>{
+    if (Object.keys(studentAttendanceList).length > 0) {
+      setSuggestions(reviewSuggestions)
+    }
+  },[editAttendanceModal])
 
   useEffect(()=>{
     if (Object.keys(studentAttendanceList).length > 0) {
@@ -201,11 +213,9 @@ console.log(reviewIndex)
   }, [attendances, studentAttendanceList])
 
   
-  console.log(attendances)
-  console.log(studentAttendanceList)
-  // useEffect(()=>{
-    
-  // },[studentAttendanceList, attendances]);
+  // console.log(attendances)
+  // console.log(studentAttendanceList)
+  
 
   const showDateTimePicker = () => {
     Keyboard.dismiss();
@@ -291,6 +301,9 @@ console.log(reviewIndex)
     
   }, [checkoutToken]);
 
+
+
+
   const toggleModal = () => {
     //setIsModalVisible(!isModalVisible);
     setSelectedClass(studentAttendanceList.completed_classes);
@@ -329,7 +342,6 @@ console.log(reviewIndex)
       dispatch(submitMarkedAttendance(d))
         .unwrap()
         .then(response => {
-          console.log(response)
           // setReviewIndex(null)
           setEditAttendanceModal(false);
           dispatch(setPageLoading(false));
@@ -383,6 +395,37 @@ console.log(reviewIndex)
     setEditAttendanceModal(true);
     setReviewIndex(null);
   };
+
+
+
+  
+
+  const loadSuggestions=(data: any,i: number)=>{
+    // console.log(data)
+    // console.log(selectedReview);
+  
+    const handleReview =()=>{
+      console.log(i)
+      let tempSuggestions = [...suggestions];
+      tempSuggestions.splice(i,1);
+      console.log(tempSuggestions);
+      setSuggestions(tempSuggestions)
+      let attendanceTemp = attendances.map((o: any) => ({
+        ...o,
+      }));
+      console.log(attendanceTemp)
+      attendanceTemp[index].review = attendanceTemp[index].review + " "+ data
+      dispatch(setAttendanceSuccess(attendanceTemp));
+      setSelectedReview(attendanceTemp[index].review);
+   
+    }
+  
+  return(
+    <TouchableOpacity onPress={handleReview} style={{paddingHorizontal:16, paddingTop:8, paddingBottom:10, marginLeft:6, backgroundColor:background6, borderRadius:32}}>
+      <Text style={StyleCSS.styles.labelText}>{data}</Text>
+    </TouchableOpacity>
+  )
+  }
 
   return (
     <View style={styles.container}>
@@ -796,21 +839,24 @@ console.log(reviewIndex)
                 </View>
               </View>
               <View style={styles.modal_row}>
-                <View>
+                <View >
                   {/* <Text style={styles.row_title}>
                           Review
                           <Text style={styles.req}>
                             *
                           </Text>
                         </Text> */}
+
                   <Textarea
-                    containerStyle={StyleCSS.styles.modalTextarea}
+                    containerStyle={[StyleCSS.styles.modalTextarea]}
                     style={StyleCSS.styles.reviewTextArea}
                     onChangeText={(text: string) => {
                       let attendanceTemp = attendances.map((o: any) => ({
                         ...o,
                       }));
-                      attendanceTemp[index].teacher_review = text.trim();
+                      attendanceTemp[index].review = text.trim();
+                      console.log(attendanceTemp)
+
                       dispatch(setAttendanceSuccess(attendanceTemp));
                       setSelectedReview(text.trim());
                     }}
@@ -819,6 +865,19 @@ console.log(reviewIndex)
                     placeholderTextColor={font2}
                     underlineColorAndroid={'transparent'}
                   />
+                  <View style={{position:'absolute', bottom:16, left:1, marginRight:2}}>
+                  {suggestions && suggestions.length>0? <FlatList
+                        data={suggestions}
+                        showsHorizontalScrollIndicator={false}
+                        horizontal
+                        keyExtractor={(item, i) => i.toString()}
+                        renderItem={({item, index}) =>
+                         
+                            loadSuggestions(item, index) 
+                            
+                        }
+                      />:null}
+                      </View>
                 </View>
               </View>
               <View style={[StyleCSS.styles.lineStyleLight, {marginTop: 16}]} />
@@ -826,6 +885,7 @@ console.log(reviewIndex)
                 <TouchableOpacity
                   style={styles.cancelButton}
                   onPress={() => {
+                    onRefresh();
                     setEditAttendanceModal(false);
                   }}>
                   <Text style={styles.cancelButtonText}>Cancel</Text>

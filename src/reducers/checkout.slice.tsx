@@ -9,6 +9,7 @@ import {Platform} from 'react-native';
 import { CartDetailsData } from '../screens/Checkout/CartPage';
 
 const initialState : any = {
+  notLoggedInCheckoutData : null,
   checkoutDataDetails : {},
   page: null,
 }
@@ -24,6 +25,9 @@ export const checkoutSlice = createSlice({
     setPage: (state, action :PayloadAction<any>) => {
       state.page = action.payload; 
     },
+    setNotLoggedInCheckoutData : (state, action: PayloadAction<any>) => {
+      state.notLoggedInCheckoutData =  action.payload;
+    }
   },
   extraReducers: (builder) => {
     // builder.addCase(getTeacherCreatedCourses.fulfilled, (state, action: PayloadAction<any>) => {
@@ -35,7 +39,7 @@ export const checkoutSlice = createSlice({
   }
 });
 
-export const {setCheckoutDataDetails, setPage} = checkoutSlice.actions;
+export const {setCheckoutDataDetails, setPage, setNotLoggedInCheckoutData} = checkoutSlice.actions;
 
 export const checkoutState = (state : RootState) => state.checkout;
 

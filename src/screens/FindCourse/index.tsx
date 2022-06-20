@@ -730,18 +730,8 @@ const getCategorySlug=(propCourse: any)=>{
                 </Text>
               ) : null}
             </View>
-            {course.teacher_spotlight !== '' ? (
+            {course.user && course.user.spotlight && course.user.spotlight !== '' ? (
               <>
-                {/* <View
-                style={[
-                  {
-                    // paddingHorizontal: 16,
-                    paddingVertical: 8,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  },
-                ]}> */}
-                {/* <Flag /> */}
                 <Text
                   style={{
                     marginTop: 5,
@@ -750,7 +740,7 @@ const getCategorySlug=(propCourse: any)=>{
                     color: font1,
                     lineHeight: 20,
                   }}>
-                  {course.teacher_spotlight}
+                  {course.user.spotlight}
                 </Text>
                 {/* </View> */}
               </>
