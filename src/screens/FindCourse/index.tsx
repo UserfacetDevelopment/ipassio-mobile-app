@@ -98,9 +98,9 @@ export interface FindCoursesInterfaceFinal {
 }
 
 interface CurrentCourse {
-  course_slug: null | string,
-    category_slug: null | string,
-    teacher_slug: null | string
+  course_slug: null | string;
+  category_slug: null | string;
+  teacher_slug: null | string;
 }
 export const Loader = () => {
   return (
@@ -144,16 +144,17 @@ export default function FindCourse({navigation, route}: Props) {
   // const [offset, setOffset] = useState<number>(0);
   const [coursesArray, setCoursesArray] = useState<Array<any>>([]);
   const [loadingMoreCourses, setLoadingMoreCourses] = useState<boolean>(false);
-  const [scrollPosition, setScrollPosition] = React.useState(0);
+  const [scrollPosition, setScrollPosition] = React.useState(19);
   const [courseDetailModal, setCourseDetailModal] = useState(false);
-  const [currCourse, setCurrCourse] = useState<CurrentCourse|null>(null);
+  const [currCourse, setCurrCourse] = useState<CurrentCourse | null>(null);
+  // const [ref, setRef] = useState<any>(null);
   // const [handleCourseState, sethandleCourseState] = useState<boolean>(false);
   // const [page, setPage] = useState<"find_course"|"home"|"">("home");
 
-  const handleScroll=(event)=>{
-    let yOffset=event.nativeEvent.contentOffset.y / 475;
-    setScrollPosition(yOffset)
-  }
+  const handleScroll = event => {
+    let yOffset = event.nativeEvent.contentOffset.y / 475;
+    setScrollPosition(yOffset);
+  };
 
   // useEffect(()=>{
   //   navigation.addListener('willBlur', () => {
@@ -401,6 +402,17 @@ export default function FindCourse({navigation, route}: Props) {
     // )}
     return str;
   };
+
+  // useEffect(() => {
+  //   if (ref !== null && coursesArray.length > 0) {
+  //     ref.scrollToIndex({
+  //       animated: true,
+  //       index: scrollPosition,
+  //       viewPosition: 1,
+  //     });
+  //   }
+  // }, [coursesArray]);
+
   useEffect(() => {
     let temp: Array<string> = [];
 
@@ -481,8 +493,7 @@ export default function FindCourse({navigation, route}: Props) {
             //   category_slug : getCategorySlug(course),
             //   teacher_slug : course.user.seo_slug_url,
             // })
-// setCourseDetailModal(true);
-
+            // setCourseDetailModal(true);
           }}
           style={[styles.courseWrapper, StyleCSS.styles.shadow]}>
           <View
@@ -632,7 +643,7 @@ export default function FindCourse({navigation, route}: Props) {
                 {!isLoggedIn
                   ? userLocation?.data?.country_code === 'IN'
                     ? course.user.ip_country === 'India'
-                         ? `₹ ${course?.pricing[0].INR}`
+                      ? `₹ ${course?.pricing[0].INR}`
                       : `US $${course?.pricing[0].USD}`
                     : `US $${course?.pricing[0].USD}`
                   : userData?.ip_country === 'India'
@@ -731,7 +742,6 @@ export default function FindCourse({navigation, route}: Props) {
                     height={24}
                     width={24}
                     uri={`${config.media_url}filter.svg`}></CustomImage>
-                  {/* <Filter /> */}
                   <Text style={styles.filter}>Filter</Text>
                 </TouchableOpacity>
               </View>
@@ -739,7 +749,9 @@ export default function FindCourse({navigation, route}: Props) {
                 <View style={styles.userTabsWrapper}>
                   <TouchableOpacity
                     style={
-                      nationality === 'INDIAN' ? styles.selectedTab : styles.userTab
+                      nationality === 'INDIAN'
+                        ? styles.selectedTab
+                        : styles.userTab
                     }
                     onPress={() => {
                       dispatch(setOffset(0));
@@ -751,12 +763,15 @@ export default function FindCourse({navigation, route}: Props) {
                           ? styles.selectedUserTabText
                           : styles.userTabText
                       }>
-                      Indian({categoryData.extra_data.count.total_indian_course})
+                      Indian ({categoryData.extra_data.count.total_indian_course}
+                      )
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={
-                      nationality === 'WESTERN' ? styles.selectedTab : styles.userTab
+                      nationality === 'WESTERN'
+                        ? styles.selectedTab
+                        : styles.userTab
                     }
                     onPress={() => {
                       dispatch(setOffset(0));
@@ -768,26 +783,47 @@ export default function FindCourse({navigation, route}: Props) {
                           ? styles.selectedUserTabText
                           : styles.userTabText
                       }>
-                      Western({categoryData.extra_data.count.total_western_course})
+                      Western (
+                      {categoryData.extra_data.count.total_western_course})
                     </Text>
                   </TouchableOpacity>
                 </View>
               </View>
               {/* <ScrollView> */}
+              <ScrollView>
               {courseData.data.length === 0 ? (
                 <Text style={styles.wrongText}>No courses found</Text>
               ) : (
-                <View
-                  style={styles.flatlist}>
+                
+                <View style={styles.flatlist}>
                   <FlatList
-                    scrollsToTop={false}
-
+                    // ref={(ref: any) => {
+                    //   setRef(ref);
+                    // }}
+                    // scrollsToTop={false}
+                    // onScrollToIndexFailed={info => {
+                    //   const wait = new Promise(resolve =>
+                    //     setTimeout(resolve, 500),
+                    //   );
+                    //   wait.then(() => {
+                    //     console.log(info);
+                    //     ref.current?.scrollToIndex({
+                    //       index: info.index,
+                    //       animated: true,
+                    //     });
+                    //   });
+                    // }}
+                    // getItemLayout={(data, index) => ({
+                    //   length: 475,
+                    //   offset: 100 * index,
+                    //   index,
+                    // })}
                     data={coursesArray}
                     renderItem={({item, index}) => loadCourse(item, index)}
                     keyExtractor={item => item.id}
                     onEndReachedThreshold={0.5}
-                      // onScroll={(event)=>handleScroll(event)}
-                    initialScrollIndex={scrollPosition}
+                    // onScroll={(event)=>handleScroll(event)}
+                    // initialScrollIndex={scrollPosition}
                     onEndReached={handleOffset}
                   />
                   {/* <View style={{marginBottom:200}}/> */}
@@ -795,9 +831,9 @@ export default function FindCourse({navigation, route}: Props) {
               )}
 
               {loadingMoreCourses ? <Loader /> : null}
-              
+
               <View style={{height: 200, backgroundColor: background4}}></View>
-              {/* </ScrollView> */}
+              </ScrollView>
             </View>
           </>
         ) : courseStatus === 'loading' ? (
@@ -808,10 +844,16 @@ export default function FindCourse({navigation, route}: Props) {
           <Text style={styles.wrongText}>No Data to show</Text>
         )}
       </View>
-      <Modal visible={courseDetailModal} onRequestClose={()=>setCourseDetailModal(false)}>
-
-  {currCourse  ? <CourseDetails navigation={navigation} currCourse={currCourse} setCourseDetailModal={setCourseDetailModal} /> : null}
-
+      <Modal
+        visible={courseDetailModal}
+        onRequestClose={() => setCourseDetailModal(false)}>
+        {currCourse ? (
+          <CourseDetails
+            navigation={navigation}
+            currCourse={currCourse}
+            setCourseDetailModal={setCourseDetailModal}
+          />
+        ) : null}
       </Modal>
       {isLoggedIn ? (
         <BottomNavigation navigation={navigation} />
@@ -1131,21 +1173,20 @@ const styles = StyleSheet.create({
   },
   tabView: {
     flexDirection: 'row',
-    marginTop:36,
-    paddingHorizontal:16,
-    paddingVertical:8,
-    height:50,
+    marginTop: 36,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    height: 50,
   },
-  userTabsWrapper:{
+  userTabsWrapper: {
     flexDirection: 'row',
-    width:'65%',
+    width: '65%',
 
-    alignItems:'center',
-    height:'100%',
-
+    alignItems: 'center',
+    height: '100%',
   },
   userTab: {
-    paddingHorizontal:8,
+    paddingHorizontal: 8,
     width: '50%',
     justifyContent: 'center',
     height: '100%',
@@ -1163,14 +1204,14 @@ const styles = StyleSheet.create({
     fontFamily: Helper.switchFont('bold'),
   },
   selectedTab: {
-    paddingHorizontal:8,
+    paddingHorizontal: 8,
     width: '50%',
     justifyContent: 'center',
-    borderBottomColor:brandColor ,
+    borderBottomColor: brandColor,
     borderBottomWidth: 2,
     height: '100%',
   },
-  flatlist:{
+  flatlist: {
     backgroundColor: background4,
-  }
+  },
 });

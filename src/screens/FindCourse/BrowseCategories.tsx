@@ -151,7 +151,7 @@ const checkNationality = (all: number, indian: number, western:number): boolean 
                   ? styles.selectedUserTabText
                   : styles.userTabText
               }>
-              Indian({categoryData.extra_data.count.total_indian_course})
+              Indian ({categoryData.extra_data.count.total_indian_course})
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -168,7 +168,7 @@ const checkNationality = (all: number, indian: number, western:number): boolean 
                   ? styles.selectedUserTabText
                   : styles.userTabText
               }>
-              Western({categoryData.extra_data.count.total_western_course})
+              Western ({categoryData.extra_data.count.total_western_course})
             </Text>
           </TouchableOpacity>
         </View>
@@ -202,6 +202,7 @@ const checkNationality = (all: number, indian: number, western:number): boolean 
                     <>
                       <View style={{paddingBottom: 20}}>
                         <View style={styles.categoryIcon}>
+                          <CustomImage uri={cd.top_navigation_icon} height={24} width={24}/>
                           <Text style={styles.mainCategory}>
                             {cd.category_name}
                           </Text>
@@ -309,8 +310,8 @@ const checkNationality = (all: number, indian: number, western:number): boolean 
                         /> */}
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <CustomImage
-                    height={16}
-                    width={16}
+                    height={24}
+                    width={24}
                     uri={`${config.media_url}others.svg`}
                   />
 

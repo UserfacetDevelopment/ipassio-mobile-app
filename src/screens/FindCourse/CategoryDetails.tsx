@@ -18,7 +18,7 @@ import {
   getCategories,
   getCategoryDetails,
   getCategoryCourseList,
-  getLookups
+  getLookups,
 } from '../../reducers/courses.slice';
 import LinearGradient from 'react-native-linear-gradient';
 import LineDashed from '../../components/LineDashed';
@@ -78,7 +78,7 @@ import StyleCSS from '../../styles/style';
 import CustomDropdown from '../../components/CustomDropdown';
 import LoginNavigation from '../../components/LoginNavigation';
 import CustomImage from '../../components/CustomImage';
-import { Item } from 'react-native-paper/lib/typescript/components/List/List';
+import {Item} from 'react-native-paper/lib/typescript/components/List/List';
 
 const CourseCard = ({course}: any) => {
   useEffect(() => {
@@ -93,7 +93,6 @@ const CourseCard = ({course}: any) => {
   map.set('P', professional);
   map.set('B', beginner);
   map.set('S', superAdvanced);
-
 
   const dispatch = useAppDispatch();
   const {isLoggedIn, userData, userLocation} = useSelector(userState);
@@ -111,63 +110,8 @@ const CourseCard = ({course}: any) => {
       style={styles.courseWrapper}>
       <CustomImage style={styles.courseImage} uri={course.course_image} />
 
-      {/* <Image
-        defaultSource={require('@images/default_course_img.png')}
-        style={styles.courseImage}
-        source={{uri: course.course_image}}
-      /> */}
-      {/* <View
-        style={{
-          position: 'absolute',
-          paddingHorizontal: 8,
-          paddingVertical: 3,
-          right: 16,
-          top: 16,
-          borderRadius: 8,
-          backgroundColor: 'rgba(0, 6, 12, 0.8)',
-        }}>
-        <Text style={styles.cardDetail}>{course.course_duration} Weeks</Text>
-      </View>
-      <LinearGradient
-        start={{x: 0.0, y: 0}}
-        end={{x: 0, y: 1.0}}
-        colors={['rgba(233, 67, 53, 0)', 'rgba(233, 67, 53, 1)']}
-        style={{
-          height: 85,
-          top: 95,
-          zIndex: 20,
-          position: 'absolute',
-          opacity: 0.6,
-          width: '100%',
-        }}></LinearGradient> */}
-      {/* <View
-        style={{
-          position: 'absolute',
-          zIndex: 40,
-          top: 120,
-          flexDirection: 'row',
-          margin: 16,
-        }}>
-        {course.course_level.map((level: any, i: number) => {
-          return (
-            <View
-              style={{
-                paddingVertical: 3,
-                paddingHorizontal: 8,
-                backgroundColor: map.get(level.code),
-                marginVertical: 2,
-                marginHorizontal: 2,
-                borderRadius: 43,
-              }}>
-              <Text style={styles.cardDetail}>{level.name}</Text>
-            </View>
-          );
-        })}
-      </View> */}
-
       <View style={styles.padding16}>
         <Text style={styles.title}>{course.title}</Text>
-        {/* <Text style={styles.authorName}>by {course.teacher_name}</Text> */}
         <View
           style={{
             marginTop: 8,
@@ -175,11 +119,11 @@ const CourseCard = ({course}: any) => {
             alignItems: 'center',
             flexWrap: 'wrap',
           }}>
-            {course.top_selling ? (
-                <View style={StyleCSS.styles.topSellingWrapper}>
-                  <Text style={StyleCSS.styles.topSellingText}>Top Selling</Text>
-                </View>
-               ) : null}
+          {course.top_selling ? (
+            <View style={StyleCSS.styles.topSellingWrapper}>
+              <Text style={StyleCSS.styles.topSellingText}>Top Selling</Text>
+            </View>
+          ) : null}
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             {course.course_level &&
               course.course_level.map((level: any, i: number) => {
@@ -204,35 +148,41 @@ const CourseCard = ({course}: any) => {
           {/* <Dot/> */}
           {/* <View></View> */}
           {course.rating.total_count > 0 ? (
-                <View style={{alignItems: 'center', flexDirection: 'row'}}>
-                  <View style={{marginHorizontal: 12}}>
-              <CustomImage  height={5} width={5} uri={`${config.media_url}dot.svg`}></CustomImage>
-
+            <View style={{alignItems: 'center', flexDirection: 'row'}}>
+              <View style={{marginHorizontal: 12}}>
+                <CustomImage
+                  height={5}
+                  width={5}
+                  uri={`${config.media_url}dot.svg`}></CustomImage>
               </View>
-                  <View style={styles.courseRating}>
-                    <Rating
-                      ratingColor={secondaryColor}
-                      type="custom"
-                      tintColor="#fff"
-                      ratingBackgroundColor="#c8c7c8"
-                      startingValue={course.rating.avg_review}
-                      readonly
-                      ratingCount={5}
-                      imageSize={16}
-                      fractions={10}
+              <View style={styles.courseRating}>
+                <Rating
+                  ratingColor={secondaryColor}
+                  type="custom"
+                  tintColor="#fff"
+                  ratingBackgroundColor="#c8c7c8"
+                  startingValue={course.rating.avg_review}
+                  readonly
+                  ratingCount={5}
+                  imageSize={16}
+                  fractions={10}
+                />
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text style={styles.courseRatingCount}>
+                    {course.rating.total_count} reviews{' '}
+                  </Text>
+                  <View>
+                    <CustomImage
+                      height={12}
+                      width={12}
+                      uri={`${config.media_url}drop.svg`}
                     />
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      <Text style={styles.courseRatingCount}>
-                        {course.rating.total_count} reviews{' '}
-                      </Text>
-                      <View>
-                      <CustomImage height={12} width={12} uri={`${config.media_url}drop.svg`}/>
-                      </View>
-                    </View>
                   </View>
                 </View>
-              ) : null}
-          
+              </View>
+            </View>
+          ) : null}
+
           {/* {course.rating.total_count > 0 ? (
                 
               ) : null} */}
@@ -382,16 +332,29 @@ export default function CategoryDetails({navigation, route}: Props) {
   const [loadingMoreCourses, setLoadingMoreCourses] = useState(false);
   const [studentTestimonial, setStudentTestimonial] = useState<boolean>(false);
   const [filter, setFilter] = useState<any>({value: 'Filter By', label: ''});
-  const [sortBy, setSortBy] = useState<any>({value: 'Sort By', label: ''});
+  const [sortBy, setSortBy] = useState<any>({value: 'None', label: 'none'});
   const [offset, setOffset] = useState<number>(0);
-const [courseLevels, setCourseLevels] = useState(null);
-const [filterList, setFilterList] = useState([]);
-  const sortList = [
+  const [courseLevels, setCourseLevels] = useState(null);
+  const [filterList, setFilterList] = useState([]);
+  let sortList: Array<any> = [];
+  let valueLow: string | null= null;
+  let valueHigh: string | null= null;
+
+  if (!isLoggedIn) {
+    let location = userLocation && userLocation.data.country_name === 'India';
+    valueLow = location ? 'price_low' : 'usd_price_low';
+    valueHigh = location ? 'price_high' : 'usd_price_high';
+  } else if (isLoggedIn) {
+    let location = userData && userData.ip_country === 'India';
+    valueLow = location ? 'price_low' : 'usd_price_low';
+    valueHigh = location ? 'price_high' : 'usd_price_high';
+  }
+
+  sortList = [
+    {value: 'None', label: 'none'},
     {value: "Teacher's Experience", label: 'experience'},
-    {value: 'Price : Low to High', label: 'price_low'},
-    {value: 'Price : High to Low', label: 'price_high'},
-    {value: 'Price : Low to High(USD)', label: 'usd_price_low'},
-    {value: 'Price : High to Low(USD)', label: 'usd_price_high'},
+    {value: 'Price : Low to High', label: valueLow && valueLow},
+    {value: 'Price : High to Low', label: valueHigh && valueHigh},
     {value: 'Popularity', label: 'popularity'},
   ];
 
@@ -420,7 +383,7 @@ const [filterList, setFilterList] = useState([]);
     let data: any = {
       category_slug: category_slug,
       filter: filter.label,
-      sort_by: sortBy.label,
+      sort_by: sortBy.label==='none' ? '' : sortBy.label,
       offset: offset,
     };
     dispatch(getCategoryCourseList(data))
@@ -429,8 +392,9 @@ const [filterList, setFilterList] = useState([]);
         if (res.data.status === 'success') {
           if (offset === 0) {
             setCourses(res.data.data);
-          } else {
-            setLoadingMoreCourses(false);
+          } 
+          else {
+            // setLoadingMoreCourses(false);
             setCourses([...courses, ...res.data.data]);
           }
         }
@@ -439,8 +403,9 @@ const [filterList, setFilterList] = useState([]);
         setLoadingMoreCourses(false);
       });
   }, [filter, sortBy, offset]);
+  console.log(offset);
+  console.log(courses);
 
-  console.log(courses)
   const handleOffset = () => {
     if (categoryCourseList.data.extra_data.course_count > offset + 10) {
       setOffset(offset + 10);
@@ -497,13 +462,14 @@ const [filterList, setFilterList] = useState([]);
       .then(res => {
         if (res.data.status === 'success') {
           setCourseLevels(res.data.data.course_levels);
-          res.data.data.course_levels.map((item: any) => filterList.push({value:item.name, label:item.code}));
+          res.data.data.course_levels.map((item: any) =>
+            filterList.push({value: item.name, label: item.code}),
+          );
 
-          filterList.push({value: 'None', label: ''})
-          }
+          filterList.push({value: 'None', label: ''});
+        }
       });
   }, []);
-
 
   //make dynamic
   // const filterList = [
@@ -549,11 +515,11 @@ const [filterList, setFilterList] = useState([]);
                     }}
                     source={{uri: category.cover_picture}}
                   /> */}
-                  
+
                   <CustomImage
                     // height={500}
                     width={400}
-                    style={{height:200, width:'100%', marginTop:16}}
+                    style={{height: 200, width: '100%', marginTop: 16}}
                     uri={category.cover_picture}
                   />
                   <View style={styles.main}>
@@ -566,7 +532,7 @@ const [filterList, setFilterList] = useState([]);
                       </Text>
                     </View>
 
-                    {category.todays_facts && category.todays_facts.text? (
+                    {category.todays_facts && category.todays_facts.text ? (
                       <View style={[styles.todaysFactWrapper]}>
                         <View
                           style={{
@@ -609,45 +575,49 @@ const [filterList, setFilterList] = useState([]);
                         <Text style={styles.factDesc}>
                           {category.todays_facts.text}
                         </Text>
-                        <Text style={[styles.factDesc, {color:font2, marginTop:5, fontSize:12}]}>
+                        <Text
+                          style={[
+                            styles.factDesc,
+                            {color: font2, marginTop: 5, fontSize: 12},
+                          ]}>
                           {category.todays_facts.citation}
                         </Text>
                       </View>
                     ) : null}
-                   <View style={{marginTop:24}}>
-                    {categoryDetails.data.data.ipassio_usp_title ? <Text style={[styles.subHead, {marginBottom:16}]}>
-                     {categoryDetails.data.data.ipassio_usp_title}
-                    </Text>:null}
+                    <View style={{marginTop: 24}}>
+                      {categoryDetails.data.data.ipassio_usp_title ? (
+                        <Text style={[styles.subHead, {marginBottom: 16}]}>
+                          {categoryDetails.data.data.ipassio_usp_title}
+                        </Text>
+                      ) : null}
                     </View>
-                    {categoryDetails.data.data.ipassio_usps ? 
-categoryDetails.data.data.ipassio_usps.map((usps: any)=>{
-  return(
-    <>
-  <View style={styles.ipassioItems}>
-    <View style={styles.ipassioDifferentImg}>
-      <CustomImage
-        height={40}
-        width={40}
-        uri={usps.icon}
-      />
-      {/* <CustomImage height={24} width={24} uri={`${config.media_url}share.svg`}/> */}
+                    {categoryDetails.data.data.ipassio_usps
+                      ? categoryDetails.data.data.ipassio_usps.map(
+                          (usps: any) => {
+                            return (
+                              <>
+                                <View style={styles.ipassioItems}>
+                                  <View style={styles.ipassioDifferentImg}>
+                                    <CustomImage
+                                      height={40}
+                                      width={40}
+                                      uri={usps.icon}
+                                    />
+                                    {/* <CustomImage height={24} width={24} uri={`${config.media_url}share.svg`}/> */}
 
-      {/* <IpassioDiff1 /> */}
-    </View>
-    <Text style={styles.ipassioDifferentText}>
-     {usps.text}
-    </Text>
-  </View>
-   <View style={styles.lineStyleWhite} />
-   </>)
-})
-
-
-                    :null}
-                    </View>
-                  
-                  
-                    
+                                    {/* <IpassioDiff1 /> */}
+                                  </View>
+                                  <Text style={styles.ipassioDifferentText}>
+                                    {usps.text}
+                                  </Text>
+                                </View>
+                                <View style={styles.lineStyleWhite} />
+                              </>
+                            );
+                          },
+                        )
+                      : null}
+                  </View>
 
                   <View style={styles.main}>
                     <Text style={styles.subHead}>
@@ -696,7 +666,7 @@ categoryDetails.data.data.ipassio_usps.map((usps: any)=>{
                           backTitle={'Select Filters '}
                         />
                       </View>
-                      <View style={styles.filters}>
+                      {sortList.length>0 ? <View style={styles.filters}>
                         <CustomDropdown
                           topLabel={sortBy.label !== '' ? 'Sort By' : undefined}
                           config={{color: '#fff'}}
@@ -706,7 +676,7 @@ categoryDetails.data.data.ipassio_usps.map((usps: any)=>{
                           label={sortBy.label !== '' ? sortBy.value : 'Sort By'}
                           backTitle={'Select Filters '}
                         />
-                      </View>
+                      </View> : null}
                     </View>
 
                     {/* <CustomDropdown/>
@@ -719,8 +689,8 @@ categoryDetails.data.data.ipassio_usps.map((usps: any)=>{
                         <CourseCard course={item} />
                       )}
                       keyExtractor={item => item.id}
-                      onEndReachedThreshold={0.5}
-                      onEndReached={handleOffset}
+                      onEndReachedThreshold={0.01}
+                      onEndReached={()=>handleOffset()}
                     />
                     {/* {course.map((course: any, i: number) => {
                       return (

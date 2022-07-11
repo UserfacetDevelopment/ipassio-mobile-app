@@ -82,10 +82,6 @@ const width = Dimensions.get('screen').width;
 const height = Dimensions.get('screen').height;
 
 
-
-
-
-
 const StudentAttendance: FC<any> = ({
   courseToken,
   classType,
@@ -624,7 +620,7 @@ const StudentAttendance: FC<any> = ({
                 attendances.map((at: any, i: number) => {
                   return (
                     <View key={at.id}>
-                      {at.status === 'S' ? (
+                      {at.status === 'S' || at.status === 'R' || at.status === 'D' ? (
                         <Card>
                           <View
                             style={[
