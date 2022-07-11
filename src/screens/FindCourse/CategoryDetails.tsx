@@ -70,7 +70,6 @@ import Accordian from '../../components/Accordian';
 import {HowItWorks, StudentsLoveCourses, Queries} from './ReusableComponents';
 import {useAppDispatch} from '../../app/store';
 const {width, height} = Dimensions.get('screen');
-import Drop from '../../assets/images/Drop.svg';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import {useNavigation} from '@react-navigation/native';
@@ -176,6 +175,11 @@ const CourseCard = ({course}: any) => {
             alignItems: 'center',
             flexWrap: 'wrap',
           }}>
+            {course.top_selling ? (
+                <View style={StyleCSS.styles.topSellingWrapper}>
+                  <Text style={StyleCSS.styles.topSellingText}>Top Selling</Text>
+                </View>
+               ) : null}
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             {course.course_level &&
               course.course_level.map((level: any, i: number) => {
@@ -222,7 +226,7 @@ const CourseCard = ({course}: any) => {
                         {course.rating.total_count} reviews{' '}
                       </Text>
                       <View>
-                        <Drop />
+                      <CustomImage height={12} width={12} uri={`${config.media_url}drop.svg`}/>
                       </View>
                     </View>
                   </View>
@@ -312,14 +316,14 @@ const CourseCard = ({course}: any) => {
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text style={styles.priceText}>
             {!isLoggedIn
-              ? userLocation?.data?.country === 'IN'
+              ? userLocation?.data?.country_code === 'IN'
                 ? course.teacher.ip_country === 'India'
-                  ? `Rs ${course.pricing[0].INR}`
+                  ? `₹ ${course.pricing[0].INR}`
                   : `US $${course.pricing[0].USD}`
                 : `US $${course.pricing[0].USD}`
               : userData?.ip_country === 'India'
               ? course.teacher.ip_country === 'India'
-                ? `Rs ${course.pricing[0].INR}`
+                ? `₹ ${course.pricing[0].INR}`
                 : `US $${course.pricing[0].USD}`
               : `US $${course.pricing[0].USD}`}
           </Text>
@@ -436,6 +440,7 @@ const [filterList, setFilterList] = useState([]);
       });
   }, [filter, sortBy, offset]);
 
+  console.log(courses)
   const handleOffset = () => {
     if (categoryCourseList.data.extra_data.course_count > offset + 10) {
       setOffset(offset + 10);

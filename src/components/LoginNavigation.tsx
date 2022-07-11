@@ -15,7 +15,7 @@ export default function LoginNavigation({navigation}: LoginNavInterface) {
   return (
     <View style={[styles.loginWrapper]}>
     <TouchableOpacity activeOpacity={1} onPressIn={()=>{setPressed('I')}}  onPressOut={()=>{setPressed('')}} onPress={()=>navigation.navigate('Login')} style={[styles.button,{borderRightWidth:1, borderRightColor:lineColor }]}><Text style={styles.buttonText}> Log In</Text></TouchableOpacity> 
-    <TouchableOpacity activeOpacity={1} onPressIn={()=>{setPressed('U')}}  onPressOut={()=>{setPressed('')}} onPress={()=>Linking.openURL(config.FrontendBaseURL)} style={[styles.button]}><Text style={styles.buttonText}>Sign up</Text></TouchableOpacity>
+    <TouchableOpacity activeOpacity={1} onPressIn={()=>{setPressed('U')}}  onPressOut={()=>{setPressed('')}} onPress={()=>navigation.navigate('Signup')} style={[styles.button]}><Text style={styles.buttonText}>Sign up</Text></TouchableOpacity>
   </View>
   )
 }

@@ -1,5 +1,6 @@
 #import "AppDelegate.h"
 #import "RNFBMessagingModule.h"
+#import <IntercomModule.h>
 #import <UserNotifications/UserNotifications.h> //added for pn
 #import <RNCPushNotificationIOS.h> //added for pn
 #import <React/RCTBridge.h>
@@ -13,7 +14,6 @@
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
-
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
@@ -55,6 +55,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
 {
   
   [FIRApp configure];
+
   // Define UNUserNotificationCenter
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     center.delegate = self;
@@ -84,6 +85,7 @@ RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [RNSplashScreen show];  // here
+  [IntercomModule initialize:@"ios_sdk-1442661b2bcdb62f449376a1b0fd648236ab774c" withAppId:@"u5oz5m2e"]; // <-- Add this
   return YES;
 }
 

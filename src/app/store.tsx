@@ -8,6 +8,7 @@ import checkoutReducer from '../reducers/checkout.slice';
 import withdrawalReducer from '../reducers/withdrawal.slice';
 import scheduleSessionReducer from '../reducers/schedule.slice';
 import recordingReducer from '../reducers/recording.slice';
+import twilioReducer from '../reducers/twilio.slice';
 const store = configureStore({
     reducer:{
         user: userReducer,
@@ -17,7 +18,8 @@ const store = configureStore({
         checkout: checkoutReducer,
         withdrawal: withdrawalReducer,
         scheduleSession: scheduleSessionReducer,
-        recording: recordingReducer
+        recording: recordingReducer,
+        twilio: twilioReducer
 
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({

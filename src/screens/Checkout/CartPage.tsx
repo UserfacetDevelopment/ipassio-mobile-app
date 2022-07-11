@@ -18,7 +18,7 @@ import TextField from '../../components/CustomTextField';
 import {useSelector} from 'react-redux';
 import StepIndicator from 'react-native-step-indicator';
 import {courseState, getCategoryDetails} from '../../reducers/courses.slice';
-import {userState} from '../../reducers/user.slice';
+import {setSignupFrom, userState} from '../../reducers/user.slice';
 import {useForm, Controller} from 'react-hook-form';
 // import { LogBox } from 'react-native';
 import style from '../../styles/style';
@@ -213,10 +213,12 @@ export default function CartPage({navigation, route}: Props) {
   // LogBox.ignoreLogs([
   //   "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
   // ]);
+  const {userData, isLoggedIn, signupFrom} = useSelector(userState);
   const {course} = useSelector(courseState);
   const {checkoutDataDetails, page} = useSelector(checkoutState);
   const [selectedTeacherAvailabilities, setSelecetdTeacherAvailabilities] =
     useState();
+    const [pop, setPop] = useState<number>(1);
   const {pageLoading} = useSelector(loaderState);
   const currentPage: number = 0;
   const dispatch = useAppDispatch();
@@ -264,6 +266,14 @@ export default function CartPage({navigation, route}: Props) {
 
   //   }, [checkoutDataDetails]),
   // );
+
+//clearing the signup foorm field so that on back and setting to local state
+useEffect(()=>{
+  if(userData.user_type ==='S' && signupFrom!==null){
+    setPop(2);
+  }
+  dispatch(setSignupFrom(null));
+})
 
   useEffect(() => {
     
@@ -350,7 +360,6 @@ export default function CartPage({navigation, route}: Props) {
   //   setCheckoutData(checkoutDataDetails)
 
   // }, [checkoutDataDetails])
-  const {userData, isLoggedIn} = useSelector(userState);
 
   // const onSubmit = (data: any) => console.log(data);
 
@@ -591,8 +600,8 @@ console.log(checkoutData);
     return selected;
   };
 
-  useEffect(() => {}, []);
   const checkoutNextPage = () => {
+    
     let filteredTeacherAvailability = filterSelected(teacherAvailability);
 
     let timeSlotEmpty = true;
@@ -679,6 +688,7 @@ console.log(checkoutData);
           <HeaderInner
             title={'Checkout'}
             type={'findCourse'}
+            pop={pop}
             backroute={route?.params?.backroute}
             back={true}
             removeRightHeader={true}
@@ -994,8 +1004,8 @@ console.log(checkoutData);
                           <Text style={styles.bodyText}>Cost per Class</Text>
                           <Text style={styles.info}>
                             {checkoutData?.amount?.currency_type === 'INR'
-                              ? 'Rs.'
-                              : 'US$ '}{' '}
+                              ? '₹'
+                              : 'US $'}{' '}
                             {checkoutData?.amount?.price_per_class}
                           </Text>
                         </View>
@@ -1132,8 +1142,8 @@ console.log(checkoutData);
                           </View>
                           <Text style={[styles.contentText, {paddingLeft: 5}]}>
                             {checkoutData?.amount?.currency_type === 'INR'
-                              ? 'Rs.'
-                              : 'US$ '}
+                              ? '₹ '
+                              : 'US $'}
                             {checkoutData?.amount?.total_amount}
                           </Text>
                         </View>
@@ -1153,8 +1163,8 @@ console.log(checkoutData);
                               style={[styles.contentText, {paddingLeft: 5}]}>
                               {' - '}
                               {checkoutData?.amount?.currency_type === 'INR'
-                                ? 'Rs.'
-                                : 'US$ '}
+                                ? '₹ '
+                                : 'US $'}
                               {checkoutData?.amount?.coupon_discount_amount}
                             </Text>
                           </View>
@@ -1171,8 +1181,8 @@ console.log(checkoutData);
                             <Text
                               style={[styles.contentText, {paddingLeft: 5}]}>
                               {checkoutData?.amount?.currency_type === 'INR'
-                                ? 'Rs.'
-                                : 'US$ '}
+                                ? '₹ '
+                                : 'US $'}
                               {getDiscountAmount(checkoutData.amount)}
                             </Text>
                           </View>
@@ -1188,8 +1198,8 @@ console.log(checkoutData);
                             <Text
                               style={[styles.contentText, {paddingLeft: 5}]}>
                               {checkoutData?.amount.currency_type === 'INR'
-                                ? 'Rs.'
-                                : 'US$ '}
+                                ? '₹ '
+                                : 'US $'}
                               {checkoutData?.amount.cgst_amount}
                             </Text>
                           </View>
@@ -1205,8 +1215,8 @@ console.log(checkoutData);
                             <Text
                               style={[styles.contentText, {paddingLeft: 5}]}>
                               {checkoutData?.amount?.currency_type === 'INR'
-                                ? 'Rs.'
-                                : 'US$ '}
+                                ? '₹ '
+                                : 'US $'}
                               {checkoutData?.amount?.sgst_amount}
                             </Text>
                           </View>
@@ -1222,8 +1232,8 @@ console.log(checkoutData);
                             <Text
                               style={[styles.contentText, {paddingLeft: 5}]}>
                               {checkoutData?.amount?.currency_type === 'INR'
-                                ? 'Rs.'
-                                : 'US$ '}
+                                ? '₹ '
+                                : 'US $'}
                               {checkoutData?.amount?.igst_amount}
                             </Text>
                           </View>
@@ -1238,8 +1248,8 @@ console.log(checkoutData);
                           </View>
                           <Text style={styles.totalDueInfo}>
                             {checkoutData.amount?.currency_type === 'INR'
-                              ? 'Rs.'
-                              : 'US$ '}
+                              ? '₹ '
+                              : 'US $'}
                             {checkoutData.amount?.pay_amount}
                           </Text>
                         </View>

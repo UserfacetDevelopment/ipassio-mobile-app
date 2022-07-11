@@ -16,6 +16,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.facebook.react.bridge.JSIModulePackage; // <- add
 import com.swmansion.reanimated.ReanimatedJSIModulePackage; // <- add
+import com.twiliorn.library.TwilioPackage;
+import com.intercom.reactnative.IntercomModule;
+
 //import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage; // ADDED FOR PUSH NOTIFICATION
 
 
@@ -32,6 +35,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
           @SuppressWarnings("UnnecessaryLocalVariable")
           List<ReactPackage> packages = new PackageList(this).getPackages();
+          packages.add(new TwilioPackage());
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
            //packages.add(new ReactNativePushNotificationPackage());
@@ -59,6 +63,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    IntercomModule.initialize(this, "android_sdk-a1285b00b70d13f605fb237ddcf717bd37f8b58f", "u5oz5m2e"); // <-- Add this line
   }
 
   /**

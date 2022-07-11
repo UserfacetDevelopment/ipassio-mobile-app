@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import {useSelector} from 'react-redux';
+import Intercom from '@intercom/intercom-react-native'
 import {userState, logoutUser} from '../../reducers/user.slice';
 import {
   appBackground,
@@ -38,6 +39,7 @@ export default function More({navigation}: any) {
 
   const doLogout = async () => {
     await messaging().deleteToken();
+    Intercom.logout();
     await AsyncStorage.removeItem('USERDATA');
     await AsyncStorage.removeItem('USERDEVICETOKEN');
     await AsyncStorage.removeItem('USER_NOT_FIRST');

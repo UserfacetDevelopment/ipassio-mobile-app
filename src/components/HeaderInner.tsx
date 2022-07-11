@@ -138,7 +138,7 @@ const HeaderInner = (props: any) => {
                 <TouchableOpacity
                   style={styles.backWrapper}
                   onPress={() => {
-                    props.navigation.goBack();
+                    props.navigation.pop(props.pop ? props.pop : 1);
                   }}>
                   <CustomImage
                     height={24}
@@ -240,17 +240,21 @@ const HeaderInner = (props: any) => {
             left: 0,
             right: 0,
           }}>
-          <Image
+            <CustomImage
+            style={[styles.backgroundImage]}
+            uri={`${config.media_url}header_bg.png`}
+          />
+           {/* <Image
             style={[styles.backgroundImage]}
             source={require('@images/header_bg.png')}
-          />
+          /> */}
           <View style={styles.centerItems}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               {props.back ? (
                 <TouchableOpacity
                   style={styles.backWrapper}
                   onPress={() => {
-                    props.navigation.goBack();
+                    props.navigation.pop(props.pop? props.pop :1);
                   }}>
                   <CustomImage
                     height={24}

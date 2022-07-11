@@ -396,8 +396,8 @@ console.log(teacherAvailability);
                     <Text style={styles.grey_items}>Cost Per Class</Text>
                     <Text style={styles.grey_items_value}>
                       {checkoutDataDetails.amount.currency_type === 'INR'
-                        ? 'Rs.'
-                        : 'US$ '}
+                        ? '₹ '
+                        : 'US $'}
                       {checkoutDataDetails.amount.price_per_class}
                     </Text>
                   </View>
@@ -469,8 +469,8 @@ console.log(teacherAvailability);
                       </View>
                       <Text style={[styles.contentText]}>
                         {checkoutDataDetails.amount.currency_type === 'INR'
-                          ? 'Rs.'
-                          : 'US$ '}
+                          ? '₹ '
+                          : 'US $'}
                         {checkoutDataDetails.amount.total_amount}
                       </Text>
                     </View>
@@ -489,8 +489,8 @@ console.log(teacherAvailability);
                         <Text style={styles.priceSectionTextGrey}>
                           {' - '}
                           {checkoutDataDetails.amount.currency_type === 'INR'
-                            ? 'Rs.'
-                            : 'US$ '}
+                            ? '₹ '
+                            : 'US $'}
                           {checkoutDataDetails.amount.coupon_discount_amount}
                         </Text>
                       </View>
@@ -506,8 +506,8 @@ console.log(teacherAvailability);
                         </View>
                         <Text style={[styles.contentText]}>
                           {checkoutDataDetails.amount.currency_type === 'INR'
-                            ? 'Rs.'
-                            : 'US$ '}
+                            ? '₹ '
+                            : 'US $'}
                           {getDiscountAmount(checkoutDataDetails.amount)}
                         </Text>
                       </View>
@@ -523,8 +523,8 @@ console.log(teacherAvailability);
                         </View>
                         <Text style={[styles.contentText]}>
                           {checkoutDataDetails.amount.currency_type === 'INR'
-                            ? 'Rs.'
-                            : 'US$ '}
+                            ? '₹ '
+                            : 'US $'}
                           {checkoutDataDetails.amount.cgst_amount}
                         </Text>
                       </View>
@@ -539,8 +539,8 @@ console.log(teacherAvailability);
                         </View>
                         <Text style={[styles.contentText]}>
                           {checkoutDataDetails.amount.currency_type === 'INR'
-                            ? 'Rs.'
-                            : 'US$ '}
+                            ? '₹ '
+                            : 'US $'}
                           {checkoutDataDetails.amount.sgst_amount}
                         </Text>
                       </View>
@@ -555,8 +555,8 @@ console.log(teacherAvailability);
                         </View>
                         <Text style={[styles.contentText]}>
                           {checkoutDataDetails.amount.currency_type === 'INR'
-                            ? 'Rs.'
-                            : 'US$ '}
+                            ? '₹ '
+                            : 'US $'}
                           {checkoutDataDetails.amount.igst_amount}
                         </Text>
                       </View>
@@ -579,8 +579,8 @@ console.log(teacherAvailability);
                   </View>
                   <Text style={[styles.totalDueInfo]}>
                     {checkoutDataDetails.amount.currency_type === 'INR'
-                      ? 'Rs.'
-                      : 'US$ '}
+                      ? '₹ '
+                      : 'US $'}
                     {checkoutDataDetails.amount.pay_amount}
                   </Text>
                 </View>

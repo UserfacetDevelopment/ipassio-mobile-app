@@ -9,10 +9,10 @@ import {
   FlatList,
   TextInput,
   Animated,
-  ImageBackgroundComponent,
   Dimensions,
   Linking,
   Platform,
+  Modal,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 // import Geolocation from 'react-native-geolocation-service';
@@ -27,6 +27,7 @@ import {
   fetchCourseSuccess,
   setOffset,
   setSelectedCategories,
+  setNationality,
 } from '../../reducers/courses.slice';
 import {useScrollToTop} from '@react-navigation/native';
 import {OutlinedTextField} from 'react-native-material-textfield';
@@ -70,17 +71,17 @@ import {
 import SheetCSS from '../../styles/style';
 //@ts-ignore
 import {Bubbles} from 'react-native-loader';
-import Drop from '../../assets/images/more_reviews.svg';
-import Filter from '../../assets/images/filter.svg';
 import BottomNavigation from '../../components/BottomNavigation';
 import LoginNavigation from '../../components/LoginNavigation';
 import StyleCSS from '../../styles/style';
 import CustomImage from '../../components/CustomImage';
 import LineDashed from '../../components/LineDashed';
 import CustomStatusBar from '../../components/CustomStatusBar';
+import Helper from '../../utils/helperMethods';
+import CourseDetails from './CourseDetails';
+
 type Props = NativeStackScreenProps<RootParamList, 'FindCourses'>;
 const {width, height} = Dimensions.get('screen');
-
 
 interface FindCoursesInterface {
   query: string;
@@ -96,11 +97,11 @@ export interface FindCoursesInterfaceFinal {
   offset: number;
 }
 
-// export interface CategoryInterface {
-
-//   nationality: string;
-// }
-
+interface CurrentCourse {
+  course_slug: null | string,
+    category_slug: null | string,
+    teacher_slug: null | string
+}
 export const Loader = () => {
   return (
     <View style={styles.loading}>
@@ -111,8 +112,6 @@ export const Loader = () => {
       /> */}
 
       <Bubbles size={7} color={brandColor} />
-
-      {/* <Text style={styles.loadingText}>Loading...</Text> */}
     </View>
   );
 };
@@ -145,20 +144,22 @@ export default function FindCourse({navigation, route}: Props) {
   // const [offset, setOffset] = useState<number>(0);
   const [coursesArray, setCoursesArray] = useState<Array<any>>([]);
   const [loadingMoreCourses, setLoadingMoreCourses] = useState<boolean>(false);
-  const [scrollPosition,setScrollPosition]=React.useState(0)
+  const [scrollPosition, setScrollPosition] = React.useState(0);
+  const [courseDetailModal, setCourseDetailModal] = useState(false);
+  const [currCourse, setCurrCourse] = useState<CurrentCourse|null>(null);
   // const [handleCourseState, sethandleCourseState] = useState<boolean>(false);
   // const [page, setPage] = useState<"find_course"|"home"|"">("home");
 
-  // const handleScroll=(event)=>{
-  //   let yOffset=event.nativeEvent.contentOffset.y / 475;
-  //   setScrollPosition(yOffset)
-  // }
+  const handleScroll=(event)=>{
+    let yOffset=event.nativeEvent.contentOffset.y / 475;
+    setScrollPosition(yOffset)
+  }
 
   // useEffect(()=>{
   //   navigation.addListener('willBlur', () => {
   //     const offset = scrollPosition
   //     // To prevent FlatList scrolls to top automatically,
-  //     // we have to delay scroll to the original position 
+  //     // we have to delay scroll to the original position
   //     setTimeout(() => {
   //       flatList.scrollToOffset({ offset, animated: false })
   //     }, 500)
@@ -244,16 +245,18 @@ export default function FindCourse({navigation, route}: Props) {
   useEffect(() => {
     // if(!isLoggedIn){
 
-    if(initialCategories.length>0) {
+    if (initialCategories.length > 0) {
       dispatch(setLoading(true));
       setLoadingMoreCourses(true);
       // dispatch(setPageLoading(true));
-  
+
       const data: FindCoursesInterface = {
         query: searchText,
         nationality: nationality,
         categories:
-          selectedCategories.length > 0 ? selectedCategories : initialCategories,
+          selectedCategories.length > 0
+            ? selectedCategories
+            : initialCategories,
         sub_categories: selectedSubcategories,
         second_sub_categories: selectedSecsubcategories,
         levels: selectedLevels,
@@ -262,7 +265,7 @@ export default function FindCourse({navigation, route}: Props) {
         data: data,
         offset: offset,
       };
-  
+
       dispatch(getCourses(finalData))
         .unwrap()
         .then((response: any) => {
@@ -290,7 +293,7 @@ export default function FindCourse({navigation, route}: Props) {
           // dispatch(setPageLoading(false));
         });
     }
-    
+
     // }
   }, [
     searchText,
@@ -299,10 +302,10 @@ export default function FindCourse({navigation, route}: Props) {
     selectedSubcategories,
     selectedLevels,
     offset,
-    initialCategories
+    initialCategories,
   ]);
 
-  console.log(courseData);
+  console.log(coursesArray);
   // useEffect(() => {
   //   // if(!isLoggedIn){
   //   dispatch(setLoading(true));
@@ -437,8 +440,8 @@ export default function FindCourse({navigation, route}: Props) {
     return str;
   };
 
-const getCategorySlug=(propCourse: any)=>{
-  let category_slug;
+  const getCategorySlug = (propCourse: any) => {
+    let category_slug;
     if (
       propCourse &&
       propCourse.second_sub_category_detail &&
@@ -460,125 +463,26 @@ const getCategorySlug=(propCourse: any)=>{
     }
 
     return category_slug;
-}
+  };
 
   const loadCourse = (course: any, index: number) => {
     return (
       <>
-        {/* <View style={styles.courseWrapper}>
-          <Image
-            defaultSource={require('@images/default_course_img.png')}
-            style={styles.courseImage}
-            source={{uri: course.course_image}}
-          />
-          <Text style={styles.title}>{course.title}</Text>
-          <View style={styles.courseDetails}>
-            <Text style={styles.colorText}>
-              by {course.user.first_name} {course.user.last_name}
-            </Text>
-            <Text style={styles.textSmall}> */}
-        {/* Check for the conditions when user is logged in or not */}
-        {/* {!isLoggedIn
-                ? userLocation?.data?.country === 'IN'
-                  ? course.user.ip_country === 'India'
-                    ? `INR ${course.pricing[0].INR}`
-                    : `$ ${course.pricing[0].USD}`
-                  : `$ ${course.pricing[0].USD}`
-                : userData?.ip_country === 'India'
-                ? course.user.ip_country === 'India'
-                  ? `INR ${course.pricing[0].INR}`
-                  : `$ ${course.pricing[0].USD}`
-                : `$ ${course.pricing[0].USD}`}{' '}
-              per class{' '}
-              {course.pricing[0].members === '1'
-                ? '1-on-1'
-                : course.pricing[0].members}{' '}
-              {course.pricing[0].members !== '1' ? ' Members' : ' Class'}
-            </Text>
-            <Text style={styles.colorText}>{course.course_duration} Weeks</Text>
-            {course.rating.avg_review !== 0 ? (
-              <View style={styles.ratingWrapper}>
-                <Rating
-                  // ratingColor="#277FD9"
-                  // type="custom"
-                  startingValue={course.rating.avg_review}
-                  readonly
-                  ratingCount={5}
-                  imageSize={20}
-                  fractions={10}
-                />
-                <View style={styles.rating}>
-                  <Text style={styles.reviews}>
-                    {course.rating.avg_review}/5
-                  </Text>
-                  <Text style={styles.colorText}>
-                    {course.rating.total_count}
-                  </Text>
-                </View>
-              </View>
-            ) : null}
-          </View>
-          <View style={styles.courseDetails}>
-            <Text style={styles.subHead}>
-              Experience{' '}
-              <Text style={styles.normalText}> {course.experience} years</Text>
-            </Text>
-            {course.teacher_skills && course.teacher_skills.length > 0 ? (
-              <Text style={styles.subHead}>
-                Expert in:{' '}
-                <Text style={styles.normalText}>
-                  {course.teacher_skills.map((ts_keyword: any, i: number) =>
-                    i > 0 ? (
-                      <Text key={i}>, {ts_keyword.name}</Text>
-                    ) : (
-                      <Text key={i}>{ts_keyword.name}</Text>
-                    ),
-                  )}
-                </Text>
-              </Text>
-            ) : null}
-          </View>
-          <View style={styles.courseDetails}>
-            <Text style={styles.subHead}>
-              Level:{' '}
-              <Text style={styles.normalText}>
-                {course.course_level[0].name}
-              </Text>
-            </Text>
-            <Text style={styles.subHead}>
-              Class duration :{' '}
-              <Text style={styles.normalText}>
-                {course.class_duration} minutes
-              </Text>
-            </Text>
-            <Text style={styles.subHead}>
-              Classes per week :{' '}
-              <Text style={styles.normalText}>{course.classes_per_week}</Text>
-            </Text>
-          </View>
-          <View style={styles.courseAction}>
-            <TouchableOpacity>
-              <Text style={styles.quickView}>Quick View</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                dispatch(setPageLoading(true));
-                navigation.navigate('CourseDetail', {
-                  course_slug: course.seo.seo_slug_url,
-                });
-              }}>
-              <Text style={styles.viewCourseButton}>View Course</Text>
-            </TouchableOpacity>
-          </View>
-        </View> */}
         <TouchableOpacity
           onPress={() => {
-            // dispatch(setPageLoading(true));
+            dispatch(setPageLoading(true));
             navigation.navigate('CourseDetail', {
               course_slug: course.seo.seo_slug_url,
               category_slug: getCategorySlug(course),
-              teacher_slug: course.user.seo_slug_url
+              teacher_slug: course.user.seo_slug_url,
             });
+            // setCurrCourse({
+            //   course_slug : course.seo.seo_slug_url,
+            //   category_slug : getCategorySlug(course),
+            //   teacher_slug : course.user.seo_slug_url,
+            // })
+// setCourseDetailModal(true);
+
           }}
           style={[styles.courseWrapper, StyleCSS.styles.shadow]}>
           <View
@@ -586,64 +490,12 @@ const getCategorySlug=(propCourse: any)=>{
               height: 180,
               width: '100%',
             }}>
-
             <CustomImage
               // defaultSource={require('@images/default_course_img.png')}
               style={styles.courseImage}
               uri={course.course_image}
             />
           </View>
-          {/* <View
-            style={{
-              position: 'absolute',
-              paddingHorizontal: 8,
-              paddingVertical: 3,
-              right: 16,
-              top: 16,
-              borderRadius: 8,
-              backgroundColor: 'rgba(0, 6, 12, 0.8)',
-            }}>
-            <Text style={styles.cardDetail}>
-              {course.course_duration} Weeks
-            </Text>
-          </View> */}
-          {/* <LinearGradient
-            start={{x: 0.0, y: 0}}
-            end={{x: 0, y: 1.0}}
-            colors={['rgba(233, 67, 53, 0)', 'rgba(233, 67, 53, 1)']}
-            style={{
-              height: 85,
-              top:95,
-              zIndex: 20,
-              position: 'absolute',
-              opacity: 0.6,
-              width: '100%',
-            }}></LinearGradient> */}
-          {/* <View
-            style={{
-              position: 'absolute',
-              zIndex: 40,
-              top: 120,
-              flexDirection: 'row',
-              margin: 16,
-            }}>
-            {course.course_level.map((level: any, i: number) => {
-              return (
-                <View
-                  style={{
-                    paddingVertical: 3,
-                    paddingHorizontal: 8,
-                    backgroundColor: map.get(level.code),
-                    marginVertical: 2,
-                    marginHorizontal: 2,
-                    borderRadius: 43,
-                  }}>
-                  <Text style={styles.cardDetail}>{level.name}</Text>
-                </View>
-              );
-            })}
-          </View> */}
-
           <View style={styles.padding16}>
             <Text style={styles.title}>{course.title}</Text>
             {/* <Text style={styles.authorName}>
@@ -657,6 +509,13 @@ const getCategorySlug=(propCourse: any)=>{
                 // justifyContent: 'space-between',
                 flexWrap: 'wrap',
               }}>
+              {course.top_selling ? (
+                <View style={StyleCSS.styles.topSellingWrapper}>
+                  <Text style={StyleCSS.styles.topSellingText}>
+                    Top Selling
+                  </Text>
+                </View>
+              ) : null}
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 {course.course_level &&
                   course.course_level.map((level: any, i: number) => {
@@ -677,14 +536,15 @@ const getCategorySlug=(propCourse: any)=>{
                     );
                   })}
               </View>
-              
 
               {course.rating.total_count > 0 ? (
                 <View style={{alignItems: 'center', flexDirection: 'row'}}>
                   <View style={{marginHorizontal: 12}}>
-              <CustomImage  height={5} width={5} uri={`${config.media_url}dot.svg`}></CustomImage>
-
-              </View>
+                    <CustomImage
+                      height={5}
+                      width={5}
+                      uri={`${config.media_url}dot.svg`}></CustomImage>
+                  </View>
                   <View style={styles.courseRating}>
                     <Rating
                       ratingColor={secondaryColor}
@@ -702,7 +562,11 @@ const getCategorySlug=(propCourse: any)=>{
                         {course.rating.total_count} reviews{' '}
                       </Text>
                       <View>
-                        <Drop />
+                        <CustomImage
+                          height={12}
+                          width={12}
+                          uri={`${config.media_url}more_reviews.svg`}
+                        />
                       </View>
                     </View>
                   </View>
@@ -715,7 +579,7 @@ const getCategorySlug=(propCourse: any)=>{
               {marginHorizontal: 16},
             ]}></View> */}
           <View style={{marginHorizontal: 16}}>
-            <LineDashed/>
+            <LineDashed />
           </View>
 
           <View style={{padding: 16}}>
@@ -730,7 +594,9 @@ const getCategorySlug=(propCourse: any)=>{
                 </Text>
               ) : null}
             </View>
-            {course.user && course.user.spotlight && course.user.spotlight !== '' ? (
+            {course.user &&
+            course.user.spotlight &&
+            course.user.spotlight !== '' ? (
               <>
                 <Text
                   style={{
@@ -748,7 +614,7 @@ const getCategorySlug=(propCourse: any)=>{
           </View>
 
           <View style={{marginHorizontal: 16}}>
-            <LineDashed/>
+            <LineDashed />
           </View>
           {/* <View
             style={[
@@ -764,16 +630,16 @@ const getCategorySlug=(propCourse: any)=>{
             <View style={{flexDirection: 'row'}}>
               <Text style={styles.priceText}>
                 {!isLoggedIn
-                  ? userLocation?.data?.country === 'IN'
+                  ? userLocation?.data?.country_code === 'IN'
                     ? course.user.ip_country === 'India'
-                      ? `Rs ${course.pricing[0].INR}`
-                      : `US $${course.pricing[0].USD}`
-                    : `US $${course.pricing[0].USD}`
+                         ? `₹ ${course?.pricing[0].INR}`
+                      : `US $${course?.pricing[0].USD}`
+                    : `US $${course?.pricing[0].USD}`
                   : userData?.ip_country === 'India'
                   ? course.user.ip_country === 'India'
-                    ? `Rs ${course.pricing[0].INR}`
-                    : `US $${course.pricing[0].USD}`
-                  : `US $${course.pricing[0].USD}`}
+                    ? `₹ ${course?.pricing[0].INR}`
+                    : `US $${course?.pricing[0].USD}`
+                  : `US $${course?.pricing[0].USD}`}
               </Text>
               <Text style={styles.perSession}>
                 {/* {course.class_duration ? (
@@ -786,7 +652,10 @@ const getCategorySlug=(propCourse: any)=>{
                 session */}{' '}
                 class
                 {course.class_duration ? (
-                  <Text style={styles.perSession}> | {course.class_duration} minutes</Text>
+                  <Text style={styles.perSession}>
+                    {' '}
+                    | {course.class_duration} minutes
+                  </Text>
                 ) : null}
                 {/* {course.classes_per_week ? (
                   <Text>, {course.classes_per_week} per week</Text>
@@ -823,10 +692,18 @@ const getCategorySlug=(propCourse: any)=>{
           <>
             <View style={styles.safecontainer}>
               <View style={styles.filterBox}>
-                <View style={{flexDirection: 'row', alignItems: 'center',width:'73%'}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    width: '73%',
+                  }}>
                   <View style={styles.searchIcon}>
-                <CustomImage  height={24} width={24} uri={`${config.media_url}search.svg`}></CustomImage>
-                </View>
+                    <CustomImage
+                      height={24}
+                      width={24}
+                      uri={`${config.media_url}search.svg`}></CustomImage>
+                  </View>
                   {/* <Search style={styles.searchIcon} /> */}
                   <TextInput
                     style={styles.input}
@@ -834,7 +711,7 @@ const getCategorySlug=(propCourse: any)=>{
                     placeholder={`Search from ${courseData.extra_data.count.total_count} Courses`}
                     value={searchText}
                     enablesReturnKeyAutomatically={true}
-                    keyboardAppearance='default'
+                    keyboardAppearance="default"
                     placeholderTextColor={font2}
                     onChangeText={(text: string) => handleSearch(text)}
                   />
@@ -850,77 +727,67 @@ const getCategorySlug=(propCourse: any)=>{
                     SheetCSS.styles.alignCenter,
                     styles.filterButton,
                   ]}>
-                    <CustomImage  height={24} width={24} uri={`${config.media_url}filter.svg`}></CustomImage>
+                  <CustomImage
+                    height={24}
+                    width={24}
+                    uri={`${config.media_url}filter.svg`}></CustomImage>
                   {/* <Filter /> */}
                   <Text style={styles.filter}>Filter</Text>
                 </TouchableOpacity>
-                {/* <TouchableOpacity
-                  onPress={() => navigation.navigate('Categories')}>
-                  <View style={styles.wrapper}>
-                    <SvgUri uri={`${config.media_url}images/bar-filter.svg`} />
-                    <Text style={styles.filterBoxText}>Filter</Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setSearch(!search)}>
-                  <View style={styles.wrapper}>
-                   
-                    <SvgUri uri={`${config.media_url}images/bar-search.svg`} />
+              </View>
+              <View style={styles.tabView}>
+                <View style={styles.userTabsWrapper}>
+                  <TouchableOpacity
+                    style={
+                      nationality === 'INDIAN' ? styles.selectedTab : styles.userTab
+                    }
+                    onPress={() => {
+                      dispatch(setOffset(0));
+                      dispatch(setNationality('INDIAN'));
+                    }}>
                     <Text
                       style={
-                        search
-                          ? [styles.filterBoxText, {color: brandColor}]
-                          : styles.filterBoxText
+                        nationality === 'INDIAN'
+                          ? styles.selectedUserTabText
+                          : styles.userTabText
                       }>
-                      Search
-                    </Text> 
-                  </View>
-                </TouchableOpacity> */}
-              </View>
-              {/* {search && (
-                <View style={styles.searchBarWrapper}>
-                  <TextInput
-                    style={styles.input}
-                    //label="Search"
-                    onChangeText={(text: string) => handleSearch(text)}
-                    textAlignVertical="top"
-                    secureTextEntry={false}
-                    //tintColor=font1
-                    value={searchText}
-                    editable={true}
-                    autoCapitalize="none"
-                    returnKeyType="next"
-                    autoCorrect={false}
-                    selectTextOnFocus={false}
-                  />
+                      Indian({categoryData.extra_data.count.total_indian_course})
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={
+                      nationality === 'WESTERN' ? styles.selectedTab : styles.userTab
+                    }
+                    onPress={() => {
+                      dispatch(setOffset(0));
+                      dispatch(setNationality('WESTERN'));
+                    }}>
+                    <Text
+                      style={
+                        nationality === 'WESTERN'
+                          ? styles.selectedUserTabText
+                          : styles.userTabText
+                      }>
+                      Western({categoryData.extra_data.count.total_western_course})
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-              )} */}
-
-              {/* <Text style={styles.totalCourseText}>
-                Total Course(s) : {courseData.extra_data.count.total_count}
-              </Text> */}
-
-              {/* <ScrollView contentInsetAdjustmentBehavior="always"> */}
-              {/* COURSES ARE REPEATING */}
+              </View>
+              {/* <ScrollView> */}
               {courseData.data.length === 0 ? (
                 <Text style={styles.wrongText}>No courses found</Text>
               ) : (
                 <View
-                  style={{
-                    // borderWidth:2,
-                    // height:'100%',
-                    // paddingBottom: 460,
-                    backgroundColor: background4,
-                    paddingTop: Platform.OS === 'android' ? 26 : 32,
-                  }}>
+                  style={styles.flatlist}>
                   <FlatList
-                  // scrollsToTop={false}
-                  
+                    scrollsToTop={false}
+
                     data={coursesArray}
                     renderItem={({item, index}) => loadCourse(item, index)}
                     keyExtractor={item => item.id}
                     onEndReachedThreshold={0.5}
-                  //   onScroll={(event)=>handleScroll(event)}
-                  // initialScrollIndex={scrollPosition}
+                      // onScroll={(event)=>handleScroll(event)}
+                    initialScrollIndex={scrollPosition}
                     onEndReached={handleOffset}
                   />
                   {/* <View style={{marginBottom:200}}/> */}
@@ -928,8 +795,9 @@ const getCategorySlug=(propCourse: any)=>{
               )}
 
               {loadingMoreCourses ? <Loader /> : null}
-              {/* </ScrollView> */}
+              
               <View style={{height: 200, backgroundColor: background4}}></View>
+              {/* </ScrollView> */}
             </View>
           </>
         ) : courseStatus === 'loading' ? (
@@ -940,6 +808,11 @@ const getCategorySlug=(propCourse: any)=>{
           <Text style={styles.wrongText}>No Data to show</Text>
         )}
       </View>
+      <Modal visible={courseDetailModal} onRequestClose={()=>setCourseDetailModal(false)}>
+
+  {currCourse  ? <CourseDetails navigation={navigation} currCourse={currCourse} setCourseDetailModal={setCourseDetailModal} /> : null}
+
+      </Modal>
       {isLoggedIn ? (
         <BottomNavigation navigation={navigation} />
       ) : (
@@ -953,7 +826,7 @@ const styles = StyleSheet.create({
   main: {
     backgroundColor: background4,
     // paddingHorizontal: 16,
-    marginTop: Platform.OS==='ios' ?  120 : 116,
+    marginTop: Platform.OS === 'ios' ? 120 : 116,
     // borderWidth:3
   },
   courseWrapper: {
@@ -965,7 +838,7 @@ const styles = StyleSheet.create({
   },
   courseImage: {
     height: '100%',
-    width:'100%',
+    width: '100%',
     zIndex: -1,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
@@ -1130,8 +1003,8 @@ const styles = StyleSheet.create({
     color: font1,
   },
   filterButton: {
-    justifyContent:'flex-end',
-    paddingHorizontal:16,
+    justifyContent: 'flex-end',
+    paddingHorizontal: 16,
     // borderWidth:1,
     marginVertical: 10,
     borderLeftWidth: 1,
@@ -1170,18 +1043,6 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20,
   },
-  // input: {
-  //   color: font1,
-  //   marginBottom: 5,
-  //   fontSize: 18,
-  //   padding: 16,
-  //   height: 55,
-  //   backgroundColor: 'rgb(255, 255, 255)',
-  //   borderRadius: 5,
-  //   fontFamily: helper.switchFont('medium'),
-  //   borderWidth: 0.5,
-  //   borderColor: 'rgb(200, 200, 200)',
-  // },
   wrongText: {
     color: font1,
     fontSize: 16,
@@ -1191,9 +1052,9 @@ const styles = StyleSheet.create({
   safecontainer: {
     backgroundColor: background4,
     zIndex: -1,
-// borderWidth:1,
-height:'100%',
-paddingBottom:Platform.OS==='ios' ? 66 : 48
+    // borderWidth:1,
+    height: '100%',
+    paddingBottom: Platform.OS === 'ios' ? 66 : 48,
     // marginTop: 105,
   },
   loader: {
@@ -1268,4 +1129,48 @@ paddingBottom:Platform.OS==='ios' ? 66 : 48
     color: font1,
     fontFamily: helper.switchFont('regular'),
   },
+  tabView: {
+    flexDirection: 'row',
+    marginTop:36,
+    paddingHorizontal:16,
+    paddingVertical:8,
+    height:50,
+  },
+  userTabsWrapper:{
+    flexDirection: 'row',
+    width:'65%',
+
+    alignItems:'center',
+    height:'100%',
+
+  },
+  userTab: {
+    paddingHorizontal:8,
+    width: '50%',
+    justifyContent: 'center',
+    height: '100%',
+  },
+  userTabText: {
+    color: font2,
+    fontWeight: '600',
+    fontSize: 16,
+    fontFamily: Helper.switchFont('bold'),
+  },
+  selectedUserTabText: {
+    color: font1,
+    fontWeight: '600',
+    fontSize: 16,
+    fontFamily: Helper.switchFont('bold'),
+  },
+  selectedTab: {
+    paddingHorizontal:8,
+    width: '50%',
+    justifyContent: 'center',
+    borderBottomColor:brandColor ,
+    borderBottomWidth: 2,
+    height: '100%',
+  },
+  flatlist:{
+    backgroundColor: background4,
+  }
 });

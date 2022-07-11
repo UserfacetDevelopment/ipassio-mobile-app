@@ -21,4 +21,14 @@ export default class ApiGateway{
         const url=`${config.BaseURL}/${endpoint}`;
         return axios.patch(url, body, auth);
     }
+
+    static getNodeServer(endpoint: string, headers?: any){
+        const url=`${config.NodeBaseURL}/${endpoint}`;
+        return axios.get(url, headers);
+    }
+
+    static postNodeServer(endpoint: string, body ?: any, headers?:any){
+        const url=`${config.NodeBaseURL}${endpoint}`;
+        return axios.post(url, body, headers);
+    }
 }

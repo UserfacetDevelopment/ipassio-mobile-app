@@ -358,7 +358,7 @@ const initialState: any = {
   coursesArray: [],
   showMore: true,
   page: 'home',
-  nationality: '',
+  nationality: 'INDIAN',
   selectedCategories: [],
   selectedSubcategories: [],
   selectedLevels: [],

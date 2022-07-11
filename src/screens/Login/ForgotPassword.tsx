@@ -145,7 +145,7 @@ const routes = useRoute();
             />
           </TouchableOpacity> */}
 
-          <View style={styles.contentWrapper}>
+          <View>
             <View style={{marginTop: 40}}>
               <Text style={styles.title}>Forgot Password?</Text>
               <Text style={styles.subTitle}>
@@ -162,23 +162,12 @@ const routes = useRoute();
             ></TextInput> */}
             <View style={styles.formInput}>
             <TextField
-              //   onSubmitEditing={() => {
-              //     this.doFgtPassword();
-              //   }}
               label="Email Address"
               mode="outlined"
               onChangeText={(text: string) => {
                 setShowError(false);
                 setEmail(text)}}
-              //textAlignVertical="top"
-              //baseColor = '#C91F35'
-              // value={email}
-              // editable={true}
-              // keyboardType="email-address"
-              // autoCapitalize="none"
-              // returnKeyType="next"
-              // autoCorrect={false}
-              // selectTextOnFocus={false}
+             
             />
             {showError? <Text style={StyleCSS.styles.errorText}>{errorMsg}</Text> : null}
 </View>

@@ -1,7 +1,7 @@
 import {Platform, Alert, PermissionsAndroid, Linking} from 'react-native';
 
 export default class Config {
-  static env = 'prod';
+  static env = 'dev';
   static version = Platform.OS === 'ios' ? '2.0.4' : '2.0.2';
   static build_number = Platform.OS === 'ios' ? 14 : 28;
  

@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {TextInput, RadioButton} from 'react-native-paper';
-import { useAppDispatch } from '../../app/store';
+import {useAppDispatch} from '../../app/store';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {
   widthPercentageToDP as wp,
@@ -30,59 +30,69 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import config from '../../config/Config';
-import {brandColor, font1, font2, lineColor, secondaryColor} from '../../styles/colors';
+import {
+  brandColor,
+  font1,
+  font2,
+  lineColor,
+  secondaryColor,
+} from '../../styles/colors';
 import {
   doLogin,
   userState,
   socialLogin,
   loginSuccess,
   logoutUser,
-  setFCMToken
+  setFCMToken,
 } from '../../reducers/user.slice';
 // import Google from '../../assets/images/google-logo.svg'
-import {setLoading, setPageLoading, loaderState} from '../../reducers/loader.slice';
+import {
+  setLoading,
+  setPageLoading,
+  loaderState,
+} from '../../reducers/loader.slice';
 import DialogLoader from '../../components/DialogLoader';
 import PageLoader from '../../components/PageLoader';
 import helper from '../../utils/helperMethods';
 import style from '../../styles/style';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootParamList } from '../../navigation/Navigators';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {RootParamList} from '../../navigation/Navigators';
 import messaging from '@react-native-firebase/messaging';
-import { ScreenStackHeaderLeftView } from 'react-native-screens';
+import {ScreenStackHeaderLeftView} from 'react-native-screens';
 import StyleCSS from '../../styles/style';
 import HeaderInner from '../../components/HeaderInner';
 import CustomStatusBar from '../../components/CustomStatusBar';
 import TextField from '../../components/CustomTextField';
 import CustomImage from '../../components/CustomImage';
-
+import Intercom from '@intercom/intercom-react-native'
 
 type Props = NativeStackScreenProps<RootParamList, 'Login'>;
 
 export interface GoogleLogin {
-    google_id: string;
-    email: string;
-    first_name?: string| null;
-    last_name?: string| null;
-    photoURL?: string| null;
+  google_id: string;
+  email: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  photoURL?: string | null;
 }
 
 export interface Login {
-  username :string;
-  password : string;
-  device_type :'IO'|'AD';
-  device_token : string;
+  username: string;
+  password: string;
+  device_type: 'IO' | 'AD';
+  device_token: string;
 }
 
-const Login: React.FC<any> = ({navigation, route} :Props) => {
+const Login: React.FC<any> = ({navigation, route}: Props) => {
   const dispatch = useAppDispatch();
-  const {loading , pageLoading } = useSelector(loaderState);
-const nextRoute = route.params?.nextRoute;
+  const {loading, pageLoading} = useSelector(loaderState);
+  const nextRoute = route.params?.nextRoute;
   const {isLoggedIn, fcmToken} = useSelector(userState);
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [viewPassword, setViewPassword] = useState<boolean>(false);
   const [userInfo, setUserInfo] = useState<any>(null);
-const [active , setActive] = useState<boolean>(false);
+  const [active, setActive] = useState<boolean>(false);
 
   useEffect(() => {
     // gsiConfigure();
@@ -90,56 +100,55 @@ const [active , setActive] = useState<boolean>(false);
     // signOut();
   }, []);
 
-  const checkPermission = async() => {
+  const checkPermission = async () => {
     const enabled = await messaging().hasPermission();
     const status =
       enabled === messaging.AuthorizationStatus.AUTHORIZED ||
-      enabled === messaging.AuthorizationStatus.PROVISIONAL
+      enabled === messaging.AuthorizationStatus.PROVISIONAL;
     if (status) {
       // console.log("Push Notifications are enabled.");
-      let fcmTokens = await AsyncStorage.getItem("USERDEVICETOKEN");
+      let fcmTokens = await AsyncStorage.getItem('USERDEVICETOKEN');
       // console.log(fcmTokens);
       getToken();
     } else {
       // console.log("Push Notifications not enabled.");
       requestPermission();
     }
-  }
+  };
 
- const getToken =async() => {
-  // const platformString = Platform.OS ==='android' ? 'ANDROID' : 'IOS';
-  // try { // VOYAPIC
-  //   const fcmToken = await messaging().getToken();
-  //   if (fcmToken) {
-  //     const currentDeviceId = DeviceInfo.getUniqueId();
-  //     await registerForPushNotification(
-  //       fcmToken,
-  //       currentDeviceId,
-  //       platformString,
-  //     );
-  //   }
-  // } catch (error) {
-  //   console.log('Error:', error);
-  // }
-    let fcmToken = await AsyncStorage.getItem("USERDEVICETOKEN");
+  const getToken = async () => {
+    // const platformString = Platform.OS ==='android' ? 'ANDROID' : 'IOS';
+    // try { // VOYAPIC
+    //   const fcmToken = await messaging().getToken();
+    //   if (fcmToken) {
+    //     const currentDeviceId = DeviceInfo.getUniqueId();
+    //     await registerForPushNotification(
+    //       fcmToken,
+    //       currentDeviceId,
+    //       platformString,
+    //     );
+    //   }
+    // } catch (error) {
+    //   console.log('Error:', error);
+    // }
+    let fcmToken = await AsyncStorage.getItem('USERDEVICETOKEN');
     dispatch(setFCMToken(fcmToken));
     if (!fcmToken) {
       // console.log(fcmToken);
       // console.log("fcmToken is not set: finding FCM Token");
-      try{
-          fcmToken = await messaging().getToken();
-          if (fcmToken) {
-            await AsyncStorage.setItem("USERDEVICETOKEN", fcmToken);
-            dispatch(setFCMToken(fcmToken));
-          } else {
-            // console.log("No fcmToken:");
-          }
+      try {
+        fcmToken = await messaging().getToken();
+        if (fcmToken) {
+          await AsyncStorage.setItem('USERDEVICETOKEN', fcmToken);
+          dispatch(setFCMToken(fcmToken));
+        } else {
+          // console.log("No fcmToken:");
+        }
+      } catch (error) {
+        console.log('Error:', error);
+      }
     }
-    catch(error){
-      console.log('Error:', error);
-    }
-    }
-  }
+  };
   async function requestPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -149,13 +158,12 @@ const [active , setActive] = useState<boolean>(false);
     if (enabled) {
       getToken();
     }
-    
+
     // try {
     //   if(Platform.OS==='ios'){
     //     const authorizationStatus = await messaging().requestPermission({
     //     provisional: true, providesAppNotificationSettings: true
     //   });
-
 
     //   if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
     //      // If user allow Push Notification
@@ -170,17 +178,17 @@ const [active , setActive] = useState<boolean>(false);
     // else {
     //   getToken();
     // }
-      
-            // if (authorizationStatus) {  // If user allow Push Notification
-            //   console.log('Permission status:', authorizationStatus);
-            //   getToken();
-            // }
-              // await messaging().requestPermission();
-              // If user allow Push Notification
-     
+
+    // if (authorizationStatus) {  // If user allow Push Notification
+    //   console.log('Permission status:', authorizationStatus);
+    //   getToken();
+    // }
+    // await messaging().requestPermission();
+    // If user allow Push Notification
+
     // } catch (error) {
-      // If user do not allow Push Notification
-      // console.log("User did not allow Push Notification");
+    // If user do not allow Push Notification
+    // console.log("User did not allow Push Notification");
     // }
   }
 
@@ -191,13 +199,12 @@ const [active , setActive] = useState<boolean>(false);
 
   //     await GoogleSignin.revokeAccess();
   //     await GoogleSignin.signOut();
-      
+
   //    } catch (error) {
   //     // Alert.alert("Something else went wrong... ", error.toString());
   //   }
-  
+
   // }
-  
 
   //GOOGLE SIGN IN
   // const gsiConfigure = () : void => {
@@ -222,14 +229,14 @@ const [active , setActive] = useState<boolean>(false);
   //       .then(async(response) => {
   //         dispatch(setLoading (false))
   //         setUserInfo(null)
-          
+
   //         if(response.data.status==='success'){
   //           redirectCheck(response.data.data);
   //           dispatch(loginSuccess(response.data.data));
   //         }
   //         else if(response.data.status==='failure'){
   //           await GoogleSignin.revokeAccess();
-            
+
   //           Alert.alert('', response.data.error_message.message, [
   //             {text: 'Okay', style: 'cancel'},
   //           ]);
@@ -273,15 +280,15 @@ const [active , setActive] = useState<boolean>(false);
   //     doSocialLogin(data);
   //   } catch (error : any) {
   //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        
+
   //     } else if (error.code === statusCodes.IN_PROGRESS) {
-        
+
   //       // operation (e.g. sign in) is in progress already
   //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-       
+
   //       // play services not available or outdated
   //     } else {
-       
+
   //       Alert.alert('Oops', JSON.parse(error), [
   //         {text: 'Okay', style: 'cancel'},
   //       ]);
@@ -293,30 +300,57 @@ const [active , setActive] = useState<boolean>(false);
 
   const handleLogin = async () => {
     Keyboard.dismiss();
-    let data: Login= {
-    username : username,
-    password : password,
-    device_type : Platform.OS === 'ios' ? 'IO' : 'AD',
-    device_token : fcmToken
-    }
+    let data: Login = {
+      username: username,
+      password: password,
+      device_type: Platform.OS === 'ios' ? 'IO' : 'AD',
+      device_token: fcmToken,
+    };
     if (data.username && data.password) {
-      dispatch(setLoading (true));
+      dispatch(setLoading(true));
       dispatch(doLogin(data))
         .unwrap()
         .then(response => {
-          if (response.status === "success") {
-            dispatch(setLoading (false));
-            redirectCheck(response.data);
-            dispatch(loginSuccess(response.data));
-          } else if (response.status === "failure") {
-            dispatch(setLoading (false));
-            Alert.alert("", response.error_message.message, [
-              { text: "Okay", style: "cancel" },
-            ])
+          console.log(response)
+
+          if (response.status === 'success') {
+            dispatch(setLoading(false));
+            if (response.data.verification_status_email === 'P') {
+              navigation.navigate('OtpVerification', {
+                email: response.data.email,
+                userSession: response.data,
+              });
+            } else if (
+              response.data.verification_status_email !== 'P' &&
+              response.data.user_details_status === 'P'
+            ) {
+              navigation.navigate('UserDetail', {
+                userSession: response.data,
+              });
+            } 
+            else {
+              redirectCheck(response.data);
+              Intercom.registerIdentifiedUser({email:response.data.email, userId: response.data.id})
+              Intercom.updateUser({
+                email: response.data.email,
+                userId: response.data.id,
+                name: response.data.first_name+ ' '+response.data.last_name,
+                phone: response.data.country_code+response.data.phone_number,
+                // languageOverride: 'fr',
+                // signedUpAt: 1621844451,
+                // unsubscribedFromEmails: true,
+              });
+              dispatch(loginSuccess(response.data));
+            }
+          } else if (response.status === 'failure') {
+            dispatch(setLoading(false));
+            Alert.alert('', response.error_message.message, [
+              {text: 'Okay', style: 'cancel'},
+            ]);
           }
         })
         .catch(err => {
-          dispatch(setLoading (false));
+          dispatch(setLoading(false));
         });
     } else {
       Alert.alert('', 'Enter email and password.', [
@@ -328,14 +362,13 @@ const [active , setActive] = useState<boolean>(false);
   //Not to be called during a render, need a fix.
   // if (isLoggedIn ? navigation.navigate('Dashboard') : null);
 
-  
-  const redirectCheck = (loginData : any) => {
+  const redirectCheck = (loginData: any) => {
     AsyncStorage.setItem('USERDATA', JSON.stringify(loginData));
     AsyncStorage.setItem('USERDEVICETOKEN', JSON.stringify(fcmToken));
     AsyncStorage.setItem('USER_NOT_FIRST', '1');
-    let nav : string = '';
-    
-//  navigation.navigate('Dashboard');
+    let nav: string = '';
+
+    //  navigation.navigate('Dashboard');
 
     // if (loginData.user_type === "T") {
     //   nav = "Dashboard";
@@ -350,7 +383,6 @@ const [active , setActive] = useState<boolean>(false);
     //   navigation.navigate('Dashboard');
     // }
     //@ts-ignore
-    
   };
 
   const handleForgotPassword = () => {
@@ -359,83 +391,81 @@ const [active , setActive] = useState<boolean>(false);
 
   return (
     <>
-    <CustomStatusBar type={'inside'}/>
-    <HeaderInner
-    type={'findCourse'}
-    title={'Log In'}
-    navigation={navigation}
-    logo={true}
-    backroute={'LoginScreen'}
-
-    />
-    <View style={styles.container}>
-{loading ? <DialogLoader/> : null}
-      <KeyboardAwareScrollView keyboardShouldPersistTaps={'handled'}>
-        {/* <View style={styles.loginImage}>
+      <CustomStatusBar type={'inside'} />
+      <HeaderInner
+        type={'findCourse'}
+        title={'Log In'}
+        navigation={navigation}
+        logo={true}
+        backroute={'LoginScreen'}
+      />
+      <View style={styles.container}>
+        {loading ? <DialogLoader /> : null}
+        <KeyboardAwareScrollView keyboardShouldPersistTaps={'handled'}>
+          {/* <View style={styles.loginImage}>
           <Image
             style={styles.backgroundImage}
             source={require('@images/toolbar_inner_back.png')}
           />
         </View> */}
-        <View style={styles.innerContainer}>
-          <Text style={styles.title}>Log In</Text>
-          <Text style={styles.subTitle}>
-          Enter your credentials
-          </Text>
+          <View style={styles.innerContainer}>
+            <Text style={styles.title}>Log In</Text>
+            <Text style={styles.subTitle}>Enter your credentials</Text>
 
-          {/* <View> */}
-          {/* <Text style={styles.inputLabel}>Username/Email</Text> */}
-          <View style={styles.formInput}>
-          <TextField
-          label='Email*'
-          mode='outlined'
-          
-          onFocus={() => setActive(true)}
-          onBlur={() => setActive(false)}
-            onChangeText={(text : any ) => {
-              setUsername(text);
-            }}></TextField>
+            {/* <View> */}
+            {/* <Text style={styles.inputLabel}>Username/Email</Text> */}
+            <View style={styles.formInput}>
+              <TextField
+                label="Email*"
+                mode="outlined"
+                onFocus={() => setActive(true)}
+                onBlur={() => setActive(false)}
+                onChangeText={(text: any) => {
+                  setUsername(text);
+                }}></TextField>
             </View>
-          {/* <Text style={styles.inputLabel}>Password</Text> */}
-          <View style={styles.formInput}>
-          <TextField
-          label='Password*'
-          mode='outlined'
-
-            secureTextEntry={!viewPassword}
-            //style={styles.inputpassword}
-            onChangeText={(text: any) => {
-              setPassword(text);
-            }}></TextField>
+            {/* <Text style={styles.inputLabel}>Password</Text> */}
+            <View style={styles.formInput}>
+              <TextField
+                label="Password*"
+                mode="outlined"
+                secureTextEntry={!viewPassword}
+                //style={styles.inputpassword}
+                onChangeText={(text: any) => {
+                  setPassword(text);
+                }}></TextField>
             </View>
-          {password.length ? (
+            {password.length ? (
+              <TouchableOpacity
+                style={styles.inputViewIconWrapper}
+                onPress={() => {
+                  setViewPassword(!viewPassword);
+                }}>
+                <CustomImage
+                  style={styles.inputViewIcon}
+                  uri={
+                    viewPassword
+                      ? `${config.media_url}hide_icon.png`
+                      : `${config.media_url}view_icon.png`
+                  }
+                />
+              </TouchableOpacity>
+            ) : null}
+            {/* </View> */}
             <TouchableOpacity
-              style={styles.inputViewIconWrapper}
+              style={styles.forgotPwd}
               onPress={() => {
-                setViewPassword(!viewPassword);
+                handleForgotPassword();
               }}>
-
-              <CustomImage
-                style={styles.inputViewIcon}
-                uri={viewPassword ? `${config.media_url}hide_icon.png` : `${config.media_url}view_icon.png` }
-               />
+              <Text style={styles.forgotPwdText}>Forgot password? </Text>
             </TouchableOpacity>
-          ) : null}
-          {/* </View> */}
-          <TouchableOpacity
-            style={styles.forgotPwd}
-            onPress={() => {
-              handleForgotPassword();
-            }}>
-            <Text style={styles.forgotPwdText}>Forgot password? </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={style.styles.submit}
-            onPress={() => handleLogin()}>
-            <Text style={style.styles.submitText}>Log In</Text>
-          </TouchableOpacity>
-          
-{/* {Platform.OS === 'android' ? 
+            <TouchableOpacity
+              style={style.styles.submit}
+              onPress={() => handleLogin()}>
+              <Text style={style.styles.submitText}>Log In</Text>
+            </TouchableOpacity>
+
+            {/* {Platform.OS === 'android' ? 
 <>
           <TouchableOpacity
             onPress={handleGoogleSignIn}
@@ -450,24 +480,22 @@ const [active , setActive] = useState<boolean>(false);
           </>
            : null} */}
 
-          <TouchableOpacity
-            style={styles.newUser}
-            onPress={() => {
-              Linking.openURL(config.FrontendBaseURL);
-              // navigation.navigate("Signup")
-            }}>
-            <Text style={styles.newUserText}>
-              New to ipassio?{' '}
-              <Text style={styles.signUp}>Sign up from the Website</Text>
-            </Text>
-          </TouchableOpacity>
-         
-        </View>
-      </KeyboardAwareScrollView>
-    </View>
+            <TouchableOpacity
+              style={styles.newUser}
+              onPress={() => {
+                // Linking.openURL(config.FrontendBaseURL);
+                navigation.navigate('Signup');
+              }}>
+              <Text style={styles.newUserText}>
+                New to ipassio? <Text style={styles.signUp}>Sign up</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAwareScrollView>
+      </View>
     </>
   );
-}
+};
 
 export default Login;
 
@@ -475,7 +503,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    marginTop:config.headerHeight,
+    marginTop: config.headerHeight,
   },
   loginImage: {
     height: 100,
@@ -499,38 +527,38 @@ const styles = StyleSheet.create({
   },
   forgotPwdText: {
     fontSize: 14,
-    marginTop:8,
+    marginTop: 8,
     color: secondaryColor,
-    fontWeight:'500',
+    fontWeight: '500',
     fontFamily: helper.switchFont('bold'),
   },
   title: {
     fontSize: 24,
     color: font1,
-    fontWeight:'700',
+    fontWeight: '700',
     fontFamily: helper.switchFont('bold'),
     marginTop: 40,
-    textAlign:'center',
-    lineHeight:30
+    textAlign: 'center',
+    lineHeight: 30,
   },
   newUser: {
     paddingVertical: 0,
     alignSelf: 'center',
     marginBottom: Platform.OS === 'ios' ? 60 : 36,
-    marginTop: Platform.OS==='ios'? 0:  24,
+    marginTop: Platform.OS === 'ios' ? 0 : 24,
   },
   newUserText: {
     fontSize: 14,
     fontFamily: helper.switchFont('regular'),
     color: font1,
-    fontWeight:'500',
+    fontWeight: '500',
     textAlign: 'center',
     alignSelf: 'center',
   },
   googleIconView: {
     // flex: 0.3,
-    flexDirection:'row',
-    alignItems:'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   googleIcon: {
     width: 22,
@@ -538,9 +566,9 @@ const styles = StyleSheet.create({
   },
   googleButtonText: {
     color: font1,
-    marginLeft:16,
-    fontWeight:'400',
-    fontSize:16
+    marginLeft: 16,
+    fontWeight: '400',
+    fontSize: 16,
   },
   googleButton: {
     justifyContent: 'center',
@@ -549,8 +577,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     marginTop: 10,
-    borderWidth:1,
-    borderColor:'#CDD6E0',
+    borderWidth: 1,
+    borderColor: '#CDD6E0',
     backgroundColor: '#fff',
     borderRadius: 8,
   },
@@ -597,14 +625,11 @@ const styles = StyleSheet.create({
     marginRight: 24,
     flex: 1,
   },
-  signUp:{
-    color:secondaryColor,
-    fontWeight:'500',
+  signUp: {
+    color: secondaryColor,
+    fontWeight: '500',
     fontSize: 14,
     fontFamily: helper.switchFont('medium'),
-    
-
-
   },
   inputTickIcon: {
     width: 26,
@@ -638,15 +663,15 @@ const styles = StyleSheet.create({
     color: font2,
     fontFamily: helper.switchFont('regular'),
     // marginBottom: 8,
-    fontWeight:'400',
-    marginTop:8,
-    textAlign:'center',
-    lineHeight:20
+    fontWeight: '400',
+    marginTop: 8,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   brandColorText: {
     color: brandColor,
   },
-  formInput:{
-    marginTop:24
-  }
+  formInput: {
+    marginTop: 24,
+  },
 });

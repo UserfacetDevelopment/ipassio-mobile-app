@@ -1,7 +1,7 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-platform :ios, '11.0'
+platform :ios, '13.0'
 
 target 'ipassio_' do
   config = use_native_modules!
@@ -12,9 +12,11 @@ target 'ipassio_' do
     :hermes_enabled => false
   )
   permissions_path = '../node_modules/react-native-permissions/ios'
+  
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera/Permission-Camera.podspec"
+  pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone/Permission-Microphone.podspec"
   pod 'GoogleSignIn', '~> 6.0.2'
-  # pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
-
+  pod 'GoogleTagManager'
   target 'ipassio_Tests' do
     inherit! :complete
     # Pods for testing

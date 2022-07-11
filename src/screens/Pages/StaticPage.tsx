@@ -104,7 +104,7 @@ const [isLoading, setIdLoading] = useState(false);
           />
           </View>
   
-          <View style={{ flex: 1, marginTop: 0 }}>
+          <View style={{ flex: 1, marginTop: 20 }}>
             {showWebView && nid === "privacy_policy" && (
               <WebView
                 source={{ uri: "https://www.ipassio.com/privacy-policy" }}

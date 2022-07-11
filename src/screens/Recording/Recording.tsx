@@ -32,8 +32,8 @@ import { getTimeMeasureUtils } from '@reduxjs/toolkit/dist/utils';
 import CustomStatusBar from '../../components/CustomStatusBar';
 
 export interface RecordingDataInterface {
-  course_slug: string;
-  user?: string;
+  course_slug: string|null;
+  user?: string|null;
   userToken: string;
 }
 
@@ -50,8 +50,8 @@ export default function Recording({route, navigation}: any) {
   const [courseFilter, setCourseFilter] = useState<any>([]);
   const [learnersFilter, setLearnersFilter] = useState<any>([]);
   const [selectedLearner, setSelectedLearner] = useState<any>(null);
-const [c, setC] = useState(null);
-const [l, setL]= useState(null);
+const [c, setC] = useState<null|string>(null);
+const [l, setL]= useState<null|string>(null);
 
 //student api call
 
@@ -91,7 +91,7 @@ useEffect(()=>{
       data = {
         course_slug: c ,//selectedCourse ? selectedCourse.label : 
         userToken: userData.token,
-        user: l//selectedLearner ? selectedLearner.label : '',
+        user: l //selectedLearner ? selectedLearner.label : '',
       };
 
       dispatch(getTeacherRecording(data))

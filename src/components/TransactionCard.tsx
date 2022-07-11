@@ -113,7 +113,7 @@ export default function TransactionCard({
           <View style={styles.itemRowItem}>
               {userData.user_type === 'T' ? <><Text style={styles.contentLabel}>Balance</Text>
               <Text style={[styles.contentText]}>
-                {data.currency_type === 'INR' ? 'Rs.' : 'US$'}
+                {data.currency_type === 'INR' ? '₹' : 'US $'}
                 {data.balance}
               </Text></> : null }
             </View>
@@ -123,7 +123,7 @@ export default function TransactionCard({
                 style={[
                   styles.amount,{marginTop:5}
                 ]}>
-                {data.currency_type === 'INR' ? 'Rs.' : 'US$'}
+                {data.currency_type === 'INR' ? '₹' : 'US $'}
                 {' '}{data.amount}
               </Text>
             </View>
@@ -170,8 +170,8 @@ export default function TransactionCard({
                     {Moment(data.created).format('MMM DD, yyyy')}
                   </Text>
                   <Text style={[styles.amount]}>
-                    {data.currency_type === 'INR' ? 'Rs.' : 'US$'}
-                    {' '}{data.amount}
+                    {data.currency_type === 'INR' ? '₹ ' : 'US $'}
+                    {data.amount}
                   </Text>
                 </View>
               </View>

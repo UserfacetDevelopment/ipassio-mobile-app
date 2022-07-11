@@ -29,6 +29,9 @@ export default class StyleCSS {
   
 
   static styles = StyleSheet.create({
+    mt24:{
+      marginTop:24
+    },
     mainTitle: {
       fontSize: 24,
       color: font1,
@@ -109,13 +112,13 @@ export default class StyleCSS {
       backgroundColor: background4,
     },
     input: {
-      backgroundColor: '#FFFFFF',
+      backgroundColor:'#fff',
       // marginTop: 24,
       height: 48,
-
       fontFamily: helper.switchFont('medium'),
       fontSize: 14,
-      // lineHeight:20,
+      justifyContent:'center',
+      lineHeight:21,
       color: font1,
     },
     lineStyleDashed: {
@@ -356,6 +359,21 @@ export default class StyleCSS {
     readMore: {
       color: secondaryColor,
     },
+    topSellingWrapper: {
+      borderRadius: 5,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      marginRight: 16,
+      backgroundColor: '#D03C30',
+      marginBottom:8,
+    },
+    topSellingText:{
+      color:'#fff',
+      fontFamily:Helper.switchFont('bold'),
+      fontSize:12,
+      fontWeight:'700',
+    },
+    font10: {fontSize: 10},
     font12: {fontSize: 12},
     font14: {fontSize: 14},
     font16: {fontSize: 16},

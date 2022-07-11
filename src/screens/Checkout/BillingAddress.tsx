@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  KeyboardAvoidingView,
   Alert,
   // Image,
   Animated,
@@ -17,7 +18,7 @@ import {TextInput} from 'react-native-paper';
 import StepIndicator from 'react-native-step-indicator';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {stepIndicatorStyles} from './CartPage';
 import HeaderInner from '../../components/HeaderInner'
 import {useSelector} from 'react-redux';
@@ -94,8 +95,8 @@ const checkoutToken = route.params?.checkoutToken;
     setStreetAddress(checkoutDataDetails.billing_street_address);
     setCity(checkoutDataDetails.billing_city);
     setPostalCode(checkoutDataDetails.billing_pin_code);
-    setState(checkoutDataDetails.billing_state);
-    setCountry(checkoutDataDetails.billing_country);
+    // setState(checkoutDataDetails.billing_state);
+    // setCountry(checkoutDataDetails.billing_country);
     setOrderComment(checkoutDataDetails.order_comments);
 
     let clist = country_listing;
@@ -133,11 +134,21 @@ const checkoutToken = route.params?.checkoutToken;
     setStateList(data[0].regions);
     setSelectedCountry(data[0]);
     setSelectedState(undefined);
+    // setState(null);
   };
 
   const getSelState = (data: any) => {
     setSelectedState(data[0]);
   };
+
+  console.log(firstName);
+  console.log(lastName);
+  console.log(selectedCountry);
+  console.log(streetAddress);
+  console.log(postalCode);
+  console.log(city);
+  console.log(selectedState);
+
 
   const updateUserBillingAddress = () => {
 
@@ -146,7 +157,7 @@ const checkoutToken = route.params?.checkoutToken;
       !firstName ||
       !lastName||
       !streetAddress ||
-      !city||
+      !postalCode||
       !postalCode ||
       !selectedState
     ) {
@@ -171,12 +182,12 @@ const checkoutToken = route.params?.checkoutToken;
       course: checkoutDataDetails.course.id,
       purchase_type: checkoutDataDetails.purchase_type,
       class_type: checkoutDataDetails.class_type.id,
-      billing_first_name: checkoutDataDetails.billing_first_name,
-      billing_last_name: checkoutDataDetails.billing_last_name,
+      billing_first_name: checkoutDataDetails.billing_first_name || firstName,
+      billing_last_name: checkoutDataDetails.billing_last_name || lastName,
       payment_gateway: checkoutDataDetails.payment_gateway,
 
       billing_pin_code: postalCode,
-      billing_state: selectedState.value,
+      billing_state: selectedState ? selectedState.value : state,
       billing_street_address: streetAddress,
       order_comments: orderComment,
       billing_city: city,
@@ -253,15 +264,9 @@ const checkoutToken = route.params?.checkoutToken;
               navigation={this.props.navigation}
               type={"innerpage"}
             /> */}
-          <KeyboardAwareScrollView
-          keyboardShouldPersistTaps='never'
-          style={styles.scrollView}
-            scrollEventThrottle={16}
-            // onScroll={Animated.event(
-            //   [{ nativeEvent: { contentOffset: { y: this.scrollY } } }],
-            //   { useNativeDriver: false }
-            // )}
-          >
+            <KeyboardAvoidingView style={styles.scrollView} behavior='height' >
+            <ScrollView >
+          
             {/* <ScrollView> */}
               <View style={styles.safecontainer}>
               <View style={[styles.stepIndicator]}>
@@ -299,7 +304,7 @@ const checkoutToken = route.params?.checkoutToken;
                 label='Last Name'
                 // style={StyleCSS.styles.input}
                   value={lastName}
-                  onChangeText={text => setState(text)}
+                  onChangeText={(text:string) => setLastName(text)}
                   editable={true}
                   selectTextOnFocus={false}
                 />
@@ -313,7 +318,7 @@ const checkoutToken = route.params?.checkoutToken;
                 label='Street Address *'
                 style={StyleCSS.styles.input}
                   value={streetAddress}
-                  onChangeText={text => setStreetAddress(text)}
+                  onChangeText={(text:string) => setStreetAddress(text)}
                   editable={true}
                   selectTextOnFocus={false}
                 />
@@ -327,7 +332,7 @@ const checkoutToken = route.params?.checkoutToken;
                 label='City *'
                   style={StyleCSS.styles.input}
                   value={city}
-                  onChangeText={text => setCity(text)}
+                  onChangeText={(text:string) => setCity(text)}
                   editable={true}
                   selectTextOnFocus={false}
                 />
@@ -375,7 +380,7 @@ const checkoutToken = route.params?.checkoutToken;
                       data={stateList}
                       selectedIds={[]}
                       label={
-                        selectedState ? selectedState.value : state? state : 'Select State'
+                        selectedState ? selectedState.value: 'Select State'
                       }
                       backTitle={'Select State'}
                     />
@@ -477,7 +482,9 @@ const checkoutToken = route.params?.checkoutToken;
                   </TouchableOpacity>
                 </View>
             {/* </ScrollView> */}
-          </KeyboardAwareScrollView>
+          
+          </ScrollView>
+          </KeyboardAvoidingView>
         </View>
       )}
     </View>

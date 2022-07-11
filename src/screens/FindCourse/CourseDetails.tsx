@@ -105,7 +105,7 @@ export interface GetCourseDataInterface {
   isLoggedIn: boolean;
 }
 
-import VideoPlayer from 'react-native-video-player';
+// import VideoPlayer from 'react-native-video-player';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import CustomImage from '../../components/CustomImage';
@@ -122,8 +122,10 @@ export interface CourseEnrollInterface {
   userToken: string;
 }
 
-const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
-  const propCourse = route.params?.course;
+const CourseDetails: FC<any> = (
+// {navigation, currCourse, setCourseDetailModal}
+  {navigation, route}: Props
+  ) => {
   const [videoId, setVideoId] = useState<string>('');
   const {loading, pageLoading} = useSelector(loaderState);
   const {teacherAttendance, teacherReviews, course, courseDetailStatus} =
@@ -178,10 +180,13 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
       course_slug: route.params?.course_slug,
       category_slug: route.params?.category_slug,
       teacher_slug: route.params?.teacher_slug,
+      // course_slug: currCourse.course_slug,
+      // category_slug: currCourse.category_slug,
+      // teacher_slug: currCourse.teacher_slug,
       userToken: isLoggedIn ? userData.token : undefined,
       isLoggedIn: isLoggedIn,
     };
-    dispatch(setPageLoading(true));
+    // dispatch(setPageLoading(true));
     dispatch(getCourseDetail(data))
       .unwrap()
       .then(response => {
@@ -246,7 +251,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
       dispatch(setLoading(true));
       var regExp =
         /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
-      var match = course.video_url.match(regExp);
+      var match = course.video_url.trim().match(regExp);
       setVideoId(match[1]);
       dispatch(setLoading(false));
     }
@@ -303,7 +308,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
     if (isLoggedIn) {
       let currency_type =
         course.user.ip_country === 'India' &&
-        ((!isLoggedIn && userLocation.data.country === 'India') ||
+        ((!isLoggedIn && userLocation.data.country_code === 'IN') ||
           (isLoggedIn && userData.ip_country === 'India'))
           ? 'INR'
           : 'USD';
@@ -628,7 +633,10 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
         <>
           <StatusBar translucent  />
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() => 
+              // setCourseDetailModal(false)
+              navigation.goBack()
+            }
             style={styles.backButton}>
             {/* <Back /> */}
             
@@ -638,11 +646,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
               uri={`${config.media_url}back-arrow.svg`}
             />
           </TouchableOpacity>
-          {/* <HeaderInner 
-        type={'findCourse'}
-        title={''}
-        back={true}
-        navigation={navigation}/> */}
+          
           <ScrollView
           // style={{marginTop:config.headerHeight}}
           >
@@ -695,6 +699,11 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                     // justifyContent: 'space-between',
                     flexWrap: 'wrap',
                   }}>
+                    {course.top_selling ? (
+                <View style={StyleCSS.styles.topSellingWrapper}>
+                  <Text style={StyleCSS.styles.topSellingText}>Top Selling</Text>
+                </View>
+               ) : null}
                   <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     {course.course_level &&
                       course.course_level.map((level: any, i: number) => {
@@ -785,10 +794,10 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                 {course && course.user && 
                 <Text style={styles.price}>
                   {!isLoggedIn ? (
-                    userLocation?.data?.country === 'IN' ? (
+                    userLocation?.data?.country_code === 'IN' ? (
                       course?.user.ip_country === 'India' ? (
                         <Text style={styles.price}>
-                          {`Rs. ${
+                          {`₹ ${
                             course && course.pricing && course?.pricing[0].INR
                           }`}{' '}
                           <Text style={StyleCSS.styles.contentText}>
@@ -808,7 +817,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                   ) : userData?.ip_country === 'India' ? (
                     course?.user.ip_country === 'India' ? (
                       <Text style={styles.price}>
-                        {`Rs. ${
+                        {`₹ ${
                           course && course.pricing && course?.pricing[0].INR
                         }`}{' '}
                         <Text style={StyleCSS.styles.contentText}>
@@ -857,6 +866,8 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                 </View>
                 {!isLoggedIn && course.allow_directly && (
                   <TouchableOpacity
+                 key={'item_name'}
+                 
                     style={styles.enrollButton}
                     onPress={() => handleEnrollment('N')}>
                     <Text
@@ -922,6 +933,7 @@ const CourseDetails: FC<Props> = ({navigation, route}: Props) => {
                 ) : null}
                 {isLoggedIn && userData.user_type !== 'S' ? (
                   <TouchableOpacity
+                  disabled={true}
                     style={styles.enrollButton}
                     // onPress={() => handleInterested()}
                   >

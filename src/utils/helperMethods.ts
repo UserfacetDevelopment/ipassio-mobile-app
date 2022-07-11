@@ -168,12 +168,10 @@ export default class Helper{
         }
       };
     
-      static validatePasswordFormat = password => {
+      static validatePasswordFormat = (password :  string) => {
         if (password.length < 8) return false;
-        if (!/\d/.test(password)) return false;
-        if (!/[A-Z]/.test(password)) return false;
-        if (!/[\!@#\$\%\^\&\*\?]/.test(password)) return false;
-    
+        if (password.length > 15) return false;
+        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(password)) return false;
         return true;
       };
     

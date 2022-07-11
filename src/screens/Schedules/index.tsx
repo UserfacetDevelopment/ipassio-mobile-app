@@ -114,6 +114,11 @@ const LoadItem = ({
   
   }
   
+  const joinClass = () =>{
+    navigation.navigate('Video',{
+      data: data
+    });
+  }
   
   const daysRemaining = (current_date: string, start_date: string) => {
     let dateFormat = 'DD MMM YYYY hh:mm A';
@@ -450,6 +455,22 @@ const LoadItem = ({
         // )
       }
       <View style={[{ alignSelf: 'flex-end', },StyleCSS.styles.fdrCenter]}>
+      {data.taught_on.code === 'I' ? <TouchableOpacity
+      onPress={joinClass}
+      >
+        <Text
+          style={[
+            StyleCSS.styles.contentText,
+            StyleCSS.styles.fw700,
+            {
+              color: font3,
+            
+              marginTop: selectedCard == data.class_token ? 0 : 12, marginRight:32
+            },
+          ]}>
+          Join Class
+        </Text>
+      </TouchableOpacity> : null}
       <TouchableOpacity
       onPress={deleteClass}
       >
@@ -500,7 +521,7 @@ export default function Schedules({navigation , route}: Props) {
 const [url, setURL]= useState(null);
 const [taughtOnCode, setTaughtOnCode] = useState(null)
 const [deleteClassData, setDeleteClassData] = useState(null);
-
+// const [joinClassData, setJoinClassData] = useState
 const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
 
 

@@ -53,6 +53,7 @@ export default function Filters({navigation, route}: Props) {
     selectedCategories,
     selectedSubcategories,
     selectedSecsubcategories,
+    nationality,
     page,
     offset,
   } = useSelector(courseState);
@@ -192,19 +193,47 @@ handleSecSubcategories(ct)
     setLevelTemp(temp);
   };
 
+  console.log(levels)
   const getCount = (code: string) => {
-    if (code === 'S') {
-      return levels.count_expert;
-    } else if (code === 'A') {
-      return levels.count_all_level;
-    } else if (code === 'B') {
-      return levels.count_beginner;
-    } else if (code === 'I') {
-      return levels.count_intermediate;
-    } else if (code === 'P') {
-      return levels.count_professional;
+    if(nationality === 'INDIAN'){
+      if (code === 'S') {
+        return levels.count.india_levels_course.count_all_level;
+      } else if (code === 'A') {
+        return levels.count.india_levels_course.count_all_level;
+      } else if (code === 'B') {
+        return levels.count.india_levels_course.count_beginner;
+      } else if (code === 'I') {
+        return levels.count.india_levels_course.count_intermediate;
+      } else if (code === 'P') {
+        return levels.count.india_levels_course.count_professional;
+      }
     }
+    else{
+      if (code === 'S') {
+        return levels.count.western_levels_course.count_expert;
+      } else if (code === 'A') {
+        return levels.count.western_levels_course.count_all_level;
+      } else if (code === 'B') {
+        return levels.count.western_levels_course.count_beginner;
+      } else if (code === 'I') {
+        return levels.count.western_levels_course.count_intermediate;
+      } else if (code === 'P') {
+        return levels.count.western_levels_course.count_professional;
+      }
+    }
+    
   };
+
+  const checkNationality = (all: number, indian: number, western:number): boolean => {
+    let val: boolean = false;
+    if (nationality === 'INDIAN' && indian > 0) {
+      val = true;
+    } else if (nationality === 'WESTERN' && western >0) {
+      val = true;
+    }
+    return val;
+  };
+
 
   const loadCategories = () => {
     return (
@@ -214,7 +243,8 @@ handleSecSubcategories(ct)
           {categoryMaster.map((cd: any) => {
              console.log(categories);
             return (
-             
+              <>
+             {checkNationality(cd.all_course, cd.indian_course, cd.western_course) ? 
               <TouchableOpacity
                 onPress={() => {
                   handleCategories(cd);
@@ -231,8 +261,9 @@ handleSecSubcategories(ct)
                   />
                   <Text style={styles.textColor}>{cd.category_name}</Text>
                 </View>
-                <Text style={styles.textColorNumber}>{cd.toral_course}</Text>
-              </TouchableOpacity>
+                <Text style={styles.textColorNumber}>{nationality === 'INDIAN' ? cd.indian_course : cd.all_course-cd.indian_course}</Text>
+              </TouchableOpacity> : null}
+              </>
             );
           })}
           <TouchableOpacity
@@ -259,6 +290,8 @@ handleSecSubcategories(ct)
           (<>
           {categoryNonmaster.map((cd: any) => {
             return (
+              <>
+              {checkNationality(cd.all_course, cd.indian_course, cd.western_course) ?
               <TouchableOpacity
                 onPress={() => {
                   handleCategories(cd);
@@ -275,8 +308,9 @@ handleSecSubcategories(ct)
                   />
                   <Text style={styles.textColor}>{cd.category_name}</Text>
                 </View>
-                <Text style={styles.textColorNumber}>{cd.toral_course}</Text>
-              </TouchableOpacity>
+                <Text style={styles.textColorNumber}>{nationality === 'INDIAN' ? cd.indian_course : cd.all_course-cd.indian_course}</Text>
+              </TouchableOpacity>:null}
+              </>
             );
           })}
           </>) : null
@@ -338,6 +372,7 @@ handleSecSubcategories(ct)
     );
   };
 
+
   const loadSubcategories = () => {
     const loadingArr =  catTemp.length > 0 ? catTemp : !others ? categoryMaster :categoryData.data;
 // loadingArr holds the catehories selected to map the subcategories
@@ -348,6 +383,7 @@ handleSecSubcategories(ct)
           return ct.subCategories.map((sc: any) => {
             return (
               <>
+              {checkNationality(sc.all_course, sc.indian_course, sc.western_course) ? 
                 <TouchableOpacity
                   onPress={() => {
                     handleSubcategories(sc);
@@ -373,9 +409,9 @@ handleSecSubcategories(ct)
                     <CustomImage height={16} width={16} uri={`${config.media_url}drop2.svg`}></CustomImage>
 
                     </View> : null}
-                  <Text style={[styles.textColorNumber, styles.moreScText]}>{sc.toral_course}</Text>
+                  <Text style={[styles.textColorNumber, styles.moreScText]}>{nationality==='INDIAN' ? sc.indian_course : sc.western_course}</Text>
                   </View>
-                </TouchableOpacity>
+                </TouchableOpacity> : null}
                 {subCategories.indexOf(sc.seo.seo_slug_url) > -1 &&
                 sc.subCategories.length > 0 ? (
                   <View style={styles.secSubcategoryListitem}>
@@ -405,7 +441,7 @@ handleSecSubcategories(ct)
                             </Text>
                           </View>
                           <Text style={styles.textColorNumber}>
-                            {ssc.toral_course}
+                            {nationality === 'INDIAN' ? ssc.indian_course : ssc.western_course}
                           </Text>
                         </TouchableOpacity>
                       );

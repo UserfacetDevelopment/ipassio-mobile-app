@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   parentHr: {
     height: 1,
-    // color: Colors.WHITE,
+
     width: '100%',
   },
   child:{

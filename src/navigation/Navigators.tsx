@@ -13,6 +13,7 @@ import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
+import Intercom,{Visibility} from '@intercom/intercom-react-native'
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -37,8 +38,17 @@ import {
   getCategories,
   enrollNow,
 } from '../reducers/courses.slice';
-import {userState, loginSuccess, getUserLocation, setLoginRedirectedFrom} from '../reducers/user.slice';
-import CourseDetails from '../screens/FindCourse/CourseDetails';
+import {
+  userState,
+  loginSuccess,
+  getUserLocation,
+  setLoginRedirectedFrom,
+  getCountryList,
+  setUserLocation,
+} from '../reducers/user.slice';
+import CourseDetails, {
+  CourseEnrollInterface,
+} from '../screens/FindCourse/CourseDetails';
 import CartPage from '../screens/Checkout/CartPage';
 import {SvgUri} from 'react-native-svg';
 import config from '../config/Config';
@@ -69,12 +79,23 @@ import Recording from '../screens/Recording/Recording';
 
 import {font1, font2} from '../styles/colors';
 import RecordingPreview from '../screens/Recording/RecordingPreview';
-import { checkoutState, setCheckoutDataDetails, setNotLoggedInCheckoutData } from '../reducers/checkout.slice';
+import {
+  checkoutState,
+  setCheckoutDataDetails,
+  setNotLoggedInCheckoutData,
+} from '../reducers/checkout.slice';
+import Otp from '../screens/SignUp/Otp';
+import UserDetail from '../screens/SignUp/UserDetail';
+import VideoConferencing from '../screens/VideoConferencing';
+import ActionStatus2 from '../components/ActionStatus2';
 export type RootParamList = {
   Categories: any;
   CategoryDetails: any;
   FindCourses: undefined;
-  Subcategories: undefined;
+  Subcategories:  {
+    subcategory:any;
+  cat: any;
+  backroute: any,}
   CourseDetail: {
     course_slug: string;
     category_slug: string;
@@ -98,6 +119,18 @@ export type RootParamList = {
     messageDesc: string;
     params?: any;
     navigator?: any;
+    data?: any;
+  };
+  ActionStatus2: {
+    timeOut: number;
+    backRoute?: string;
+    email?: string;
+    messageStatus: string;
+    messageTitle: string;
+    messageDesc: string;
+    params?: any;
+    navigator?: any;
+    data?: any;
   };
   ResetPassword: any;
   ForgotPassword: any;
@@ -151,6 +184,9 @@ export type RootParamList = {
   Signup: any;
   CreatedCourses: any;
   RecordingPreview: any;
+  OtpVerification: any;
+  UserDetail: any;
+  Video: any;
 };
 
 export interface CategoryInterface {
@@ -166,318 +202,318 @@ function LogoTitle(props: any) {
   return <SvgUri uri="https://media.ipassio.com/images/ipassio_logo.svg" />;
 }
 
-const StudentTabNavigator = () => {
-  const {isLoggedIn} = useSelector(userState);
-  return (
-    <Tab.Navigator
-      initialRouteName={'Dashboard'}
-      screenOptions={({route}) => ({
-        tabBarStyle: {
-          paddingBottom: Platform.OS === 'android' ? 12 : 30,
-          height: Platform.OS === 'android' ? 64 : 80,
-        },
-        // tabBarLabelStyle​:{
-        //   fontSize:10,
-        //   fontWeight:'600',
-        //   color:font1
-        // },
-        tabBarIcon: ({focused, tintColor}) => {
-          let iconName;
-          let iconW = 0;
-          let iconH = 0;
-          if (route.name === 'Dashboard') {
-            iconName = focused
-              ? require('@images/dashboard-active.png')
-              : require('@images/dashboard.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'Schedule') {
-            iconName = focused
-              ? require('@images/schedule-active.png')
-              : require('@images/schedule.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'Recording') {
-            iconName = focused
-              ? require('@images/recording-active.png')
-              : require('@images/recording.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'Transactions') {
-            iconName = focused
-              ? require('@images/transactions-active.png')
-              : require('@images/transactions.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'More') {
-            iconName = focused
-              ? require('@images/more.png')
-              : require('@images/more.png');
-            iconW = 24;
-            iconH = 24;
-          }
-          // You can return any component that you like here!
-          if (focused) {
-            return (
-              <Animated.Image
-                style={{
-                  marginTop: 7,
-                  paddingBottom: 7,
-                  width: iconW,
-                  height: iconH,
-                }}
-                source={iconName}
-              />
-            );
-          }
-          // tintColor='#81878D'
-          return (
-            <Animated.Image
-              style={{
-                marginTop: 7,
-                paddingBottom: 7,
-                width: iconW,
-                height: iconH,
-              }}
-              source={iconName}
-            />
-          );
-        },
-        tabBarActiveTintColor: font1,
-        tabBarInactiveTintColor: font2,
-      })}>
-      <Tab.Screen
-        name="Dashboard"
-        component={Dashboard}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen
-        name="Schedule"
-        component={Schedules}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen
-        name="Recording"
-        component={Recording}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen
-        name="Transactions"
-        component={Transaction}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen name="More" component={More} options={{headerShown: false}} />
-    </Tab.Navigator>
-  );
-};
+// const StudentTabNavigator = () => {
+//   const {isLoggedIn} = useSelector(userState);
+//   return (
+//     <Tab.Navigator
+//       initialRouteName={'Dashboard'}
+//       screenOptions={({route}) => ({
+//         tabBarStyle: {
+//           paddingBottom: Platform.OS === 'android' ? 12 : 30,
+//           height: Platform.OS === 'android' ? 64 : 80,
+//         },
+//         // tabBarLabelStyle​:{
+//         //   fontSize:10,
+//         //   fontWeight:'600',
+//         //   color:font1
+//         // },
+//         tabBarIcon: ({focused, tintColor}) => {
+//           let iconName;
+//           let iconW = 0;
+//           let iconH = 0;
+//           if (route.name === 'Dashboard') {
+//             iconName = focused
+//               ? require('@images/dashboard-active.png')
+//               : require('@images/dashboard.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'Schedule') {
+//             iconName = focused
+//               ? require('@images/schedule-active.png')
+//               : require('@images/schedule.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'Recording') {
+//             iconName = focused
+//               ? require('@images/recording-active.png')
+//               : require('@images/recording.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'Transactions') {
+//             iconName = focused
+//               ? require('@images/transactions-active.png')
+//               : require('@images/transactions.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'More') {
+//             iconName = focused
+//               ? require('@images/more.png')
+//               : require('@images/more.png');
+//             iconW = 24;
+//             iconH = 24;
+//           }
+//           // You can return any component that you like here!
+//           if (focused) {
+//             return (
+//               <Animated.Image
+//                 style={{
+//                   marginTop: 7,
+//                   paddingBottom: 7,
+//                   width: iconW,
+//                   height: iconH,
+//                 }}
+//                 source={iconName}
+//               />
+//             );
+//           }
+//           // tintColor='#81878D'
+//           return (
+//             <Animated.Image
+//               style={{
+//                 marginTop: 7,
+//                 paddingBottom: 7,
+//                 width: iconW,
+//                 height: iconH,
+//               }}
+//               source={iconName}
+//             />
+//           );
+//         },
+//         tabBarActiveTintColor: font1,
+//         tabBarInactiveTintColor: font2,
+//       })}>
+//       <Tab.Screen
+//         name="Dashboard"
+//         component={Dashboard}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen
+//         name="Schedule"
+//         component={Schedules}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen
+//         name="Recording"
+//         component={Recording}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen
+//         name="Transactions"
+//         component={Transaction}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen name="More" component={More} options={{headerShown: false}} />
+//     </Tab.Navigator>
+//   );
+// };
 
-const TabNavigator = () => {
-  const {isLoggedIn} = useSelector(userState);
+// const TabNavigator = () => {
+//   const {isLoggedIn} = useSelector(userState);
 
-  return (
-    <Tab.Navigator
-      initialRouteName={'Dashboard'}
-      screenOptions={({route}) => ({
-        tabBarStyle: {
-          paddingBottom: Platform.OS === 'android' ? 12 : 30,
-          height: Platform.OS === 'android' ? 64 : 80,
-        },
-        tabBarIcon: ({focused}) => {
-          let iconName;
-          let iconW = 0;
-          let iconH = 0;
-          if (route.name === 'Dashboard') {
-            iconName = focused
-              ? require('@images/dashboard-active.png')
-              : require('@images/dashboard.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'Schedule') {
-            iconName = focused
-              ? require('@images/schedule-active.png')
-              : require('@images/schedule.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'Withdraw') {
-            iconName = focused
-              ? require('@images/withdraw-active.png')
-              : require('@images/withdraw.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'Transactions') {
-            iconName = focused
-              ? require('@images/transactions-active.png')
-              : require('@images/transactions.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'More') {
-            iconName = focused
-              ? require('@images/more.png')
-              : require('@images/more.png');
-            iconW = 24;
-            iconH = 24;
-          }
-          // You can return any component that you like here!
+//   return (
+//     <Tab.Navigator
+//       initialRouteName={'Dashboard'}
+//       screenOptions={({route}) => ({
+//         tabBarStyle: {
+//           paddingBottom: Platform.OS === 'android' ? 12 : 30,
+//           height: Platform.OS === 'android' ? 64 : 80,
+//         },
+//         tabBarIcon: ({focused}) => {
+//           let iconName;
+//           let iconW = 0;
+//           let iconH = 0;
+//           if (route.name === 'Dashboard') {
+//             iconName = focused
+//               ? require('@images/dashboard-active.png')
+//               : require('@images/dashboard.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'Schedule') {
+//             iconName = focused
+//               ? require('@images/schedule-active.png')
+//               : require('@images/schedule.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'Withdraw') {
+//             iconName = focused
+//               ? require('@images/withdraw-active.png')
+//               : require('@images/withdraw.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'Transactions') {
+//             iconName = focused
+//               ? require('@images/transactions-active.png')
+//               : require('@images/transactions.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'More') {
+//             iconName = focused
+//               ? require('@images/more.png')
+//               : require('@images/more.png');
+//             iconW = 24;
+//             iconH = 24;
+//           }
+//           // You can return any component that you like here!
 
-          if (focused) {
-            // tintColor=brandColor;
+//           if (focused) {
+//             // tintColor=brandColor;
 
-            return (
-              <Animated.Image
-                style={{
-                  marginTop: 7,
-                  paddingBottom: 7,
-                  width: iconW,
-                  height: iconH,
-                }}
-                source={iconName}
-              />
-            );
-          }
-          // tintColor='#81878D'
-          return (
-            <Animated.Image
-              style={{
-                marginTop: 7,
-                paddingBottom: 7,
-                width: iconW,
-                height: iconH,
-              }}
-              source={iconName}
-            />
-          );
-        },
-        tabBarActiveTintColor: font1,
-        tabBarInactiveTintColor: font2,
-      })}>
-      <Tab.Screen
-        name="Dashboard"
-        component={Dashboard}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen
-        name="Schedule"
-        component={Schedules}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen
-        name="Withdraw"
-        component={Withdrawal}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen
-        name="Transactions"
-        component={Transaction}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen name="More" component={More} options={{headerShown: false}} />
-    </Tab.Navigator>
-  );
-};
+//             return (
+//               <Animated.Image
+//                 style={{
+//                   marginTop: 7,
+//                   paddingBottom: 7,
+//                   width: iconW,
+//                   height: iconH,
+//                 }}
+//                 source={iconName}
+//               />
+//             );
+//           }
+//           // tintColor='#81878D'
+//           return (
+//             <Animated.Image
+//               style={{
+//                 marginTop: 7,
+//                 paddingBottom: 7,
+//                 width: iconW,
+//                 height: iconH,
+//               }}
+//               source={iconName}
+//             />
+//           );
+//         },
+//         tabBarActiveTintColor: font1,
+//         tabBarInactiveTintColor: font2,
+//       })}>
+//       <Tab.Screen
+//         name="Dashboard"
+//         component={Dashboard}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen
+//         name="Schedule"
+//         component={Schedules}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen
+//         name="Withdraw"
+//         component={Withdrawal}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen
+//         name="Transactions"
+//         component={Transaction}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen name="More" component={More} options={{headerShown: false}} />
+//     </Tab.Navigator>
+//   );
+// };
 
-const TeacherTabNavigator = () => {
-  const {isLoggedIn} = useSelector(userState);
+// const TeacherTabNavigator = () => {
+//   const {isLoggedIn} = useSelector(userState);
 
-  return (
-    <Tab.Navigator
-      initialRouteName={'Dashboard'}
-      screenOptions={({route}) => ({
-        tabBarStyle: {
-          paddingBottom: Platform.OS === 'android' ? 12 : 30,
-          height: Platform.OS === 'android' ? 64 : 80,
-        },
-        tabBarIcon: ({focused}) => {
-          let iconName;
-          let iconW = 0;
-          let iconH = 0;
-          if (route.name === 'Dashboard') {
-            iconName = focused
-              ? require('@images/dashboard-active.png')
-              : require('@images/dashboard.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'Schedule') {
-            iconName = focused
-              ? require('@images/schedule-active.png')
-              : require('@images/schedule.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'Withdraw') {
-            iconName = focused
-              ? require('@images/withdraw-active.png')
-              : require('@images/withdraw.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'Transactions') {
-            iconName = focused
-              ? require('@images/transactions-active.png')
-              : require('@images/transactions.png');
-            iconW = 24;
-            iconH = 24;
-          } else if (route.name === 'More') {
-            iconName = focused
-              ? require('@images/more.png')
-              : require('@images/more.png');
-            iconW = 24;
-            iconH = 24;
-          }
-          // You can return any component that you like here!
+//   return (
+//     <Tab.Navigator
+//       initialRouteName={'Dashboard'}
+//       screenOptions={({route}) => ({
+//         tabBarStyle: {
+//           paddingBottom: Platform.OS === 'android' ? 12 : 30,
+//           height: Platform.OS === 'android' ? 64 : 80,
+//         },
+//         tabBarIcon: ({focused}) => {
+//           let iconName;
+//           let iconW = 0;
+//           let iconH = 0;
+//           if (route.name === 'Dashboard') {
+//             iconName = focused
+//               ? require('@images/dashboard-active.png')
+//               : require('@images/dashboard.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'Schedule') {
+//             iconName = focused
+//               ? require('@images/schedule-active.png')
+//               : require('@images/schedule.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'Withdraw') {
+//             iconName = focused
+//               ? require('@images/withdraw-active.png')
+//               : require('@images/withdraw.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'Transactions') {
+//             iconName = focused
+//               ? require('@images/transactions-active.png')
+//               : require('@images/transactions.png');
+//             iconW = 24;
+//             iconH = 24;
+//           } else if (route.name === 'More') {
+//             iconName = focused
+//               ? require('@images/more.png')
+//               : require('@images/more.png');
+//             iconW = 24;
+//             iconH = 24;
+//           }
+//           // You can return any component that you like here!
 
-          if (focused) {
-            // tintColor=brandColor;
+//           if (focused) {
+//             // tintColor=brandColor;
 
-            return (
-              <Animated.Image
-                style={{
-                  marginTop: 7,
-                  paddingBottom: 7,
-                  width: iconW,
-                  height: iconH,
-                }}
-                source={iconName}
-              />
-            );
-          }
-          // tintColor='#81878D'
-          return (
-            <Animated.Image
-              style={{
-                marginTop: 7,
-                paddingBottom: 7,
-                width: iconW,
-                height: iconH,
-              }}
-              source={iconName}
-            />
-          );
-        },
-        tabBarActiveTintColor: font1,
-        tabBarInactiveTintColor: font2,
-      })}>
-      <Tab.Screen
-        name="Dashboard"
-        component={Dashboard}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen
-        name="Schedule"
-        component={Schedules}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen
-        name="Withdraw"
-        component={Withdrawal}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen
-        name="Transactions"
-        component={Transaction}
-        options={{headerShown: false}}
-      />
-      <Tab.Screen name="More" component={More} options={{headerShown: false}} />
-    </Tab.Navigator>
-  );
-};
+//             return (
+//               <Animated.Image
+//                 style={{
+//                   marginTop: 7,
+//                   paddingBottom: 7,
+//                   width: iconW,
+//                   height: iconH,
+//                 }}
+//                 source={iconName}
+//               />
+//             );
+//           }
+//           // tintColor='#81878D'
+//           return (
+//             <Animated.Image
+//               style={{
+//                 marginTop: 7,
+//                 paddingBottom: 7,
+//                 width: iconW,
+//                 height: iconH,
+//               }}
+//               source={iconName}
+//             />
+//           );
+//         },
+//         tabBarActiveTintColor: font1,
+//         tabBarInactiveTintColor: font2,
+//       })}>
+//       <Tab.Screen
+//         name="Dashboard"
+//         component={Dashboard}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen
+//         name="Schedule"
+//         component={Schedules}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen
+//         name="Withdraw"
+//         component={Withdrawal}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen
+//         name="Transactions"
+//         component={Transaction}
+//         options={{headerShown: false}}
+//       />
+//       <Tab.Screen name="More" component={More} options={{headerShown: false}} />
+//     </Tab.Navigator>
+//   );
+// };
 
 const CourseFlowNavigator = () => {
   const {loading, pageLoading} = useSelector(loaderState);
@@ -490,7 +526,6 @@ const CourseFlowNavigator = () => {
         component={FindCourse}
         options={{
           headerShown: false,
-          
         }}
       />
       <Stack.Screen
@@ -572,11 +607,6 @@ const LoginFlowNavigator = () => {
           component={ResetPassword}
           options={{headerShown: false}}
         />
-        <Stack.Screen
-          name="Signup"
-          component={Signup}
-          options={{headerShown: false}}
-        />
       </>
     </Stack.Navigator>
   );
@@ -584,45 +614,117 @@ const LoginFlowNavigator = () => {
 
 export const RootNavigator = () => {
   const dispatch = useAppDispatch();
-  const {courseData, courseStatus, categoryData, categoryStatus} =
+  const {courseData, courseStatus, nationality, categoryData, categoryStatus} =
     useSelector(courseState);
   const {isLoggedIn, userData, userLocation} = useSelector(userState);
   const {loading, pageLoading} = useSelector(loaderState);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    let data: CategoryInterface = {
-      nationality: '',
-    };
-    const date = new Date();
+  useEffect(()=>{
+    Intercom.registerUnidentifiedUser();
+    // Intercom.displayMessenger()
+    Intercom.setLauncherVisibility(Visibility.VISIBLE)
+  },[userData])
 
-    dispatch(getCategories(data));
+  if(Platform.OS === 'android'){
+    Intercom.setBottomPadding(150)
+  }
+  else{
+    Intercom.setBottomPadding(20)
+  }
+
+  const ipinfo = (responseCountry: any, response: any) => {
+    responseCountry.data.map((country_name: any, i: number) => {
+      if (country_name.countryShortCode === response.data.country) {
+        var data = {
+          country_code: response.data.country,
+          country_name: country_name.countryName
+            ? country_name.countryName
+            : response.data.country,
+          city: response.data.city,
+          postal: response.data.postal,
+          latitude: response.data.loc,
+          longitude: response.data.loc,
+          IPv4: response.data.ip,
+          state: response.data.region,
+          timezone: response.data.timezone,
+        };
+        var result = {
+          data: data,
+        };
+        dispatch(setUserLocation(result));
+      }
+    });
+  }
+
+useEffect(()=>{
+  let data: CategoryInterface = {
+    nationality: nationality,
+  };
+  dispatch(getCategories(data));
+},[nationality])
+
+  useEffect(() => {
+    
 
     setIsLoading(true);
     if (!isLoggedIn) {
+      dispatch(getCountryList())
+        .unwrap()
+        .then(responseCountry => {
+          console.log(responseCountry);
+
+          const token1 = 'd03fadd21eeed2';
+          dispatch(getUserLocation(token1))
+            .unwrap()
+            .then(response => {
+              console.log(response);
+              ipinfo(responseCountry, response);
+            })
+            .catch(() => {
+              const token2 = 'b52e8cf6ab40aa';
+              dispatch(getUserLocation(token2))
+                .unwrap()
+                .then(response => {
+                  console.log(response);
+                  ipinfo(responseCountry, response);
+                })
+                .catch(err => {
+                  const token3 = 'ad519179ea355a';
+                  dispatch(getUserLocation(token3))
+                    .unwrap()
+                    .then(response => {
+                      console.log(response);
+                      ipinfo(responseCountry, response);
+                    })
+                    .catch(err => {
+                      console.log(err);
+                    });
+                });
+            });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+
       AsyncStorage.getItem('USERDATA', (err, response) => {
         if (response) {
+         
+          const resJson = JSON.parse(response);
           dispatch(loginSuccess(JSON.parse(response)));
-          // dispatch(setLoading(true));
-          // dispatch(setPageLoading(true));
-
-          // // dispatch(getCategories());
-          // dispatch(getCourses())
-          //   .then(() => {
-          //     dispatch(setLoading(false));
-          //     dispatch(setPageLoading(false));
-          //   })
-          //   .catch(() => {
-          //     dispatch(setLoading(false));
-          //     dispatch(setPageLoading(false));
-          //   });
+          console.log(resJson);
+           Intercom.registerIdentifiedUser({email:resJson.email, userId: resJson.id})
+              Intercom.updateUser({
+                email: resJson.email,
+                userId: resJson.id,
+                name: resJson.first_name+ ' '+resJson.last_name,
+                phone: resJson.country_code+resJson.phone_number,
+              });
         } else {
           //nothing
-          
         }
       });
     }
-    dispatch(getUserLocation());
     setIsLoading(false);
   }, []);
 
@@ -669,87 +771,93 @@ const CheckoutNavigator = () => {
 
 const RootStackNavigator = () => {
   const navigation = useNavigation();
-  const dispatch= useAppDispatch();
-  // const {navigation} = useSelector(userState);
+  const dispatch = useAppDispatch();
   const [initialRoute, setInitialRoute] = useState('Dashboard');
-  const {isLoggedIn, userData, userLocation, loginRedirectedFrom} = useSelector(userState);
+  const {isLoggedIn, userData, userLocation, loginRedirectedFrom} =
+    useSelector(userState);
   const {notLoggedInCheckoutData} = useSelector(checkoutState);
   const {course} = useSelector(courseState);
-  
+
   useEffect(() => {
-    
     if (isLoggedIn) {
-      if(loginRedirectedFrom!==null){
-        if(loginRedirectedFrom ==='CD'){
-          let currency_type =
-        course.user.ip_country === 'India' &&
-        ((!isLoggedIn && userLocation.data.country === 'India') ||
-          (isLoggedIn && userData.ip_country === 'India'))
-          ? 'INR'
-          : 'USD';
+      if (loginRedirectedFrom !== null) {
+        if (loginRedirectedFrom === 'CD') {
+          if (userData.user_type === 'S') {
+            let currency_type =
+              course.user.ip_country === 'India' &&
+              ((!isLoggedIn && userLocation.data.country === 'India') ||
+                (isLoggedIn && userData.ip_country === 'India'))
+                ? 'INR'
+                : 'USD';
 
-      let total_cpw = notLoggedInCheckoutData.total_cpw;
-      let total_weeks = notLoggedInCheckoutData.total_weeks;
-      let total_class = notLoggedInCheckoutData.total_class;
-      let selectedPrice = notLoggedInCheckoutData.selectedPrice;
+            let total_cpw = notLoggedInCheckoutData.total_cpw;
+            let total_weeks = notLoggedInCheckoutData.total_weeks;
+            let total_class = notLoggedInCheckoutData.total_class;
+            let selectedPrice = notLoggedInCheckoutData.selectedPrice;
 
-      let enrollData = {
-        course: course.id,
-        price_per_class:
-          currency_type === 'INR'
-            ? selectedPrice.final_INR
-            : selectedPrice.final_USD,
-        currency_type: currency_type,
-        classes_per_week: total_cpw,
-        number_of_weeks: total_weeks,
-        number_of_class: total_class,
-        billing_first_name: userData.first_name,
-        billing_last_name: userData.last_name,
-        billing_street_address: '',
-        billing_city: userData.ip_city,
-        billing_pin_code: '',
-        billing_state: userData.ip_state,
-        billing_country: userData.ip_country,
-        class_type: selectedPrice.id,
-        purchase_type: 'N',
-        discounts: course.discounts ? course.discounts : '',
-        timezone: userData.timezone,
-        device_type: Platform.OS,
-        price_per_class_inr: selectedPrice.final_INR,
-      price_per_class_usd: selectedPrice.final_USD
-      };
+            let enrollData = {
+              course: course.id,
+              price_per_class:
+                currency_type === 'INR'
+                  ? selectedPrice.final_INR
+                  : selectedPrice.final_USD,
+              currency_type: currency_type,
+              classes_per_week: total_cpw,
+              number_of_weeks: total_weeks,
+              number_of_class: total_class,
+              billing_first_name: userData.first_name,
+              billing_last_name: userData.last_name,
+              billing_street_address: '',
+              billing_city: userData.ip_city,
+              billing_pin_code: '',
+              billing_state: userData.ip_state,
+              billing_country: userData.ip_country,
+              class_type: selectedPrice.id,
+              purchase_type: 'N',
+              discounts: course.discounts ? course.discounts : '',
+              timezone: userData.timezone,
+              device_type: Platform.OS,
+              price_per_class_inr: selectedPrice.final_INR,
+              price_per_class_usd: selectedPrice.final_USD,
+            };
 
-      const finaldata: CourseEnrollInterface = {
-        data: enrollData,
-        userToken: userData.token,
-      };
+            const finaldata: CourseEnrollInterface = {
+              data: enrollData,
+              userToken: userData.token,
+            };
 
-      dispatch(setPageLoading(true));
-      dispatch(enrollNow(finaldata))
-        .unwrap()
-        .then(response => {
-          dispatch(setNotLoggedInCheckoutData(null));
-          dispatch(setLoginRedirectedFrom(null));
-          dispatch(setPageLoading(false));
-          if (response.data.status === 'success') {
-            dispatch(setCheckoutDataDetails(response.data.data));
-            navigation.navigate('Checkout', {
-              screen: 'CartPage',
-              params: {
-                checkoutToken: response.data.data.checkout_token,
-              },
-            });
+            dispatch(setPageLoading(true));
+            dispatch(enrollNow(finaldata))
+              .unwrap()
+              .then(response => {
+                dispatch(setNotLoggedInCheckoutData(null));
+                dispatch(setLoginRedirectedFrom(null));
+                dispatch(setPageLoading(false));
+                if (response.data.status === 'success') {
+                  dispatch(setCheckoutDataDetails(response.data.data));
+                  navigation.navigate('Checkout', {
+                    screen: 'CartPage',
+                    params: {
+                      checkoutToken: response.data.data.checkout_token,
+                    },
+                  });
+                }
+              })
+              .catch(err => {
+                dispatch(setPageLoading(false));
+                console.log(err);
+              });
+          } else {
+            dispatch(setNotLoggedInCheckoutData(null));
+            dispatch(setLoginRedirectedFrom(null));
+            setInitialRoute('Browse');
+            navigation.navigate('Browse');
           }
-        })
-        .catch(err => {
-          dispatch(setPageLoading(false));
-          console.log(err);
-        });
+
           // setInitialRoute('CartPage');
           // navigation.navigate('CartPage');
         }
-      }
-      else{
+      } else {
         setInitialRoute('Dashboard');
         navigation.navigate('Dashboard');
       }
@@ -849,31 +957,30 @@ const RootStackNavigator = () => {
     }
   };
 
-
   //handling notifs in quit state for ios
-  useEffect(() => {
-    messaging()
-        .getDidOpenSettingsForNotification()
-        .then(async didOpenSettingsForNotification => {
-            if (didOpenSettingsForNotification) {
-                navigation.navigate('Dashboard')
-            }
-        })
-}, [])
+  // useEffect(() => {
+  //   messaging()
+  //     .getDidOpenSettingsForNotification()
+  //     .then(async didOpenSettingsForNotification => {
+  //       if (didOpenSettingsForNotification) {
+  //         navigation.navigate('Dashboard');
+  //       }
+  //     });
+  // }, []);
 
-
-//handling notifications for ios
-const openSettingsForNotifications = AsyncStorage.getItem('openSettingsForNotifications');
-  useEffect(() => {
-    AsyncStorage.getItem('openSettingsForNotifications', (err, response) => {
-      if (response) {
-          navigation.navigate('Dashboard')        
-      } else {
-        //nothing
-      }
-    });    
-  }, [openSettingsForNotifications])
-
+  //handling notifications for ios
+  // const openSettingsForNotifications = AsyncStorage.getItem(
+  //   'openSettingsForNotifications',
+  // );
+  // useEffect(() => {
+  //   AsyncStorage.getItem('openSettingsForNotifications', (err, response) => {
+  //     if (response) {
+  //       navigation.navigate('Dashboard');
+  //     } else {
+  //       //nothing
+  //     }
+  //   });
+  // }, [openSettingsForNotifications]);
 
   useEffect(() => {
     messaging().onNotificationOpenedApp((remoteMessage: any) => {
@@ -899,7 +1006,7 @@ const openSettingsForNotifications = AsyncStorage.getItem('openSettingsForNotifi
           );
         }
       })
-      .catch(()=>{
+      .catch(() => {
         //nothing
       });
   }, []);
@@ -923,6 +1030,11 @@ const openSettingsForNotifications = AsyncStorage.getItem('openSettingsForNotifi
             options={{headerShown: false}}
           />
           <Stack.Screen
+            name="ActionStatus2"
+            component={ActionStatus2}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
             name="Browse"
             component={CourseFlowNavigator}
             options={{
@@ -932,6 +1044,28 @@ const openSettingsForNotifications = AsyncStorage.getItem('openSettingsForNotifi
           <Stack.Screen
             name="Dashboard"
             component={Dashboard}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Signup"
+            component={Signup}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="OtpVerification"
+            component={Otp}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="UserDetail"
+            component={UserDetail}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="StaticPage"
+            component={StaticPage}
             options={{
               headerShown: false,
             }}
@@ -971,6 +1105,11 @@ const openSettingsForNotifications = AsyncStorage.getItem('openSettingsForNotifi
           <Stack.Screen
             name="ActionStatus"
             component={ActionStatus}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="ActionStatus2"
+            component={ActionStatus2}
             options={{headerShown: false}}
           />
           <Stack.Screen
@@ -1031,6 +1170,11 @@ const openSettingsForNotifications = AsyncStorage.getItem('openSettingsForNotifi
           <Stack.Screen
             name="RecordingPreview"
             component={RecordingPreview}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Video"
+            component={VideoConferencing}
             options={{headerShown: false}}
           />
         </>

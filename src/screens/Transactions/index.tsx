@@ -139,8 +139,8 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
         if (response.data.status === 'success') {
           setWalletBalance(
             response.data.extra_data.currency_type === 'INR'
-              ? 'Rs.' + " " +response.data.extra_data.total_balance
-              : 'US$' + " " +response.data.extra_data.total_balance,
+              ? '₹' + " " +response.data.extra_data.total_balance
+              : 'US $' +response.data.extra_data.total_balance,
           );
           console.log(response);
           dispatch(fetchTransactionsDataSuccess(response.data.data));
@@ -267,7 +267,6 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
                   </Animated.Text>
                   <Animated.Text
                     style={[
-                      styles.walletSubTitle,
                       {marginTop: thirdTitleTop, position:'absolute', fontSize: balanceSize,
                       top:config.headerHeight, color:'#fff', opacity:0.9, fontWeight:'600', marginLeft: 16, marginBottom:12,
                     },

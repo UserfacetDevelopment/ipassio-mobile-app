@@ -12,7 +12,7 @@ import {
   Dimensions,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
-import PhoneInput from 'react-native-phone-number-input';
+import PhoneInput,{isValidNumber} from 'react-native-phone-number-input';
 import helper from '../../utils/helperMethods';
 // import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import Moment from 'moment';
@@ -54,6 +54,7 @@ import TextField from '../../components/CustomTextField';
 import Textarea from 'react-native-textarea';
 import CustomImage from '../../components/CustomImage';
 import country_listing from '../../assets/json/country_region.json';
+import { KeyboardAvoidingView } from 'native-base';
 
 const width = Dimensions.get('screen').width;
 
@@ -160,6 +161,10 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
     {label: 'DT', value: 'Discuss Session Timings'},
   ];
 
+
+    console.log(phoneInput.current?.isValidNumber(phoneNumber, countryCode) ? 'correct' : 'incorrect');
+  
+
   console.log(timeSlots);
   const onSubmit = (data: any) => {
     setSubmitRequested(true);
@@ -170,7 +175,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
     // {
     //when user is not logged in and yob should be there + user logged in and yob not required
     //  if (selectedCountry !== undefined && reason !== undefined)
-    if (phoneInput.current?.isValidNumber(data.number)) {
+    if (phoneInput.current?.isValidNumber(phoneNumber, countryCode)) {
       console.log('correct');
     }
     console.log(meetingPlatform);
@@ -223,7 +228,7 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
           city: data.city,
           country: selectedCountry?.value,
           add_info: data.add_info,
-          timezone: userLocation.data.timezone,
+          timezone: isLoggedIn ? userData.timezone : userLocation.data.timezone,
           course: course.id,
           taught_on: learn_on,
           slots: timeSlots,
@@ -573,8 +578,9 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
             </View>
           </View>
           <View>
+            <KeyboardAvoidingView  style={styles.scrollView} behavior='height' >
             <ScrollView
-              style={styles.scrollView}
+              // style={styles.scrollView}
               contentInsetAdjustmentBehavior="always">
               <View style={styles.container}>
                 <View style={[styles.safecontainer]}>
@@ -1307,6 +1313,7 @@ zIndex={10000}
                 </View>
               </View>
             </ScrollView>
+            </KeyboardAvoidingView>
           </View>
         </>
       )}

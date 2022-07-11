@@ -404,19 +404,19 @@ const CardData = ({data, navigation}: any) => {
         <View style={[style.styles.flexDirRow]}>
           <View style={styles.halfWidth}>
             {userData.user_type === 'S' ? (<Text style={[styles.enrolledStudentsTextLarge, {fontSize:16, marginBottom:4}]}>
-              {data.currency_type === 'INR' ? 'Rs.' : 'US$'}
+              {data.currency_type === 'INR' ? '₹ ' : 'US $'}
               {data.per_class_price}
             </Text>) : null}
             <Text style={[styles.enrolledStudentsTextLight]}>Per Class</Text>
             {userData.user_type === 'T' ? (<Text style={[styles.enrolledStudentsTextLarge,styles.teacherPrice, {marginTop:4}]}>
-              {data.currency_type === 'INR' ? 'Rs.' : 'US$'}
+              {data.currency_type === 'INR' ? '₹ ' : 'US $'}
               {data.per_class_price}
             </Text>) : null}
           </View>
           <View style={styles.halfWidth}>
             {userData.user_type === 'S' ? (<Text
               style={[styles.enrolledStudentsTextLarge, {marginBottom:4}]}>
-              {data.currency_type === 'INR' ? 'Rs.' : 'US$'}
+              {data.currency_type === 'INR' ? '₹ ' : 'US $'}
               {data.amount_released}
             </Text>) :null }
             <Text style={styles.enrolledStudentsTextLight}>
@@ -424,7 +424,7 @@ const CardData = ({data, navigation}: any) => {
             </Text>
             {userData.user_type === 'T' ? (<Text
               style={[styles.enrolledStudentsTextLarge, styles.teacherPrice, {marginTop:4}]}>
-              {data.currency_type === 'INR' ? 'Rs.' : 'US$'}
+              {data.currency_type === 'INR' ? '₹ ' : 'US $'}
               {data.amount_released}
             </Text>) :null }
           </View>
@@ -547,8 +547,6 @@ export default function Dashboard({navigation}: Props) {
       ;
     }
   };
-
-
 
   const markAttendance = (data: any): void => {
     // console.log(data)
@@ -1088,75 +1086,7 @@ useEffect(()=>{
           navigation={navigation}
           type={'dashboard'}
         />
-        {/* {userData && userData.user_type === 'T' ? (
-          <>
-            <Animated.View style={{flexDirection: 'row', zIndex: -1, top: 80}}>
-              <Image
-                style={{width: '100%'}}
-                source={require('@images/header_bg.png')}
-              />
-              <TouchableOpacity
-                onPress={() => setTabState('S')}
-                style={[
-                  {
-                    position: 'absolute',
-                    top: 60,
-                    paddingLeft: 20,
-                    paddingBottom: 10,
-                    width: '50%',
-                  },
-                  tabState === 'S' ? styles.activeBorder : null,
-                ]}>
-                <Text
-                  style={
-                    tabState === 'S'
-                      ? styles.tabTextActive
-                      : styles.tabTextInactive
-                  }>
-                  List of Students
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setTabState('C')}
-                style={[
-                  {
-                    position: 'absolute',
-                    top: 60,
-                    paddingLeft: 20,
-                    paddingBottom: 10,
-                    right: 0,
-                    width: '50%',
-                  },
-                  tabState === 'C' ? styles.activeBorder : null,
-                ]}>
-                <Text
-                  style={
-                    tabState === 'C'
-                      ? styles.tabTextActive
-                      : styles.tabTextInactive
-                  }>
-                  Created Courses
-                </Text>
-              </TouchableOpacity>
-            </Animated.View>
-            <View
-              style={{
-                position: 'relative',
-                zIndex: 999,
-                top: 83,
-                flexDirection: 'row',
-                paddingLeft: 16,
-                backgroundColor: '#fff',
-                paddingVertical: 12,
-                alignItems: 'center',
-              }}>
-              <Text style={styles.filterAllCourses}>All Courses</Text>
-              <TouchableOpacity>
-                <DropdownArrow />
-              </TouchableOpacity>
-            </View>
-          </>
-        ) : null} */}
+        
 
         <ScrollView
           style={

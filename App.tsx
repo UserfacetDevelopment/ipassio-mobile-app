@@ -8,7 +8,7 @@
 import React, {useEffect, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
-import {StyleSheet, useColorScheme, Alert} from 'react-native';
+import {StyleSheet, useColorScheme, Alert, Platform} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
@@ -37,8 +37,8 @@ import VersionCheck from 'react-native-version-check';
 import {BackHandler} from 'react-native';
 import {Linking} from 'react-native';
 import { brandColor, dropdownBorder, font1, font2, font3, lineColor, lineColor2, secondaryColor } from './src/styles/colors';
-import { setFCMToken } from './src/reducers/user.slice';
-import SplashScreen from 'react-native-splash-screen'
+import { setFCMToken, userState } from './src/reducers/user.slice';
+import SplashScreen from 'react-native-splash-screen';
 
 const theme = {
   ...DefaultTheme,
@@ -71,22 +71,21 @@ const App = () => {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-
   const [permissions, setPermissions] = useState({});
 
-  useEffect(() => {
-    PushNotificationIOS.addEventListener('notification', onRemoteNotification);
-  },[]);
+  // useEffect(() => {
+  //   PushNotificationIOS.addEventListener('notification', onRemoteNotification);
+  // },[]);
 
-  const onRemoteNotification = (notification:any) => {
-    const isClicked = notification.getData().userInteraction === 1;
+  // const onRemoteNotification = (notification:any) => {
+  //   const isClicked = notification.getData().userInteraction === 1;
 
-    if (isClicked) {
-      // Navigate user to another screen
-    } else {
-      // Do something else with push notification
-    }
-  };
+  //   if (isClicked) {
+  //     // Navigate user to another screen
+  //   } else {
+  //     // Do something else with push notification
+  //   }
+  // };
 
 
   useEffect(() => {
@@ -106,7 +105,7 @@ const App = () => {
   },[]);
 
   // setCustomTextInput(customTextInputProps);
-  
+ 
 
   const checkUpdateNeeded = async () => {
     let updateNeeded = await VersionCheck.needUpdate({

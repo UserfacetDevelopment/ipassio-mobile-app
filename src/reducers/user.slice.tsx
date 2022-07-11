@@ -5,14 +5,10 @@ import {RootState} from '../app/store';
 import {GoogleLogin, Login} from '../screens/Login';
 import {ForgotPassswordInterface} from '../screens/Login/ForgotPassword';
 import {ResetPasswordInterface} from '../screens/Login/ResetPassword';
+import { RegisterDataInterface } from '../screens/SignUp';
+import NoData from '../components/NoData';
+import { CompleteSignupInterface } from '../screens/SignUp/UserDetail';
 
-export const getUserLocation = createAsyncThunk(
-  'user/getUserLocation',
-  async () => {
-    const response = await ApiGateway.get('https://ipinfo.io/?token=ad519179ea355a', true);
-    return response; // (this is the actual data which will be returned as a payload).
-  },
-);
 
 const initialState: any = {
   userData: [],
@@ -21,7 +17,8 @@ const initialState: any = {
   locationStatus: null,
   fcmToken: null,
   navigation:null,
-  loginRedirectedFrom : null
+  loginRedirectedFrom : null,
+  signupFrom: null,
 };
 export const userSlice = createSlice({
   name: 'user',
@@ -44,29 +41,35 @@ export const userSlice = createSlice({
     setLoginRedirectedFrom : (state, action:PayloadAction<any>) =>{
       state.loginRedirectedFrom = action.payload;
     },
+    setUserLocation : (state, action:PayloadAction<any>)=>{
+      state.userLocation = action.payload;
+    },
+    setSignupFrom : (state, action:PayloadAction<any>) =>{
+      state.signupFrom = action.payload;
+    },
   },
-  extraReducers: builder => {
-    builder.addCase(getUserLocation.pending, state => {
-      state.locationStatus = 'loading';
-    }),
-      builder.addCase(
-        getUserLocation.fulfilled,
-        (state, action: PayloadAction<any>) => {
-          state.userLocation = action.payload;
-          state.locationStatus = 'success';
-        },
-      ),
-      builder.addCase(
-        getUserLocation.rejected,
-        (state, action: PayloadAction<any>) => {
-          state.locationStatus = 'failed';
-          state.userLocation = action.payload;
-        },
-      );
-  },
+  // extraReducers: builder => {
+  //   builder.addCase(getUserLocation.pending, state => {
+  //     state.locationStatus = 'loading';
+  //   }),
+  //     builder.addCase(
+  //       getUserLocation.fulfilled,
+  //       (state, action: PayloadAction<any>) => {
+  //         state.userLocation = action.payload;
+  //         state.locationStatus = 'success';
+  //       },
+  //     ),
+  //     builder.addCase(
+  //       getUserLocation.rejected,
+  //       (state, action: PayloadAction<any>) => {
+  //         state.locationStatus = 'failed';
+  //         state.userLocation = action.payload;
+  //       },
+  //     );
+  // },
 });
 
-export const {loginSuccess, logoutUser, setFCMToken, setNavigation, setLoginRedirectedFrom} = userSlice.actions;
+export const {loginSuccess, logoutUser, setFCMToken, setNavigation, setLoginRedirectedFrom, setUserLocation, setSignupFrom} = userSlice.actions;
 
 export const userState = (state: RootState) => state.user;
 
@@ -142,57 +145,54 @@ export const getSession = createAsyncThunk('user/getSession', async () => {
   });
   return response;
 });
-// export const socialLogin = (data) = (dispatch) => {
-//   ApiGateway
-//     .post("https://safeapis.ipassio.com/api/account/google-login?format=json", data)
-//     .then(response => {
-//       if (response.data.status === 'success') {
-//         dispatch(loginSuccess(response.data))
-//       } else if (response.data.status === 'failure') {
-//         dispatch(loginFailure());
-//         // setIsLoading(false);
-//         // Alert.alert('', response.data.error_message.message, [
-//         //   {text: 'Okay', style: 'cancel'},
-//         // ]);
-//       }
-//     })
-//     .catch((err) => {
-//       console.log(err)
-//     });
-// }
 
-// export const doForgetPassword = (data, navigation)  => {
-//   ApiGateway.post(config.api_urls.forgot_password, data)
-//         .then((response) => {
-//           // this.setState({ isLoading: false });
-//           // this.setState({ username: "" });
-//           // global.not_first = true;                          //????????????????????????????????????????
-//           if (response.data.status === "success") {
-//             //  navigation.navigate("ActionStatus", {
-//             //   messageStatus: "success",
-//             //   messageTitle: "Congratulations!",
-//             //   messageDesc: config.messages.forgot_password_msg,
-//             //   timeOut: 4000,
-//             //   backRoute: "Login",
-//             //   params: {},
-//             // });
-//           } else if (response.data.status === "failure") {
-//             // this.props.navigation.navigate("ActionStatus", {
-//             //   messageStatus: "failure",
-//             //   messageTitle: "Sorry!",
-//             //   messageDesc: response.data.error_message.message,
-//             //   timeOut: 4000,
-//             //   backRoute: "ForgotPassword",
-//             //   params: {},
-//             // });
-//           }
-//         })
-//         .catch((err) => {
-//           alert(JSON.stringify(err));
-//           // this.setState({ isLoading: false });
-//         });
-// }
+export const getStaticPage = createAsyncThunk('user/getStaticPage', 
+async(pageKey: string)=>{
+  const response =  await ApiGateway.get("site-config/static-page?key=" + pageKey)
+  return response.data;
+})
 
+export const register  =createAsyncThunk('user/register',
+async(data: RegisterDataInterface) => {
+  const response = await ApiGateway.post('account/?format=json', data)
+  return response;
+})
+
+export const otpVerifyAccount = createAsyncThunk('user/otpVerifyAccount',
+async(data : any)=>{
+  let response = ApiGateway.post('account/verify-account?format=json', data);
+  return response;
+})
+
+
+export const completeSignUp = createAsyncThunk('user/completeSignUp',
+async(data : CompleteSignupInterface)=>{
+  let response = ApiGateway.patch('account/?format=json', data.data,{
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Token " + data.userToken,
+    },
+  });
+  return response;
+})
+
+export const getCountryList = createAsyncThunk(
+  'user/getCountryList', async()=>{
+    const response = await ApiGateway.get('https://media.ipassio.com/JSON/country_region.json', true);
+    return response;
+  }
+)
+
+export const getUserLocation = createAsyncThunk(
+  'user/getUserLocation',
+  async (token:string) => {
+    //ad519179ea355a
+    //d03fadd21eeed2 no country code
+    //b52e8cf6ab40aa no country code
+    const response = await ApiGateway.get('https://ipinfo.io/?token='+token, true);
+    return response; // (this is the actual data which will be returned as a payload).
+  },
+);
 // data contains your data, for example:
-// const data = { foo: 'bar', };
+// const data = { fooe: 'bar', };
 // data.self = data; // <-- cyclic reference

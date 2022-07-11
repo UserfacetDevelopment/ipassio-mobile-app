@@ -163,8 +163,8 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
         if (response.data.status === 'success') {
           setWalletBalance(
             response.data.extra_data.currency_type === 'INR'
-              ? 'Rs.' + response.data.extra_data.total_balance
-              : 'US$' + response.data.extra_data.total_balance,
+              ? '₹ ' + response.data.extra_data.total_balance
+              : 'US $' + response.data.extra_data.total_balance,
           );
 
           dispatch(fetchWithdrawalDataSuccess(response.data.data));
@@ -337,7 +337,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                   </Text>
                   <View style={styles.dateWrapper}>
                     {/* <Text style={styles.amount}>
-                      {data.currency_type === 'INR' ? 'Rs.' : 'US$ '}
+                      {data.currency_type === 'INR' ? '₹ ' : 'US $'}
                       {data.amount}
                     </Text> */}
                     <Text style={styles.date}>
@@ -423,7 +423,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
               <View style={styles.itemRowItem}>
                 <Text style={styles.contentLabel}>Amount</Text>
                 <Text style={styles.contentText}>
-                      {data.currency_type === 'INR' ? 'Rs.' : 'US$ '}
+                      {data.currency_type === 'INR' ? '₹ ' : 'US $'}
                       {data.amount}
                     </Text>
               </View>
@@ -537,7 +537,7 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                   style={styles.amtDateWrapper}>
                   <Text
                     style={styles.amount}>
-                    {data.currency_type === 'INR' ? 'Rs. ' : 'US $'}
+                    {data.currency_type === 'INR' ? '₹ ' : 'US $'}
                     {data.amount}
                   </Text>
                   
@@ -729,7 +729,6 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                   </Animated.Text>
                   <Animated.Text
                     style={[
-                      styles.walletSubTitle,
                       {marginTop: thirdTitleTop, position:'absolute', fontSize: balanceSize,
                       top:config.headerHeight, color:'#fff', opacity:0.9, fontWeight:'600', margin: 16,
                     },

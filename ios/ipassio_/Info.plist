@@ -35,8 +35,13 @@
 			</dict>
 		</dict>
 	</dict>
+	
+  <key>NSMicrophoneUsageDescription</key>
+  <string>We require your permission to access the microphone while in a video call</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We require your permission to access the camera</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This application nees to access your location</string>
+	<string>ipassio nees to access your location</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>ipassio needs to access Photos</string>
 	<key>Privacy - User Notifications Usage Description</key>

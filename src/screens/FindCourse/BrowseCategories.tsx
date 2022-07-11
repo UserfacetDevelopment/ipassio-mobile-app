@@ -15,6 +15,8 @@ import {SvgUri} from 'react-native-svg';
 import {
   courseState,
   getCategories,
+  setNationality,
+  setOffset,
   setPage,
   setShowMore,
 } from '../../reducers/courses.slice';
@@ -33,14 +35,14 @@ const {width, height} = Dimensions.get('screen');
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 // import Back from '../../assets/images/arrow-dark.svg';
-import {CategoryInterface} from './index';
+// import {CategoryInterface} from './index';
 import HeaderInner from '../../components/HeaderInner';
 import {useRoute} from '@react-navigation/native';
 // import Drop from '../../assets/images/Drop.svg';
 import {brandColor, font1, selectedDrop} from '../../styles/colors';
 // import Others from '../../assets/images/others.svg';
 // import Dropdown from '../../assets/images/dropdown.svg';
-import { configureFonts } from 'react-native-paper';
+import {configureFonts} from 'react-native-paper';
 import CustomImage from '../../components/CustomImage';
 import Helper from '../../utils/helperMethods';
 
@@ -52,9 +54,8 @@ export default function BrowseCategories({navigation, route}: Props) {
   // const [others, setOthers] = useState(true);
   const [othersSelected, setOthersSelected] = useState(false);
   const routes = useRoute();
-const [active, setActive] = useState('');
+  const [active, setActive] = useState('');
   const {loading} = useSelector(loaderState);
-
 
   // useEffect(() => {
   //   dispatch(setLoading(true));
@@ -71,7 +72,6 @@ const [active, setActive] = useState('');
   //     .then(() => dispatch(setLoading(false)))
   //     .catch(() => dispatch(setLoading(false)));
   // }, []);
-
 
   const loadCategory = (item: any, index: number): any => {
     return (
@@ -104,10 +104,21 @@ const [active, setActive] = useState('');
 
           <Text style={styles.categoryText}>{item.category_name}</Text>
         </View>
-        <Text style={styles.categoryText}>{item.toral_course}</Text>
+        <Text style={styles.categoryText}>{item.all_course}</Text>
       </TouchableOpacity>
     );
   };
+
+const checkNationality = (all: number, indian: number, western:number): boolean => {
+    let val: boolean = false;
+    if (nationality === 'INDIAN' && indian > 0) {
+      val = true;
+    } else if (nationality === 'WESTERN' && western >0) {
+      val = true;
+    }
+    return val;
+  };
+
   return (
     <>
       <HeaderInner
@@ -120,20 +131,65 @@ const [active, setActive] = useState('');
         back={true}
         // backroute={backroute}
       />
-
+      <View style={styles.tabView}>
+        <CustomImage
+          style={styles.tabBgImage}
+          uri={`${config.media_url}transactions_bg.png`}
+        />
+        <View style={styles.userTabsWrapper}>
+          <TouchableOpacity
+            style={
+              nationality === 'INDIAN' ? styles.selectedTab : styles.userTab
+            }
+            onPress={() => {
+              dispatch(setOffset(0));
+              dispatch(setNationality('INDIAN'));
+            }}>
+            <Text
+              style={
+                nationality === 'INDIAN'
+                  ? styles.selectedUserTabText
+                  : styles.userTabText
+              }>
+              Indian({categoryData.extra_data.count.total_indian_course})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={
+              nationality === 'WESTERN' ? styles.selectedTab : styles.userTab
+            }
+            onPress={() => {
+              dispatch(setOffset(0));
+              dispatch(setNationality('WESTERN'));
+            }}>
+            <Text
+              style={
+                nationality === 'WESTERN'
+                  ? styles.selectedUserTabText
+                  : styles.userTabText
+              }>
+              Western({categoryData.extra_data.count.total_western_course})
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       <View style={styles.main}>
         {route.params?.subcategory ? (
-        <>
-          <TouchableOpacity
-            style={styles.backCategory}
-            onPress={() => {
-              navigation.goBack();
-            }}>
-                                     <CustomImage height={16} width={16} uri={`${config.media_url}arrow-dark.svg`}/>
+          <>
+            <TouchableOpacity
+              style={styles.backCategory}
+              onPress={() => {
+                navigation.goBack();
+              }}>
+              <CustomImage
+                height={16}
+                width={16}
+                uri={`${config.media_url}arrow-dark.svg`}
+              />
 
-            {/* <Back/> */}
-            <Text style={styles.backCategoryText}>Back</Text>
-          </TouchableOpacity>
+              {/* <Back/> */}
+              <Text style={styles.backCategoryText}>Back</Text>
+            </TouchableOpacity>
           </>
         ) : null}
         {categoryData && categoryData.data ? (
@@ -141,19 +197,11 @@ const [active, setActive] = useState('');
             {categoryData.data.map((cd: any) => {
               return (
                 <>
-                  {cd.is_master ? (
+                  {cd.is_master &&
+                  checkNationality(cd.all_course, cd.indian_course, cd.western_course) ? (
                     <>
-
-                    {/* {console.log(cd.top_navigation_icon)} */}
                       <View style={{paddingBottom: 20}}>
-                        <View
-                          style={styles.categoryIcon}>
-                            <CustomImage height={32} width={32} style={{height:32, width:32}} uri={cd.top_navigation_icon}/>
-                            {/* <SvgUri uri={cd.top_navigation_icon} /> */}
-                          {/* <Image
-                            style={{height: 100, width: 100, resizeMode:'cover'}}
-                            source={{uri: cd.top_navigation_icon}}
-                          /> */}
+                        <View style={styles.categoryIcon}>
                           <Text style={styles.mainCategory}>
                             {cd.category_name}
                           </Text>
@@ -162,35 +210,53 @@ const [active, setActive] = useState('');
                           <>
                             {cd.subCategories.map((sc: any) => {
                               return (
+                                <>
+                                {checkNationality(sc.all_course, sc.indian_course, sc.western_course) ?
                                 <TouchableOpacity
-                                activeOpacity={1}
-                                onPressIn={()=>{setActive(sc.seo.seo_slug_url)}}
-                                onPressOut={()=>{setActive('')}}
-                                onPress={() => {
-                                  if (sc.subCategories && sc.subCategories.length !== 0) {
-                                    navigation.navigate('Subcategories', {
-                                      subcategory: sc.subCategories,
-                                      cat: sc.category_name,
-                                      backroute: routes.name,
-                                    });
-                                  } else {
-                                    //call api for category page
-                                    if (sc.seo.seo_slug_url !== null) {
-                                      dispatch(setPageLoading(true));
-                                      navigation.navigate('CategoryDetails', {
-                                        category_slug: sc.seo.seo_slug_url,
+                                  activeOpacity={1}
+                                  onPressIn={() => {
+                                    setActive(sc.seo.seo_slug_url);
+                                  }}
+                                  onPressOut={() => {
+                                    setActive('');
+                                  }}
+                                  onPress={() => {
+                                    if (
+                                      sc.subCategories &&
+                                      sc.subCategories.length !== 0
+                                    ) {
+                                      navigation.navigate('Subcategories', {
+                                        subcategory: sc.subCategories,
+                                        cat: sc.category_name,
                                         backroute: routes.name,
                                       });
+                                    } else {
+                                      //call api for category page
+                                      if (sc.seo.seo_slug_url !== null) {
+                                        dispatch(setPageLoading(true));
+                                        navigation.navigate('CategoryDetails', {
+                                          category_slug: sc.seo.seo_slug_url,
+                                          backroute: routes.name,
+                                        });
+                                      }
                                     }
-                                  }
-                                }}
-                                  style={[{
-                                    // borderWidth:1,
-                                    backgroundColor: active === sc.seo.seo_slug_url ? '#EFF1F2' : '#fff',
-                                    borderLeftWidth:active === sc.seo.seo_slug_url ? 3 : 0,
-                                    borderLeftColor:active === sc.seo.seo_slug_url ? brandColor : '#fff',
-                                    
-                                  },styles.listItem]}>
+                                  }}
+                                  style={[
+                                    {
+                                      // borderWidth:1,
+                                      backgroundColor:
+                                        active === sc.seo.seo_slug_url
+                                          ? '#EFF1F2'
+                                          : '#fff',
+                                      borderLeftWidth:
+                                        active === sc.seo.seo_slug_url ? 3 : 0,
+                                      borderLeftColor:
+                                        active === sc.seo.seo_slug_url
+                                          ? brandColor
+                                          : '#fff',
+                                    },
+                                    styles.listItem,
+                                  ]}>
                                   <Text style={styles.subcategories}>
                                     {sc.category_name}
                                   </Text>
@@ -198,19 +264,22 @@ const [active, setActive] = useState('');
                                     style={{
                                       flexDirection: 'row',
                                       alignItems: 'center',
-                                      
                                     }}>
                                     {sc.subCategories &&
                                     sc.subCategories.length > 0 ? (
-                                      <CustomImage height={16} width={16} uri={`${config.media_url}drop.svg`}/>
-
-                                      // <Drop />
-                                    ) : null}
+                                      <CustomImage
+                                        height={16}
+                                        width={16}
+                                        uri={`${config.media_url}drop.svg`}
+                                      />
+                                    ) : // <Drop />
+                                    null}
                                     <Text style={styles.subcategories}>
-                                      {sc.toral_course}
+                                      {nationality === 'INDIAN' ? sc.indian_course : sc.western_course }
                                     </Text>
                                   </View>
-                                </TouchableOpacity>
+                                </TouchableOpacity> : null }
+                                </>
                               );
                             })}
                           </>
@@ -228,7 +297,6 @@ const [active, setActive] = useState('');
                   setOthersSelected(!othersSelected);
                 }}
                 style={{
-                  
                   paddingHorizontal: 16,
                   paddingVertical: 15,
                   flexDirection: 'row',
@@ -240,60 +308,96 @@ const [active, setActive] = useState('');
                           source={{uri: cd.home_icon}}
                         /> */}
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <CustomImage height={16} width={16} uri={`${config.media_url}others.svg`}/>
+                  <CustomImage
+                    height={16}
+                    width={16}
+                    uri={`${config.media_url}others.svg`}
+                  />
 
                   {/* <Others /> */}
                   <Text style={styles.mainCategory}>Others</Text>
                 </View>
-                {othersSelected ? <View style={  styles.selectedDrop}><CustomImage height={16} width={16} uri={`${config.media_url}dropdown.svg`}/>
-                </View> : <CustomImage height={16} width={16} uri={`${config.media_url}drop.svg`}/>
-}
+                {othersSelected ? (
+                  <View style={styles.selectedDrop}>
+                    <CustomImage
+                      height={16}
+                      width={16}
+                      uri={`${config.media_url}dropdown.svg`}
+                    />
+                  </View>
+                ) : (
+                  <CustomImage
+                    height={16}
+                    width={16}
+                    uri={`${config.media_url}drop.svg`}
+                  />
+                )}
               </TouchableOpacity>
               {othersSelected && categoryData.data ? (
                 <>
                   {categoryData.data.map((cd: any) => {
                     return (
                       <>
-                        {!cd.is_master ? (
+                        {!cd.is_master &&  checkNationality(cd.all_course, cd.indian_course, cd.western_course)  ? (
+                          
                           <TouchableOpacity
-                          activeOpacity={1}
-                          onPressIn={()=>{setActive(cd.seo.seo_slug_url)}}
-                                onPressOut={()=>{setActive('')}}
-                          onPress={() => {
-                            if (cd.subCategories && cd.subCategories.length !== 0) {
-                              navigation.navigate('Subcategories', {
-                                subcategory: cd.subCategories,
-                                cat: cd.category_name,
-                                backroute: routes.name,
-                              });
-                            } else {
-                              //call api for category page
-                              if (cd.seo.seo_slug_url !== null) {
-                                dispatch(setPageLoading(true));
-                                navigation.navigate('CategoryDetails', {
-                                  category_slug: cd.seo.seo_slug_url,
+                            activeOpacity={1}
+                            onPressIn={() => {
+                              setActive(cd.seo.seo_slug_url);
+                            }}
+                            onPressOut={() => {
+                              setActive('');
+                            }}
+                            onPress={() => {
+                              if (
+                                cd.subCategories &&
+                                cd.subCategories.length !== 0
+                              ) {
+                                navigation.navigate('Subcategories', {
+                                  subcategory: cd.subCategories,
+                                  cat: cd.category_name,
                                   backroute: routes.name,
                                 });
+                              } else {
+                                //call api for category page
+                                if (cd.seo.seo_slug_url !== null) {
+                                  dispatch(setPageLoading(true));
+                                  navigation.navigate('CategoryDetails', {
+                                    category_slug: cd.seo.seo_slug_url,
+                                    backroute: routes.name,
+                                  });
+                                }
                               }
-                            }
-                          }}
-                            style={[{
-                              backgroundColor: active === cd.seo.seo_slug_url ? '#EFF1F2' : '#fff',
-                              borderLeftWidth:active === cd.seo.seo_slug_url ? 3 : 0,
-                              borderLeftColor:active === cd.seo.seo_slug_url ? brandColor : '#fff',
-                              
-                            }, styles.listItem]}>
+                            }}
+                            style={[
+                              {
+                                backgroundColor:
+                                  active === cd.seo.seo_slug_url
+                                    ? '#EFF1F2'
+                                    : '#fff',
+                                borderLeftWidth:
+                                  active === cd.seo.seo_slug_url ? 3 : 0,
+                                borderLeftColor:
+                                  active === cd.seo.seo_slug_url
+                                    ? brandColor
+                                    : '#fff',
+                              },
+                              styles.listItem,
+                            ]}>
                             <Text style={styles.subcategories}>
                               {cd.category_name}
                             </Text>
 
-                            <View
-                              style={styles.courseNumber}>
+                            <View style={styles.courseNumber}>
                               {/* <Drop /> */}
-                              <CustomImage height={16} width={16} uri={`${config.media_url}drop.svg`}/>
+                              <CustomImage
+                                height={16}
+                                width={16}
+                                uri={`${config.media_url}drop.svg`}
+                              />
 
                               <Text style={styles.subcategories}>
-                                {cd.toral_course}
+                                {nationality === 'INDIAN' ? cd.indian_course : cd.all_course-cd.indian_course}
                               </Text>
                             </View>
                           </TouchableOpacity>
@@ -386,7 +490,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: font1,
     fontSize: 16,
-    marginLeft:16,
+    marginLeft: 16,
     // lineHeight: 20.16,
   },
   backCategory: {
@@ -397,7 +501,7 @@ const styles = StyleSheet.create({
   },
   backCategoryText: {
     color: font1,
-    marginLeft:16,
+    marginLeft: 16,
     textTransform: 'capitalize',
     fontWeight: '600',
   },
@@ -426,33 +530,77 @@ const styles = StyleSheet.create({
     color: font1,
     fontSize: 14,
     fontWeight: '500',
-    fontFamily:Helper.switchFont('medium'),
-    marginLeft:16
+    fontFamily: Helper.switchFont('medium'),
+    marginLeft: 16,
   },
-  selectedDrop:{
-    padding:8,
-    backgroundColor:selectedDrop,
-    borderRadius:16
+  selectedDrop: {
+    padding: 8,
+    backgroundColor: selectedDrop,
+    borderRadius: 16,
   },
-  categoryIcon:{
+  categoryIcon: {
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom:12,
+    paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
     // borderWidth:1
   },
-  listItem:{
+  listItem: {
     paddingVertical: 16,
-                                    paddingRight:16,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-  },
-  courseNumber:{
+    paddingRight: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    width:'15%',
-    justifyContent:'space-between'
-  }
+    justifyContent: 'space-between',
+  },
+  courseNumber: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '15%',
+    justifyContent: 'space-between',
+  },
+  tabView: {
+    width: '100%',
+    height: 36,
+    zIndex: 9999,
+    top: config.headerHeight,
+  },
+  tabBgImage: {
+    height: '100%',
+    width: '100%',
+  },
+  userTabsWrapper: {
+    position: 'absolute',
+    top: 0,
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  userTab: {
+    width: '50%',
+    justifyContent: 'center',
+    height: '100%',
+  },
+
+  userTabText: {
+    textAlign: 'center',
+    color: 'rgba(255,255,255,0.6)',
+    fontWeight: '600',
+    fontSize: 16,
+    fontFamily: Helper.switchFont('bold'),
+  },
+  selectedUserTabText: {
+    textAlign: 'center',
+    color: 'rgb(255,255,255)',
+    fontWeight: '600',
+    fontSize: 16,
+    fontFamily: Helper.switchFont('bold'),
+  },
+  selectedTab: {
+    width: '50%',
+    justifyContent: 'center',
+    borderBottomColor: 'rgba(255,255,255,0.8)',
+    borderBottomWidth: 4,
+    height: '100%',
+  },
 });

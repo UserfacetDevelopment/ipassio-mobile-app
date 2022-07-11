@@ -52,6 +52,19 @@ const categories = route.params?.subcategory;
   const {loading} = useSelector(loaderState);
 const [active, setActive] = useState('');
 
+
+const checkNationality = (all: number, indian: number, western:number): boolean => {
+  let val: boolean = false;
+  if (nationality === 'INDIAN' && indian > 0) {
+    val = true;
+  } else if (nationality === 'WESTERN' &&  western >0) {
+    val = true;
+  }
+  
+
+  return val;
+};
+
   return (
       
     <>
@@ -100,7 +113,10 @@ const [active, setActive] = useState('');
                         {categories && categories.length > 0 ? (
                           <>
                             {categories.map((sc: any) => {
+
                               return (
+                                <>
+                                {checkNationality(sc.all_course, sc.indian_course, sc.western_course) ?
                                 <TouchableOpacity
                                 activeOpacity={1}
                                 onPressIn={()=>{setActive(sc.seo.seo_slug_url)}}
@@ -148,10 +164,11 @@ const [active, setActive] = useState('');
 
                                     ) : null}
                                     <Text style={styles.subcategories}>
-                                      {sc.toral_course}
+                                      {nationality === 'INDIAN' ? sc.indian_course : sc.western_course}
                                     </Text>
                                   </View>
-                                </TouchableOpacity>
+                                </TouchableOpacity>:null}
+                                </>
                               );
                             })}
                           </>

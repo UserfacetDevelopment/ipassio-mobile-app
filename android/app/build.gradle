@@ -128,6 +128,10 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
 
 android {
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
     lintOptions {
         abortOnError false
         
@@ -144,8 +148,8 @@ android {
         applicationId "com.ipassio.apps"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 44
-        versionName "3.0.2"
+        versionCode 47
+        versionName "3.0.5"
     }
     splits {
         abi {
@@ -231,6 +235,7 @@ dependencies {
     implementation 'com.facebook.fresco:webpsupport:2.5.0'
 //till here
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation project(':react-native-twilio-video-webrtc')
 implementation 'com.google.firebase:firebase-analytics:17.3.0'
 // implementation project(':react-native-push-notification')
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
