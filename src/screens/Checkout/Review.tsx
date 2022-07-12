@@ -61,7 +61,6 @@ const Review: FC<Props> = ({route, navigation}) => {
   const [timezone, setTimezone] = useState<any>(null);
 
   let scrollY;
-console.log(teacherAvailability);
   useEffect(() => {
     let data: any = {
       checkoutToken: checkoutToken,
@@ -75,7 +74,6 @@ console.log(teacherAvailability);
         
         dispatch(setPageLoading(false));
       dispatch(setCheckoutDataDetails(response.data.data))
-        console.log(response);
       })
       .catch(err => {
         dispatch(setPageLoading(false));
@@ -175,7 +173,6 @@ console.log(teacherAvailability);
       dispatch(proceedToPayment(finalData))
         .unwrap()
         .then(response => {
-          console.log(response);
           dispatch(setPageLoading(false));
           if (response.data.status === 'success') {
             navigation.navigate('ActionStatus', {
@@ -287,7 +284,6 @@ console.log(teacherAvailability);
     }
   };
 
-  console.log(checkoutDataDetails);
   return (
     <>
       

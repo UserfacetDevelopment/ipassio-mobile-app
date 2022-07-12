@@ -485,7 +485,6 @@ const [selectedDateToPass, setSelectedDateToPass] = useState<any>(undefined)
       
 //     }, [startTime, endTime, selectedDate]);
 
-    console.log(new Date(selectedDateToPass));
     // useEffect(() => {
     //   if (startTime && endTime) {
     //     // let tempStart = startTime.split(' ');
@@ -510,12 +509,6 @@ const [selectedDateToPass, setSelectedDateToPass] = useState<any>(undefined)
     //     // }
     //   }
     // }, [startTime, endTime, startDate]);
-
-console.log(startTime, endTime);
-console.log(selectedDate, endDate);
-console.log(selectedDateToPass, selectedEndDateToPass);
-console.log(startDate, endDate);
-console.log(selectedStartDateToPass, selectedEndDateToPass);
 
     const changeEndTime = (data: any) => {
       setEndTime(data[0].value);
@@ -750,7 +743,6 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
       }
     };
 
-    console.log(repeatDuration);
     useEffect(() => {
       // if(repeatType && repeatType.value === 'Do not Repeat'){
       //   set
@@ -778,8 +770,7 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
         }
       }
     };
-    console.log(selectedCourse);
-    console.log(selectedStudent);
+
 
     useEffect(() => {
       if (repeatType && repeatType.value === 'Do not Repeat') {
@@ -881,7 +872,7 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
     const getMeetingPlatform = (data: any) => {
       setTaughtOn(data[0]);
     };
-    console.log(selectedEndDateToPass);
+
     const getRepeatType = (data: any) => {
       setRepeatType(data[0]);
     };
@@ -947,8 +938,8 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
           // type: 'C',
         };
   
-        console.log(selectedDate);
-        console.log(params);
+  
+     
         if (userData.user_type === 'T') {
           let studentIds = new Array();
           studentIds.push(selectedStudentId);
@@ -966,7 +957,6 @@ console.log(selectedStartDateToPass, selectedEndDateToPass);
             //  Alert.alert('', JSON.stringify(params))
             setShowAddSessionModal(false);
             dispatch(setPageLoading(false));
-            console.log(response);
             if (response.data.status === 'success') {
               // if (response.status === 200) {
               if (

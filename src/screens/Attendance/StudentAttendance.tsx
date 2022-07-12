@@ -401,15 +401,12 @@ const StudentAttendance: FC<any> = ({
     // console.log(selectedReview);
   
     const handleReview =()=>{
-      console.log(i)
       let tempSuggestions = [...suggestions];
       tempSuggestions.splice(i,1);
-      console.log(tempSuggestions);
       setSuggestions(tempSuggestions)
       let attendanceTemp = attendances.map((o: any) => ({
         ...o,
       }));
-      console.log(attendanceTemp)
       attendanceTemp[index].review = attendanceTemp[index].review + " "+ data
       dispatch(setAttendanceSuccess(attendanceTemp));
       setSelectedReview(attendanceTemp[index].review);
@@ -851,7 +848,6 @@ const StudentAttendance: FC<any> = ({
                         ...o,
                       }));
                       attendanceTemp[index].review = text.trim();
-                      console.log(attendanceTemp)
 
                       dispatch(setAttendanceSuccess(attendanceTemp));
                       setSelectedReview(text.trim());

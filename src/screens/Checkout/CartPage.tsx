@@ -256,11 +256,9 @@ export default function CartPage({navigation, route}: Props) {
   // useFocusEffect(
   //   useCallback(() => {
   //     if(route?.params?.backroute!=='CourseDetail'){
-  //       console.log("is exec here")
   //       getCartDetails();
   //     }
   //     else {
-  //       console.log('reached this scope')
   //        setCheckoutData(checkoutDataDetails)
   //     }
 
@@ -287,7 +285,6 @@ useEffect(()=>{
     dispatch(detailsCheckoutToken(data))
       .unwrap()
       .then(response => {
-        console.log(response);
         dispatch(setPageLoading(false));
         let APIData = response.data;
         postResponseUpdate(APIData);
@@ -302,7 +299,6 @@ useEffect(()=>{
   //     getCartDetails();
   //   }
   //   else if(page==='C'){
-  //     console.log('reached this scope')
   //      setCheckoutData(checkoutDataDetails)
   //      setTotalClassesPerWeek(checkoutDataDetails.amount.classes_per_week);
   //      setTotalNumberOfClass(checkoutDataDetails.amount.number_of_class);
@@ -320,7 +316,6 @@ useEffect(()=>{
   //   dispatch(cartDetails(finalData))
   //     .unwrap()
   //     .then(response => {
-  //       console.log(response)
   //       dispatch(setPageLoading(false));
   //       let APIData = response.data;
   //       postResponseUpdate(APIData);
@@ -452,7 +447,6 @@ useEffect(()=>{
       selectedValue,
     );
   };
-console.log(checkoutData);
   const applyCouponSubmit = (couponType: 'AC' | 'RC') => {
     dispatch(setPageLoading(true));
     let finalCouponCode = '';

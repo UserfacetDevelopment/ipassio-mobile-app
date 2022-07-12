@@ -127,8 +127,6 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
 
   const phoneInput = useRef();
 
-  console.log(userData);
-
   useEffect(() => {
     if (isLoggedIn) {
       setSelectedGender(
@@ -162,10 +160,9 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
   ];
 
 
-    console.log(phoneInput.current?.isValidNumber(phoneNumber, countryCode) ? 'correct' : 'incorrect');
+    // console.log(phoneInput.current?.isValidNumber(phoneNumber, countryCode) ? 'correct' : 'incorrect');
   
 
-  console.log(timeSlots);
   const onSubmit = (data: any) => {
     setSubmitRequested(true);
     // if (
@@ -175,10 +172,9 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
     // {
     //when user is not logged in and yob should be there + user logged in and yob not required
     //  if (selectedCountry !== undefined && reason !== undefined)
-    if (phoneInput.current?.isValidNumber(phoneNumber, countryCode)) {
-      console.log('correct');
-    }
-    console.log(meetingPlatform);
+    // if (phoneInput.current?.isValidNumber(phoneNumber, countryCode)) {
+    //   console.log('correct');
+    // }
     if (
       selectedCountry !== undefined &&
       reason !== undefined &&
@@ -265,18 +261,15 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
         //   };
         // }
         dispatch(setPageLoading(false));
-        console.log(formData);
         let finalData = {
           formData: formData,
           userToken: userData && userData.token,
           loggedIn: isLoggedIn,
         };
-        console.log(formData)
         dispatch(requestFreeSession(finalData))
           .unwrap()
           .then(response => {
             dispatch(setPageLoading(false));
-            console.log(response);
             if (response.data.status === 'success') {
               navigation.navigate('ActionStatus', {
                 messageStatus: 'success',
@@ -349,7 +342,6 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
   }, [selectedDate]);
 
   const removeTimeSlot = (index: number) => {
-    console.log(index);
     if (timeSlots.length > 1) {
       const values = [...timeSlots];
       values.splice(index, 1);

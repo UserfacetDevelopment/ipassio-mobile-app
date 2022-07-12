@@ -60,7 +60,6 @@ const Payment: FC<Props> = ({route, navigation}) => {
     useState<PaymentGatewayType>(null);
   const {checkoutDataDetails} = useSelector(checkoutState);
   const [checkoutData, setCheckoutData] = useState(checkoutDataDetails);
-  // console.log(checkoutDataDetails);
 
   useEffect(() => {
     let data: any = {
@@ -74,7 +73,6 @@ const Payment: FC<Props> = ({route, navigation}) => {
         
         dispatch(setPageLoading(false));
        setCheckoutData(response.data.data);
-        console.log(response);
       })
       .catch(err => {
         dispatch(setPageLoading(false));

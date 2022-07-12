@@ -166,13 +166,6 @@ useEffect(()=>{
     setSelectedLearner(data[0]);
   };
 
-console.log('courses',courses)
-console.log('selectedCourse',selectedCourse)
-console.log('selectedLearner',selectedLearner)
-console.log('courseFilter',courseFilter);
-console.log('learnersFilter',learnersFilter)
-console.log(c,l)
-
 
 const applyTeacherFilter = () => {
 setC(selectedCourse.label);
@@ -221,7 +214,6 @@ setL(selectedLearner.label);
      return videoDuration;
   }
 
-  console.log(recordings);
 
   return (
     <>

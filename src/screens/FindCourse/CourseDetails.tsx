@@ -622,7 +622,7 @@ const CourseDetails: FC<any> = (
   const handleFreeMeeting = () => {
     navigation.navigate('RequestMeeting');
   };
-  console.log(course)
+
   return (
     <>
       {/* {loading && <DialogLoader />} */}

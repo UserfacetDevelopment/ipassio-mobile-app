@@ -566,8 +566,6 @@ export default function Dashboard({navigation}: Props) {
 
   const downloadCertificate = () => {};
 
-  console.log(userData);
-
   //not used anywhere
   // const noCertificate = () => {
   //   Alert.alert("", config.messages.no_certificate, [

@@ -58,8 +58,6 @@ export default function CustomForm({
   const {isLoggedIn, userData, userLocation} = useSelector(userState);
 const [timezones,setTimezones] = useState<any>(null)
 
-console.log(index);
-
   const showDateTimePicker = () => {
     Keyboard.dismiss();
     setIsDateTimePickerVisible(true);
@@ -82,8 +80,6 @@ console.log(index);
     setSelectedTimezone(data[0]);
     timeSlots[index].timezone = data[0].value;
   };
-
-  console.log(timeSlots);
 
   useEffect(() => {
     const coeff = 1000 * 60 * 15;

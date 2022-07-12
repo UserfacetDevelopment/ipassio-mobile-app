@@ -161,7 +161,6 @@ setPassionateError(true)
         .readFile(fileResponse[0].uri, 'base64')
         .then(data => {
           setBase64File(data);
-          console.log('data', data);
         })
         .catch(err => {});
     }
@@ -216,7 +215,6 @@ setPassionateError(true)
           userToken: userData.token,
         };
 
-        console.log(finalData);
     
         dispatch(completeSignUp(finalData))
           .then((response: any) => {
@@ -286,11 +284,6 @@ setPassionateError(true)
     setPassionate(temp);
   };
 
-  console.log(fileResponse);
-  console.log(phoneNumber);
-  console.log(countryCode);
-  console.log(isValidNum);
-
   const handleDocumentSelection = useCallback(async () => {
     try {
       const response = await DocumentPicker.pick({
@@ -300,7 +293,6 @@ setPassionateError(true)
 
       const temp = await RNFetchBlob.fs.readFile(response[0].uri, 'base64');
       setBioType(response[0].type);
-      console.log(temp);
       setBase64File(temp);
     } catch (err) {
       console.warn(err);

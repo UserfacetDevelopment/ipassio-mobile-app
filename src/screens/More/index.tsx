@@ -34,7 +34,6 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 export default function More({navigation}: any) {
   const {userData, isLoggedIn} = useSelector(userState);
-  console.log(userData);
   const dispatch = useAppDispatch();
 
   const doLogout = async () => {

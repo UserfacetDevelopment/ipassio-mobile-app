@@ -527,7 +527,7 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
 
   const routes = useRoute();
   const doNothing = () => {
-    console.log('closing the ');
+   //nothing
   };
   let scrollY = new Animated.Value(0.01);
   // let changingHeight = scrollY.interpolate({

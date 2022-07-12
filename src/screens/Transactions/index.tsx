@@ -142,7 +142,6 @@ let changingHeight, titleSize, mainTitleSize, titleTop, titleSubTop, thirdTitleT
               ? '₹' + " " +response.data.extra_data.total_balance
               : 'US $' +response.data.extra_data.total_balance,
           );
-          console.log(response);
           dispatch(fetchTransactionsDataSuccess(response.data.data));
         } else if (response.data.status === 'failure') {
           Alert.alert('', response.data.error_message.message, [

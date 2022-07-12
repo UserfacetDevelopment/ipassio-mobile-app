@@ -672,13 +672,10 @@ useEffect(()=>{
       dispatch(getCountryList())
         .unwrap()
         .then(responseCountry => {
-          console.log(responseCountry);
-
           const token1 = 'd03fadd21eeed2';
           dispatch(getUserLocation(token1))
             .unwrap()
             .then(response => {
-              console.log(response);
               ipinfo(responseCountry, response);
             })
             .catch(() => {
@@ -686,7 +683,6 @@ useEffect(()=>{
               dispatch(getUserLocation(token2))
                 .unwrap()
                 .then(response => {
-                  console.log(response);
                   ipinfo(responseCountry, response);
                 })
                 .catch(err => {
@@ -694,7 +690,6 @@ useEffect(()=>{
                   dispatch(getUserLocation(token3))
                     .unwrap()
                     .then(response => {
-                      console.log(response);
                       ipinfo(responseCountry, response);
                     })
                     .catch(err => {
@@ -712,7 +707,6 @@ useEffect(()=>{
          
           const resJson = JSON.parse(response);
           dispatch(loginSuccess(JSON.parse(response)));
-          console.log(resJson);
            Intercom.registerIdentifiedUser({email:resJson.email, userId: resJson.id})
               Intercom.updateUser({
                 email: resJson.email,

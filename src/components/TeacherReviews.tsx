@@ -74,7 +74,6 @@ export default function TeacherReviews({
     dispatch(getReviews(data))
       .unwrap()
       .then(response => {
-        console.log(response);
         if (response.data.status === 'success') {
           setReviews(response.data);
           if (offset === 0) {

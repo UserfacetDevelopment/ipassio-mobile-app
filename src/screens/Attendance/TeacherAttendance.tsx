@@ -143,10 +143,6 @@ const [modalTitle, setModalTitle] = useState<"Mark Attendance"|"Edit Attendance"
     setRefreshing(false);
   }, [refreshing]);
 
-console.log(reviewIndex)
-  console.log(attendances)
-  console.log(studentAttendanceList)
-
   useEffect(() => {
     if (attendances.length > 0) {
         

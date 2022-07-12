@@ -621,7 +621,6 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
                       {data.status.name}
                     </Text>
                   )}
-                  {console.log(data.status.code,data.status.name)}
                   {data.status.code === 'R' && (
                     <Text style={[styles.mainLink, styles.status_text_r]}>
                       {data.status.name}

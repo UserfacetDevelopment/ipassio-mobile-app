@@ -90,10 +90,7 @@ console.log(testState);
 // },[selectedCategories, selectedSubcategories, selectedSecsubcategories])
 
 // console.log(selectedCategories)
-console.log(secSubCategories,selectedSecsubcategories);
-console.log(categories, selectedCategories);
-console.log(subCategories ,selectedSubcategories);
-console.log(levelTemp, selectedLevels);
+
 
   const handleCategories = (category: any) => {
       setAll(false);
@@ -111,7 +108,6 @@ console.log(levelTemp, selectedLevels);
       setCatTemp([...catTemp, category]);
       temp.push(category.seo.seo_slug_url);
     }
-    console.log(catTemp);
     setCategories(temp);
   };
 
@@ -127,7 +123,6 @@ console.log(levelTemp, selectedLevels);
         // }
 
         category.subCategories.forEach((element : any) => {
-            console.log(element);
             handleSecSubcategoriesOnParentClick(element)
         });
     }
@@ -157,7 +152,6 @@ handleSecSubcategories(ct)
       temp.push(category.seo.seo_slug_url);
     }
     setSecSubCategories(temp);
-    console.log(secSubCategories)
   };
 
   const handleSecSubcategoriesOnParentClick = (category: any) => {
@@ -193,7 +187,6 @@ handleSecSubcategories(ct)
     setLevelTemp(temp);
   };
 
-  console.log(levels)
   const getCount = (code: string) => {
     if(nationality === 'INDIAN'){
       if (code === 'S') {
@@ -241,7 +234,6 @@ handleSecSubcategories(ct)
         {categoryData && categoryData.status === 'success' ? (
           <>
           {categoryMaster.map((cd: any) => {
-             console.log(categories);
             return (
               <>
              {checkNationality(cd.all_course, cd.indian_course, cd.western_course) ? 

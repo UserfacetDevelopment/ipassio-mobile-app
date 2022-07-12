@@ -47,7 +47,6 @@ export default function Otp({navigation, route}) {
           dispatch(otpVerifyAccount(data))
             .unwrap()
             .then(response => {
-              console.log(response);
               if (response.data.status === 'success') {
                 navigation.navigate('UserDetail',{
                     userSession: response.data.data

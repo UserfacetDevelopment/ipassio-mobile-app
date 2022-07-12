@@ -9,7 +9,7 @@ import React, {useEffect, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
 import {StyleSheet, useColorScheme, Alert, Platform} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {
@@ -24,32 +24,42 @@ import {
   setCustomTextInput,
   setCustomText,
   setCustomImage,
-  setCustomTouchableOpacity
+  setCustomTouchableOpacity,
 } from 'react-native-global-props';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Provider} from 'react-redux';
 import {NativeBaseProvider} from 'native-base';
 import messaging from '@react-native-firebase/messaging';
-import store, { useAppDispatch } from './src/app/store';
+import store, {useAppDispatch} from './src/app/store';
 import {RootNavigator} from './src/navigation/Navigators';
 //@ts-ignore
 import VersionCheck from 'react-native-version-check';
 import {BackHandler} from 'react-native';
 import {Linking} from 'react-native';
-import { brandColor, dropdownBorder, font1, font2, font3, lineColor, lineColor2, secondaryColor } from './src/styles/colors';
-import { setFCMToken, userState } from './src/reducers/user.slice';
+import {
+  brandColor,
+  dropdownBorder,
+  font1,
+  font2,
+  font3,
+  lineColor,
+  lineColor2,
+  secondaryColor,
+} from './src/styles/colors';
+import {setFCMToken, userState} from './src/reducers/user.slice';
 import SplashScreen from 'react-native-splash-screen';
+import {number} from 'prop-types';
 
 const theme = {
   ...DefaultTheme,
   roundness: 8,
   colors: {
-     primary: dropdownBorder,
+    primary: dropdownBorder,
     accent: secondaryColor,
     // underlineColor:'transparent',
-     placeholder: '#9AA6B2', 
-           text:font1,
-           underlineColor: 'transparent',    
+    placeholder: '#9AA6B2',
+    text: font1,
+    underlineColor: 'transparent',
   },
 };
 
@@ -57,14 +67,13 @@ const customTextProps = {
   style: {
     fontFamily: 'PlusJakartaSans-Regular',
     color: font2,
-    fontWeight:'500'
-  }
+    fontWeight: '500',
+  },
 };
 
 setCustomText(customTextProps);
 
 const App = () => {
-
   const isDarkMode = useColorScheme() === 'dark';
   const Stack = createNativeStackNavigator();
   // const [userDataLoaded, setUserDataLoaded] = useState(false);
@@ -72,21 +81,7 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
   const [permissions, setPermissions] = useState({});
-
-  // useEffect(() => {
-  //   PushNotificationIOS.addEventListener('notification', onRemoteNotification);
-  // },[]);
-
-  // const onRemoteNotification = (notification:any) => {
-  //   const isClicked = notification.getData().userInteraction === 1;
-
-  //   if (isClicked) {
-  //     // Navigate user to another screen
-  //   } else {
-  //     // Do something else with push notification
-  //   }
-  // };
-
+  // const [latestVersion, setLatestVersion] = useState<number|undefined>(undefined);
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -95,24 +90,34 @@ const App = () => {
     });
     return unsubscribe;
   }, []);
-  
-  //   const latestVersion = await VersionCheck.getLatestVersion();
+
+  // useEffect(()=>{
+  //   VersionCheck.getLatestVersion().then((res:any)=>{
+  //     console.log(res)
+  //     setLatestVersion(res);
+  //   });
+  // },[])
+
   // const currentVersion = VersionCheck.getCurrentVersion()
+  // console.log('latestVersion', parseFloat(latestVersion));
+  // console.log('currentVersion', parseFloat(currentVersion));
 
   useEffect(() => {
     checkUpdateNeeded();
     SplashScreen.hide();
-  },[]);
+  }, []);
 
   // setCustomTextInput(customTextInputProps);
- 
 
   const checkUpdateNeeded = async () => {
-    let updateNeeded = await VersionCheck.needUpdate({
-      packageName: 'com.ipassio.apps'
-      });
-    console.log(updateNeeded)
-    if (updateNeeded.isNeeded) {
+    let updateNeeded: any;
+    VersionCheck.needUpdate().then((res: any) => {
+      updateNeeded = res;
+      console.log(res)
+    });
+
+    // console.log(updateNeeded)
+    if (updateNeeded.isNeeded){
       //Alert the user and direct to the app url
       Alert.alert(
         'Please Update',

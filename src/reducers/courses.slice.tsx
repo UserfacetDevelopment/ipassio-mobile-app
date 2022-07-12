@@ -366,6 +366,7 @@ const initialState: any = {
   selectedSecsubcategories: [],
   categoryCourseList: [],
   categoryCourseListStatus: null,
+  scrollPosition: 0,
 };
 
 export const courseSlice = createSlice({
@@ -411,6 +412,9 @@ export const courseSlice = createSlice({
     },
     setSecSubcategories: (state, action: PayloadAction<any>) => {
       state.selectedSecsubcategories = action.payload;
+    },
+    setScrollPosition: (state, action: PayloadAction<any>) => {
+      state.scrollPosition = action.payload;
     },
   },
   extraReducers: builder => {
@@ -493,6 +497,7 @@ export const {
   setSelectedSubCategories,
   setOffset,
   setSecSubcategories,
+  setScrollPosition
 } = courseSlice.actions;
 
 export const courseState = (state: RootState) => state.course;
@@ -502,7 +507,6 @@ export default courseSlice.reducer;
 export const getCourses = createAsyncThunk(
   'course/getCourses',
   async (final_data: FindCoursesInterfaceFinal) => {
-    console.log(final_data.offset);
     const response = await ApiGateway.post(
       'courses/search?format=json&offset=' + final_data.offset,
       final_data.data,

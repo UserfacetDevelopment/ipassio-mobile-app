@@ -13,13 +13,11 @@ export default function OtpVerification({navigation, route}) {
   let otpInput = useRef<number | string | null>(null);
   const dispatch = useAppDispatch();
   let email = route?.params?.email;
-  console.log(email);
   const [staticPageContent, setStaticPageContent] = useState(null);
   useEffect(() => {
     dispatch(getStaticPage('verify_otp'))
       .unwrap()
       .then(response => {
-        console.log(response);
         if (response.data.status === 'success') {
           setStaticPageContent(response.data.data);
         } else if (response.data.status === 'failure') {
@@ -40,7 +38,6 @@ export default function OtpVerification({navigation, route}) {
       .unwrap()
       .then(response => {
         if (response.data.status === 'success') {
-          console.log(response);
         }
       })
       .catch(err => {
@@ -56,7 +53,6 @@ export default function OtpVerification({navigation, route}) {
     dispatch(resendOtp(data))
       .unwrap()
       .then(response => {
-        console.log(response);
       })
       .catch(error => console.log(error));
   };

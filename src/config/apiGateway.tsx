@@ -12,7 +12,6 @@ export default class ApiGateway{
             return axios.get(endpoint);
         }
         const url=`${config.BaseURL}/${endpoint}`;
-        // console.log(url)
 
         return axios.get(url, headers);
     }  

@@ -336,6 +336,7 @@ export default function CategoryDetails({navigation, route}: Props) {
   const [offset, setOffset] = useState<number>(0);
   const [courseLevels, setCourseLevels] = useState(null);
   const [filterList, setFilterList] = useState([]);
+  const [onEndReachedCalledDuringMomentum, setOnEndReachedCalledDuringMomentum] = useState(true)
   let sortList: Array<any> = [];
   let valueLow: string | null= null;
   let valueHigh: string | null= null;
@@ -386,32 +387,49 @@ export default function CategoryDetails({navigation, route}: Props) {
       sort_by: sortBy.label==='none' ? '' : sortBy.label,
       offset: offset,
     };
-    dispatch(getCategoryCourseList(data))
+   
+      // dispatch(setPageLoading(true))
+      setOnEndReachedCalledDuringMomentum(true);
+      setLoadingMoreCourses(true);
+      dispatch(getCategoryCourseList(data))
       .unwrap()
       .then(res => {
+        setOnEndReachedCalledDuringMomentum(false);
+
+        // dispatch(setPageLoading(false))
         if (res.data.status === 'success') {
           if (offset === 0) {
             setCourses(res.data.data);
           } 
           else {
-            // setLoadingMoreCourses(false);
+            
+            setLoadingMoreCourses(false);
+            // courses.push([...res.data.data]);
             setCourses([...courses, ...res.data.data]);
           }
         }
       })
       .catch(() => {
+        setOnEndReachedCalledDuringMomentum(false);
+        dispatch(setPageLoading(false))
         setLoadingMoreCourses(false);
       });
+   
+    
   }, [filter, sortBy, offset]);
-  console.log(offset);
-  console.log(courses);
+
+
 
   const handleOffset = () => {
-    if (categoryCourseList.data.extra_data.course_count > offset + 10) {
-      setOffset(offset + 10);
-    }
+    if(!onEndReachedCalledDuringMomentum){
+      if (categoryCourseList.data.extra_data.course_count > offset + 10) {
+        setOffset(offset + 10);
+      }
+      setOnEndReachedCalledDuringMomentum(true);
+  }
+   
   };
-  // console.log(offset)
+
   // const loadCourse = (course, index) => {
   //   return (
   //     <View style={styles.courseItemWrapper}>
@@ -454,7 +472,7 @@ export default function CategoryDetails({navigation, route}: Props) {
   //   );
   // };
 
-  // console.log(categoryDetails);
+
 
   useEffect(() => {
     dispatch(getLookups())
@@ -470,7 +488,6 @@ export default function CategoryDetails({navigation, route}: Props) {
         }
       });
   }, []);
-
   //make dynamic
   // const filterList = [
   //   {value: 'All Levels', label: 'A'},
@@ -503,7 +520,8 @@ export default function CategoryDetails({navigation, route}: Props) {
                 navigation={navigation}
                 backroute={route.params?.backroute}></HeaderInner>
               <ScrollView
-                style={{marginTop: config.headerHeight}}
+                      // onScrollBeginDrag = {()=>setOnEndReachedCalledDuringMomentum(false)}
+                      style={{marginTop: config.headerHeight}}
                 contentInsetAdjustmentBehavior="always">
                 <View style={{backgroundColor: '#fff'}}>
                   {/* <Image
@@ -689,8 +707,8 @@ export default function CategoryDetails({navigation, route}: Props) {
                         <CourseCard course={item} />
                       )}
                       keyExtractor={item => item.id}
-                      onEndReachedThreshold={0.01}
-                      onEndReached={()=>handleOffset()}
+                      onEndReachedThreshold={0.5}
+                      onEndReached={handleOffset}
                     />
                     {/* {course.map((course: any, i: number) => {
                       return (

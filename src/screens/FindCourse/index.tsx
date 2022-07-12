@@ -28,6 +28,7 @@ import {
   setOffset,
   setSelectedCategories,
   setNationality,
+  setScrollPosition,
 } from '../../reducers/courses.slice';
 import {useScrollToTop} from '@react-navigation/native';
 import {OutlinedTextField} from 'react-native-material-textfield';
@@ -105,12 +106,6 @@ interface CurrentCourse {
 export const Loader = () => {
   return (
     <View style={styles.loading}>
-      {/* <Image
-        style={styles.loader}
-        source={require('@images/loading.gif')}
-        resizeMode="contain"
-      /> */}
-
       <Bubbles size={7} color={brandColor} />
     </View>
   );
@@ -131,6 +126,7 @@ export default function FindCourse({navigation, route}: Props) {
     selectedSubcategories,
     offset,
     selectedSecsubcategories,
+    scrollPosition,
   } = useSelector(courseState);
   const backroute = route.params?.backroute;
   const {isLoggedIn, userData, userLocation} = useSelector(userState);
@@ -144,17 +140,19 @@ export default function FindCourse({navigation, route}: Props) {
   // const [offset, setOffset] = useState<number>(0);
   const [coursesArray, setCoursesArray] = useState<Array<any>>([]);
   const [loadingMoreCourses, setLoadingMoreCourses] = useState<boolean>(false);
-  const [scrollPosition, setScrollPosition] = React.useState(19);
+  // const [scrollPosition, setScrollPosition] = React.useState(19);
   const [courseDetailModal, setCourseDetailModal] = useState(false);
   const [currCourse, setCurrCourse] = useState<CurrentCourse | null>(null);
-  // const [ref, setRef] = useState<any>(null);
+  const [ref, setRef] = useState<any>(null);
+  const [onEndReachedCalledDuringMomentum, setOnEndReachedCalledDuringMomentum] = useState(true);
+
   // const [handleCourseState, sethandleCourseState] = useState<boolean>(false);
   // const [page, setPage] = useState<"find_course"|"home"|"">("home");
 
-  const handleScroll = event => {
-    let yOffset = event.nativeEvent.contentOffset.y / 475;
-    setScrollPosition(yOffset);
-  };
+  // const handleScroll = event => {
+  //   let yOffset = event.nativeEvent.contentOffset.y / 475;
+  //   setScrollPosition(yOffset);
+  // };
 
   // useEffect(()=>{
   //   navigation.addListener('willBlur', () => {
@@ -266,10 +264,11 @@ export default function FindCourse({navigation, route}: Props) {
         data: data,
         offset: offset,
       };
-
+setOnEndReachedCalledDuringMomentum(true);
       dispatch(getCourses(finalData))
         .unwrap()
         .then((response: any) => {
+          setOnEndReachedCalledDuringMomentum(false);
           dispatch(setLoading(false));
           setLoadingMoreCourses(false);
           if (response.status === 'success') {
@@ -289,6 +288,7 @@ export default function FindCourse({navigation, route}: Props) {
           dispatch(setPageLoading(false));
         })
         .catch(() => {
+          setOnEndReachedCalledDuringMomentum(false);
           setLoadingMoreCourses(false);
           dispatch(setLoading(false));
           // dispatch(setPageLoading(false));
@@ -306,7 +306,6 @@ export default function FindCourse({navigation, route}: Props) {
     initialCategories,
   ]);
 
-  console.log(coursesArray);
   // useEffect(() => {
   //   // if(!isLoggedIn){
   //   dispatch(setLoading(true));
@@ -361,9 +360,13 @@ export default function FindCourse({navigation, route}: Props) {
   };
 
   const handleOffset = () => {
-    if (courseData.extra_data.count.total_count > offset + 20) {
-      dispatch(setOffset(offset + 20));
+    if(!onEndReachedCalledDuringMomentum){
+      if (courseData.extra_data.count.total_count > offset + 20) {
+        dispatch(setOffset(offset + 20));
+      }
+      setOnEndReachedCalledDuringMomentum(true);
     }
+   
   };
 
   const education = (details: any) => {
@@ -403,16 +406,19 @@ export default function FindCourse({navigation, route}: Props) {
     return str;
   };
 
-  // useEffect(() => {
-  //   if (ref !== null && coursesArray.length > 0) {
-  //     ref.scrollToIndex({
-  //       animated: true,
-  //       index: scrollPosition,
-  //       viewPosition: 1,
-  //     });
-  //   }
-  // }, [coursesArray]);
+  useEffect(() => {
+    if (ref !== null && coursesArray.length > 0) {
+      ref.scrollToIndex({
+        animated: true,
+        index: scrollPosition,
+        viewPosition: 1,
+      });
+    }
+  }, [scrollPosition]);
 
+  //   useEffect(()=>{
+  // dispatch(setScrollPosition(0));
+  //   },[])
   useEffect(() => {
     let temp: Array<string> = [];
 
@@ -483,6 +489,7 @@ export default function FindCourse({navigation, route}: Props) {
         <TouchableOpacity
           onPress={() => {
             dispatch(setPageLoading(true));
+            dispatch(setScrollPosition(index));
             navigation.navigate('CourseDetail', {
               course_slug: course.seo.seo_slug_url,
               category_slug: getCategorySlug(course),
@@ -717,15 +724,35 @@ export default function FindCourse({navigation, route}: Props) {
                   </View>
                   {/* <Search style={styles.searchIcon} /> */}
                   <TextInput
-                    style={styles.input}
+                    style={[styles.input]}
                     // autoFocus={true}
                     placeholder={`Search from ${courseData.extra_data.count.total_count} Courses`}
                     value={searchText}
                     enablesReturnKeyAutomatically={true}
                     keyboardAppearance="default"
                     placeholderTextColor={font2}
-                    onChangeText={(text: string) => handleSearch(text)}
+                    onChangeText={(text: string) => {
+                      handleSearch(text);
+                      dispatch(setScrollPosition(0));
+                    }}
                   />
+                  {searchText.length > 0 ? (
+                    <TouchableOpacity
+                      style={{width: '7%'}}
+                      onPress={() => {
+                        dispatch(setScrollPosition(0));
+                        handleSearch('');
+                      }}
+                      hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}
+                      // style={{ borderWidth:1}}
+                    >
+                      <CustomImage
+                        height={16}
+                        width={16}
+                        uri={`${config.media_url}close.svg`}
+                      />
+                    </TouchableOpacity>
+                  ) : null}
                 </View>
                 <TouchableOpacity
                   onPress={() => {
@@ -754,6 +781,7 @@ export default function FindCourse({navigation, route}: Props) {
                         : styles.userTab
                     }
                     onPress={() => {
+                      dispatch(setScrollPosition(0));
                       dispatch(setOffset(0));
                       dispatch(setNationality('INDIAN'));
                     }}>
@@ -763,8 +791,8 @@ export default function FindCourse({navigation, route}: Props) {
                           ? styles.selectedUserTabText
                           : styles.userTabText
                       }>
-                      Indian ({categoryData.extra_data.count.total_indian_course}
-                      )
+                      Indian (
+                      {categoryData.extra_data.count.total_indian_course})
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -774,6 +802,7 @@ export default function FindCourse({navigation, route}: Props) {
                         : styles.userTab
                     }
                     onPress={() => {
+                      dispatch(setScrollPosition(0));
                       dispatch(setOffset(0));
                       dispatch(setNationality('WESTERN'));
                     }}>
@@ -790,40 +819,38 @@ export default function FindCourse({navigation, route}: Props) {
                 </View>
               </View>
               {/* <ScrollView> */}
-              <ScrollView>
+              {/* <ScrollView> */}
               {courseData.data.length === 0 ? (
                 <Text style={styles.wrongText}>No courses found</Text>
               ) : (
-                
                 <View style={styles.flatlist}>
                   <FlatList
-                    // ref={(ref: any) => {
-                    //   setRef(ref);
-                    // }}
-                    // scrollsToTop={false}
-                    // onScrollToIndexFailed={info => {
-                    //   const wait = new Promise(resolve =>
-                    //     setTimeout(resolve, 500),
-                    //   );
-                    //   wait.then(() => {
-                    //     console.log(info);
-                    //     ref.current?.scrollToIndex({
-                    //       index: info.index,
-                    //       animated: true,
-                    //     });
-                    //   });
-                    // }}
-                    // getItemLayout={(data, index) => ({
-                    //   length: 475,
-                    //   offset: 100 * index,
-                    //   index,
-                    // })}
+                    ref={(ref: any) => {
+                      setRef(ref);
+                    }}
+                    scrollsToTop={false}
+                    onScrollToIndexFailed={info => {
+                      const wait = new Promise(resolve =>
+                        setTimeout(resolve, 200),
+                      );
+                      wait.then(() => {
+                        ref.current?.scrollToIndex({
+                          index: info.index,
+                          animated: true,
+                        });
+                      });
+                    }}
+                    getItemLayout={(data, index) => ({
+                      length: 440,
+                      offset: 440 * index,
+                      index,
+                    })}
                     data={coursesArray}
                     renderItem={({item, index}) => loadCourse(item, index)}
                     keyExtractor={item => item.id}
                     onEndReachedThreshold={0.5}
                     // onScroll={(event)=>handleScroll(event)}
-                    // initialScrollIndex={scrollPosition}
+                    initialScrollIndex={scrollPosition}
                     onEndReached={handleOffset}
                   />
                   {/* <View style={{marginBottom:200}}/> */}
@@ -832,8 +859,8 @@ export default function FindCourse({navigation, route}: Props) {
 
               {loadingMoreCourses ? <Loader /> : null}
 
-              <View style={{height: 200, backgroundColor: background4}}></View>
-              </ScrollView>
+              {/* <View style={{marginBottom: 300, backgroundColor: background4}}></View> */}
+              {/* </ScrollView> */}
             </View>
           </>
         ) : courseStatus === 'loading' ? (
@@ -841,7 +868,9 @@ export default function FindCourse({navigation, route}: Props) {
             <Loader />
           </View>
         ) : (
+          <View style={{height:height}}>
           <Text style={styles.wrongText}>No Data to show</Text>
+          </View>
         )}
       </View>
       <Modal
@@ -869,7 +898,6 @@ const styles = StyleSheet.create({
     backgroundColor: background4,
     // paddingHorizontal: 16,
     marginTop: Platform.OS === 'ios' ? 120 : 116,
-    // borderWidth:3
   },
   courseWrapper: {
     position: 'relative',
@@ -1106,7 +1134,7 @@ const styles = StyleSheet.create({
   input: {
     color: font1,
     margin: 0,
-    width: '80%',
+    width: '73%',
     fontSize: 14,
     height: 48,
     backgroundColor: 'rgb(255, 255, 255)',
@@ -1180,7 +1208,7 @@ const styles = StyleSheet.create({
   },
   userTabsWrapper: {
     flexDirection: 'row',
-    width: '65%',
+    width: '68%',
 
     alignItems: 'center',
     height: '100%',
@@ -1213,5 +1241,7 @@ const styles = StyleSheet.create({
   },
   flatlist: {
     backgroundColor: background4,
+    marginBottom:Platform.OS === 'android' ? 70 : 104,
+
   },
 });

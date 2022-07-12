@@ -47,7 +47,6 @@ export default function ActionStatus({navigation, route} : Props) {
   const params = route.params?.params;
 
   const cleanup=()=>{
-    console.log('cleaup called', remainingSeconds);
     clearInterval(myInterval)
     setRemainingSeconds(0);
   }

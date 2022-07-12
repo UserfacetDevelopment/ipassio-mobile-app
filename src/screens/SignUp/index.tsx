@@ -75,7 +75,6 @@ export default function Signup({navigation, routes}) {
     if (userType === 'S') {
       dispatch(getStaticPage('student_signup'))
         .then(response => {
-          console.log(response);
           if (response.payload.status === 'success') {
             setStaticPageContent(response.payload.data.body);
           }
@@ -86,7 +85,6 @@ export default function Signup({navigation, routes}) {
     } else if (userType === 'T') {
       dispatch(getStaticPage('teacher_signup'))
         .then(response => {
-          console.log(response);
           if (response.payload.status === 'success') {
             setStaticPageContent(response.payload.data.body);
           }
@@ -142,10 +140,9 @@ export default function Signup({navigation, routes}) {
                 ? userLocation.data.country_code
                 : '',
           };
-          console.log(userData);
+
           dispatch(register(data))
             .then((response: any) => {
-              console.log(response);
               if (response.payload.data.status === 'success') {
                 if (
                   response.payload.data.data.verification_status_email !==

@@ -82,7 +82,7 @@ const checkoutToken = route.params?.checkoutToken;
         
         dispatch(setPageLoading(false));
       dispatch(setCheckoutDataDetails(response.data.data))
-        console.log(response);
+    
       })
       .catch(err => {
         dispatch(setPageLoading(false));
@@ -140,15 +140,6 @@ const checkoutToken = route.params?.checkoutToken;
   const getSelState = (data: any) => {
     setSelectedState(data[0]);
   };
-
-  console.log(firstName);
-  console.log(lastName);
-  console.log(selectedCountry);
-  console.log(streetAddress);
-  console.log(postalCode);
-  console.log(city);
-  console.log(selectedState);
-
 
   const updateUserBillingAddress = () => {
 

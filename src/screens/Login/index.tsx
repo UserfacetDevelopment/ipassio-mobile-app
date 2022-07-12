@@ -311,8 +311,6 @@ const Login: React.FC<any> = ({navigation, route}: Props) => {
       dispatch(doLogin(data))
         .unwrap()
         .then(response => {
-          console.log(response)
-
           if (response.status === 'success') {
             dispatch(setLoading(false));
             if (response.data.verification_status_email === 'P') {

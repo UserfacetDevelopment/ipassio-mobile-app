@@ -44,7 +44,6 @@ export interface GetTokenInterface {
 const width = Dimensions.get('screen').width;
 
 export default function VideoConferencing({navigation, route}) {
-  console.log(route.params?.data);
   const dispatch = useDispatch();
   const {userData} = useSelector(userState);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
@@ -57,7 +56,6 @@ export default function VideoConferencing({navigation, route}) {
   const devices = useCameraDevices('wide-angle-camera')
   const device = devices.front;
   const twilioRef: React.MutableRefObject<any> = useRef(null);
-console.log(devices);
   useEffect(() => {
     getPermission();
   });
@@ -77,7 +75,6 @@ console.log(devices);
     return null;
   };
 
-  console.log(token);
 
   const onConnectButtonPress = async () => {
     console.log('in on connect button preess');
@@ -116,7 +113,8 @@ console.log(devices);
 
   const onFlipButtonPress = () => {
     // switches between fronst camera and Rare camera
-    twilioRef.current.flipCamera();
+    // twilioRef.current.flipCamera();
+    setIsVideoEnabled(!isVideoEnabled);
   };
   const onRoomDidConnect = () => {
     console.log('onRoomDidConnect: ', roomName);
@@ -126,9 +124,10 @@ console.log(devices);
   };
 
   const onVideoStateChange = () => {
-    twilioRef.current
-      .setIsLocalVideoEnabled(!isVideoEnabled)
-      .then((isEnabled: boolean) => setIsVideoEnabled(!isEnabled));
+    // twilioRef.current
+    //   .setIsLocalVideoEnabled(!isVideoEnabled)
+    //   .then((isEnabled: boolean) => setIsVideoEnabled(!isEnabled));
+    setIsVideoEnabled(!isVideoEnabled)
   };
 
   const onRoomDidDisconnect = ({roomName, error}) => {
@@ -209,11 +208,11 @@ console.log(devices);
                 {isAudioEnabled ?<Text>Flip</Text> :<Text>Flip</Text>}
               </TouchableOpacity>
             </View>
-            {/* <View>
+            <View>
               <TouchableOpacity onPress={onVideoStateChange}>
                 {isVideoEnabled ? <VideoOff /> : <VideoOn />}
               </TouchableOpacity>
-            </View> */}
+            </View>
 
             <TouchableOpacity
               style={styles.button}
@@ -251,7 +250,7 @@ console.log(devices);
             )}
             <View style={styles.localVideoWrapper}>
             <TwilioVideoLocalView
-                enabled={status === 'connected'}
+                enabled={isVideoEnabled}
                 style={styles.localVideo}
               />
               </View>
@@ -292,6 +291,7 @@ console.log(devices);
           onRoomDidFailToConnect={onRoomDidFailToConnect}
           onParticipantAddedVideoTrack={onParticipantAddedVideoTrack}
           onParticipantRemovedVideoTrack={onParticipantRemovedVideoTrack}
+          onVideoChange={onVideoStateChange}
         />
       </View>
     </>

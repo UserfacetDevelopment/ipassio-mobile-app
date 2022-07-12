@@ -34,7 +34,6 @@ export const fetchToken = createAsyncThunk(
         'token',
         data
       );
-      console.log(response)
       return response;
     }
   );

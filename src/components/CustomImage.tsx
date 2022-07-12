@@ -27,14 +27,12 @@ export default function CustomImage({
       setExtension(ext.toLowerCase());
     }
   }, [uri]);
-// console.log(uri)
   return (
     <>
     {extension==='webp' ||extension=== 'jpg' || extension=== 'png' || extension=== 'gif' ||  extension=== 'jpeg' || extension === 'tif'? (
         <Image style={style} source={{uri: uri}} />
       ) :
        (
-        // console.log(uri)
         extension==='svg' ? <SvgUri 
         style={style}
         height= {height} 

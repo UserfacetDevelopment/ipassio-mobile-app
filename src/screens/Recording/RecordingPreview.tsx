@@ -26,9 +26,6 @@ export default function RecordingPreview({navigation, route}: Props) {
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const [relatedVideos, setRelatedVideos] = useState([]);
 const {loading} = useSelector(loaderState);
-  console.log(allVideos);
-  console.log(selectedVideo);
-  console.log(relatedVideos)
 
   const handleVideoSelect = (item: any) => {
     setSelectedVideo(item);

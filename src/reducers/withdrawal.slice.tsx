@@ -67,7 +67,6 @@ export const withdrawList = createAsyncThunk(
 export const withdrawRequest = createAsyncThunk(
   'withdrawal/withdrawRequest',
   async (finalData: FinalWithdrawRequestInterface) => {
-    console.log(finalData)
     let response = await ApiGateway.patch(
       'withdrawal/withdrawlist?format=json',
       finalData.data,
