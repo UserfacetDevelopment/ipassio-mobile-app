@@ -36,8 +36,8 @@ export default function ActionStatus({navigation, route} : Props) {
   );
 
 
-    Intercom.hideIntercom();
-
+    // Intercom.hideIntercom();
+    // Intercom.setLauncherVisibility(Visibility.GONE);
 
   // useEffect(()=>{
   //   timer();

@@ -113,8 +113,8 @@ export default function VideoConferencing({navigation, route}) {
 
   const onFlipButtonPress = () => {
     // switches between fronst camera and Rare camera
-    // twilioRef.current.flipCamera();
-    setIsVideoEnabled(!isVideoEnabled);
+    twilioRef.current.flipCamera();
+    // setIsVideoEnabled(!isVideoEnabled);
   };
   const onRoomDidConnect = () => {
     console.log('onRoomDidConnect: ', roomName);

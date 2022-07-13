@@ -169,7 +169,7 @@ const StudentAttendance: FC<any> = ({
     //   dispatch(setAttendanceFailure());
     // });
     setRefreshing(false);
-  }, [refreshing]);
+  }, [refreshing, courseToken]);
 
 
   useEffect(() => {
