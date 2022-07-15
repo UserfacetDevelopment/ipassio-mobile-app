@@ -79,7 +79,7 @@ const checkNationality = (all: number, indian: number, western:number): boolean 
         // backroute={backroute}
       />
       <View style={styles.main}>
-        {route.params?.subcategory ? (
+        {/* {route.params?.subcategory ? (
         <>
           <TouchableOpacity
             style={styles.backCategory}
@@ -87,12 +87,10 @@ const checkNationality = (all: number, indian: number, western:number): boolean 
               navigation.goBack();
             }}>
              <CustomImage height={12} width={12} uri={`${config.media_url}arrow-dark.svg`}/>
-             
-            {/* <Back/> */}
             <Text style={styles.backCategoryText}>Back</Text>
           </TouchableOpacity>
           </>
-        ) : null}
+        ) : null} */}
         {categoryData && categoryData.data ? (
           <ScrollView>
                 <View style={{paddingBottom: 20}}>

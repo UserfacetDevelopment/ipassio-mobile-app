@@ -58,7 +58,6 @@ import style from '../../styles/style';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import messaging from '@react-native-firebase/messaging';
-import {ScreenStackHeaderLeftView} from 'react-native-screens';
 import StyleCSS from '../../styles/style';
 import HeaderInner from '../../components/HeaderInner';
 import CustomStatusBar from '../../components/CustomStatusBar';

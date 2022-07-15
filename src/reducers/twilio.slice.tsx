@@ -2,7 +2,7 @@ import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
 import config from '../config/Config';
 import ApiGateway from '../config/apiGateway';
 import { RootState } from '../app/store';
-import { GetTokenInterface } from '../screens/VideoConferencing';
+import { GetParticipantListInterface, GetTokenInterface } from '../screens/VideoConferencing';
 
 
 const initialState: any = {
@@ -33,6 +33,22 @@ export const fetchToken = createAsyncThunk(
       let response = await ApiGateway.postNodeServer(
         'token',
         data
+      );
+      return response;
+    }
+  );
+
+  export const getParticipantList = createAsyncThunk(
+    'twilio/getParticipantList',
+    async (data : GetParticipantListInterface) => {
+      let response = await ApiGateway.twilioClientGet(
+        '/v1/Rooms/'+ data.roomName+'/Participants?Status='+data.status+'&PageSize=20',{
+          auth: {
+            username: config.twilio_api_key,
+            password: config.twilio_api_secret
+          }
+        }
+       
       );
       return response;
     }

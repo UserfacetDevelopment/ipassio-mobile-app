@@ -31,7 +31,7 @@ import {
   setScrollPosition,
 } from '../../reducers/courses.slice';
 import {useScrollToTop} from '@react-navigation/native';
-import {OutlinedTextField} from 'react-native-material-textfield';
+// import {OutlinedTextField} from 'react-native-material-textfield';
 import {ScrollView} from 'native-base';
 import helper from '../../utils/helperMethods';
 import {
@@ -1241,7 +1241,7 @@ const styles = StyleSheet.create({
   },
   flatlist: {
     backgroundColor: background4,
-    marginBottom:Platform.OS === 'android' ? 70 : 104,
+    marginBottom:Platform.OS === 'android' ? 70 : 70,
 
   },
 });

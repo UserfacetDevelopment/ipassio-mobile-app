@@ -22,7 +22,6 @@ import CustomImage from '../../components/CustomImage';
 import Helper from '../../utils/helperMethods';
 import {useAppDispatch} from '../../app/store';
 import {useForm, Controller} from 'react-hook-form';
-import PasswordStrengthBar from 'react-password-strength-bar';
 import {
   getStaticPage,
   getUserLocation,

@@ -22,7 +22,6 @@ import Helper from '../../utils/helperMethods';
 import {appBackground, background4, brandColor, lineColor} from '../../styles/colors';
 //@ts-ignore
 import Textarea from 'react-native-textarea';
-// import StarRating from 'react-native-star-rating';
 import {Rating} from 'react-native-ratings';
 import Moment from 'moment';
 import 'moment-timezone';

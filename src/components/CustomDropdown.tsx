@@ -28,7 +28,6 @@ import {scheduledDataSuccess} from '../reducers/schedule.slice';
 import SheetCss from '../styles/style';
 
 // import Dropdown from '../assets/images/custom-dropdown.svg';
-import {widthPercentageToDP} from 'react-native-responsive-screen';
 import CustomImage from './CustomImage';
 import Config from '../config/Config';
 

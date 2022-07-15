@@ -17,7 +17,7 @@ import Intercom,{Visibility} from '@intercom/intercom-react-native'
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+// import {createDrawerNavigator} from '@react-navigation/drawer';
 import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Splash from '../screens/Splash';
@@ -88,6 +88,8 @@ import Otp from '../screens/SignUp/Otp';
 import UserDetail from '../screens/SignUp/UserDetail';
 import VideoConferencing from '../screens/VideoConferencing';
 import ActionStatus2 from '../components/ActionStatus2';
+import Helper from '../utils/helperMethods';
+import VideoConfWebview from '../screens/VideoConferencing/VideoConfWebview';
 export type RootParamList = {
   Categories: any;
   CategoryDetails: any;
@@ -187,6 +189,7 @@ export type RootParamList = {
   OtpVerification: any;
   UserDetail: any;
   Video: any;
+  VideoWebview: any;
 };
 
 export interface CategoryInterface {
@@ -621,9 +624,10 @@ export const RootNavigator = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(()=>{
-    Intercom.registerUnidentifiedUser();
-    // Intercom.displayMessenger()
-    Intercom.setLauncherVisibility(Visibility.VISIBLE)
+    if(!isLoggedIn){
+      Intercom.registerUnidentifiedUser();
+      Helper.enableIntercom();
+    }
   },[userData])
 
   if(Platform.OS === 'android'){
@@ -1169,6 +1173,11 @@ const RootStackNavigator = () => {
           <Stack.Screen
             name="Video"
             component={VideoConferencing}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="VideoWebview"
+            component={VideoConfWebview}
             options={{headerShown: false}}
           />
         </>

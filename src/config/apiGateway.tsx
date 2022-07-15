@@ -30,4 +30,9 @@ export default class ApiGateway{
         const url=`${config.NodeBaseURL}${endpoint}`;
         return axios.post(url, body, headers);
     }
+
+    static twilioClientGet(endpoint: string, headers?:any){
+        const url=`https://video.twilio.com${endpoint}`;
+        return axios.get(url, headers);
+    }
 }

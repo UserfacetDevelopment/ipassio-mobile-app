@@ -31,7 +31,7 @@ import LineDashed from '../../components/LineDashed';
 // import Dot from '../../assets/images/dot.svg';
 
 //@ts-ignore
-import {OutlinedTextField} from 'react-native-material-textfield';
+// import {OutlinedTextField} from 'react-native-material-textfield';
 import {ScrollView} from 'native-base';
 import {
   brandColor,

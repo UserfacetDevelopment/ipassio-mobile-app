@@ -1,4 +1,5 @@
 import {Platform, Alert, PermissionsAndroid, Linking} from 'react-native';
+import Intercom, {Visibility} from '@intercom/intercom-react-native'
 import config from '../config/Config'
 
 export default class Helper{
@@ -208,4 +209,11 @@ export default class Helper{
       static getRandomNumber = max => {
         return Math.floor(Math.random() * Math.floor(max));
       };
+
+      static enableIntercom = () =>{
+        Intercom.setLauncherVisibility(Visibility.VISIBLE);
+      }
+      static disableIntercom = () => {
+        Intercom.setLauncherVisibility(Visibility.GONE);
+      }
 }

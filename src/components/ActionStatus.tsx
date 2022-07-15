@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 //@ts-ignore
 import {Bubbles} from 'react-native-loader';
-import Intercom from '@intercom/intercom-react-native'
+import Intercom, {Visibility} from '@intercom/intercom-react-native'
 import {StackActions, useFocusEffect} from '@react-navigation/native';
 import helper from '../utils/helperMethods';
 import { brandColor } from '../styles/colors';
@@ -18,6 +18,7 @@ import { RootParamList } from '../navigation/Navigators';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomImage from './CustomImage';
 import Config from '../config/Config';
+import Helper from '../utils/helperMethods';
 
 type Props = NativeStackScreenProps<RootParamList, 'ActionStatus'>;
 
@@ -35,9 +36,10 @@ export default function ActionStatus({navigation, route} : Props) {
     }, []),
   );
 
+  useEffect(()=>{
+   Helper.disableIntercom();
+  },[])
 
-    // Intercom.hideIntercom();
-    // Intercom.setLauncherVisibility(Visibility.GONE);
 
   // useEffect(()=>{
   //   timer();
@@ -53,6 +55,8 @@ export default function ActionStatus({navigation, route} : Props) {
 
 useEffect(()=>{
   if(isRedirected){
+    Helper.enableIntercom();
+
     setRemainingSeconds(0);
   clearInterval(myInterval);
   if (route.params?.backRoute == 'startagain') {

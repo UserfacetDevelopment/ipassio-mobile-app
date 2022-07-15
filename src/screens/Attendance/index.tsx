@@ -20,10 +20,8 @@ import Helper from '../../utils/helperMethods';
 import {appBackground, brandColor, font2} from '../../styles/colors';
 //@ts-ignore
 import Textarea from 'react-native-textarea';
-// import StarRating from 'react-native-star-rating';
 import {Rating} from 'react-native-ratings';
 import Moment from 'moment';
-import Modal from 'react-native-modal';
 import config from '../../config/Config';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useAppDispatch} from '../../app/store';

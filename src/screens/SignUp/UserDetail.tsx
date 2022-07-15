@@ -38,9 +38,6 @@ import Helper from '../../utils/helperMethods';
 import RNFetchBlob from 'rn-fetch-blob';
 import CustomDropdown from '../../components/CustomDropdown';
 import CustomImage from '../../components/CustomImage';
-// @ts-ignore
-import Close from '../../assets/images/signup/chip_close';
-import Passionate from '../../assets/images/signup/passionate';
 import {FlatList} from 'native-base';
 import {courseState} from '../../reducers/courses.slice';
 import {useAppDispatch} from '../../app/store';

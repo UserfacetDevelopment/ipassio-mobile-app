@@ -1,4 +1,4 @@
-import React, {useEffect, useState, FC} from 'react';
+import React, {useEffect, useState, FC, useCallback} from 'react';
 import {
   View,
   // Image,
@@ -16,6 +16,7 @@ import {
   ToastAndroid,
   KeyboardAvoidingView,
   Modal,
+  Linking,
   Alert,
   TouchableWithoutFeedback,
   ShadowPropTypesIOS,
@@ -37,7 +38,7 @@ import {
   scheduledDataSuccess,
   schedulesState,
 } from '../../reducers/schedule.slice';
-import {userState} from '../../reducers/user.slice';
+import {setIntercomIcon, userState} from '../../reducers/user.slice';
 import SheetCSS from '../../styles/style';
 import {fetchWithdrawalDataSuccess} from '../../reducers/withdrawal.slice';
 import Helper from '../../utils/helperMethods';
@@ -52,7 +53,7 @@ import {
 } from '../../styles/colors';
 import NoData from '../../components/NoData';
 import HeaderInner from '../../components/HeaderInner';
-import {useRoute} from '@react-navigation/native';
+import {useFocusEffect, useRoute} from '@react-navigation/native';
 // import Dropdown from '../../assets/images/dropdown.svg'
 import config from '../../config/Config';
 const {width, height} = Dimensions.get('screen');
@@ -67,6 +68,8 @@ import CustomImage from '../../components/CustomImage';
 import StyleCSS from '../../styles/style';
 import ShareLinkPopup from '../../components/ShareLinkPopup';
 import DeleteClassPopup from '../../components/DeleteClassPopup';
+import { fetchToken } from '../../reducers/twilio.slice';
+import { GetTokenInterface } from '../VideoConferencing';
 
 type Props = NativeStackScreenProps<RootParamList, 'AddSession'>;
 
@@ -113,7 +116,28 @@ const LoadItem = ({
   
   
   }
+
   
+  const joinClassWV = () =>{
+    let final_data: GetTokenInterface = {
+      room_name: data.class_url,
+      create_conversation: false,
+      user_identity: userData.first_name + ' ' + userData.last_name,
+    };
+
+     dispatch(fetchToken(final_data))
+      .then((res: any) => {
+        Linking.openURL(config.FrontendURL+config.videoURL+res.payload.data.token);
+        // navigation.navigate('VideoWebview',{
+        //     token: res.payload.data.token
+        // });
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
+   
+  }
+
   const joinClass = () =>{
     navigation.navigate('Video',{
       data: data
@@ -455,7 +479,23 @@ const LoadItem = ({
         // )
       }
       <View style={[{ alignSelf: 'flex-end', },StyleCSS.styles.fdrCenter]}>
-      {data.taught_on.code === 'I' ? <TouchableOpacity
+      {/* {data.taught_on.code === 'I' ? <TouchableOpacity
+      onPress={joinClassWV}
+      >
+        <Text
+          style={[
+            StyleCSS.styles.contentText,
+            StyleCSS.styles.fw700,
+            {
+              color: font3,
+            
+              marginTop: selectedCard == data.class_token ? 0 : 12, marginRight:32
+            },
+          ]}>
+          Join Class
+        </Text>
+      </TouchableOpacity> : null} */}
+      {/* {data.taught_on.code === 'I' ? <TouchableOpacity
       onPress={joinClass}
       >
         <Text
@@ -470,7 +510,7 @@ const LoadItem = ({
           ]}>
           Join Class
         </Text>
-      </TouchableOpacity> : null}
+      </TouchableOpacity> : null} */}
       <TouchableOpacity
       onPress={deleteClass}
       >
@@ -593,6 +633,13 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
   useEffect(() => {
     getSchedules();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      Helper.enableIntercom();
+    }, []),
+  );
+
 
   const getSchedules = () => {
     dispatch(setPageLoading(true));

@@ -29,6 +29,11 @@ static videoURL="/video/";
       ? 'https://apps.apple.com/us/app/ipassio-learn-hobbies-online/id1449104526'
       : 'https://play.google.com/store/apps/details?id=com.ipassio.apps';
 
+      static twilio_api_key = "SK43a83895cfb9411058183c59fb67a775";
+      static twilio_api_secret = "WEGDYF1VJYUVKk1a8RD5xfGHpZPPKqLM";
+
+
+
   static media_url = 'https://media.ipassio.com/mobile_app/';
   
   static messages = {

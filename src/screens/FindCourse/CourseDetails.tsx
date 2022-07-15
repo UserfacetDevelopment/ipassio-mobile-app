@@ -18,7 +18,6 @@ import {
 } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 // import {SvgUri} from 'react-native-svg';
-import ReactPlayer from 'react-player';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Rating} from 'react-native-ratings';
 import Video from 'react-native-video';
@@ -251,7 +250,8 @@ const CourseDetails: FC<any> = (
       dispatch(setLoading(true));
       var regExp =
         /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
-      var match = course.video_url.trim().match(regExp);
+      var video = course.course_videos.length > 0 ? course.course_videos[0].media_url : course.video_url;
+      var match = video.trim().match(regExp);
       setVideoId(match[1]);
       dispatch(setLoading(false));
     }
