@@ -341,7 +341,7 @@ const CourseDetails: FC<any> = (
         purchase_type: purchase_type,
         discounts: course.discounts ? course.discounts : '',
         timezone: userData.timezone,
-        device_type: Platform.OS,
+        device_type: Platform.OS === 'android' ? 'AD' : 'IO',
         price_per_class_inr: selectedPrice.final_INR,
       price_per_class_usd: selectedPrice.final_USD
       };
@@ -567,6 +567,8 @@ const CourseDetails: FC<any> = (
           subject: course.title,
           message: message,
           phone_number: mobile,
+          device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
         };
         // userToken = props.session.token;
       } else {
@@ -577,6 +579,8 @@ const CourseDetails: FC<any> = (
           subject: course.title,
           message: message,
           phone_number: mobile,
+          device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
         };
       }
 

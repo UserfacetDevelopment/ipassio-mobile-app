@@ -10,6 +10,7 @@ import {
   Alert,
   Keyboard,
   Dimensions,
+  Platform,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import PhoneInput,{isValidNumber} from 'react-native-phone-number-input';
@@ -228,6 +229,8 @@ export default function RequestFreeMeetingForm({navigation, route}: Props) {
           course: course.id,
           taught_on: learn_on,
           slots: timeSlots,
+          device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
         };
         // if (!isLoggedIn) {
         //   formData = {

@@ -411,7 +411,37 @@ console.log(participant);
                       />
                     );
                   })} */}
-                  {participantArr.length>0 ? 
+                  {participantArr.length>0? 
+                  participantArr.map((vid)=>{
+                    // console.log('identifier',videoTracks.get(vid.sid))
+                    // videoTracks.get(vid.sid) !== undefined && console.log('trackSid',videoTracks.get(vid.sid).participantSid)
+                  return(
+                    <>
+                    {videoTracks.get(vid.sid) !== undefined?  
+                    <TwilioVideoParticipantView
+                    style={[styles.remoteVideo, {flexBasis: `${100/(participantArr.length-1)}%`}]}
+                    key={videoTracks.get(vid.sid).participantSid}
+                    trackIdentifier={videoTracks.get(vid.sid)} 
+                  />: vid.identity !== `${userData.first_name} ${userData.last_name}` ?
+                    <View style={{borderWidth:4, borderColor:'#eaa',height:'100%', width:'100%',}}>
+                   <Text style={{color:'#fff', position:'absolute',left:16, bottom:16, alignItems:'center'}}>{vid.identity}</Text>
+                   <View style={{height:160, width:160, backgroundColor:'#e1d', justifyContent:'center', alignSelf:'center'}}>
+<Text>hdbjs</Text>
+                   </View>
+                    </View>:null}
+                    </>
+                  )
+                  //   {videoTracks.get(vid.sid) !== undefined ? 
+                  //   <TwilioVideoParticipantView
+                  //   style={[styles.remoteVideo, {flexBasis: `${100/(participantArr.length-1)}%`}]}
+                  //   key={videoTracks.get(vid.sid).participantSid}
+                  //   trackIdentifier={videoTracks.get(vid.sid)} 
+                  // />)
+                  // : <View style={{backgroundColor:'#fff'}}></View>
+                  }) 
+                  :null
+                  }
+                  {/* {participantArr.length>0? 
                   participantArr.map((vid)=>{
                     console.log('identifier',videoTracks.get(vid.sid))
                     videoTracks.get(vid.sid) !== undefined && console.log('trackSid',videoTracks.get(vid.sid).participantSid)
@@ -420,9 +450,10 @@ console.log(participant);
                     style={[styles.remoteVideo, {flexBasis: `${100/(participantArr.length-1)}%`}]}
                     key={videoTracks.get(vid.sid).participantSid}
                     trackIdentifier={videoTracks.get(vid.sid)} 
-                  /> : <View style={{backgroundColor:'#fff'}}></View>
+                  /> 
+                  : <View style={{backgroundColor:'#fff'}}></View>
                   }) :null
-                  }
+                  } */}
                 </View>
               )}
               <View style={participantArr.length <= 1 ? styles.remoteVideo : styles.localVideoWrapper}>
@@ -557,9 +588,9 @@ const styles = StyleSheet.create({
   },
   remoteVideo: {
     width: wp('100%'),
-    height: hp('90%'),
+    height: hp('80%'),
     borderBottomWidth:2,
-    borderBottomColor:'#000',
+    borderBottomColor:'#fff',
     // width:'100%',
     // height:'100%',
     zIndex: 1,
@@ -642,6 +673,5 @@ const styles = StyleSheet.create({
     height: 140,
     width: 140,
     borderRadius: 98,
-    textAlign: 'center',
   },
 });

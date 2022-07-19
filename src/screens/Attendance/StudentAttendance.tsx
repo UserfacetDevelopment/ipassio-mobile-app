@@ -12,6 +12,7 @@ import {
   Animated,
   KeyboardAvoidingView,
   Modal,
+  Platform,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import {Container, FlatList, TextField} from 'native-base';
@@ -326,6 +327,8 @@ const StudentAttendance: FC<any> = ({
           status: 'S',
           timezone: data.timezone ? data.timezone : userData.timezone,
           is_anonymoususer: data.is_anonymoususer,
+          device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
         };
       
       let d: any = {

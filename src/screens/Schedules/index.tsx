@@ -38,7 +38,7 @@ import {
   scheduledDataSuccess,
   schedulesState,
 } from '../../reducers/schedule.slice';
-import {setIntercomIcon, userState} from '../../reducers/user.slice';
+import {userState} from '../../reducers/user.slice';
 import SheetCSS from '../../styles/style';
 import {fetchWithdrawalDataSuccess} from '../../reducers/withdrawal.slice';
 import Helper from '../../utils/helperMethods';
@@ -495,7 +495,7 @@ const LoadItem = ({
           Join Class
         </Text>
       </TouchableOpacity> : null} */}
-      {/* {data.taught_on.code === 'I' ? <TouchableOpacity
+      {data.taught_on.code === 'I' ? <TouchableOpacity
       onPress={joinClass}
       >
         <Text
@@ -510,7 +510,7 @@ const LoadItem = ({
           ]}>
           Join Class
         </Text>
-      </TouchableOpacity> : null} */}
+      </TouchableOpacity> : null}
       <TouchableOpacity
       onPress={deleteClass}
       >
