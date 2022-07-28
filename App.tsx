@@ -81,7 +81,7 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
   const [permissions, setPermissions] = useState({});
-  // const [latestVersion, setLatestVersion] = useState<number|undefined>(undefined);
+  const [latestVersion, setLatestVersion] = useState<number|undefined>(undefined);
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -91,21 +91,49 @@ const App = () => {
     return unsubscribe;
   }, []);
 
-  // useEffect(()=>{
-  //   VersionCheck.getLatestVersion().then((res:any)=>{
-  //     console.log(res)
-  //     setLatestVersion(res);
-  //   });
-  // },[])
+  useEffect(()=>{
+    if(Platform.OS === 'ios'){
+      VersionCheck.getLatestVersion().then((res:any)=>{
+        console.log(res)
+        setLatestVersion(res);
+      });
+    }
+    else{
+      getLatestVersionLocal()
+      .then(res=>{
+        console.log(res);
+        setLatestVersion(res);
+      })
+      
+    }
+    
+  },[])
 
-  // const currentVersion = VersionCheck.getCurrentVersion()
-  // console.log('latestVersion', parseFloat(latestVersion));
-  // console.log('currentVersion', parseFloat(currentVersion));
+  const getLatestVersionLocal = async () =>{
+    if(Platform.OS === 'android'){
+      const res = await fetch(
+        `https://play.google.com/store/apps/details?id=${VersionCheck.getPackageName()}&hl=en`
+      );
+      const text = await res.text();
+    
+      const match = text.match(/\[\[\["([\d.]+?)"\]\]/);
+      if (match) {
+        const latestVersion = match[1].trim();
+        return latestVersion;
+      } else return null;
+    }
+  }
+  
+  
+  const currentVersion = VersionCheck.getCurrentVersion()
+  // console.log('latestVersion', latestVersion);
+  // console.log('currentVersion', currentVersion);
 
+  console.log(latestVersion && latestVersion < currentVersion);
   useEffect(() => {
     checkUpdateNeeded();
     SplashScreen.hide();
-  }, []);
+  }, [latestVersion]);
 
   // setCustomTextInput(customTextInputProps);
 
@@ -113,11 +141,11 @@ const App = () => {
     let updateNeeded: any;
     VersionCheck.needUpdate().then((res: any) => {
       updateNeeded = res;
-      console.log(res)
+      // console.log(res)
     });
 
     // console.log(updateNeeded)
-    if (updateNeeded.isNeeded){
+    if (latestVersion && latestVersion > currentVersion){
       //Alert the user and direct to the app url
       Alert.alert(
         'Please Update',
@@ -127,7 +155,9 @@ const App = () => {
             text: 'Update',
             onPress: () => {
               BackHandler.exitApp();
-              Linking.openURL(updateNeeded.storeUrl);
+              Linking.openURL(Platform.OS === 'android' ? 'https://play.google.com/store/apps/details?id=com.ipassio.apps' :
+                updateNeeded.storeUrl
+                );
             },
           },
         ],

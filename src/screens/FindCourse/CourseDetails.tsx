@@ -14,7 +14,7 @@ import {
   Modal,
   Alert,
   KeyboardAvoidingView,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 // import {SvgUri} from 'react-native-svg';
@@ -24,6 +24,10 @@ import Video from 'react-native-video';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import Carousel from 'react-native-snap-carousel';
 import config from '../../config/Config';
+import PlayIcon from '../../assets/images/course_details/play_dark.svg'
+import Previous from '../../assets/images/course_details/arrow_left.svg'
+import Next from '../../assets/images/course_details/arrow_right.svg'
+import { VLCPlayer, VlCPlayerView } from 'react-native-vlc-media-player';
 // import Whatsapp from '../../assets/images/whatsapp.svg';
 // import Contact from '../../assets/images/contact.svg';
 // import OnlineClasses from '../../assets/images/course_details/online-classes.svg';
@@ -62,7 +66,6 @@ import {
   iamInterestedinCourse,
 } from '../../reducers/courses.slice';
 import {
-  setLoading,
   setPageLoading,
   loaderState,
 } from '../../reducers/loader.slice';
@@ -104,7 +107,6 @@ export interface GetCourseDataInterface {
   isLoggedIn: boolean;
 }
 
-// import VideoPlayer from 'react-native-video-player';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootParamList} from '../../navigation/Navigators';
 import CustomImage from '../../components/CustomImage';
@@ -122,11 +124,13 @@ export interface CourseEnrollInterface {
 }
 
 const CourseDetails: FC<any> = (
-// {navigation, currCourse, setCourseDetailModal}
-  {navigation, route}: Props
-  ) => {
+  // {navigation, currCourse, setCourseDetailModal}
+  {navigation, route}: Props,
+) => {
+  //not using the global loading state since it is causing problem in loader in login page
+  const [loading, setLoading] = useState(false);
   const [videoId, setVideoId] = useState<string>('');
-  const {loading, pageLoading} = useSelector(loaderState);
+  const { pageLoading} = useSelector(loaderState);
   const {teacherAttendance, teacherReviews, course, courseDetailStatus} =
     useSelector(courseState);
   const {isLoggedIn, userData, userLocation} = useSelector(userState);
@@ -156,7 +160,9 @@ const CourseDetails: FC<any> = (
     undefined,
   );
   const [reviewPopupOpen, setReviewPopupOpen] = useState<boolean>(false);
-
+  const [showNativeVideo, setShowNativeVideo] = useState(false);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState<string|undefined>(undefined);
+  const [playMp4Video, setPlayMp4Video] = useState(false);
   const errors = {
     fullName: 'Enter full name',
     email: 'Enter an email address',
@@ -174,6 +180,7 @@ const CourseDetails: FC<any> = (
     'Saturday',
   ];
 
+  const dataTemp = ['https://www.youtube.com/watch?v=7bNcQXetje0', 'https://www.youtube.com/watch?v=7bNcQXetje0', 'https://www.youtube.com/watch?v=7bNcQXetje0']
   useEffect(() => {
     let data: GetCourseDataInterface = {
       course_slug: route.params?.course_slug,
@@ -189,7 +196,7 @@ const CourseDetails: FC<any> = (
     dispatch(getCourseDetail(data))
       .unwrap()
       .then(response => {
-        console.log(response)
+        console.log(response);
         if (response.data.status === 'success') {
           dispatch(setCurrentCourse(response.data.data));
           dispatch(setPageLoading(false));
@@ -203,7 +210,9 @@ const CourseDetails: FC<any> = (
   }, []);
 
   useEffect(() => {
-    Object.keys(course).length>0 && course.pricing && setSelectedPrice(course.pricing[0]);
+    Object.keys(course).length > 0 &&
+      course.pricing &&
+      setSelectedPrice(course.pricing[0]);
   }, [course]);
 
   // useEffect(() => {
@@ -246,16 +255,47 @@ const CourseDetails: FC<any> = (
   // }, [course]);
 
   useEffect(() => {
-    if (Object.keys(course).length !== 0) {
-      dispatch(setLoading(true));
-      var regExp =
-        /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
-      var video = course.course_videos.length > 0 ? course.course_videos[0].media_url : course.video_url;
-      var match = video.trim().match(regExp);
-      setVideoId(match[1]);
-      dispatch(setLoading(false));
+    
+      if (Object.keys(course).length !== 0 && course.course_videos.length>0 && currentVideoUrl) {
+        console.log(currentVideoUrl)
+       //getting extension of the video
+        let ext = currentVideoUrl
+          .split(/[#?]/)[0]
+          .split('.')
+          .pop()
+          .trim();
+        console.log(ext);
+        
+        if (ext.toLowerCase() === 'mp4') {
+          setShowNativeVideo(true);
+        } else {
+          setShowNativeVideo(false);
+          var regExp =
+            /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+          var video = currentVideoUrl
+            // course.course_videos.length > 0
+            //   ? course.course_videos[0].media_url
+            //   : course.video_url;
+          console.log(video);
+          var match = video.trim().match(regExp);
+          console.log(match);
+          setVideoId(match[1]);
+          
+          setLoading(false);
+        }
+        
+      }
+    
+  }, [course, currentVideoUrl]);
+
+//added this useEffect because the video at first was playing of the previous
+  useEffect(()=>{
+    if(course && course.course_videos && course.course_videos.length>0 ){
+      setLoading(true);
+      setCurrentVideoUrl(course.course_videos[0].media_url);
     }
-  }, [course]);
+    
+  },[course])
 
   // const getTeacherAvailability =(token, id) =>{
   //   dispatch(getTeacherCalender(course.user.user_token, 'G', course.id))
@@ -341,9 +381,9 @@ const CourseDetails: FC<any> = (
         purchase_type: purchase_type,
         discounts: course.discounts ? course.discounts : '',
         timezone: userData.timezone,
-        device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+        device_type: Platform.OS === 'android' ? 'android' : 'ios',
         price_per_class_inr: selectedPrice.final_INR,
-      price_per_class_usd: selectedPrice.final_USD
+        price_per_class_usd: selectedPrice.final_USD,
       };
 
       const finaldata: CourseEnrollInterface = {
@@ -374,7 +414,6 @@ const CourseDetails: FC<any> = (
     } else {
       dispatch(setLoginRedirectedFrom('CD'));
 
-      
       let total_cpw = selectedPrice.previous_purchase.classes_per_week
         ? selectedPrice.previous_purchase.classes_per_week
         : course.classes_per_week;
@@ -387,11 +426,11 @@ const CourseDetails: FC<any> = (
         total_cpw: total_cpw,
         total_weeks: total_weeks,
         total_class: total_class,
-        selectedPrice: selectedPrice
-      }
+        selectedPrice: selectedPrice,
+      };
 
       dispatch(setNotLoggedInCheckoutData(data));
-      
+
       navigation.navigate('Login', {
         nextRoute: 'CourseDetail',
       });
@@ -568,7 +607,6 @@ const CourseDetails: FC<any> = (
           message: message,
           phone_number: mobile,
           device_type: Platform.OS === 'android' ? 'AD' : 'IO',
-
         };
         // userToken = props.session.token;
       } else {
@@ -580,7 +618,6 @@ const CourseDetails: FC<any> = (
           message: message,
           phone_number: mobile,
           device_type: Platform.OS === 'android' ? 'AD' : 'IO',
-
         };
       }
 
@@ -633,55 +670,138 @@ const CourseDetails: FC<any> = (
 
       {pageLoading ? (
         <PageLoader />
-      ) : Object.keys(course).length>0 ? (
+      ) : Object.keys(course).length > 0 ? (
         <>
-          <StatusBar translucent  />
+          <StatusBar translucent />
           <TouchableOpacity
-            onPress={() => 
+            onPress={() =>
               // setCourseDetailModal(false)
               navigation.goBack()
             }
             style={styles.backButton}>
             {/* <Back /> */}
-            
-             <CustomImage
+
+            <CustomImage
               height={32}
               width={32}
               uri={`${config.media_url}back-arrow.svg`}
             />
           </TouchableOpacity>
-          
+
           <ScrollView
           // style={{marginTop:config.headerHeight}}
           >
-           
-            {!loading && videoId ? (
-              <View
-              style={{backgroundColor:'#000', paddingTop:Platform.OS==='ios'? 36:0}}
-              >
-                {/* have to be changed to a non youtube specific carousal */}
-                <YoutubePlayer
-                  height={222}
-                  play={false}
-                  videoId={`${videoId}`}
+            {/* 1. check video or thumbnail
+            2. check for extension (mp4, youtube or what)
+            3. check for arrows(add functioning to them also)
+            4.  */}
+            
+                <Carousel
+                  ref={isCarousel}
+                  data={course.course_videos}
+                  renderItem={({item, index}) => (
+                    <>
+                    {console.log(item.media_url === currentVideoUrl)}
+                    {showNativeVideo ? (
+                      <>
+                      {item.media_url === currentVideoUrl && playMp4Video ? 
+                  //     <VlCPlayerView
+                  //     style={{
+                  //       height: 220,
+                  //       alignSelf: 'center',
+                  //       width: '100%',
+                  //     }}
+                  //     autoplay={true}
+                  //     url={course.course_videos[index].media_url}
+                  //     // Orientation={Orientation}
+                  //     ggUrl=""
+                  //     showGG={true}
+                  //     // showTitle={true}
+                  //     // title="Big Buck Bunny"
+                  //     // showBack={true}
+                  //     onLeftPress={()=>{}}
+                  //  />
+                      <VLCPlayer
+                      style={{
+                        height: 220,
+                        alignSelf: 'center',
+                        width: '100%',
+                      }}
+                      videoAspectRatio="16:9"
+                      source={{ 
+                        // uri:'http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3'
+                        uri: course.course_videos[index].media_url
+                      }}
+                  />
+                      // <Video // Can be a URL or a local file.
+                      //         controls={true}
+                      //         onBuffer={() => setLoading(true)}
+                      //         onLoad={() => setLoading(false)}
+                      //         resizeMode="cover"
+                      //         fullscreen={true}
+                      //         // paused={true}
+                      //         source={{
+                      //           uri: course.course_videos[index].media_url,
+                      //           // uri:'http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3'
+                      //         }} // Store reference
+                      //         onError={() => {
+                      //           console.log('error,error! not loading');
+                      //         }} // Callback when video cannot be loaded
+                      //         style={{
+                      //           height: 220,
+                      //           alignSelf: 'center',
+                      //           width: '100%',
+                      //         }}
+                      //       />
+                            : <TouchableOpacity
+                            activeOpacity={1}
+                            onPress={() => {
+                              setPlayMp4Video(true);
+                              setCurrentVideoUrl(item.media_url);
+                            }}
+                            style={{
+                              height: 220,
+                              alignSelf: 'center',
+                              width: '100%',
+                            }}>
+                              {console.log('item.media_url !== currentVideoUrl')}
+                            <CustomImage
+                              uri={item.media_thumbnail}
+                              style={{
+                                height: 220,
+                                alignSelf: 'center',
+                                width: '100%',
+                              }}
+                            />
+<TouchableOpacity hitSlop={{top:20, bottom:20, left:20, right:20}} onPress={()=>{isCarousel.current.snapToPrev()}} style={{position:'absolute', left:16,top:105}}><Previous/></TouchableOpacity><TouchableOpacity style={{position:'absolute', left: (width/2)-25, top:95}}><PlayIcon/></TouchableOpacity><TouchableOpacity style={{position:'absolute', right:16, top:105}} hitSlop={{top:20, bottom:20, left:20, right:20}} onPress={()=>{isCarousel.current.snapToNext()}}><Next/></TouchableOpacity>
+                          </TouchableOpacity>}
+                      </>
+                    ) : (<>
+                      {!loading && videoId ? (
+                        <View
+                          style={{
+                            backgroundColor: '#000',
+                            paddingTop: Platform.OS === 'ios' ? 36 : 0,
+                          }}>
+                          {/* have to be changed to a non youtube specific carousal */}
+                          <TouchableOpacity onPress={()=>{setCurrentVideoUrl(item.media_url);}}>
+                          <YoutubePlayer
+                            height={222}
+                            play={false}
+                            videoId={`${videoId}`}
+                            
+                          />
+                          </TouchableOpacity>
+                        </View>
+                      ) : null}
+                    </>)}
+                     
+                    </>
+                  )}
+                  sliderWidth={width}
+                  itemWidth={width}
                 />
-              </View>
-            ) : // )
-            // : //   <View style={{height:220}}>
-            // <VideoPlayer
-            //   video={{uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4'}}
-            //   // videoWidth={1600}
-            //   videoHeight={height}
-            //   // thumbnail={{uri: 'https://i.picsum.photos/id/866/1600/900.jpg'}}
-            // />
-            //    <Video   // Can be a URL or a local file.
-            //   //  controls
-            // source={{uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4'}}                                    // Store reference
-            // onError={()=>{console.log("not loading")}}       // Callback when video cannot be loaded
-            // style={styles.backgroundVideo}
-            //  />):
-            // </View>
-            null}
+
 
             <View style={styles.main}>
               <View style={styles.courseWrapper}></View>
@@ -703,11 +823,13 @@ const CourseDetails: FC<any> = (
                     // justifyContent: 'space-between',
                     flexWrap: 'wrap',
                   }}>
-                    {course.top_selling ? (
-                <View style={StyleCSS.styles.topSellingWrapper}>
-                  <Text style={StyleCSS.styles.topSellingText}>Top Selling</Text>
-                </View>
-               ) : null}
+                  {course.top_selling ? (
+                    <View style={StyleCSS.styles.topSellingWrapper}>
+                      <Text style={StyleCSS.styles.topSellingText}>
+                        Top Selling
+                      </Text>
+                    </View>
+                  ) : null}
                   <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     {course.course_level &&
                       course.course_level.map((level: any, i: number) => {
@@ -733,16 +855,19 @@ const CourseDetails: FC<any> = (
                       })}
                   </View>
 
-                  {course.rating && course.rating.total_count && course.rating.total_count > 0 ? (
+                  {course.rating &&
+                  course.rating.total_count &&
+                  course.rating.total_count > 0 ? (
                     <View style={{alignItems: 'center', flexDirection: 'row'}}>
                       <View style={{marginHorizontal: 12}}>
                         <CustomImage
                           height={5}
                           width={5}
                           uri={`${config.media_url}dot.svg`}
-                        /> 
+                        />
                       </View>
-                      <TouchableOpacity onPress={()=>setReviewPopupOpen(true)}>
+                      <TouchableOpacity
+                        onPress={() => setReviewPopupOpen(true)}>
                         <View style={styles.courseRating}>
                           <Rating
                             ratingColor={secondaryColor}
@@ -756,11 +881,19 @@ const CourseDetails: FC<any> = (
                             fractions={10}
                           />
                           <View
-                            style={{flexDirection: 'row', alignItems: 'center'}}>
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                            }}>
                             <Text style={styles.courseRatingCount}>
-                            {course.rating.avg_review}/5{"  "} |{"  "} {course.rating.total_count} reviews{' '} 
+                              {course.rating.avg_review}/5{'  '} |{'  '}{' '}
+                              {course.rating.total_count} reviews{' '}
                             </Text>
-                            <CustomImage uri={`${config.media_url}drop.svg`} height={12} width={12}/>
+                            <CustomImage
+                              uri={`${config.media_url}drop.svg`}
+                              height={12}
+                              width={12}
+                            />
                             {/* <View>
                               <CustomImage
                                 height={12}
@@ -769,7 +902,7 @@ const CourseDetails: FC<any> = (
                               />
                             </View> */}
                           </View>
-                      </View>
+                        </View>
                       </TouchableOpacity>
                     </View>
                   ) : null}
@@ -781,9 +914,11 @@ const CourseDetails: FC<any> = (
                   {course.user?.first_name} {course?.user?.last_name}
                 </Text>
               </TouchableOpacity>
-              {course.experience ? <Text style={(StyleCSS.styles.contentText, styles.experience)}>
-                {course.experience} years experience
-              </Text> : null}
+              {course.experience ? (
+                <Text style={(StyleCSS.styles.contentText, styles.experience)}>
+                  {course.experience} years experience
+                </Text>
+              ) : null}
               {course.user && course.user.spotlight ? (
                 <Text
                   style={[
@@ -795,10 +930,30 @@ const CourseDetails: FC<any> = (
                 </Text>
               ) : null}
               <View style={styles.courseInfo}>
-                {course && course.user && 
-                <Text style={styles.price}>
-                  {!isLoggedIn ? (
-                    userLocation?.data?.country_code === 'IN' ? (
+                {course && course.user && (
+                  <Text style={styles.price}>
+                    {!isLoggedIn ? (
+                      userLocation?.data?.country_code === 'IN' ? (
+                        course?.user.ip_country === 'India' ? (
+                          <Text style={styles.price}>
+                            {`₹ ${
+                              course && course.pricing && course?.pricing[0].INR
+                            }`}{' '}
+                            <Text style={StyleCSS.styles.contentText}>
+                              per class (Tax Exclusive)
+                            </Text>
+                          </Text>
+                        ) : (
+                          `US $${
+                            course && course.pricing && course?.pricing[0].USD
+                          }`
+                        )
+                      ) : (
+                        `US $${
+                          course && course.pricing && course?.pricing[0].USD
+                        }`
+                      )
+                    ) : userData?.ip_country === 'India' ? (
                       course?.user.ip_country === 'India' ? (
                         <Text style={styles.price}>
                           {`₹ ${
@@ -817,26 +972,9 @@ const CourseDetails: FC<any> = (
                       `US $${
                         course && course.pricing && course?.pricing[0].USD
                       }`
-                    )
-                  ) : userData?.ip_country === 'India' ? (
-                    course?.user.ip_country === 'India' ? (
-                      <Text style={styles.price}>
-                        {`₹ ${
-                          course && course.pricing && course?.pricing[0].INR
-                        }`}{' '}
-                        <Text style={StyleCSS.styles.contentText}>
-                          per class (Tax Exclusive)
-                        </Text>
-                      </Text>
-                    ) : (
-                      `US $${
-                        course && course.pricing && course?.pricing[0].USD
-                      }`
-                    )
-                  ) : (
-                    `US $${course && course.pricing && course?.pricing[0].USD}`
-                  )}{' '}
-                </Text>}
+                    )}{' '}
+                  </Text>
+                )}
                 <Text style={[StyleCSS.styles.contentText, {marginTop: 5}]}>
                   for 1-on-1, {course.class_duration} mins class{' '}
                 </Text>
@@ -845,13 +983,12 @@ const CourseDetails: FC<any> = (
                 </Text>
                 <Text style={[StyleCSS.styles.contentText, {marginTop: 6}]}>
                   {course.classes_per_week}{' '}
-                  {course.classes_per_week === 1 ? 'class' : 'classes'} per
-                  week{' '}
-                   <Text style={[StyleCSS.styles.labelText, {marginTop: 16}]}>
+                  {course.classes_per_week === 1 ? 'class' : 'classes'} per week{' '}
+                  <Text style={[StyleCSS.styles.labelText, {marginTop: 16}]}>
                     {' '}
                     |{' '}
                   </Text>
-                  {course.level_up_week ? course.level_up_week :null}
+                  {course.level_up_week ? course.level_up_week : null}
                 </Text>
                 <View style={[{marginTop: 16}, StyleCSS.styles.fdrCenter]}>
                   <CustomImage
@@ -859,19 +996,20 @@ const CourseDetails: FC<any> = (
                     width={16}
                     uri={`${config.media_url}course_details/card.svg`}
                   />
-                  {course.pay_as_you_go ? <Text
-                    style={[
-                      StyleCSS.styles.contentText,
-                      StyleCSS.styles.fw600,
-                      {marginLeft: 8},
-                    ]}>
-                    {course.pay_as_you_go}
-                  </Text> :null}
+                  {course.pay_as_you_go ? (
+                    <Text
+                      style={[
+                        StyleCSS.styles.contentText,
+                        StyleCSS.styles.fw600,
+                        {marginLeft: 8},
+                      ]}>
+                      {course.pay_as_you_go}
+                    </Text>
+                  ) : null}
                 </View>
                 {!isLoggedIn && course.allow_directly && (
                   <TouchableOpacity
-                 key={'item_name'}
-                 
+                    key={'item_name'}
                     style={styles.enrollButton}
                     onPress={() => handleEnrollment('N')}>
                     <Text
@@ -937,7 +1075,7 @@ const CourseDetails: FC<any> = (
                 ) : null}
                 {isLoggedIn && userData.user_type !== 'S' ? (
                   <TouchableOpacity
-                  disabled={true}
+                    disabled={true}
                     style={styles.enrollButton}
                     // onPress={() => handleInterested()}
                   >
@@ -1014,13 +1152,15 @@ const CourseDetails: FC<any> = (
                 <View style={StyleCSS.styles.marginV16}>
                   <LineDashed />
                 </View>
-                {course.discuss_timing ? <Text
-                  style={[
-                    StyleCSS.styles.contentText,
-                    styles.courseInfoDetail,
-                  ]}>
-                  {course.discuss_timing}
-                </Text> : null}
+                {course.discuss_timing ? (
+                  <Text
+                    style={[
+                      StyleCSS.styles.contentText,
+                      styles.courseInfoDetail,
+                    ]}>
+                    {course.discuss_timing}
+                  </Text>
+                ) : null}
                 <View style={[StyleCSS.styles.lineStyleLight]}></View>
                 {/* <View style={[StyleCSS.styles.fdrCenter, {marginTop: 16}]}>
                   <View style={styles.courseGeneralDetails}>
@@ -1042,7 +1182,7 @@ const CourseDetails: FC<any> = (
                     </Text>
                     <Text>:</Text>
                   </View>
-                  <View style={{marginLeft: 8, width:'50%'}}>
+                  <View style={{marginLeft: 8, width: '50%'}}>
                     <Text style={[StyleCSS.styles.contentText]}>
                       {course.language.map((lang: any, i: number) => (
                         <Text style={StyleCSS.styles.contentText} key={i}>
@@ -1111,7 +1251,7 @@ const CourseDetails: FC<any> = (
                 {course.course_summary ? (
                   readMoreSummary ? (
                     <>
-                    {/* new */}
+                      {/* new */}
                       <RenderHtml
                         baseStyle={styles.summary}
                         contentWidth={cardW}
@@ -1121,14 +1261,22 @@ const CourseDetails: FC<any> = (
                         onPress={() => {
                           setReadMoreSummary(false);
                         }}>
-                        <Text style={[styles.summary, {color: secondaryColor, alignSelf:'flex-end', marginBottom:12}]}>
+                        <Text
+                          style={[
+                            styles.summary,
+                            {
+                              color: secondaryColor,
+                              alignSelf: 'flex-end',
+                              marginBottom: 12,
+                            },
+                          ]}>
                           Read Less
                         </Text>
                       </TouchableOpacity>
                     </>
                   ) : (
                     <>
-                    {/* new */}
+                      {/* new */}
                       <RenderHtml
                         baseStyle={styles.summary}
                         contentWidth={cardW}
@@ -1138,7 +1286,15 @@ const CourseDetails: FC<any> = (
                         onPress={() => {
                           setReadMoreSummary(true);
                         }}>
-                        <Text style={[styles.summary, {color: secondaryColor, alignSelf:'flex-end', marginBottom:12}]}>
+                        <Text
+                          style={[
+                            styles.summary,
+                            {
+                              color: secondaryColor,
+                              alignSelf: 'flex-end',
+                              marginBottom: 12,
+                            },
+                          ]}>
                           ...Read More
                         </Text>
                       </TouchableOpacity>
@@ -1174,12 +1330,14 @@ const CourseDetails: FC<any> = (
                       ]}>
                       {course.user.first_name} {course.user.last_name}
                     </Text>
-                    {course.experience ? <Text style={[StyleCSS.styles.contentText]}>
-                      <Text style={[StyleCSS.styles.labelText]}>
-                        Experience:{' '}
+                    {course.experience ? (
+                      <Text style={[StyleCSS.styles.contentText]}>
+                        <Text style={[StyleCSS.styles.labelText]}>
+                          Experience:{' '}
+                        </Text>
+                        {course.experience} years
                       </Text>
-                      {course.experience} years
-                    </Text>:null}
+                    ) : null}
                     {course.user.ip_country !== '' && (
                       <Text style={[StyleCSS.styles.contentText]}>
                         <Text style={[StyleCSS.styles.labelText]}>From: </Text>
@@ -1195,14 +1353,15 @@ const CourseDetails: FC<any> = (
                         StyleCSS.styles.fdrCenter,
                         styles.teacherProfileList,
                       ]}>
-                      <View style={{width:'10%'}}>
+                      <View style={{width: '10%'}}>
                         <CustomImage
                           height={32}
                           width={32}
                           uri={`${config.media_url}course_details/teacherProfile1.svg`}
                         />
                       </View>
-                      <View style={[styles.teacherProfileListText,{width:'85%'}]}>
+                      <View
+                        style={[styles.teacherProfileListText, {width: '85%'}]}>
                         <Text
                           style={[
                             StyleCSS.styles.contentText,
@@ -1241,14 +1400,15 @@ const CourseDetails: FC<any> = (
                         StyleCSS.styles.fdrCenter,
                         styles.teacherProfileList,
                       ]}>
-                      <View style={{width:'10%'}}>
+                      <View style={{width: '10%'}}>
                         <CustomImage
                           height={32}
                           width={32}
                           uri={`${config.media_url}course_details/teacherProfile2.svg`}
                         />
                       </View>
-                      <View style={[styles.teacherProfileListText,{width:'85%'}]}>
+                      <View
+                        style={[styles.teacherProfileListText, {width: '85%'}]}>
                         <Text
                           style={[
                             StyleCSS.styles.contentText,
@@ -1288,14 +1448,15 @@ const CourseDetails: FC<any> = (
                         StyleCSS.styles.fdrCenter,
                         styles.teacherProfileList,
                       ]}>
-                      <View style={{width:'10%'}}>
+                      <View style={{width: '10%'}}>
                         <CustomImage
                           height={32}
                           width={32}
                           uri={`${config.media_url}course_details/teacherProfile3.svg`}
                         />
                       </View>
-                      <View style={[styles.teacherProfileListText,{width:'85%'}]}>
+                      <View
+                        style={[styles.teacherProfileListText, {width: '85%'}]}>
                         <Text
                           style={[
                             StyleCSS.styles.contentText,
@@ -1331,14 +1492,14 @@ const CourseDetails: FC<any> = (
                       paddingHorizontal: 16,
                     },
                   ]}>
-                  <View style={{width:'10%'}}>
+                  <View style={{width: '10%'}}>
                     <CustomImage
                       height={32}
                       width={32}
                       uri={`${config.media_url}course_details/teacherProfile4.svg`}
                     />
                   </View>
-                  <View style={[styles.teacherProfileListText,{width:'85%'}]}>
+                  <View style={[styles.teacherProfileListText, {width: '85%'}]}>
                     <Text
                       style={[
                         StyleCSS.styles.contentText,
@@ -1356,52 +1517,7 @@ const CourseDetails: FC<any> = (
                     </Text>
                   </View>
                 </View>
-                {/* {course.teacher_skills && course.teacher_skills.length > 0 && (
-              <View style={styles.educatorInfo}>
-                <Image
-                  style={styles.iconImage}
-                  source={{
-                    uri:
-                      config.media_url +
-                      'images/course-detail/skill-keywords.png',
-                  }}
-                />
-                <Text style={styles.subHeading2}>Teacher Skill Keywords </Text>
-                <Text>
-                  {course.teacher_skills.map((skill: any, i: number) => (
-                    <Text style={styles.body2} key={i}>
-                      {i > 0 ? ', ' + skill.name : skill.name}
-                    </Text>
-                  ))}
-                </Text>
-              </View>
-            )} */}
-                {/* {course.user &&
-              course.user.study_details &&
-              course.user.study_details.length > 0 && (
-                <View style={styles.educatorInfo}>
-                  <Image
-                    style={styles.iconImage}
-                    source={{
-                      uri:
-                        config.media_url + 'images/course-detail/education.png',
-                    }}
-                  />
-                  <Text style={styles.subHeading2}>Education </Text>
-                  <Text style={styles.body2}>
-                    {course.user.study_details.map(
-                      (s_detail: any, i: number) => (
-                        <Text key={i}>
-                          {s_detail.degree}{' '}
-                          {s_detail.university && (
-                            <>from {s_detail.university}</>
-                          )}
-                        </Text>
-                      ),
-                    )}
-                  </Text>
-                </View>
-              )} */}
+
                 {/* {course.user.work_details && course.user.work_details.length > 0 && (
               <View style={styles.educatorInfo}>
                 <Image
@@ -1575,7 +1691,7 @@ const CourseDetails: FC<any> = (
               <Text style={styles.subHeading}> About the Course</Text>
               {readMoreDetail ? (
                 <>
-                {/* new */}
+                  {/* new */}
                   <RenderHtml
                     baseStyle={styles.summary}
                     contentWidth={width}
@@ -1585,14 +1701,22 @@ const CourseDetails: FC<any> = (
                     onPress={() => {
                       setReadMoreDetail(false);
                     }}>
-                    <Text style={[styles.summary, {color: secondaryColor , alignSelf:'flex-end', marginBottom:12}]}>
+                    <Text
+                      style={[
+                        styles.summary,
+                        {
+                          color: secondaryColor,
+                          alignSelf: 'flex-end',
+                          marginBottom: 12,
+                        },
+                      ]}>
                       Read Less
                     </Text>
                   </TouchableOpacity>
                 </>
               ) : (
                 <>
-                {/* new */}
+                  {/* new */}
                   <RenderHtml
                     baseStyle={styles.summary}
                     contentWidth={width}
@@ -1606,7 +1730,15 @@ const CourseDetails: FC<any> = (
                     onPress={() => {
                       setReadMoreDetail(true);
                     }}>
-                    <Text style={[styles.summary, {color: secondaryColor, alignSelf:'flex-end', marginBottom:12}]}>
+                    <Text
+                      style={[
+                        styles.summary,
+                        {
+                          color: secondaryColor,
+                          alignSelf: 'flex-end',
+                          marginBottom: 12,
+                        },
+                      ]}>
                       ...Read More
                     </Text>
                   </TouchableOpacity>
@@ -1682,7 +1814,11 @@ const CourseDetails: FC<any> = (
                       {marginVertical: 8},
                     ]}></View>
                   <View>
-                    {course.what_you_get  ? <Text style={styles.whatYouGet}>{course.what_you_get}</Text> : null}
+                    {course.what_you_get ? (
+                      <Text style={styles.whatYouGet}>
+                        {course.what_you_get}
+                      </Text>
+                    ) : null}
                   </View>
                   {course.course_includes.map((details: any) => {
                     return (
@@ -1709,27 +1845,29 @@ const CourseDetails: FC<any> = (
                   })}
                 </>
               ) : null}
-              {course.factoid && course.factoid.text? 
-              <View style={styles.factoidWrapper}>
-                <Text style={styles.factoidText}>Factoid</Text>
-                <Text
-                  style={[
-                    StyleCSS.styles.contentText,
-                    StyleCSS.styles.fw400,
-                    {lineHeight: 26},
-                  ]}>
-                  {course.factoid.text}
-                </Text>
-                {course.factoid.citation!=='' ? <Text
-                  style={[
-                    StyleCSS.styles.labelText,
-                    StyleCSS.styles.fw400,
-                    {lineHeight: 26, marginTop:5, fontSize:12},
-                  ]}>
-                   {course.factoid.citation}
-                </Text> : null}
-              </View> : null}
-              
+              {course.factoid && course.factoid.text ? (
+                <View style={styles.factoidWrapper}>
+                  <Text style={styles.factoidText}>Factoid</Text>
+                  <Text
+                    style={[
+                      StyleCSS.styles.contentText,
+                      StyleCSS.styles.fw400,
+                      {lineHeight: 26},
+                    ]}>
+                    {course.factoid.text}
+                  </Text>
+                  {course.factoid.citation !== '' ? (
+                    <Text
+                      style={[
+                        StyleCSS.styles.labelText,
+                        StyleCSS.styles.fw400,
+                        {lineHeight: 26, marginTop: 5, fontSize: 12},
+                      ]}>
+                      {course.factoid.citation}
+                    </Text>
+                  ) : null}
+                </View>
+              ) : null}
             </View>
             <View style={styles.main}>
               <View style={styles.queries}>
@@ -1795,7 +1933,7 @@ const CourseDetails: FC<any> = (
                 </Text>
               </View>
             </View> */}
-            
+
             {/* {teacherAttendance && teacherAttendance.length > 0 && (
               <View style={styles.greyBg}>
                 <Text style={styles.subHeading}>Teacher's Availability</Text>
@@ -1931,176 +2069,190 @@ const CourseDetails: FC<any> = (
               </View>
             ) : null}
             <View style={StyleCSS.styles.lineStyleLight} />
-            {course.ipassio_best_fit ? <View style={styles.main}>
-              {course.what_makes_ipassio ? <Text style={[styles.subHeading, {marginVertical: 24}]}>
-               {course.what_makes_ipassio}
-              </Text>:null}
-               {course.ipassio_best_fit.map((ibf:any)=>{
-                return(
-<View style={styles.courseIncludedWrapper}>
-                <View style={styles.svgWrapper}>
-                  <CustomImage
-                    height={140}
-                    width={219}
-                    uri={ibf.best_fit_image}
-                  />
-                </View>
-               
-                <Text
-                  style={[
-                    StyleCSS.styles.contentText,
-                    StyleCSS.styles.fw600,
-                    StyleCSS.styles.font16,
-                    {marginTop: 8},
-                  ]}>
-                  {ibf.title}
-                </Text>
-                <Text
-                  style={[
-                    StyleCSS.styles.labelText,
-                    StyleCSS.styles.fw400,
-                    {lineHeight: 25},
-                  ]}>
-                  {ibf.description}
-                </Text>
+            {course.ipassio_best_fit ? (
+              <View style={styles.main}>
+                {course.what_makes_ipassio ? (
+                  <Text style={[styles.subHeading, {marginVertical: 24}]}>
+                    {course.what_makes_ipassio}
+                  </Text>
+                ) : null}
+                {course.ipassio_best_fit.map((ibf: any) => {
+                  return (
+                    <View style={styles.courseIncludedWrapper}>
+                      <View style={styles.svgWrapper}>
+                        <CustomImage
+                          height={140}
+                          width={219}
+                          uri={ibf.best_fit_image}
+                        />
+                      </View>
+
+                      <Text
+                        style={[
+                          StyleCSS.styles.contentText,
+                          StyleCSS.styles.fw600,
+                          StyleCSS.styles.font16,
+                          {marginTop: 8},
+                        ]}>
+                        {ibf.title}
+                      </Text>
+                      <Text
+                        style={[
+                          StyleCSS.styles.labelText,
+                          StyleCSS.styles.fw400,
+                          {lineHeight: 25},
+                        ]}>
+                        {ibf.description}
+                      </Text>
+                    </View>
+                  );
+                })}
               </View>
-                )
-              })} 
-              
-              
-            </View>: null}
-            
+            ) : null}
           </ScrollView>
         </>
-      ) : <Text style={{textAlign:'center', marginTop:height*0.4}}> An error occurred. Please try again later.</Text>}
+      ) : (
+        <Text style={{textAlign: 'center', marginTop: height * 0.4}}>
+          {' '}
+          An error occurred. Please try again later.
+        </Text>
+      )}
 
       <Modal
         visible={interested}
         presentationStyle="overFullScreen"
         transparent={true}>
-           <KeyboardAvoidingView behavior='padding'>
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setInterested(false)}
-          style={StyleCSS.styles.modalBackground}>
+        <KeyboardAvoidingView behavior="padding">
           <TouchableOpacity
             activeOpacity={1}
-            onPress={() => {}}
-            style={StyleCSS.styles.modalView}>
-            <ScrollView>
-              <View style={StyleCSS.styles.modalLine}></View>
-              <Text style={StyleCSS.styles.modalTitle}>I am Interested</Text>
-              <View style={styles.formInput}>
-                <TextField
-                  mode="outlined"
-                  label="Full Name*"
-                  // style={StyleCSS.styles.input}
-                  value={fullName}
-                  onChangeText={(text: string) => setFullName(text)}
-                  editable={true}
-                  selectTextOnFocus={false}
-                />
-                {submitRequested && !fullName ? (
-                  <Text style={styles.errorMessage}>{errors.fullName}</Text>
-                ) : null}
-              </View>
-              <View style={styles.formInput}>
-                <TextField
-                  mode="outlined"
-                  label="Email Address*"
-                  onKeyPress={validateEmail}
-                  // style={StyleCSS.styles.input}
-                  value={email}
-                  onChangeText={(text: string) => setEmail(text)}
-                  editable={true}
-                  selectTextOnFocus={false}
-                />
-                {submitRequested && !email ? (
-                  <Text style={styles.errorMessage}>{errors.email}</Text>
-                ) : null}
-                {validEmail ? null : (
-                  <Text style={styles.errorMessage}>
-                    This email address is invalid.
-                  </Text>
-                )}
-              </View>
-              <View style={styles.formInput}>
-                <TextField
-                  mode="outlined"
-                  label="Mobile Number (preferably WhatsApp number)*"
-                  // style={StyleCSS.styles.input}
-                  value={mobile}
-                  keyboardType="numeric"
-                  onChangeText={(text: string) => setMobile(text)}
-                  editable={true}
-                  selectTextOnFocus={false}
-                />
-                {submitRequested && !mobile ? (
-                  <Text style={styles.errorMessage}>{errors.mobile}</Text>
-                ) : null}
-              </View>
-              <View style={styles.formInput}>
-                <TextField
-                  mode="outlined"
-                  label="Subject"
-                  // multiline={true}
-                  // style={StyleCSS.styles.input}
-                  value={subject}
-                  defaultValue={course.title}
-                  onChangeText={(text: string) => setSubject(text)}
-                  editable={true}
-                  selectTextOnFocus={false}
-                />
-                {submitRequested && subject === '' ? (
-                  <Text style={styles.errorMessage}>{errors.subject}</Text>
-                ) : null}
-              </View>
-              <View style={styles.formInput}>
-                <Textarea
-                  containerStyle={StyleCSS.styles.modalTextarea}
-                  style={StyleCSS.styles.reviewTextArea}
-                  onChangeText={(text: string) => {
-                    setMessage(text);
-                  }}
-                  value={message}
-                  // defaultValue={attendances[index].review}
-                  placeholder={'Message *'}
-                  placeholderTextColor={font2}
-                  underlineColorAndroid={'transparent'}
-                />
-                {submitRequested && !message ? (
-                  <Text style={styles.errorMessage}>{errors.message}</Text>
-                ) : null}
-              </View>
+            onPress={() => setInterested(false)}
+            style={StyleCSS.styles.modalBackground}>
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() => {}}
+              style={StyleCSS.styles.modalView}>
+              <ScrollView>
+                <View style={StyleCSS.styles.modalLine}></View>
+                <Text style={StyleCSS.styles.modalTitle}>I am Interested</Text>
+                <View style={styles.formInput}>
+                  <TextField
+                    mode="outlined"
+                    label="Full Name*"
+                    // style={StyleCSS.styles.input}
+                    value={fullName}
+                    onChangeText={(text: string) => setFullName(text)}
+                    editable={true}
+                    selectTextOnFocus={false}
+                  />
+                  {submitRequested && !fullName ? (
+                    <Text style={styles.errorMessage}>{errors.fullName}</Text>
+                  ) : null}
+                </View>
+                <View style={styles.formInput}>
+                  <TextField
+                    mode="outlined"
+                    label="Email Address*"
+                    onKeyPress={validateEmail}
+                    // style={StyleCSS.styles.input}
+                    value={email}
+                    onChangeText={(text: string) => setEmail(text)}
+                    editable={true}
+                    selectTextOnFocus={false}
+                  />
+                  {submitRequested && !email ? (
+                    <Text style={styles.errorMessage}>{errors.email}</Text>
+                  ) : null}
+                  {validEmail ? null : (
+                    <Text style={styles.errorMessage}>
+                      This email address is invalid.
+                    </Text>
+                  )}
+                </View>
+                <View style={styles.formInput}>
+                  <TextField
+                    mode="outlined"
+                    label="Mobile Number (preferably WhatsApp number)*"
+                    // style={StyleCSS.styles.input}
+                    value={mobile}
+                    keyboardType="numeric"
+                    onChangeText={(text: string) => setMobile(text)}
+                    editable={true}
+                    selectTextOnFocus={false}
+                  />
+                  {submitRequested && !mobile ? (
+                    <Text style={styles.errorMessage}>{errors.mobile}</Text>
+                  ) : null}
+                </View>
+                <View style={styles.formInput}>
+                  <TextField
+                    mode="outlined"
+                    label="Subject"
+                    // multiline={true}
+                    // style={StyleCSS.styles.input}
+                    value={subject}
+                    defaultValue={course.title}
+                    onChangeText={(text: string) => setSubject(text)}
+                    editable={true}
+                    selectTextOnFocus={false}
+                  />
+                  {submitRequested && subject === '' ? (
+                    <Text style={styles.errorMessage}>{errors.subject}</Text>
+                  ) : null}
+                </View>
+                <View style={styles.formInput}>
+                  <Textarea
+                    containerStyle={StyleCSS.styles.modalTextarea}
+                    style={StyleCSS.styles.reviewTextArea}
+                    onChangeText={(text: string) => {
+                      setMessage(text);
+                    }}
+                    value={message}
+                    // defaultValue={attendances[index].review}
+                    placeholder={'Message *'}
+                    placeholderTextColor={font2}
+                    underlineColorAndroid={'transparent'}
+                  />
+                  {submitRequested && !message ? (
+                    <Text style={styles.errorMessage}>{errors.message}</Text>
+                  ) : null}
+                </View>
 
-              <View style={[StyleCSS.styles.lineStyleLight, {marginTop: 16}]} />
-              <View style={[StyleCSS.styles.modalButton]}>
-                <TouchableOpacity
-                  style={StyleCSS.styles.cancelButton}
-                  onPress={() => {
-                    setInterested(false);
-                  }}>
-                  <Text style={StyleCSS.styles.cancelButtonText}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={StyleCSS.styles.submitButton}
-                  onPress={() => {
-                    handleInterestedData();
-                  }}>
-                  <Text style={StyleCSS.styles.submitButtonText}>Submit</Text>
-                </TouchableOpacity>
-              </View>
-            </ScrollView>
+                <View
+                  style={[StyleCSS.styles.lineStyleLight, {marginTop: 16}]}
+                />
+                <View style={[StyleCSS.styles.modalButton]}>
+                  <TouchableOpacity
+                    style={StyleCSS.styles.cancelButton}
+                    onPress={() => {
+                      setInterested(false);
+                    }}>
+                    <Text style={StyleCSS.styles.cancelButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={StyleCSS.styles.submitButton}
+                    onPress={() => {
+                      handleInterestedData();
+                    }}>
+                    <Text style={StyleCSS.styles.submitButtonText}>Submit</Text>
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
+            </TouchableOpacity>
           </TouchableOpacity>
-        </TouchableOpacity>
         </KeyboardAvoidingView>
       </Modal>
-      <Modal visible={reviewPopupOpen} animationType='slide' transparent={true} statusBarTranslucent  presentationStyle="overFullScreen" 
-     >
-       <View style={{height:'100%'}}>
-        <TeacherReviews setReviewPopupOpen={setReviewPopupOpen} course={course}/>
+      <Modal
+        visible={reviewPopupOpen}
+        animationType="slide"
+        transparent={true}
+        statusBarTranslucent
+        presentationStyle="overFullScreen">
+        <View style={{height: '100%'}}>
+          <TeacherReviews
+            setReviewPopupOpen={setReviewPopupOpen}
+            course={course}
+          />
         </View>
-       
       </Modal>
     </>
   );
@@ -2123,9 +2275,9 @@ const styles = StyleSheet.create({
   teacher: {
     color: font1,
     fontSize: 16,
-    fontWeight:'600',
+    fontWeight: '600',
     textTransform: 'capitalize',
-    fontFamily:Helper.switchFont('medium'),
+    fontFamily: Helper.switchFont('medium'),
   },
   summary: {
     color: font1,
@@ -2538,7 +2690,6 @@ const styles = StyleSheet.create({
   },
   teacherProfileListText: {
     marginLeft: 24,
-    
   },
   bgGrey: {
     backgroundColor: background6,

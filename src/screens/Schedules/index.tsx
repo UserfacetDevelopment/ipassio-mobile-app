@@ -60,7 +60,7 @@ const {width, height} = Dimensions.get('screen');
 
 // import Copy from '../../assets/images/copy.svg'
 // import AddSession from '../../assets/images/addSession.svg';
-import AddSessionCmp, { CreateSessionInterfaceFinal } from './AddSession';
+import AddSessionCmp, {CreateSessionInterfaceFinal} from './AddSession';
 import Clipboard from '@react-native-clipboard/clipboard';
 import BottomNavigation from '../../components/BottomNavigation';
 import DashedLine from 'react-native-dashed-line';
@@ -68,8 +68,8 @@ import CustomImage from '../../components/CustomImage';
 import StyleCSS from '../../styles/style';
 import ShareLinkPopup from '../../components/ShareLinkPopup';
 import DeleteClassPopup from '../../components/DeleteClassPopup';
-import { fetchToken } from '../../reducers/twilio.slice';
-import { GetTokenInterface } from '../VideoConferencing';
+import {fetchToken, getMasqueradeToken} from '../../reducers/twilio.slice';
+import {GetTokenInterface} from '../VideoConferencing';
 
 type Props = NativeStackScreenProps<RootParamList, 'AddSession'>;
 
@@ -82,8 +82,8 @@ interface LoadItemInterface {
   setShowAddSessionModal: any;
   setDeleteClassData: any;
   setTitle: any;
-  navigation:any;
-  onRefresh:any;
+  navigation: any;
+  onRefresh: any;
   setShowDeletePopup: any;
 }
 
@@ -98,95 +98,118 @@ const LoadItem = ({
   setDeleteClassData,
   navigation,
   onRefresh,
-  setShowDeletePopup
- }: LoadItemInterface) => {
+  setShowDeletePopup,
+}: LoadItemInterface) => {
   const {userData} = useSelector(userState);
-  
+
   const dispatch = useAppDispatch();
-  
+
   const editClass = () => {
     setEditClassData(data);
     setShowAddSessionModal(true);
     setTitle('Edit');
   };
-  
+
   const deleteClass = () => {
     setDeleteClassData(data);
     setShowDeletePopup(true);
-  
-  
-  }
+  };
 
-  
-  const joinClassWV = () =>{
-    let final_data: GetTokenInterface = {
-      room_name: data.class_url,
-      create_conversation: false,
-      user_identity: userData.first_name + ' ' + userData.last_name,
-    };
-
-     dispatch(fetchToken(final_data))
-      .then((res: any) => {
-        Linking.openURL(config.FrontendURL+config.videoURL+res.payload.data.token);
-        // navigation.navigate('VideoWebview',{
-        //     token: res.payload.data.token
-        // });
-      })
-      .catch((error: any) => {
-        console.log(error);
+  const openVideoConferencing=(token?:string)=>{
+    if(Platform.OS === 'ios'){
+      navigation.navigate('VideoWebview', {
+        token: token ? `${data.class_url}?t=${token}` : data.class_url,
       });
-   
+    }
+    else{
+      if(token){
+        Linking.openURL(config.FrontendURL+config.videoURL+data.class_url+'?t='+token);
+      }
+      else{
+        Linking.openURL(config.FrontendURL+config.videoURL+data.class_url);
+      }
+      
+    }
   }
+  const joinClassWV = () => {
 
-  const joinClass = () =>{
-    navigation.navigate('Video',{
-      data: data
+    dispatch(getMasqueradeToken(userData.token)).then(response => {
+      if(response.payload.data.status === 'success'){
+        openVideoConferencing(response.payload.data.data.masq_token);
+      }
+      else{
+        openVideoConferencing();
+      }
+    }).catch(()=>{
+      openVideoConferencing();
     });
-  }
-  
+
+
+    // let final_data: GetTokenInterface = {
+    //   room_name: data.class_url,
+    //   create_conversation: false,
+    //   user_identity: userData.first_name + ' ' + userData.last_name,
+    // };
+
+    //  dispatch(fetchToken(final_data))
+    //   .then((res: any) => {
+    //     // Linking.openURL(config.FrontendURL+config.videoURL+data.class_url);
+
+    //   })
+    //   .catch((error: any) => {
+    //     console.log(error);
+    //   });
+  };
+
+  const joinClass = () => {
+    navigation.navigate('Video', {
+      data: data,
+    });
+  };
+
   const daysRemaining = (current_date: string, start_date: string) => {
     let dateFormat = 'DD MMM YYYY hh:mm A';
     var date1 = Moment(start_date, dateFormat);
     var date2 = Moment(current_date, dateFormat);
-  
+
     let months = date1.diff(date2, 'months');
     date2.add(months, 'months');
     months = months;
-  
+
     let days = date1.diff(date2, 'days');
     date2.add(days, 'days');
     days = days;
-  
+
     if (months === 0 && days === 0) {
       return true;
     }
   };
-  
+
   const getDaysDiff = (current_date: string, start_date: string) => {
     let dateFormat = 'DD MMM YYYY hh:mm A';
     var date1 = Moment(start_date, dateFormat);
     var date2 = Moment(current_date, dateFormat);
-  
+
     let years = date1.diff(date2, 'year');
     date2.add(years, 'years');
     years = years;
-  
+
     let months = date1.diff(date2, 'months');
     date2.add(months, 'months');
     months = months;
-  
+
     let days = date1.diff(date2, 'days');
     date2.add(days, 'days');
     days = days;
-  
+
     let hours = date1.diff(date2, 'hours');
     date2.add(hours, 'hours');
     hours = hours;
-  
+
     let minutes = date1.diff(date2, 'minutes');
     date2.add(minutes, 'minutes');
     minutes = minutes;
-  
+
     if (months < 0 || days < 0 || hours < 0 || minutes < 0) {
       return 'Class Ongoing';
     } else {
@@ -203,8 +226,7 @@ const LoadItem = ({
       );
     }
   };
-  
-  
+
   return (
     <View
       style={[
@@ -326,7 +348,7 @@ const LoadItem = ({
               ? ' (1-on-1 Class)'
               : ' ( ' + data.course.class_type.members + ' Members)'} */}
           </Text>
-  
+
           {userData.user_type === 'T' && (
             <View>
               <View
@@ -373,7 +395,7 @@ const LoadItem = ({
           )}
         </View>
       </TouchableOpacity>
-  
+
       {
         selectedCard == data.class_token ? (
           <View>
@@ -383,7 +405,7 @@ const LoadItem = ({
               dashGap={5}
               dashColor={lineColor}
             />
-  
+
             <View style={styles.itemRow}>
               <View style={styles.itemRowItem}>
                 <Text style={styles.contentLabel}>Time</Text>
@@ -414,7 +436,7 @@ const LoadItem = ({
                 </View>
               </View>
             </View>
-            {data.class_url && data.class_url !== "" ? (
+            {data.class_url && data.class_url !== '' ? (
               <>
                 <DashedLine
                   dashLength={5}
@@ -428,9 +450,14 @@ const LoadItem = ({
                     <Text
                       selectable={true}
                       style={[styles.contentText, {flex: 1, marginTop: 0}]}>
-                      {(config.FrontendURL+config.videoURL+data.class_url).length > 30
-                        ? `${(config.FrontendURL+config.videoURL+data.class_url).substring(0, 30)}...`
-                        : config.FrontendURL+config.videoURL+data.class_url}
+                      {(config.FrontendURL + config.videoURL + data.class_url)
+                        .length > 30
+                        ? `${(
+                            config.FrontendURL +
+                            config.videoURL +
+                            data.class_url
+                          ).substring(0, 30)}...`
+                        : config.FrontendURL + config.videoURL + data.class_url}
                     </Text>
                     <TouchableOpacity
                       onPress={() => {
@@ -439,7 +466,9 @@ const LoadItem = ({
                           text1: 'Copied',
                           // text2: 'This is some something 👋'
                         });
-                        Clipboard.setString(config.FrontendURL+config.videoURL+data.class_url);
+                        Clipboard.setString(
+                          config.FrontendURL + config.videoURL + data.class_url,
+                        );
                       }}
                       style={styles.copy}>
                       <CustomImage
@@ -478,24 +507,25 @@ const LoadItem = ({
         //   </View>
         // )
       }
-      <View style={[{ alignSelf: 'flex-end', },StyleCSS.styles.fdrCenter]}>
-      {/* {data.taught_on.code === 'I' ? <TouchableOpacity
-      onPress={joinClassWV}
-      >
-        <Text
-          style={[
-            StyleCSS.styles.contentText,
-            StyleCSS.styles.fw700,
-            {
-              color: font3,
-            
-              marginTop: selectedCard == data.class_token ? 0 : 12, marginRight:32
-            },
-          ]}>
-          Join Class
-        </Text>
-      </TouchableOpacity> : null} */}
-      {data.taught_on.code === 'I' ? <TouchableOpacity
+      <View style={[{alignSelf: 'flex-end'}, StyleCSS.styles.fdrCenter]}>
+        {data.taught_on.code === 'I' ? (
+          <TouchableOpacity onPress={joinClassWV}>
+            <Text
+              style={[
+                StyleCSS.styles.contentText,
+                StyleCSS.styles.fw700,
+                {
+                  color: font3,
+
+                  marginTop: selectedCard == data.class_token ? 0 : 12,
+                  marginRight: 32,
+                },
+              ]}>
+              Join Class
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+        {/* {data.taught_on.code === 'I' ? <TouchableOpacity
       onPress={joinClass}
       >
         <Text
@@ -510,44 +540,42 @@ const LoadItem = ({
           ]}>
           Join Class
         </Text>
-      </TouchableOpacity> : null}
-      <TouchableOpacity
-      onPress={deleteClass}
-      >
-        <Text
-          style={[
-            StyleCSS.styles.contentText,
-            StyleCSS.styles.fw700,
-            {
-              color: brandColor,
-            
-              marginTop: selectedCard == data.class_token ? 0 : 12, marginRight:32
-            },
-          ]}>
-          Delete
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={editClass}>
-        <Text
-          style={[
-            StyleCSS.styles.contentText,
-            StyleCSS.styles.fw700,
-            {
-              color: secondaryColor,
-            
-              marginTop: selectedCard == data.class_token ? 0 : 12,
-            },
-          ]}>
-          Edit
-        </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> : null} */}
+        <TouchableOpacity onPress={deleteClass}>
+          <Text
+            style={[
+              StyleCSS.styles.contentText,
+              StyleCSS.styles.fw700,
+              {
+                color: brandColor,
+
+                marginTop: selectedCard == data.class_token ? 0 : 12,
+                marginRight: 32,
+              },
+            ]}>
+            Delete
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={editClass}>
+          <Text
+            style={[
+              StyleCSS.styles.contentText,
+              StyleCSS.styles.fw700,
+              {
+                color: secondaryColor,
+
+                marginTop: selectedCard == data.class_token ? 0 : 12,
+              },
+            ]}>
+            Edit
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
- };
- 
+};
 
-export default function Schedules({navigation , route}: Props) {
+export default function Schedules({navigation, route}: Props) {
   const dispatch = useAppDispatch();
   const {scheduledData, scheduledDataStatus} = useSelector(schedulesState);
   const {userData} = useSelector(userState);
@@ -556,18 +584,17 @@ export default function Schedules({navigation , route}: Props) {
   const [showAddSessionModal, setShowAddSessionModal] = useState(false);
   const [editClassData, setEditClassData] = useState<any>(null);
   const [title, setTitle] = useState<'Add' | 'Edit'>('Add');
-  const [shareLinkPopup, setShareLinkPopup] = useState(false)
-  const [childData, setChildData] = useState(null)
-const [url, setURL]= useState(null);
-const [taughtOnCode, setTaughtOnCode] = useState(null)
-const [deleteClassData, setDeleteClassData] = useState(null);
-// const [joinClassData, setJoinClassData] = useState
-const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
-
+  const [shareLinkPopup, setShareLinkPopup] = useState(false);
+  const [childData, setChildData] = useState(null);
+  const [url, setURL] = useState(null);
+  const [taughtOnCode, setTaughtOnCode] = useState(null);
+  const [deleteClassData, setDeleteClassData] = useState(null);
+  // const [joinClassData, setJoinClassData] = useState
+  const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
 
   const routes = useRoute();
   const doNothing = () => {
-   //nothing
+    //nothing
   };
   let scrollY = new Animated.Value(0.01);
   // let changingHeight = scrollY.interpolate({
@@ -640,7 +667,6 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
     }, []),
   );
 
-
   const getSchedules = () => {
     dispatch(setPageLoading(true));
 
@@ -670,7 +696,6 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
   };
 
   return (
-   
     <View style={styles.container}>
       <CustomStatusBar type={'inside'} />
 
@@ -685,7 +710,6 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
           type={'findCourse'}
           backroute={routes.name}
         />
-        
 
         <View style={styles.addSessionWrapper}>
           <TouchableOpacity
@@ -717,9 +741,7 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
           keyboardShouldPersistTaps={'handled'}
           scrollEventThrottle={16}
           refreshControl={
-            <RefreshControl refreshing={refreshing} 
-            onRefresh={onRefresh} 
-            />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           onScroll={Animated.event(
             [{nativeEvent: {contentOffset: {y: scrollY}}}],
@@ -800,10 +822,10 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({item, index}) => (
                           <LoadItem
-                          key={index}
-                          setShowDeletePopup={setShowDeletePopup}
-                          onRefresh={onRefresh}
-                          navigation={navigation}
+                            key={index}
+                            setShowDeletePopup={setShowDeletePopup}
+                            onRefresh={onRefresh}
+                            navigation={navigation}
                             data={item}
                             setDeleteClassData={setDeleteClassData}
                             index={index}
@@ -829,8 +851,10 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
       </View>
 
       {showAddSessionModal ? (
-        <Modal presentationStyle="overFullScreen" transparent={true} statusBarTranslucent={true}>
-          
+        <Modal
+          presentationStyle="overFullScreen"
+          transparent={true}
+          statusBarTranslucent={true}>
           <TouchableOpacity
             activeOpacity={1}
             onPressOut={() => {
@@ -838,8 +862,8 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
             }}
             style={[SheetCSS.styles.modalBackground]}>
             <View
-             style={[StyleCSS.styles.modalView]}
-            //  style={{backgroundColor:'#fff',alignSelf:'flex-end'}}
+              style={[StyleCSS.styles.modalView]}
+              //  style={{backgroundColor:'#fff',alignSelf:'flex-end'}}
             >
               <TouchableOpacity activeOpacity={1} onPress={doNothing}>
                 <>
@@ -850,39 +874,71 @@ const [showDeletePopup, setShowDeletePopup] = useState<boolean>(false);
                       : `${title} Class`}
                   </Text>
                   <ScrollView contentInsetAdjustmentBehavior="always">
-                  <AddSessionCmp
-                  setTaughtOnCode={setTaughtOnCode}
-                  setShareLinkPopup={setShareLinkPopup}
-                  setChildData={setChildData}
-                  setURL={setURL}
-                    editClassData={title === 'Edit' ? editClassData : null}
-                    title={title}
-                    onRefresh={onRefresh}
-                    setShowAddSessionModal={setShowAddSessionModal}
-                    navigation={navigation}
-                  />
-                 </ScrollView>
+                    <AddSessionCmp
+                      setTaughtOnCode={setTaughtOnCode}
+                      setShareLinkPopup={setShareLinkPopup}
+                      setChildData={setChildData}
+                      setURL={setURL}
+                      editClassData={title === 'Edit' ? editClassData : null}
+                      title={title}
+                      onRefresh={onRefresh}
+                      setShowAddSessionModal={setShowAddSessionModal}
+                      navigation={navigation}
+                    />
+                  </ScrollView>
                 </>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
-          
         </Modal>
       ) : null}
       <Modal visible={shareLinkPopup} transparent={true} statusBarTranslucent>
-        <TouchableOpacity activeOpacity={1} onPress={()=> setShareLinkPopup(false)} style={{flexDirection:'row',height:'100%', backgroundColor:'rgba(0,0,0,0.3)', justifyContent:'center', alignItems:'center'}}>
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setShareLinkPopup(false)}
+          style={{
+            flexDirection: 'row',
+            height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
           <TouchableOpacity activeOpacity={1}>
-          <ShareLinkPopup class_url={title==='Edit' ? childData && childData.class_url : url} taught_on_code={title==='Edit' ? childData && childData.taught_on_code : taughtOnCode} setShareLinkPopup={setShareLinkPopup}/>
+            <ShareLinkPopup
+              class_url={
+                title === 'Edit' ? childData && childData.class_url : url
+              }
+              taught_on_code={
+                title === 'Edit'
+                  ? childData && childData.taught_on_code
+                  : taughtOnCode
+              }
+              setShareLinkPopup={setShareLinkPopup}
+            />
           </TouchableOpacity>
-          </TouchableOpacity>
-        </Modal>
-        <Modal visible={showDeletePopup} transparent={true} statusBarTranslucent>
-        <TouchableOpacity activeOpacity={1} onPress={()=> setShowDeletePopup(false)} style={{flexDirection:'row',height:'100%', backgroundColor:'rgba(0,0,0,0.3)', justifyContent:'center', alignItems:'center'}}>
+        </TouchableOpacity>
+      </Modal>
+      <Modal visible={showDeletePopup} transparent={true} statusBarTranslucent>
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setShowDeletePopup(false)}
+          style={{
+            flexDirection: 'row',
+            height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
           <TouchableOpacity activeOpacity={1}>
-          <DeleteClassPopup onRefresh={onRefresh} navigation={navigation} data={deleteClassData}  setShowDeletePopup={setShowDeletePopup}/>
+            <DeleteClassPopup
+              onRefresh={onRefresh}
+              navigation={navigation}
+              data={deleteClassData}
+              setShowDeletePopup={setShowDeletePopup}
+            />
           </TouchableOpacity>
-          </TouchableOpacity>
-        </Modal>
+        </TouchableOpacity>
+      </Modal>
       <BottomNavigation navigation={navigation} selected={'S'} />
     </View>
   );

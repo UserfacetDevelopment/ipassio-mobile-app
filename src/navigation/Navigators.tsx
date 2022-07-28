@@ -86,10 +86,12 @@ import {
 } from '../reducers/checkout.slice';
 import Otp from '../screens/SignUp/Otp';
 import UserDetail from '../screens/SignUp/UserDetail';
-import VideoConferencing from '../screens/VideoConferencing';
+// import VideoConferencing from '../screens/VideoConferencing';
 import ActionStatus2 from '../components/ActionStatus2';
 import Helper from '../utils/helperMethods';
 import VideoConfWebview from '../screens/VideoConferencing/VideoConfWebview';
+// import LoginScreen from '../screens/VideoConferencing/LoginScreen';
+import ChatWindow from '../screens/Chats/ChatWindow';
 export type RootParamList = {
   Categories: any;
   CategoryDetails: any;
@@ -188,8 +190,10 @@ export type RootParamList = {
   RecordingPreview: any;
   OtpVerification: any;
   UserDetail: any;
-  Video: any;
+  // Video: any;
   VideoWebview: any;
+  // VideoLoginScreen : any;
+  Chat: any;
 };
 
 export interface CategoryInterface {
@@ -1155,11 +1159,6 @@ const RootStackNavigator = () => {
               headerShown: false,
             }}
           />
-          {/* <Stack.Screen
-            name="Login"
-            component={LoginFlowNavigator}
-            options={{headerShown: false}}
-          /> */}
           <Stack.Screen
             name="Withdraw"
             component={Withdrawal}
@@ -1170,16 +1169,26 @@ const RootStackNavigator = () => {
             component={RecordingPreview}
             options={{headerShown: false}}
           />
-          <Stack.Screen
+          {/* <Stack.Screen
             name="Video"
             component={VideoConferencing}
             options={{headerShown: false}}
-          />
+          /> */}
           <Stack.Screen
             name="VideoWebview"
             component={VideoConfWebview}
             options={{headerShown: false}}
           />
+          <Stack.Screen
+            name="Chat"
+            component={ChatWindow}
+            options={{headerShown: false}}
+          />
+           {/* <Stack.Screen
+            name="VideoLoginScreen"
+            component={LoginScreen}
+            options={{headerShown: false}}
+          /> */}
         </>
       )}
     </Stack.Navigator>

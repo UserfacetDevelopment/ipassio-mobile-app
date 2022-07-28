@@ -10,6 +10,7 @@ import {
   Alert,
   // Image,
   Animated,
+  Platform,
   //TextInput,
 } from 'react-native';
 // @ts-ignore
@@ -183,6 +184,8 @@ const checkoutToken = route.params?.checkoutToken;
       order_comments: orderComment,
       billing_city: city,
       billing_country: selectedCountry.value,
+      device_type: Platform.OS === 'android' ? 'android' : 'ios',
+
     };
 
     let finalData = {

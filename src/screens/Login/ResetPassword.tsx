@@ -11,6 +11,7 @@ import {
   TouchableHighlight,
   Alert,
   Keyboard,
+  Platform,
 } from 'react-native';
 import {Container} from 'native-base';
 import {TextInput, RadioButton} from 'react-native-paper';
@@ -45,6 +46,7 @@ export interface ResetPasswordInterface{
         type: string;
         verification_code: string;
         password: string;
+        device_type:'AD'|'IO';
 }
 export default function ResetPassword({navigation, route} : Props) {
   const dispatch = useAppDispatch();
@@ -90,6 +92,8 @@ export default function ResetPassword({navigation, route} : Props) {
         type: 'mail',
         verification_code: otp,
         password: password2,
+        device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
       };
       setPassword1('');
       setPassword2('');
@@ -140,6 +144,8 @@ export default function ResetPassword({navigation, route} : Props) {
         let data = {
             email: route.params?.email,
             type: "mail",
+            device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
           };
           dispatch(doForgetPassword(data))
           .unwrap()

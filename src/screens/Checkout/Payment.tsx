@@ -9,6 +9,7 @@ import {
   // Image,
   Alert,
   Animated,
+  Platform,
 } from 'react-native';
 import StepIndicator from 'react-native-step-indicator';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -104,6 +105,8 @@ const Payment: FC<Props> = ({route, navigation}) => {
       billing_street_address: checkoutData.billing_street_address,
       order_comments: checkoutData.order_comments,
       payment_gateway: selectedPaymentGateway,
+      device_type: Platform.OS === 'android' ? 'android' : 'ios',
+
     };
 
     let finalData = {

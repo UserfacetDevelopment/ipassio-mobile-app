@@ -9,6 +9,7 @@ import {
   Modal,
   Alert,
   KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import PhoneInput, {isValidNumber} from 'react-native-phone-number-input';
@@ -52,6 +53,8 @@ interface ChipInterface {
 export interface CompleteSignupInterface{
     data:any;
     userToken: string;
+    device_type: 'AD' | 'IO';
+
 }
 
 const Chip = ({data, removeCategory}: ChipInterface) => {
@@ -177,6 +180,8 @@ setPassionateError(true)
             phone_number: phoneNumber,
             gender: selectedGender.label,
             country_code: '+' + countryCode,
+            device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
           };
         } else if (userData.user_type === 'T') {
             if(base64File){
@@ -190,6 +195,8 @@ setPassionateError(true)
                     bio_image_base64: base64File ? base64File : '',
                     bio_type: bioType ? bioType : '',
                     website: data.website ? data.website : '',
+                    device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
                   };
             }
             else{
@@ -201,6 +208,8 @@ setPassionateError(true)
                     gender: selectedGender.label,
                     country_code: '+' + countryCode,
                     website: data.website ? data.website : '',
+                    device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
                   };
             }
           

@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Alert} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, Alert, Platform} from 'react-native';
 import HeaderInner from '../../components/HeaderInner';
 import OTPTextInput from 'react-native-otp-textinput';
 import {useAppDispatch} from '../../app/store';
@@ -42,6 +42,8 @@ export default function Otp({navigation, route}) {
             email: email,
             type: 'mail',
             verification_code: otp,
+            device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
           };
       
           dispatch(otpVerifyAccount(data))
@@ -70,6 +72,8 @@ export default function Otp({navigation, route}) {
     let data = {
       email: email,
       type: 'mail',
+      device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
     };
     dispatch(resendOtp(data))
       .unwrap()

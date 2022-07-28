@@ -9,7 +9,8 @@ import {
   RefreshControl,
   Dimensions, Animated,
   KeyboardAvoidingView,
-  Modal
+  Modal,
+  Platform
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import { Container } from "native-base";
@@ -246,6 +247,8 @@ setEditAttendanceModal(true)
         teacher_timezone: data.teacher_timezone
           ? data.teacher_timezone
           : userData.timezone,
+          device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
       };
     
     let d: any = {

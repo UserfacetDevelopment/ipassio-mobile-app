@@ -198,6 +198,8 @@ const Review: FC<Props> = ({route, navigation}) => {
   };
 
   const handleResponse = (data: any) => {
+    console.log(data);
+
     if (data.title === 'success') {
       dispatch(setPageLoading(true));
       var regex = /[?&]([^=#]+)=([^&#]*)/g,
@@ -206,6 +208,9 @@ const Review: FC<Props> = ({route, navigation}) => {
       while ((match = regex.exec(data.url))) {
         urlParams[match[1]] = match[2];
       }
+      console.log(urlParams['PayerID']);
+      console.log(urlParams['paymentId']);
+      
       let dataPay = {
         course: checkoutDataDetails.course.id,
         checkout_id: checkoutDataDetails.id,

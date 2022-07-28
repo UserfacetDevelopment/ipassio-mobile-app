@@ -35,4 +35,9 @@ export default class ApiGateway{
         const url=`https://video.twilio.com${endpoint}`;
         return axios.get(url, headers);
     }
+
+    static adminGet(endpoint: string, headers?:any){
+        const url=`${config.BaseAdminURL}/${endpoint}`;
+        return axios.get(url, headers);
+    }
 }

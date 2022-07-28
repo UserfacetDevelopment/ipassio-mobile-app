@@ -412,7 +412,7 @@ useEffect(()=>{
       billing_street_address: checkoutData.billing_street_address,
       order_comments: checkoutData.order_comments,
       payment_gateway: checkoutData.payment_gateway,
-      device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+      device_type: Platform.OS === 'android' ? 'android' : 'ios',
     };
 
     const finalData = {
@@ -476,7 +476,7 @@ useEffect(()=>{
       total_amount: checkoutData.amount.total_amount,
       class_type: checkoutData.class_type.id,
       discount_amount: checkoutData.amount.discount_amount,
-      device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+      device_type: Platform.OS === 'android' ? 'android' : 'ios',
     };
 
     let finalData = {
@@ -635,7 +635,7 @@ useEffect(()=>{
         billing_street_address: checkoutData.billing_street_address,
         order_comments: checkoutData.order_comments,
         payment_gateway: checkoutData.payment_gateway,
-        device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+        device_type: Platform.OS === 'android' ? 'android' : 'ios',
         teacher_availability: filteredTeacherAvailability,
       };
 

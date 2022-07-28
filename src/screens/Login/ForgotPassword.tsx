@@ -11,7 +11,8 @@ import {
   // Image,
   Alert,
   Keyboard,
-  Dimensions
+  Dimensions,
+  Platform
 } from 'react-native';
 import {Container} from 'native-base';
 import {TextInput, RadioButton, configureFonts} from 'react-native-paper';
@@ -39,6 +40,7 @@ import CustomStatusBar from '../../components/CustomStatusBar';
 export interface ForgotPassswordInterface{
 email:string|undefined;
 type:string;
+device_type:'AD'|'IO'
 }
 type Props = NativeStackScreenProps<RootParamList, 'ForgotPassword'>;
 
@@ -56,6 +58,8 @@ const routes = useRoute();
     let finalData : ForgotPassswordInterface = {
       email: email,
       type: 'mail',
+      device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
     };
 
     if (email!=='') {

@@ -20,6 +20,10 @@ static videoURL="/video/";
     Config.env == 'prod'
       ? 'https://safeapis.ipassio.com/api'
       : 'https://neoapis.ipassio.com/api';
+
+      static BaseAdminURL = Config.env == 'prod'
+      ? 'https://safeapis.ipassio.com'
+      : 'https://neoapis.ipassio.com';
   static NodeBaseURL =
     Config.env == 'prod'
       ? 'https://node.ipassio.com/'

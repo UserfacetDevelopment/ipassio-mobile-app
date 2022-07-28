@@ -9,7 +9,7 @@ import Config from '../config/Config';
 
 export default function BottomNavigation({navigation, selected}: any) {
   const {userData} = useSelector(userState);
-const flexBasis =  20;
+const flexBasis =  15;
   return (
     <View style={styles.tabStyle}>
       <TouchableOpacity
@@ -167,6 +167,34 @@ const flexBasis =  20;
             },
           ]}>
           More
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate('Chat');
+        }}
+        style={[
+          styles.tabButton,
+          {flexBasis: `${flexBasis}%`},
+        ]}>
+        <CustomImage
+          style={styles.tabImage}
+          uri={
+            selected === 'M'
+              ? `${Config.media_url}more-active.png`
+              : `${Config.media_url}more.png`
+          }
+        />
+
+        <Text
+          style={[
+            styles.text,
+            {
+              color: selected === 'M' ? font1 : font2,
+              fontWeight: selected === 'M' ? '600' : '500',
+            },
+          ]}>
+          Chat
         </Text>
       </TouchableOpacity>
     </View>

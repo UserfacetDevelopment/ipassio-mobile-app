@@ -57,11 +57,11 @@ export interface GetTokenInterface {
 }
 export interface GetParticipantListInterface {
   roomName: string;
-  status:string;
+  status: string;
 }
 
 const width = Dimensions.get('screen').width;
-
+const height = Dimensions.get('screen').height;
 export default function VideoConferencing({navigation, route}: Props) {
   const dispatch = useDispatch();
   const {userData} = useSelector(userState);
@@ -72,6 +72,7 @@ export default function VideoConferencing({navigation, route}: Props) {
   // const [participants, setParticipants] = useState<number>(0);
   const [participants, setParticipants] = useState(new Map());
   const [videoTracks, setVideoTracks] = useState(new Map());
+  const [audioTracks, setAudioTracks] = useState(new Map());
   const [token, setToken] = useState('');
   const [roomName, setRoomName] = useState(route.params?.data.class_url);
   const devices = useCameraDevices('wide-angle-camera');
@@ -83,8 +84,6 @@ export default function VideoConferencing({navigation, route}: Props) {
     getPermission();
     Helper.disableIntercom();
   }, []);
-
-
 
   const getPermission = async () => {
     try {
@@ -102,29 +101,28 @@ export default function VideoConferencing({navigation, route}: Props) {
     return null;
   };
 
-useEffect(()=>{
-getList();
-},[participantAdded])
+  useEffect(() => {
+    getList();
+  }, [participantAdded, videoTracks]);
 
-const getList =()=>{
-  const data : GetParticipantListInterface = {
-    roomName : roomName,
-    status : 'connected'
-  }
-  
-  dispatch(getParticipantList(data))
-  .then((response : any)=>{
+  const getList = () => {
+    const data: GetParticipantListInterface = {
+      roomName: roomName,
+      status: 'connected',
+    };
 
-  console.log(response);
-  setParticipantArr(response.payload.data.participants)
-  })
-  .catch((err: any)=>{
-    console.log(err)
-  })
-}
-// var new1 = Array.from(videoTracks)
-// , ([trackSid, trackIdentifier]))
-// console.log(new1)
+    dispatch(getParticipantList(data))
+      .then((response: any) => {
+        console.log(response);
+        setParticipantArr(response.payload.data.participants);
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
+  // var new1 = Array.from(videoTracks)
+  // , ([trackSid, trackIdentifier]))
+  // console.log(new1)
 
   const onConnectButtonPress = async () => {
     console.log('in on connect button preess');
@@ -132,6 +130,7 @@ const getList =()=>{
       room_name: roomName,
       create_conversation: false,
       user_identity: userData.first_name + ' ' + userData.last_name,
+      // + ":"+userData.user_token,
     };
 
     await dispatch(fetchToken(data))
@@ -139,7 +138,7 @@ const getList =()=>{
         setToken(res.payload.data.token);
         twilioRef.current.getStats();
         console.log(twilioRef.current.getStats());
-        console.log('res', res.payload.data.token)
+        console.log('res', res.payload.data.token);
         twilioRef.current.connect({
           accessToken: res.payload.data.token,
           enableAudio: isAudioEnabled,
@@ -172,28 +171,25 @@ const getList =()=>{
   };
   const onRoomDidConnect = () => {
     console.log('onRoomDidConnect: ', roomName);
-    getList()
-twilioRef.current.publishLocalVideo();
+    getList();
+    twilioRef.current.publishLocalVideo();
     setStatus('connected');
     // console.log("over");
   };
-console.log(participantArr);
+  console.log(participantArr);
   const onVideoStateChange = () => {
     if (twilioRef && twilioRef.current) {
       twilioRef.current
         .setLocalVideoEnabled(!isVideoEnabled)
 
         .then((isEnabled: boolean) => setIsVideoEnabled(isEnabled))
-        .then(()=>{
-          if(isVideoEnabled){
-          twilioRef.current.publishLocalVideo();
-          }
-          else{
+        .then(() => {
+          if (isVideoEnabled) {
+            twilioRef.current.publishLocalVideo();
+          } else {
             twilioRef.current.publishLocalVideo();
           }
-
-        })
-
+        });
     }
   };
 
@@ -209,27 +205,51 @@ console.log(participantArr);
     setStatus('disconnected');
   };
 
-
-const onRoomParticipantDidDisconnect = ({roomName, participant}: any) => {
-  setParticipantAdded(false);
-  console.log('one participant left');
-participants.delete(participant.sid);
-  // call everytime a participant joins the same room
-  console.log('pTracks', participants);
-}
+  const onRoomParticipantDidDisconnect = ({roomName, participant}: any) => {
+    setParticipantAdded(false);
+    console.log('one participant left');
+    participants.delete(participant.sid);
+    // call everytime a participant joins the same room
+    console.log('pTracks', participants);
+  };
 
   const onRoomParticipantDidConnect = ({roomName, participant}: any) => {
     setParticipantAdded(true);
     console.log('one participant joined');
-console.log(participant);
-    participants.set(participant.sid,roomName);
+    console.log(participant);
+    participants.set(participant.sid, roomName);
     // call everytime a participant joins the same room
     console.log('pTracks', participants);
-  }
+  };
+
+  const onParticipantAddedAudioTrack = ({participant, track}: any) => {
+    console.log('onParticipantAddedAudioTrack: ', participant, track);
+
+    setAudioTracks(
+      new Map([
+        ...audioTracks,
+        [
+          participant.sid,
+          {participantSid: participant.sid, audioTrackSid: track.trackSid},
+        ],
+      ]),
+    );
+    // call everytime a participant joins the same room
+  };
+  console.log('audioTracks', audioTracks);
+  // twilioRef.current.getStats();
+
+  const onParticipantRemovedAudioTrack = ({participant, track}: any) => {
+    // gets called when a participant disconnects.
+    console.log('onParticipantRemovedAudioTrack: ', participant, track);
+    const audioTracksTemp = audioTracks;
+    audioTracksTemp.delete(participant.sid);
+    setVideoTracks(audioTracksTemp);
+    console.log('audioTrack removed', audioTracks);
+  };
 
   const onParticipantAddedVideoTrack = ({participant, track}: any) => {
     console.log('onParticipantAddedVideoTrack: ', participant, track);
-
 
     // setVideoTracks(
     //   new Map([
@@ -250,20 +270,26 @@ console.log(participant);
       ]),
     );
     // call everytime a participant joins the same room
-   
   };
-  console.log('videoTracks',videoTracks)
+  console.log('videoTracks', videoTracks);
   // twilioRef.current.getStats();
 
   const onParticipantRemovedVideoTrack = ({participant, track}: any) => {
     // gets called when a participant disconnects.
     console.log('onParticipantRemovedVideoTrack: ', participant, track);
     const videoTracksTemp = videoTracks;
-    videoTracksTemp.delete(track.trackSid);
+    videoTracksTemp.delete(participant.sid);
     setVideoTracks(videoTracksTemp);
-    console.log('videoTracks',videoTracks)
+    console.log('videoTracks', videoTracks);
   };
 
+  const getUser = (identity: string, type: 'N' | 'T') => {
+    let temp = identity.split(':');
+    console.log(temp[0]);
+    console.log(temp[1]);
+
+    return type === 'T' ? temp[1] : temp[0];
+  };
 
   return (
     <>
@@ -292,11 +318,13 @@ console.log(participant);
                   {device == null ? (
                     <Text>Loading ... </Text>
                   ) : isVideoEnabled ? (
+                    <View>
                     <Camera
                       style={styles.fillVideo}
                       device={device}
                       isActive={true}
                     />
+                    </View>
                   ) : (
                     <View
                       style={{
@@ -313,6 +341,9 @@ console.log(participant);
                           uri={userData.user_media.profile_pic}
                         />
                       </View>
+                      <View style={{position:'absolute',width:'100%', bottom:0, backgroundColor:'rgba(0,0,0,0.614319)'}}>
+                      <Text style={{color:'#fff', bottom:8}}>{userData.first_name} {userData.last_name}</Text>
+</View>
                     </View>
                   )}
                 </View>
@@ -390,17 +421,16 @@ console.log(participant);
 
         {(status === 'connected' || status === 'connecting') && (
           <View style={{height: '100%'}}>
-
             <View style={styles.callContainer}>
-              <StatusBar hidden/>
-            <TouchableOpacity
-                    style={styles.flipCamera}
-                    onPress={onFlipButtonPress}>
-                    <Flip />
-                  </TouchableOpacity>
+              <StatusBar hidden />
+              <TouchableOpacity
+                style={styles.flipCamera}
+                onPress={onFlipButtonPress}>
+                <Flip />
+              </TouchableOpacity>
               {status === 'connected' && (
                 <View style={styles.remoteGrid}>
-                 {/* {Array.from(videoTracks, ([trackSid, trackIdentifier]) => {
+                  {/* {Array.from(videoTracks, ([trackSid, trackIdentifier]) => {
                    console.log('trackSid', trackSid)
                    console.log('trackIdentifier', trackIdentifier )
                     return (
@@ -411,36 +441,65 @@ console.log(participant);
                       />
                     );
                   })} */}
-                  {participantArr.length>0? 
-                  participantArr.map((vid)=>{
-                    // console.log('identifier',videoTracks.get(vid.sid))
-                    // videoTracks.get(vid.sid) !== undefined && console.log('trackSid',videoTracks.get(vid.sid).participantSid)
-                  return(
-                    <>
-                    {videoTracks.get(vid.sid) !== undefined?  
-                    <TwilioVideoParticipantView
-                    style={[styles.remoteVideo, {flexBasis: `${100/(participantArr.length-1)}%`}]}
-                    key={videoTracks.get(vid.sid).participantSid}
-                    trackIdentifier={videoTracks.get(vid.sid)} 
-                  />: vid.identity !== `${userData.first_name} ${userData.last_name}` ?
-                    <View style={{borderWidth:4, borderColor:'#eaa',height:'100%', width:'100%',}}>
-                   <Text style={{color:'#fff', position:'absolute',left:16, bottom:16, alignItems:'center'}}>{vid.identity}</Text>
-                   <View style={{height:160, width:160, backgroundColor:'#e1d', justifyContent:'center', alignSelf:'center'}}>
-<Text>hdbjs</Text>
-                   </View>
-                    </View>:null}
-                    </>
-                  )
-                  //   {videoTracks.get(vid.sid) !== undefined ? 
-                  //   <TwilioVideoParticipantView
-                  //   style={[styles.remoteVideo, {flexBasis: `${100/(participantArr.length-1)}%`}]}
-                  //   key={videoTracks.get(vid.sid).participantSid}
-                  //   trackIdentifier={videoTracks.get(vid.sid)} 
-                  // />)
-                  // : <View style={{backgroundColor:'#fff'}}></View>
-                  }) 
-                  :null
-                  }
+                  {participantArr.length > 0
+                    ? participantArr.map(vid => {
+                        // console.log('identifier',videoTracks.get(vid.sid))
+                        // videoTracks.get(vid.sid) !== undefined && console.log('trackSid',videoTracks.get(vid.sid).participantSid)
+                        return (
+                          <>
+                            {videoTracks.get(vid.sid) !== undefined ? (
+                              <TwilioVideoParticipantView
+                                style={[
+                                  styles.remoteVideo,
+                                  {
+                                    flexBasis: `${
+                                      100 / (participantArr.length - 1)
+                                    }%`,
+                                  },
+                                ]}
+                                key={videoTracks.get(vid.sid).participantSid}
+                                trackIdentifier={videoTracks.get(vid.sid)}
+                              />
+                            ) : vid.identity !==
+                              `${userData.first_name} ${userData.last_name}` ? (
+                              <View style={{height: '100%', width: '100%'}}>
+                                <Text
+                                  style={{
+                                    color: '#fff',
+                                    position: 'absolute',
+                                    left: 16,
+                                    bottom: 16,
+                                    alignItems: 'center',
+                                  }}>
+                                  {audioTracks.get(vid.sid) ? (
+                                    <Text>Unmute</Text>
+                                  ) : (
+                                    <Text>Mute</Text>
+                                  )}
+                                  {vid.identity}
+                                </Text>
+                                <View style={styles.avatar}>
+                                  <Text
+                                    style={[
+                                      StyleCSS.styles.mainTitle,
+                                      {color: '#fff'},
+                                    ]}>
+                                    {vid.identity.substring(0, 2).toUpperCase()}
+                                  </Text>
+                                </View>
+                              </View>
+                            ) : null}
+                          </>
+                        );
+                        //   {videoTracks.get(vid.sid) !== undefined ?
+                        //   <TwilioVideoParticipantView
+                        //   style={[styles.remoteVideo, {flexBasis: `${100/(participantArr.length-1)}%`}]}
+                        //   key={videoTracks.get(vid.sid).participantSid}
+                        //   trackIdentifier={videoTracks.get(vid.sid)}
+                        // />)
+                        // : <View style={{backgroundColor:'#fff'}}></View>
+                      })
+                    : null}
                   {/* {participantArr.length>0? 
                   participantArr.map((vid)=>{
                     console.log('identifier',videoTracks.get(vid.sid))
@@ -456,30 +515,37 @@ console.log(participant);
                   } */}
                 </View>
               )}
-              <View style={participantArr.length <= 1 ? styles.remoteVideo : styles.localVideoWrapper}>
+              <View
+                style={
+                  participantArr.length <= 1
+                    ? styles.remoteVideo
+                    : styles.localVideoWrapper
+                }>
                 {isVideoEnabled ? (
                   <TwilioVideoLocalView
                     enabled={true}
                     style={styles.localVideo}
                   />
-                ) :
-                <View
-                style={{
-                  backgroundColor: '#3A424A',
-                  height: '100%',
-                  width: '100%',
-                  borderRadius: 8,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <View>
-                  <CustomImage
-                    style={styles.profile_pic}
-                    uri={userData.user_media.profile_pic}
-                  />
-                </View>
-              </View>
-              }
+                ) : (
+                  <View
+                    style={{
+                      backgroundColor: '#2D353D',
+                      height: '100%',
+                      width: '100%',
+                      borderRadius: 8,
+                      borderWidth:1,
+                      borderColor:'rgba(255,255,255,0.2)',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <View>
+                      <CustomImage
+                        style={participantArr.length>1 ? styles.profile_pic_mini : styles.profile_pic}
+                        uri={userData.user_media.profile_pic}
+                      />
+                    </View>
+                  </View>
+                )}
               </View>
             </View>
             <View style={styles.optionsContainer}>
@@ -504,6 +570,8 @@ console.log(participant);
           onRoomParticipantDidDisconnect={onRoomParticipantDidDisconnect}
           onParticipantAddedVideoTrack={onParticipantAddedVideoTrack}
           onParticipantRemovedVideoTrack={onParticipantRemovedVideoTrack}
+          onParticipantEnabledAudioTrack={onParticipantAddedAudioTrack}
+          onParticipantDisabledAudioTrack={onParticipantRemovedAudioTrack}
         />
       </View>
     </>
@@ -542,8 +610,8 @@ const styles = StyleSheet.create({
   flipCamera: {
     position: 'absolute',
     zIndex: 4,
-    top:54,
-    right:24,
+    top: 54,
+    right: 24,
   },
   input: {
     height: 50,
@@ -581,16 +649,17 @@ const styles = StyleSheet.create({
   },
 
   remoteGrid: {
+    // borderWidth:8,
+    width: '100%',
     position: 'relative',
-    zIndex:0,
+    zIndex: 0,
     flex: 1,
     flexDirection: 'column',
   },
   remoteVideo: {
     width: wp('100%'),
-    height: hp('80%'),
-    borderBottomWidth:2,
-    borderBottomColor:'#fff',
+    height: hp('90%'),
+    borderBottomWidth: 2,
     // width:'100%',
     // height:'100%',
     zIndex: 1,
@@ -673,5 +742,20 @@ const styles = StyleSheet.create({
     height: 140,
     width: 140,
     borderRadius: 98,
+  },
+  profile_pic_mini:{
+    height: 64,
+    width: 64,
+    borderRadius: 98,
+  },
+  avatar: {
+    height: 160,
+    width: 160,
+    borderRadius: 98,
+    backgroundColor: '#f5b342',
+    alignItems: 'center',
+    marginTop: height / 2 - 160,
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
 });

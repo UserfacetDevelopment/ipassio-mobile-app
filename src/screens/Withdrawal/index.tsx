@@ -56,6 +56,8 @@ interface WithdrawRequestInterface {
   withdrawl_id: Array<any>;
   status: string;
   withdraw_method: string | null;
+  device_type: 'AD' |'IO';
+
 }
 
 export interface FinalWithdrawRequestInterface {
@@ -222,6 +224,8 @@ const Withdrawal: FC<Props> = ({navigation, route}) => {
       withdrawl_id: ids,
       status: 'P',
       withdraw_method: withdrawMethod ? withdrawMethod : null,
+      device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
     };
 
     let finalData: FinalWithdrawRequestInterface = {

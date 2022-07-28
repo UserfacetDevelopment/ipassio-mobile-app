@@ -53,3 +53,21 @@ export const fetchToken = createAsyncThunk(
       return response;
     }
   );
+
+  export const getMasqueradeToken = createAsyncThunk(
+    'twilio/getMasqueradeToken',
+    async (userToken : any) => {
+      let response = await ApiGateway.get(
+        'adminpanel/generate-masquerade/',
+        false,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Token ' + userToken,
+          },
+        },
+      )
+      return response;
+      
+    }
+  );

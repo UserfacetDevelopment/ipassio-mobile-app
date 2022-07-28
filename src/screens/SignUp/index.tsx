@@ -8,6 +8,7 @@ import {
   Image,
   Dimensions,
   Alert,
+  Platform,
 } from 'react-native';
 import Intercom, {Visibility} from '@intercom/intercom-react-native'
 import HeaderInner from '../../components/HeaderInner';
@@ -44,6 +45,8 @@ export interface RegisterDataInterface {
   timezone: string;
   user_type: string;
   email: string;
+  device_type: 'AD' | 'IO';
+
 }
 
 export default function Signup({navigation, routes}) {
@@ -138,6 +141,8 @@ export default function Signup({navigation, routes}) {
               userLocation.data.country_code
                 ? userLocation.data.country_code
                 : '',
+                device_type: Platform.OS === 'android' ? 'AD' : 'IO',
+
           };
 
           dispatch(register(data))
